@@ -28,7 +28,7 @@ impl Plugin for UiPlugin {
     }
 }
 
-fn scale_ui(mut ui_scale: ResMut<UiScale>, mut ev_window_resized: EventReader<WindowResized>) {
+fn scale_ui(mut ui_scale: ResMut<UiScale>, mut ev_window_resized: MessageReader<WindowResized>) {
     for ev in ev_window_resized.read() {
         ui_scale.0 = ev.width / DEFAULT_WINDOW_WIDTH;
     }

@@ -1,12 +1,9 @@
-use std::f32::consts::PI;
+use std::collections::HashSet;
 
 use rand::{thread_rng, Rng};
 
-use bevy::{prelude::*, utils::HashSet};
-use bevy_particle_systems::{
-    CircleSegment, ColorOverTime, Curve, CurvePoint, EmitterShape, JitteredValue, Noise2D,
-    ParticleSystem, ParticleSystemBundle, Playing, VectorOverTime, VelocityModifier,
-};
+use bevy::prelude::*;
+use bevy_hanabi::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use crate::{
@@ -36,6 +33,9 @@ const ROCK_RADIUS: f32 = 1.15;
 
 const NPC_FLORA_RADIUS: f32 = 64.0;
 
+// The petal effect renders on this z to always stay above world sprites.
+const PETAL_Z: f32 = 100.0;
+
 #[derive(Component)]
 struct SakuraPedal;
 
@@ -54,7 +54,7 @@ fn spawn_rock(commands: &mut Commands, assets: &Res<GameAssets>, chunk_pos: IVec
     let collider = commands
         .spawn((
             Collider::cuboid(8.0, 8.0),
-            TransformBundle::from_transform(Transform::from_translation(Vec3::new(0.0, 0.0, 0.0))),
+            Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
         ))
         .id();
 
@@ -64,17 +64,17 @@ fn spawn_rock(commands: &mut Commands, assets: &Res<GameAssets>, chunk_pos: IVec
         .spawn((
             Flora::new(chunk_pos),
             YSort(-8.0),
-            SpriteBundle {
-                texture: assets.rocks_texture.clone(),
-                transform: Transform::from_translation(pos),
+            Sprite {
+                image: assets.rocks_texture.clone(),
+                texture_atlas: Some(TextureAtlas {
+                    layout: assets.rocks_layout.clone(),
+                    index: rng.gen_range(0..ROCKS_COUNT),
+                }),
                 ..default()
             },
-            TextureAtlas {
-                layout: assets.rocks_layout.clone(),
-                index: rng.gen_range(0..ROCKS_COUNT),
-            },
+            Transform::from_translation(pos),
         ))
-        .push_children(&[collider]);
+        .add_children(&[collider]);
 }
 
 fn spawn_bush(
@@ -98,7 +98,7 @@ fn spawn_bush(
     let collider = commands
         .spawn((
             c,
-            TransformBundle::from_transform(Transform::from_translation(Vec3::new(0.0, -8.0, 0.0))),
+            Transform::from_translation(Vec3::new(0.0, -8.0, 0.0)),
         ))
         .id();
 
@@ -106,23 +106,89 @@ fn spawn_bush(
         .spawn((
             Flora::new(chunk_pos),
             YSort(0.0),
-            SpriteBundle {
-                transform: Transform::from_translation(pos),
-                texture,
+            Sprite {
+                image: texture,
                 ..default()
             },
+            Transform::from_translation(pos),
         ))
-        .push_children(&[collider]);
+        .add_children(&[collider]);
 }
 
-fn spawn_tree(commands: &mut Commands, assets: &Res<GameAssets>, chunk_pos: IVec2, pos: Vec3) {
+/// Builds the looping sakura petal effect: ~2 particles per second, spawned at the
+/// tree position, drifting outward/downward with a wobble, fading in and out.
+fn build_petal_effect() -> EffectAsset {
+    let writer = ExprWriter::new();
+
+    // Age starts at a random [0, 1] fraction so petals don't all spawn in sync.
+    let init_age = SetAttributeModifier::new(Attribute::AGE, writer.rand(ScalarType::Float).expr());
+
+    // Lifetime roughly in [0.5, 2.5]s.
+    let lifetime = (writer.lit(1.0) + (writer.rand(ScalarType::Float) - writer.lit(0.5)) * writer.lit(2.0)).expr();
+    let init_lifetime = SetAttributeModifier::new(Attribute::LIFETIME, lifetime);
+
+    // Constant drift plus a random sideways wobble (replaces the noise modifier).
+    let velocity = (writer.lit(7.0) * writer.lit(Vec3::new(3.0, -1.5, 0.0))
+        + (writer.rand(ScalarType::Float) - writer.lit(0.5)) * writer.lit(Vec3::new(4.0, 2.5, 0.0)))
+        .expr();
+    let init_velocity = SetAttributeModifier::new(Attribute::VELOCITY, velocity);
+
+    // Spawn in a small region around the tree crown. The effect entity is placed at the
+    // tree top (z ≈ 100), so this keeps petals near the crown, replacing the original
+    // circle-segment emitter.
+    let init_position = SetAttributeModifier::new(
+        Attribute::POSITION,
+        (writer.rand(VectorType::VEC3F) * writer.lit(Vec3::splat(16.0))
+            - writer.lit(Vec3::splat(8.0)))
+            .expr(),
+    );
+
+    let texture_slot = writer.lit(0u32).expr();
+    let mut module = writer.finish();
+    module.add_texture_slot("pedal");
+
+    let mut color_gradient = bevy_hanabi::Gradient::new();
+    color_gradient.add_key(0.0, Vec4::new(1.0, 1.0, 1.0, 0.0));
+    color_gradient.add_key(0.3, Vec4::ONE);
+    color_gradient.add_key(0.8, Vec4::ONE);
+    color_gradient.add_key(0.95, Vec4::new(1.0, 1.0, 1.0, 0.0));
+    color_gradient.add_key(1.0, Vec4::new(1.0, 1.0, 1.0, 0.0));
+
+    EffectAsset::new(
+        32768,
+        SpawnerSettings::rate(2.0.into()),
+        module,
+    )
+    .with_name("sakura_pedal")
+    .init(init_age)
+    .init(init_lifetime)
+    .init(init_velocity)
+    .init(init_position)
+    .render(ParticleTextureModifier {
+        texture_slot,
+        sample_mapping: ImageSampleMapping::Modulate,
+    })
+    .render(ColorOverLifetimeModifier::new(color_gradient))
+    .render(SizeOverLifetimeModifier {
+        gradient: bevy_hanabi::Gradient::constant(Vec3::splat(0.5)),
+        screen_space_size: false,
+    })
+}
+
+fn spawn_tree(
+    commands: &mut Commands,
+    assets: &Res<GameAssets>,
+    effects: &mut Assets<EffectAsset>,
+    chunk_pos: IVec2,
+    pos: Vec3,
+) {
     let pos = pos + Vec3::new(0.0, 48.0, 0.0);
 
     let trunk = commands
         .spawn((
             YSortStaticChild(16.1),
-            SpriteBundle {
-                texture: assets.tree_trunk.clone(),
+            Sprite {
+                image: assets.tree_trunk.clone(),
                 ..default()
             },
         ))
@@ -131,8 +197,8 @@ fn spawn_tree(commands: &mut Commands, assets: &Res<GameAssets>, chunk_pos: IVec
     let shadow = commands
         .spawn((
             YSortStaticChild(64.0),
-            SpriteBundle {
-                texture: assets.tree_shadow.clone(),
+            Sprite {
+                image: assets.tree_shadow.clone(),
                 ..default()
             },
         ))
@@ -141,51 +207,19 @@ fn spawn_tree(commands: &mut Commands, assets: &Res<GameAssets>, chunk_pos: IVec
     let collider = commands
         .spawn((
             Collider::cuboid(16.0, 8.0),
-            TransformBundle::from_transform(Transform::from_translation(Vec3::new(
-                0.0, -48.0, 0.0,
-            ))),
+            Transform::from_translation(Vec3::new(0.0, -48.0, 0.0)),
         ))
         .id();
 
+    let petal_effect = effects.add(build_petal_effect());
     let tree_pedals = commands
         .spawn((
             SakuraPedal,
-            Playing,
-            ParticleSystemBundle {
-                particle_system: ParticleSystem {
-                    max_particles: 0,
-                    texture: assets.tree_pedal.clone().into(),
-                    spawn_rate_per_second: 2.0.into(),
-                    initial_speed: JitteredValue::jittered(50.0, -3.0..3.0),
-                    lifetime: JitteredValue::jittered(1.0, -0.5..1.5),
-                    color: ColorOverTime::Gradient(Curve::new(vec![
-                        CurvePoint::new(Color::srgba(1.0, 1.0, 1.0, 0.0), 0.0),
-                        CurvePoint::new(Color::WHITE, 0.3),
-                        CurvePoint::new(Color::WHITE, 0.8),
-                        CurvePoint::new(Color::srgba(1.0, 1.0, 1.0, 0.0), 0.95),
-                        CurvePoint::new(Color::srgba(1.0, 1.0, 1.0, 0.0), 1.0),
-                    ])),
-                    emitter_shape: EmitterShape::CircleSegment(CircleSegment {
-                        opening_angle: PI / 2.0,
-                        direction_angle: 3.0 / 2.0 * PI,
-                        radius: 0.0.into(),
-                    }),
-                    initial_rotation: JitteredValue::jittered(PI, -PI..PI),
-                    rotation_speed: JitteredValue::jittered(PI / 2.0, -PI / 4.0..PI / 4.0),
-                    velocity_modifiers: vec![
-                        VelocityModifier::Vector(VectorOverTime::Constant(
-                            7.0 * Vec3::new(3.0, -1.5, 0.0),
-                        )),
-                        VelocityModifier::Noise(Noise2D::new(0.1, 2.0, Vec2::ZERO)),
-                    ],
-                    scale: 0.5.into(),
-                    z_value_override: Some(100.0.into()),
-                    looping: true,
-                    despawn_particles_with_system: true,
-                    ..ParticleSystem::default()
-                },
-                ..ParticleSystemBundle::default()
+            ParticleEffect::new(petal_effect),
+            EffectMaterial {
+                images: vec![assets.tree_pedal.clone()],
             },
+            Transform::from_translation(Vec3::new(0.0, 0.0, PETAL_Z)),
         ))
         .id();
 
@@ -193,18 +227,19 @@ fn spawn_tree(commands: &mut Commands, assets: &Res<GameAssets>, chunk_pos: IVec
         .spawn((
             Flora::new(chunk_pos),
             YSortStatic(40.0),
-            SpriteBundle {
-                transform: Transform::from_translation(pos),
-                texture: assets.tree.clone(),
+            Sprite {
+                image: assets.tree.clone(),
                 ..default()
             },
+            Transform::from_translation(pos),
         ))
-        .push_children(&[trunk, shadow, collider, tree_pedals]);
+        .add_children(&[trunk, shadow, collider, tree_pedals]);
 }
 
 fn spawn_flora(
     commands: &mut Commands,
     assets: &Res<GameAssets>,
+    effects: &mut Assets<EffectAsset>,
     bitmap: &mut ResMut<BitMap>,
     chunk_pos: IVec2,
     ipos: IVec2,
@@ -229,7 +264,7 @@ fn spawn_flora(
         {
             return;
         }
-        spawn_tree(commands, assets, chunk_pos, pos);
+        spawn_tree(commands, assets, effects, chunk_pos, pos);
     } else if radius > BUSH_1_RADIUS {
         if !(bitmap.get_flora_flag(v)
             && bitmap.get_flora_flag(v - IVec2::Y)
@@ -255,8 +290,9 @@ fn spawn_flora(
 fn spawn_flora_chunks(
     mut commands: Commands,
     assets: Res<GameAssets>,
+    mut effects: ResMut<Assets<EffectAsset>>,
     mut bitmap: ResMut<BitMap>,
-    mut ev_spawned_chunk: EventReader<SpawnedChunk>,
+    mut ev_spawned_chunk: MessageReader<SpawnedChunk>,
 ) {
     for ev in ev_spawned_chunk.read() {
         let seed =
@@ -282,7 +318,7 @@ fn spawn_flora_chunks(
         .collect();
 
         for (p, r) in points_with_radius {
-            spawn_flora(&mut commands, &assets, &mut bitmap, ev.pos, p, r);
+            spawn_flora(&mut commands, &assets, &mut effects, &mut bitmap, ev.pos, p, r);
         }
     }
 }
@@ -290,12 +326,12 @@ fn spawn_flora_chunks(
 fn despawn_flora_chunks(
     mut commands: Commands,
     q_floras: Query<(Entity, &Flora)>,
-    mut ev_despawned_chunk: EventReader<DespawnedChunk>,
+    mut ev_despawned_chunk: MessageReader<DespawnedChunk>,
 ) {
     for ev in ev_despawned_chunk.read() {
         for (entity, flora) in &q_floras {
             if flora.chunk_pos == ev.chunk_pos {
-                commands.entity(entity).despawn_recursive();
+                commands.entity(entity).despawn();
             }
         }
     }
@@ -306,7 +342,7 @@ fn despawn_flora_around_start_hint(
     q_keyboard_icon: Query<&Transform, (With<KeyboardHint>, Without<Flora>)>,
     q_floras: Query<(Entity, &Transform), Added<Flora>>,
 ) {
-    let start_hint_transform = match q_keyboard_icon.get_single() {
+    let start_hint_transform = match q_keyboard_icon.single() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -317,7 +353,7 @@ fn despawn_flora_around_start_hint(
             .distance_squared(start_hint_transform.translation)
             <= KEYBOARD_ICON_RADIUS.powi(2)
         {
-            commands.entity(entity).despawn_recursive();
+            commands.entity(entity).despawn();
         }
     }
 }
@@ -334,15 +370,9 @@ fn despawn_flora_around_npcs(
                 .distance_squared(npc_transform.translation)
                 <= NPC_FLORA_RADIUS.powi(2)
             {
-                commands.entity(entity).despawn_recursive();
+                commands.entity(entity).despawn();
             }
         }
-    }
-}
-
-fn play_sakura_pedal_particles(mut q_pedals: Query<&mut ParticleSystem, Added<SakuraPedal>>) {
-    for mut system in &mut q_pedals {
-        system.max_particles = 100;
     }
 }
 
@@ -353,7 +383,6 @@ impl Plugin for FloraPlugin {
         app.add_systems(
             Update,
             (
-                play_sakura_pedal_particles.before(spawn_flora_chunks),
                 spawn_flora_chunks,
                 despawn_flora_chunks,
                 despawn_flora_around_start_hint,

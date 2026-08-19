@@ -1,10 +1,9 @@
-use bevy::render::camera::ScalingMode;
+use bevy::camera::ScalingMode;
 #[cfg(not(target_arch = "wasm32"))]
-use bevy::render::view::screenshot::ScreenshotManager;
+use bevy::render::view::window::screenshot::{save_to_disk, Screenshot};
 #[cfg(not(target_arch = "wasm32"))]
-use bevy::window::{PrimaryWindow, WindowMode};
-use bevy::{prelude::*, transform::TransformSystem};
-use bevy_kira_audio::prelude::AudioReceiver;
+use bevy::window::{MonitorSelection, PrimaryWindow, VideoModeSelection, WindowMode};
+use bevy::{prelude::*, transform::TransformSystems};
 use bevy_rapier2d::plugin::PhysicsSet;
 
 use super::camera_shake::{update_camera, CameraShake};
@@ -44,12 +43,12 @@ pub fn apply_y_sort(mut q_transforms: Query<(&mut Transform, &GlobalTransform, &
 fn apply_y_sort_child(
     q_parents: Query<&Transform, (With<YSort>, Without<YSortChild>)>,
     mut q_transforms: Query<
-        (&Parent, &mut Transform, &GlobalTransform, &YSortChild),
+        (&ChildOf, &mut Transform, &GlobalTransform, &YSortChild),
         Without<YSort>,
     >,
 ) {
     for (parent, mut transform, global_transform, ysort) in &mut q_transforms {
-        let parent_transform = match q_parents.get(parent.get()) {
+        let parent_transform = match q_parents.get(parent.parent()) {
             Ok(r) => r,
             Err(_) => continue,
         };
@@ -69,12 +68,12 @@ fn apply_y_sort_static(
 fn apply_y_sort_static_child(
     q_parents: Query<&Transform, (With<YSortStatic>, Without<YSortStaticChild>)>,
     mut q_transforms: Query<
-        (&Parent, &mut Transform, &GlobalTransform, &YSortStaticChild),
+        (&ChildOf, &mut Transform, &GlobalTransform, &YSortStaticChild),
         (Added<YSortStaticChild>, Without<YSortStatic>),
     >,
 ) {
     for (parent, mut transform, global_transform, ysort) in &mut q_transforms {
-        let parent_transform = match q_parents.get(parent.get()) {
+        let parent_transform = match q_parents.get(parent.parent()) {
             Ok(r) => r,
             Err(_) => continue,
         };
@@ -84,13 +83,20 @@ fn apply_y_sort_static_child(
 }
 
 fn spawn_camera(mut commands: Commands) {
-    let mut camera = Camera2dBundle::default();
-    camera.projection.scaling_mode = ScalingMode::FixedVertical(PROJECTION_SCALE);
-    commands.spawn((MainCamera, camera, AudioReceiver));
+    commands.spawn((
+        MainCamera,
+        Camera2d,
+        Projection::Orthographic(OrthographicProjection {
+            scaling_mode: ScalingMode::FixedVertical {
+                viewport_height: PROJECTION_SCALE,
+            },
+            ..OrthographicProjection::default_2d()
+        }),
+    ));
 }
 
 fn update_camera_target(mut shake: ResMut<CameraShake>, q_player: Query<&Transform, With<Player>>) {
-    let player_transform = match q_player.get_single() {
+    let player_transform = match q_player.single() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -100,18 +106,21 @@ fn update_camera_target(mut shake: ResMut<CameraShake>, q_player: Query<&Transfo
 fn zoom_camera(
     player_input: Res<PlayerInput>,
     debug_active: Res<DebugActive>,
-    mut q_projection: Query<&mut OrthographicProjection, With<MainCamera>>,
+    mut q_projection: Query<&mut Projection, With<MainCamera>>,
 ) {
     if !**debug_active {
         return;
     }
 
-    let mut projection = match q_projection.get_single_mut() {
+    let mut projection = match q_projection.single_mut() {
         Ok(p) => p,
         Err(_) => return,
     };
 
-    projection.scale = (projection.scale + player_input.scroll).clamp(1.0, 10.0);
+    let Projection::Orthographic(ortho) = &mut *projection else {
+        return;
+    };
+    ortho.scale = (ortho.scale + player_input.scroll).clamp(1.0, 10.0);
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -123,7 +132,7 @@ fn toggle_full_screen(
         return;
     }
 
-    let mut window = match main_window.get_single_mut() {
+    let mut window = match main_window.single_mut() {
         Ok(w) => w,
         Err(err) => {
             error!("there is not exactly one window, {}", err);
@@ -132,7 +141,7 @@ fn toggle_full_screen(
     };
 
     window.mode = if window.mode == WindowMode::Windowed {
-        WindowMode::Fullscreen
+        WindowMode::Fullscreen(MonitorSelection::Current, VideoModeSelection::Current)
     } else {
         WindowMode::Windowed
     }
@@ -141,8 +150,7 @@ fn toggle_full_screen(
 #[cfg(not(target_arch = "wasm32"))]
 fn take_screenshot(
     keys: Res<ButtonInput<KeyCode>>,
-    main_window: Query<Entity, With<PrimaryWindow>>,
-    mut screenshot_manager: ResMut<ScreenshotManager>,
+    mut commands: Commands,
     mut counter: Local<u32>,
 ) {
     if !keys.just_pressed(KeyCode::F12) {
@@ -151,10 +159,9 @@ fn take_screenshot(
 
     let path = format!("./screenshot-{}.png", *counter);
     *counter += 1;
-    match screenshot_manager.save_screenshot_to_disk(main_window.single(), path) {
-        Ok(()) => {}
-        Err(err) => error!("failed to take screenshot, {}", err),
-    }
+    commands
+        .spawn(Screenshot::primary_window())
+        .observe(save_to_disk(path));
 }
 
 pub struct CameraPlugin;
@@ -182,7 +189,7 @@ impl Plugin for CameraPlugin {
                 PostUpdate,
                 update_camera_target
                     .after(PhysicsSet::Writeback)
-                    .before(TransformSystem::TransformPropagate)
+                    .before(TransformSystems::Propagate)
                     .before(update_camera),
             );
     }

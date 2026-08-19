@@ -1,9 +1,9 @@
 use std::str::FromStr;
+use std::time::Instant;
 
 use unicode_segmentation::UnicodeSegmentation;
 
 use bevy::prelude::*;
-use bevy::utils::Instant;
 use bevy_yarnspinner::{events::*, prelude::*};
 
 use crate::npc::NpcDialogue;
@@ -12,19 +12,19 @@ use crate::ui::main_menu::{ButtonAction, MainMenuButtonPressed};
 use crate::{GameAssets, GameState};
 
 use super::option_selection::OptionSelection;
-use super::spawn::{create_dialogue_text, DialogueContent};
+use super::spawn::{set_dialogue_text, DialogueContent};
 use super::DialogueViewSystemSet;
 
 // The average dialogue speed.
 // It's used to calculate the multiplier of the pauses caused by punctuation.
 const AVERAGE_SPEED: f32 = 20.0;
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct TypewriterFinished;
 /// This event triggers the typewriter to write a full line instantly.
 /// It's used to set the dialuge lines whenever the player stops/starts
 /// dialogue with NPCs.
-#[derive(Event)]
+#[derive(Message)]
 pub struct WriteDialogueText;
 
 #[derive(Resource)]
@@ -150,20 +150,24 @@ impl Typewriter {
 }
 
 fn write_text(
-    assets: Res<GameAssets>,
     mut typewriter: ResMut<Typewriter>,
     option_selection: Option<Res<OptionSelection>>,
-    mut q_text: Query<&mut Text, With<DialogueContent>>,
-    mut ev_write_dialogue_text: EventReader<WriteDialogueText>,
+    mut q_content: Query<(&mut Text, &Children), With<DialogueContent>>,
+    mut q_spans: Query<&mut TextSpan>,
+    mut ev_write_dialogue_text: MessageReader<WriteDialogueText>,
 ) {
-    let mut text = match q_text.get_single_mut() {
+    let (mut text, children) = match q_content.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
+    let Some(child) = children.iter().find(|e| q_spans.get(*e).is_ok()) else {
+        return;
+    };
+    let mut span = q_spans.get_mut(child).unwrap();
 
     if !ev_write_dialogue_text.is_empty() {
         ev_write_dialogue_text.clear();
-        *text = create_dialogue_text(&typewriter.current_text, "", &assets);
+        set_dialogue_text(&mut text, &mut span, &typewriter.current_text, "");
         return;
     }
 
@@ -180,22 +184,22 @@ fn write_text(
     }
 
     let rest = typewriter.graphemes_left.join("");
-    *text = create_dialogue_text(&typewriter.current_text, rest, &assets);
+    set_dialogue_text(&mut text, &mut span, &typewriter.current_text, &rest);
 }
 
 fn send_finished_event(
     mut typewriter: ResMut<Typewriter>,
-    mut ev_typewriter_finished: EventWriter<TypewriterFinished>,
+    mut ev_typewriter_finished: MessageWriter<TypewriterFinished>,
 ) {
     if typewriter.is_finished() && !typewriter.last_finished {
-        ev_typewriter_finished.send(TypewriterFinished);
+        ev_typewriter_finished.write(TypewriterFinished);
         typewriter.last_finished = true;
     }
 }
 
 fn finish_stopped_dialoauge(
     mut typewriter: ResMut<Typewriter>,
-    mut ev_player_stopped_chat: EventReader<PlayerStoppedChat>,
+    mut ev_player_stopped_chat: MessageReader<PlayerStoppedChat>,
 ) {
     if ev_player_stopped_chat.is_empty() {
         return;
@@ -205,40 +209,36 @@ fn finish_stopped_dialoauge(
     typewriter.finish_current_line();
 }
 
-fn set_writer_speed(
-    mut typewriter: ResMut<Typewriter>,
-    mut ev_present_line: EventReader<PresentLineEvent>,
-) {
-    for ev in ev_present_line.read() {
-        let name = ev
-            .line
-            .character_name()
-            .unwrap_or_default()
-            .trim_start_matches('_');
-        let maybe_npc = NpcDialogue::from_str(name);
-        let speed = if let Ok(npc) = maybe_npc {
-            match npc {
-                NpcDialogue::Jotem => 18.0,
-                NpcDialogue::Eleonore => 20.0,
-                NpcDialogue::Isabelle => 20.0,
-                NpcDialogue::Ionas => 16.0,
-                NpcDialogue::Antonius => 19.0,
-                // Should never happen!
-                NpcDialogue::IonasAndAntonius => 300.0,
-            }
-        } else {
-            match name {
-                "You" => 20.0,
-                _ => AVERAGE_SPEED,
-            }
-        };
-        typewriter.current_speed = speed;
-    }
+fn set_writer_speed(trigger: On<PresentLine>, mut typewriter: ResMut<Typewriter>) {
+    let ev = trigger.event();
+    let name = ev
+        .line
+        .character_name()
+        .unwrap_or_default()
+        .trim_start_matches('_');
+    let maybe_npc = NpcDialogue::from_str(name);
+    let speed = if let Ok(npc) = maybe_npc {
+        match npc {
+            NpcDialogue::Jotem => 18.0,
+            NpcDialogue::Eleonore => 20.0,
+            NpcDialogue::Isabelle => 20.0,
+            NpcDialogue::Ionas => 16.0,
+            NpcDialogue::Antonius => 19.0,
+            // Should never happen!
+            NpcDialogue::IonasAndAntonius => 300.0,
+        }
+    } else {
+        match name {
+            "You" => 20.0,
+            _ => AVERAGE_SPEED,
+        }
+    };
+    typewriter.current_speed = speed;
 }
 
 fn update_speed_multiplier(
     mut typewriter: ResMut<Typewriter>,
-    mut ev_main_menu_button_pressed: EventReader<MainMenuButtonPressed>,
+    mut ev_main_menu_button_pressed: MessageReader<MainMenuButtonPressed>,
 ) {
     for ev in ev_main_menu_button_pressed.read() {
         let speed_multiplier = match ev.0 {
@@ -257,20 +257,16 @@ pub struct DialogueTypewriterPlugin;
 impl Plugin for DialogueTypewriterPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<Typewriter>()
-            .add_event::<TypewriterFinished>()
-            .add_event::<WriteDialogueText>()
+            .add_message::<TypewriterFinished>()
+            .add_message::<WriteDialogueText>()
+            .add_observer(set_writer_speed)
             .add_systems(
                 Update,
                 update_speed_multiplier.run_if(in_state(GameState::MainMenu)),
             )
             .add_systems(
                 Update,
-                (
-                    send_finished_event,
-                    write_text,
-                    finish_stopped_dialoauge,
-                    set_writer_speed,
-                )
+                (send_finished_event, write_text, finish_stopped_dialoauge)
                     .chain()
                     .after(YarnSpinnerSystemSet)
                     .in_set(DialogueViewSystemSet)

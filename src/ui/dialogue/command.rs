@@ -15,9 +15,9 @@ pub fn stop_chat_command(
     In(_): In<()>,
     q_player: Query<&Player>,
     mut q_runner_flags: Query<&mut RunnerFlags>,
-    mut ev_player_stopped_chat: EventWriter<PlayerStoppedChat>,
+    mut ev_player_stopped_chat: MessageWriter<PlayerStoppedChat>,
 ) {
-    let player = match q_player.get_single() {
+    let player = match q_player.single() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -32,7 +32,7 @@ pub fn stop_chat_command(
             // We are setting the line to `...` because you are always
             // supposed to follow a <<stop_chat>> with a `...`.
             // The reason we have to set this explicitely is because
-            // the `PresentLineEvent` doesn't fire quickly enough
+            // the `PresentLine` doesn't fire quickly enough
             // and doesn't update the `flags.line` automatically.
             // This results in a problem with the displayed lines.
             flags.line = Some(LocalizedLine {
@@ -45,11 +45,11 @@ pub fn stop_chat_command(
         }
     }
 
-    ev_player_stopped_chat.send(PlayerStoppedChat);
+    ev_player_stopped_chat.write(PlayerStoppedChat);
 }
 
 pub fn target_npc_mentioned_command(
-    In((source_npc, target_npc)): In<(&str, &str)>,
+    In((source_npc, target_npc)): In<(String, String)>,
     mut q_npcs: Query<&mut Npc>,
 ) {
     let source_npc = match NpcDialogue::from_str(source_npc.trim_start_matches('_')) {
@@ -76,8 +76,8 @@ pub fn target_npc_mentioned_command(
 }
 
 pub fn trigger_ending_command(
-    In(npc_name): In<&str>,
-    mut ev_ending_triggered: EventWriter<EndingTriggered>,
+    In(npc_name): In<String>,
+    mut ev_ending_triggered: MessageWriter<EndingTriggered>,
 ) {
     let dialogue = match NpcDialogue::from_str(npc_name.trim_start_matches('_')) {
         Ok(r) => r,
@@ -86,5 +86,5 @@ pub fn trigger_ending_command(
             return;
         }
     };
-    ev_ending_triggered.send(EndingTriggered { dialogue });
+    ev_ending_triggered.write(EndingTriggered { dialogue });
 }

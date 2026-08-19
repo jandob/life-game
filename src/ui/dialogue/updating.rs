@@ -47,51 +47,49 @@ fn character_icon(assets: &Res<GameAssets>, name: &str) -> Option<Handle<Image>>
 }
 
 fn present_line(
+    trigger: On<PresentLine>,
     assets: Res<GameAssets>,
     mut typewriter: ResMut<Typewriter>,
-    mut q_character_icon: Query<&mut UiImage, With<DialogueCharacterIcon>>,
+    mut q_character_icon: Query<&mut ImageNode, With<DialogueCharacterIcon>>,
     mut q_name_text: Query<&mut Text, With<DialogueNameNode>>,
     mut q_runner_flags: Query<&mut RunnerFlags>,
-    mut ev_present_line: EventReader<PresentLineEvent>,
 ) {
-    let mut character_icon_image = match q_character_icon.get_single_mut() {
+    let mut character_icon_image = match q_character_icon.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
-    let mut name_text = match q_name_text.get_single_mut() {
+    let mut name_text = match q_name_text.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
 
-    for event in ev_present_line.read() {
-        let raw_name = event.line.character_name().unwrap_or_default();
-        if let Some(texture) = character_icon(&assets, raw_name) {
-            character_icon_image.texture = texture;
-        }
-        name_text.sections[0].value = convert_name(raw_name);
+    let event = trigger.event();
+    let raw_name = event.line.character_name().unwrap_or_default();
+    if let Some(texture) = character_icon(&assets, raw_name) {
+        character_icon_image.image = texture;
+    }
+    name_text.0 = convert_name(raw_name);
 
-        typewriter.set_line(&event.line);
-        for mut flags in &mut q_runner_flags {
-            if flags.active {
-                flags.line = Some(event.line.clone());
-            }
+    typewriter.set_line(&event.line);
+    for mut flags in &mut q_runner_flags {
+        if flags.active {
+            flags.line = Some(event.line.clone());
         }
     }
 }
 
 fn present_options(
+    trigger: On<PresentOptions>,
     mut commands: Commands,
     mut q_runner_flags: Query<&mut RunnerFlags>,
-    mut events: EventReader<PresentOptionsEvent>,
 ) {
-    for event in events.read() {
-        let option_selection = OptionSelection::from_option_set(&event.options);
-        commands.insert_resource(option_selection.clone());
+    let event = trigger.event();
+    let option_selection = OptionSelection::from_option_set(&event.options);
+    commands.insert_resource(option_selection.clone());
 
-        for mut flags in &mut q_runner_flags {
-            if flags.active {
-                flags.options = Some(option_selection.clone());
-            }
+    for mut flags in &mut q_runner_flags {
+        if flags.active {
+            flags.options = Some(option_selection.clone());
         }
     }
 }
@@ -121,7 +119,7 @@ fn continue_dialogue(
 
         if !dialogue_runner.is_waiting_for_option_selection() && dialogue_runner.is_running() {
             dialogue_runner.continue_in_next_update();
-            let mut visibility = match q_continue_visibility.get_single_mut() {
+            let mut visibility = match q_continue_visibility.single_mut() {
                 Ok(r) => r,
                 Err(_) => continue,
             };
@@ -133,30 +131,30 @@ fn continue_dialogue(
 fn update_displayed_character(
     assets: Res<GameAssets>,
     typewriter: Res<Typewriter>,
-    mut q_character_icon: Query<&mut UiImage, With<DialogueCharacterIcon>>,
+    mut q_character_icon: Query<&mut ImageNode, With<DialogueCharacterIcon>>,
     mut q_name_text: Query<&mut Text, With<DialogueNameNode>>,
 ) {
-    let mut character_icon_image = match q_character_icon.get_single_mut() {
+    let mut character_icon_image = match q_character_icon.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
-    let mut name_text = match q_name_text.get_single_mut() {
+    let mut name_text = match q_name_text.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
 
     let raw_name = &typewriter.character_name.clone().unwrap_or_default();
     if let Some(texture) = character_icon(&assets, raw_name) {
-        character_icon_image.texture = texture;
+        character_icon_image.image = texture;
     }
-    name_text.sections[0].value = convert_name(raw_name);
+    name_text.0 = convert_name(raw_name);
 }
 
 fn show_continue_node(
     typewriter: Res<Typewriter>,
     mut q_visibility: Query<&mut Visibility, With<DialogueContinueNode>>,
 ) {
-    let mut visibility = match q_visibility.get_single_mut() {
+    let mut visibility = match q_visibility.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -172,35 +170,43 @@ fn show_continue_node(
 fn hide_continue_node(
     mut q_continue_visibility: Query<&mut Visibility, With<DialogueContinueNode>>,
 ) {
-    let mut visibility = match q_continue_visibility.get_single_mut() {
+    let mut visibility = match q_continue_visibility.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
     *visibility = Visibility::Hidden;
 }
 
+fn hide_continue_node_on_dialogue_completed(
+    _trigger: On<DialogueCompleted>,
+    mut q_continue_visibility: Query<&mut Visibility, With<DialogueContinueNode>>,
+) {
+    if let Ok(mut visibility) = q_continue_visibility.single_mut() {
+        *visibility = Visibility::Hidden;
+    }
+}
+
 pub struct DialogueUpdatingPlugin;
 
 impl Plugin for DialogueUpdatingPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            Update,
-            (
-                present_line,
-                present_options.run_if(on_event::<PresentOptionsEvent>()),
-                continue_dialogue,
-                update_displayed_character.run_if(on_event::<WriteDialogueText>()),
-                show_continue_node.run_if(
-                    on_event::<TypewriterFinished>().or_else(on_event::<WriteDialogueText>()),
-                ),
-                hide_continue_node.run_if(
-                    on_event::<DialogueCompleteEvent>().or_else(on_event::<PlayerStoppedChat>()),
-                ),
-            )
-                .chain()
-                .run_if(resource_exists::<GameAssets>)
-                .after(YarnSpinnerSystemSet)
-                .in_set(DialogueViewSystemSet),
-        );
+        app.add_observer(present_line)
+            .add_observer(present_options)
+            .add_observer(hide_continue_node_on_dialogue_completed)
+            .add_systems(
+                Update,
+                (
+                    continue_dialogue,
+                    update_displayed_character.run_if(on_message::<WriteDialogueText>),
+                    show_continue_node.run_if(
+                        on_message::<TypewriterFinished>.or_else(on_message::<WriteDialogueText>),
+                    ),
+                    hide_continue_node.run_if(on_message::<PlayerStoppedChat>),
+                )
+                    .chain()
+                    .run_if(resource_exists::<GameAssets>)
+                    .after(YarnSpinnerSystemSet)
+                    .in_set(DialogueViewSystemSet),
+            );
     }
 }

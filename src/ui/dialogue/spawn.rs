@@ -38,35 +38,44 @@ const CONTINUE_BOTTOM: f32 = -5.0;
 const CONTINUE_BOB_DURATION: f32 = 1.0;
 const CONTINUE_BOB_OFFSET: f32 = 5.0;
 
-fn style_standard(_assets: &Res<GameAssets>) -> Style {
-    Style {
+fn style_standard(_assets: &Res<GameAssets>) -> Node {
+    Node {
         max_width: Val::Px(DIALOG_WIDTH - 2.0 * TEXT_BORDER_HORIZONTAL),
         ..default()
     }
 }
 
-fn text_style_standard(assets: &Res<GameAssets>) -> TextStyle {
-    TextStyle {
-        font: assets.silver_font.clone(),
-        font_size: 50.0,
-        color: Color::WHITE,
-    }
+fn text_style_standard(assets: &Res<GameAssets>) -> (TextFont, TextColor) {
+    (
+        TextFont {
+            font: assets.silver_font.clone().into(),
+            font_size: 50.0.into(),
+            ..default()
+        },
+        TextColor::WHITE,
+    )
 }
 
-fn text_style_name(assets: &Res<GameAssets>) -> TextStyle {
-    TextStyle {
-        font: assets.silver_font.clone(),
-        font_size: 46.0,
-        color: Color::WHITE,
-    }
+fn text_style_name(assets: &Res<GameAssets>) -> (TextFont, TextColor) {
+    (
+        TextFont {
+            font: assets.silver_font.clone().into(),
+            font_size: 46.0.into(),
+            ..default()
+        },
+        TextColor::WHITE,
+    )
 }
 
-fn text_style_option_text(assets: &Res<GameAssets>) -> TextStyle {
-    TextStyle {
-        font: assets.silver_font.clone(),
-        font_size: 50.0,
-        color: Color::WHITE,
-    }
+fn text_style_option_text(assets: &Res<GameAssets>) -> (TextFont, TextColor) {
+    (
+        TextFont {
+            font: assets.silver_font.clone().into(),
+            font_size: 50.0.into(),
+            ..default()
+        },
+        TextColor::WHITE,
+    )
 }
 
 fn spawn_dialogue_content(commands: &mut Commands, assets: &Res<GameAssets>) -> Entity {
@@ -74,14 +83,20 @@ fn spawn_dialogue_content(commands: &mut Commands, assets: &Res<GameAssets>) -> 
         .spawn((
             DialogueContent,
             Label,
-            TextBundle::from_section(String::new(), text_style_standard(assets))
-                .with_style(style_standard(assets)),
+            Text::new(String::new()),
+            text_style_standard(assets),
+            style_standard(assets),
         ))
+        .with_children(|parent| {
+            // Reserve the remaining (not yet typed) text as an invisible span so
+            // the text box keeps its size while the typewriter catches up.
+            parent.spawn((TextSpan(String::new()), TextColor(Color::NONE)));
+        })
         .id();
 
     commands
-        .spawn((NodeBundle {
-            style: Style {
+        .spawn((
+            Node {
                 width: Val::Px(DIALOG_WIDTH),
                 min_height: Val::Px(50.0),
                 flex_direction: FlexDirection::Column,
@@ -95,10 +110,9 @@ fn spawn_dialogue_content(commands: &mut Commands, assets: &Res<GameAssets>) -> 
                 },
                 ..default()
             },
-            background_color: Color::BLACK.with_alpha(BACKGROUND_ALPHA).into(),
-            ..default()
-        },))
-        .push_children(&[text])
+            BackgroundColor(Color::BLACK.with_alpha(BACKGROUND_ALPHA)),
+        ))
+        .add_children(&[text])
         .id()
 }
 
@@ -127,86 +141,68 @@ fn spawn_dialogue_bottom(commands: &mut Commands, assets: &Res<GameAssets>) -> E
     let continue_node = commands
         .spawn((
             DialogueContinueNode,
-            Animator::new(tween),
-            ImageBundle {
-                image: UiImage {
-                    texture: assets.dialogue_continue.clone(),
-                    ..default()
-                },
-                style: Style {
-                    position_type: PositionType::Absolute,
-                    ..default()
-                },
-                z_index: ZIndex::Local(1),
-                visibility: Visibility::Hidden,
+            TweenAnim::new(tween),
+            Node {
+                position_type: PositionType::Absolute,
                 ..default()
             },
+            ImageNode::new(assets.dialogue_continue.clone()),
+            ZIndex(1),
+            Visibility::Hidden,
         ))
         .id();
 
     let icon_node = commands
         .spawn((
-            ImageBundle {
-                image: UiImage::new(assets.eleonore_icon.clone()),
-                style: Style {
-                    width: Val::Px(128.0),
-                    height: Val::Px(128.0),
-                    ..default()
-                },
-                z_index: ZIndex::Local(1),
+            Node {
+                width: Val::Px(128.0),
+                height: Val::Px(128.0),
                 ..default()
             },
+            ImageNode::new(assets.eleonore_icon.clone()),
+            ZIndex(1),
             DialogueCharacterIcon,
         ))
         .id();
 
     let name_node = commands
         .spawn((
-            TextBundle {
-                text: Text::from_section(String::new(), text_style_name(assets)),
-                style: Style {
-                    // bottom: Val::Px(-25.0),
-                    ..default()
-                },
-                z_index: ZIndex::Local(1),
-                ..default()
-            },
+            Text::new(String::new()),
+            text_style_name(assets),
+            ZIndex(1),
             DialogueNameNode,
             Label,
         ))
         .id();
 
     let character_icon_node = commands
-        .spawn((NodeBundle {
-            style: Style {
+        .spawn((
+            Node {
                 position_type: PositionType::Absolute,
                 left: Val::Px(-550.0),
                 bottom: Val::Px(0.0),
                 width: Val::Px(140.0),
                 height: Val::Px(180.0),
-                // justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            z_index: ZIndex::Local(1),
-            background_color: Color::BLACK.with_alpha(BACKGROUND_ALPHA).into(),
-            ..default()
-        },))
-        .push_children(&[icon_node, name_node])
+            ZIndex(1),
+            BackgroundColor(Color::BLACK.with_alpha(BACKGROUND_ALPHA)),
+        ))
+        .add_children(&[icon_node, name_node])
         .id();
 
     commands
-        .spawn((NodeBundle {
-            style: Style {
+        .spawn((
+            Node {
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            ..default()
-        },))
-        .push_children(&[character_icon_node, continue_node])
+        ))
+        .add_children(&[character_icon_node, continue_node])
         .id()
 }
 
@@ -214,14 +210,11 @@ fn spawn_dialogue_options(commands: &mut Commands, _assets: &Res<GameAssets>) ->
     let options = commands
         .spawn((
             OptionsNode,
-            NodeBundle {
-                style: Style {
-                    display: Display::Flex,
-                    flex_direction: FlexDirection::Column,
-                    justify_content: JustifyContent::FlexEnd,
-                    align_items: AlignItems::FlexStart,
-                    ..default()
-                },
+            Node {
+                display: Display::Flex,
+                flex_direction: FlexDirection::Column,
+                justify_content: JustifyContent::FlexEnd,
+                align_items: AlignItems::FlexStart,
                 ..default()
             },
         ))
@@ -230,31 +223,28 @@ fn spawn_dialogue_options(commands: &mut Commands, _assets: &Res<GameAssets>) ->
     commands
         .spawn((
             OptionsBackground,
-            NodeBundle {
-                style: Style {
-                    width: Val::Px(OPTIONS_WIDTH),
-                    min_height: Val::Px(100.0),
-                    max_height: Val::Px(720.0),
-                    flex_direction: FlexDirection::Column,
-                    justify_content: JustifyContent::SpaceAround,
-                    align_items: AlignItems::FlexStart,
-                    padding: UiRect {
-                        top: Val::Px(20.0),
-                        bottom: Val::Px(20.0),
-                        left: Val::Px(20.0),
-                        right: Val::Px(OPTIONS_WIDTH + 10.0),
-                    },
-                    top: Val::Percent(0.0),
-                    right: Val::Percent(0.0),
-                    position_type: PositionType::Absolute,
-                    ..default()
+            Node {
+                width: Val::Px(OPTIONS_WIDTH),
+                min_height: Val::Px(100.0),
+                max_height: Val::Px(720.0),
+                flex_direction: FlexDirection::Column,
+                justify_content: JustifyContent::SpaceAround,
+                align_items: AlignItems::FlexStart,
+                padding: UiRect {
+                    top: Val::Px(20.0),
+                    bottom: Val::Px(20.0),
+                    left: Val::Px(20.0),
+                    right: Val::Px(OPTIONS_WIDTH + 10.0),
                 },
-                background_color: Color::BLACK.with_alpha(BACKGROUND_ALPHA).into(),
-                visibility: Visibility::Hidden,
+                top: Val::Percent(0.0),
+                right: Val::Percent(0.0),
+                position_type: PositionType::Absolute,
                 ..default()
             },
+            BackgroundColor(Color::BLACK.with_alpha(BACKGROUND_ALPHA)),
+            Visibility::Hidden,
         ))
-        .push_children(&[options])
+        .add_children(&[options])
         .id()
 }
 
@@ -265,8 +255,8 @@ fn spawn_dialogue(mut commands: Commands, assets: Res<GameAssets>) {
     let dialogue_bottom = spawn_dialogue_bottom(&mut commands, &assets);
 
     let dialogue_root = commands
-        .spawn((NodeBundle {
-            style: Style {
+        .spawn((
+            Node {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
                 justify_content: JustifyContent::FlexEnd,
@@ -275,34 +265,30 @@ fn spawn_dialogue(mut commands: Commands, assets: Res<GameAssets>) {
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            ..default()
-        },))
-        .push_children(&[dialogue_content, dialogue_bottom])
+        ))
+        .add_children(&[dialogue_content, dialogue_bottom])
         .id();
 
     commands
         .spawn((
             DialogueRoot,
-            NodeBundle {
-                style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(100.0),
-                    position_type: PositionType::Absolute,
-                    ..default()
-                },
-                visibility: Visibility::Hidden,
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                position_type: PositionType::Absolute,
                 ..default()
             },
+            Visibility::Hidden,
         ))
-        .push_children(&[dialogue_options, dialogue_root]);
+        .add_children(&[dialogue_options, dialogue_root]);
 }
 
 fn spawn_dialogue_main_menu(mut commands: Commands, assets: Res<GameAssets>) {
     let dialogue_content = spawn_dialogue_content(&mut commands, &assets);
 
     let dialogue_root = commands
-        .spawn(NodeBundle {
-            style: Style {
+        .spawn((
+            Node {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
                 justify_content: JustifyContent::Center,
@@ -312,21 +298,17 @@ fn spawn_dialogue_main_menu(mut commands: Commands, assets: Res<GameAssets>) {
                 top: Val::Px(-200.0),
                 ..default()
             },
-            ..default()
-        })
+        ))
         .add_child(dialogue_content)
         .id();
 
     commands
         .spawn((
             DialogueRoot,
-            NodeBundle {
-                style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(100.0),
-                    position_type: PositionType::Absolute,
-                    ..default()
-                },
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                position_type: PositionType::Absolute,
                 ..default()
             },
         ))
@@ -338,28 +320,18 @@ fn despawn_dialogue_main_menu(
     q_dialogue_root: Query<Entity, With<DialogueRoot>>,
 ) {
     for entity in &q_dialogue_root {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
 
-pub fn create_dialogue_text(
-    text: impl Into<String>,
-    invisible: impl Into<String>,
-    assets: &Res<GameAssets>,
-) -> Text {
-    Text::from_sections([
-        TextSection {
-            value: text.into(),
-            style: text_style_standard(assets),
-        },
-        TextSection {
-            value: invisible.into(),
-            style: TextStyle {
-                color: Color::NONE,
-                ..text_style_standard(assets)
-            },
-        },
-    ])
+pub fn set_dialogue_text(
+    text: &mut Text,
+    span: &mut TextSpan,
+    visible: &str,
+    invisible: &str,
+) {
+    text.0 = visible.to_string();
+    span.0 = invisible.to_string();
 }
 
 fn spawn_option(
@@ -368,36 +340,34 @@ fn spawn_option(
     option: DialogueOption,
     entity: Entity,
 ) {
-    let sections = [TextSection {
-        value: format!("- {}", option.line.text.clone()),
-        style: text_style_option_text(assets),
-    }];
+    let (font, color) = text_style_option_text(assets);
     let text = commands
         .spawn((
             OptionsText,
             Label,
-            TextBundle::from_sections(sections).with_style(Style {
+            Text::new(format!("- {}", option.line.text.clone())),
+            font,
+            color,
+            Node {
                 width: Val::Px(OPTIONS_WIDTH - 2.0 * OPTIONS_TEXT_BORDER),
                 ..default()
-            }),
+            },
         ))
         .id();
 
     let button = commands
         .spawn((
-            ButtonBundle {
-                style: Style {
-                    justify_content: JustifyContent::FlexStart,
-                    ..default()
-                },
-                background_color: Color::NONE.into(),
+            Button,
+            Node {
+                justify_content: JustifyContent::FlexStart,
                 ..default()
             },
+            BackgroundColor(Color::NONE),
             OptionButton(option.id),
         ))
-        .push_children(&[text])
+        .add_child(text)
         .id();
-    commands.entity(entity).push_children(&[button]);
+    commands.entity(entity).add_child(button);
 }
 
 pub fn spawn_options(

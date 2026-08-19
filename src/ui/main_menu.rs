@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use bevy::{prelude::*, time::common_conditions::once_after_delay};
-use bevy_tweening::{lens::TransformScaleLens, Animator, EaseFunction, Tween};
+use bevy_tweening::{lens::TransformScaleLens, Tween, TweenAnim};
 use bevy_yarnspinner::prelude::*;
 
 use super::dialogue::Typewriter;
@@ -15,7 +15,7 @@ const SPAWN_DELAY: f32 = 0.5;
 const DIALOGUE_LINE: &str = "Example dialogue. Select speed at which to display dialogue in game. You can also click the button in the bottom right corner to join my discord server ^-^";
 const DISCORD_LINK: &str = "https://discord.gg/2h7dncQNTr";
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct MainMenuButtonPressed(pub ButtonAction);
 
 #[derive(Component)]
@@ -45,7 +45,7 @@ fn spawn_button(
     action: ButtonAction,
     title: &str,
 ) -> Entity {
-    let button_style = Style {
+    let button_style = Node {
         width: Val::Px(192.0),
         height: Val::Px(96.0),
         margin: UiRect::all(Val::Px(20.0)),
@@ -53,26 +53,24 @@ fn spawn_button(
         align_items: AlignItems::Center,
         ..default()
     };
-    let button_text_style = TextStyle {
-        color: Color::WHITE,
-        font_size: 23.0,
-        font: assets.pixel_font.clone(),
-    };
+    let button_text_style = (
+        TextFont {
+            font: assets.pixel_font.clone().into(),
+            font_size: 23.0.into(),
+            ..default()
+        },
+        TextColor::WHITE,
+    );
 
     let text = commands
-        .spawn(TextBundle::from_section(title, button_text_style))
+        .spawn((Text::new(title), button_text_style))
         .id();
 
     commands
         .spawn((
-            ButtonBundle {
-                style: button_style,
-                image: UiImage {
-                    texture: assets.button.clone(),
-                    ..default()
-                },
-                ..default()
-            },
+            Button,
+            button_style,
+            ImageNode::new(assets.button.clone()),
             action,
         ))
         .add_child(text)
@@ -80,7 +78,7 @@ fn spawn_button(
 }
 
 fn spawn_discord_button(commands: &mut Commands, assets: &Res<GameAssets>) {
-    let style = Style {
+    let style = Node {
         width: Val::Px(100.0),
         height: Val::Px(100.0),
         bottom: Val::Px(20.0),
@@ -95,13 +93,11 @@ fn spawn_discord_button(commands: &mut Commands, assets: &Res<GameAssets>) {
             timer: Timer::from_seconds(0.5, TimerMode::Once),
             delay: Timer::from_seconds(1.5, TimerMode::Once),
         },
-        ButtonBundle {
-            style,
-            image: UiImage {
-                color: Color::WHITE.with_alpha(0.0),
-                texture: assets.discord_button.clone(),
-                ..default()
-            },
+        Button,
+        style,
+        ImageNode {
+            color: Color::WHITE.with_alpha(0.0),
+            image: assets.discord_button.clone(),
             ..default()
         },
     ));
@@ -119,7 +115,7 @@ fn spawn_main_menu(mut commands: Commands, assets: Res<GameAssets>) {
     );
     let normal_dialogue_button = commands
         .entity(entity)
-        .insert((Animator::new(tween), SelectedOption))
+        .insert((TweenAnim::new(tween), SelectedOption))
         .id();
     let quick_dialogue_button = spawn_button(&mut commands, &assets, ButtonAction::Quick, "Quick");
     let fast_dialogue_button = spawn_button(&mut commands, &assets, ButtonAction::Fast, "Fast");
@@ -129,14 +125,11 @@ fn spawn_main_menu(mut commands: Commands, assets: Res<GameAssets>) {
     spawn_discord_button(&mut commands, &assets);
 
     let speed_buttons = commands
-        .spawn(NodeBundle {
-            style: Style {
-                column_gap: Val::Px(50.0),
-                ..default()
-            },
+        .spawn(Node {
+            column_gap: Val::Px(50.0),
             ..default()
         })
-        .push_children(&[
+        .add_children(&[
             normal_dialogue_button,
             quick_dialogue_button,
             fast_dialogue_button,
@@ -156,22 +149,19 @@ fn spawn_main_menu(mut commands: Commands, assets: Res<GameAssets>) {
     commands
         .spawn((
             MainMenuUiRoot,
-            Animator::new(tween),
-            NodeBundle {
-                style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(100.0),
-                    top: Val::Px(150.0),
-                    align_items: AlignItems::Center,
-                    justify_content: JustifyContent::Center,
-                    flex_direction: FlexDirection::Column,
-                    position_type: PositionType::Absolute,
-                    ..default()
-                },
+            TweenAnim::new(tween),
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                top: Val::Px(150.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                flex_direction: FlexDirection::Column,
+                position_type: PositionType::Absolute,
                 ..default()
             },
         ))
-        .push_children(&[speed_buttons, play_button]);
+        .add_children(&[speed_buttons, play_button]);
 }
 
 fn highlight_buttons(
@@ -181,13 +171,13 @@ fn highlight_buttons(
         (Entity, &Interaction, Option<&SelectedOption>),
         (Changed<Interaction>, With<Button>),
     >,
-    mut ev_play_sound: EventWriter<PlaySound>,
+    mut ev_play_sound: MessageWriter<PlaySound>,
 ) {
     for (entity, interaction, selected) in &mut interaction_query {
         let tween = match (*interaction, selected) {
             (_, Some(_)) => continue,
             (Interaction::Pressed, None) => {
-                ev_play_sound.send(PlaySound {
+                ev_play_sound.write(PlaySound {
                     clip: assets.ui_button_press_sound.clone(),
                     volume: 0.5,
                     ..default()
@@ -202,7 +192,7 @@ fn highlight_buttons(
                 )
             }
             (Interaction::Hovered, None) => {
-                ev_play_sound.send(PlaySound {
+                ev_play_sound.write(PlaySound {
                     clip: assets.ui_button_hover_sound.clone(),
                     volume: 0.5,
                     ..default()
@@ -225,14 +215,14 @@ fn highlight_buttons(
                 },
             ),
         };
-        commands.entity(entity).insert(Animator::new(tween));
+        commands.entity(entity).insert(TweenAnim::new(tween));
     }
 }
 
 fn dehighlight_buttons(
     mut commands: Commands,
     q_buttons: Query<(Entity, &ButtonAction, Option<&SelectedOption>), With<Button>>,
-    mut ev_main_menu_button_pressed: EventReader<MainMenuButtonPressed>,
+    mut ev_main_menu_button_pressed: MessageReader<MainMenuButtonPressed>,
 ) {
     for ev in ev_main_menu_button_pressed.read() {
         match ev.0 {
@@ -260,7 +250,7 @@ fn dehighlight_buttons(
                 commands
                     .entity(entity)
                     .remove::<SelectedOption>()
-                    .insert(Animator::new(tween));
+                    .insert(TweenAnim::new(tween));
             }
         }
     }
@@ -272,7 +262,7 @@ fn trigger_button_actions(
         (Entity, &Interaction, &ButtonAction, Option<&SelectedOption>),
         (Changed<Interaction>, With<Button>),
     >,
-    mut ev_main_menu_button_pressed: EventWriter<MainMenuButtonPressed>,
+    mut ev_main_menu_button_pressed: MessageWriter<MainMenuButtonPressed>,
 ) {
     for (entity, interaction, action, selected) in &interaction_query {
         if selected.is_some() {
@@ -288,7 +278,7 @@ fn trigger_button_actions(
                 }
                 _ => {}
             }
-            ev_main_menu_button_pressed.send(MainMenuButtonPressed(*action));
+            ev_main_menu_button_pressed.write(MainMenuButtonPressed(*action));
         }
     }
 }
@@ -310,7 +300,7 @@ fn insert_typewriter_line(mut typewriter: ResMut<Typewriter>) {
 
 fn change_to_playing_game_state(
     mut next_state: ResMut<NextState<GameState>>,
-    mut ev_main_menu_button_pressed: EventReader<MainMenuButtonPressed>,
+    mut ev_main_menu_button_pressed: MessageReader<MainMenuButtonPressed>,
 ) {
     for ev in ev_main_menu_button_pressed.read() {
         if ev.0 == ButtonAction::Play {
@@ -321,7 +311,7 @@ fn change_to_playing_game_state(
 
 fn reset_typewriter_line(
     mut typewriter: ResMut<Typewriter>,
-    mut ev_main_menu_button_pressed: EventReader<MainMenuButtonPressed>,
+    mut ev_main_menu_button_pressed: MessageReader<MainMenuButtonPressed>,
 ) {
     for ev in ev_main_menu_button_pressed.read() {
         match ev.0 {
@@ -343,19 +333,19 @@ fn despawn_main_menu(
     q_main_menu: Query<Entity, Or<(With<MainMenuUiRoot>, With<DiscordButton>)>>,
 ) {
     for entity in &q_main_menu {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
 
 fn animate_discord_button(
     time: Res<Time>,
-    mut q_discord_button: Query<(&mut UiImage, &mut DiscordButton)>,
+    mut q_discord_button: Query<(&mut ImageNode, &mut DiscordButton)>,
 ) {
-    let Ok((mut image, mut discord_button)) = q_discord_button.get_single_mut() else {
+    let Ok((mut image, mut discord_button)) = q_discord_button.single_mut() else {
         return;
     };
 
-    if !discord_button.delay.finished() {
+    if !discord_button.delay.is_finished() {
         discord_button.delay.tick(time.delta());
         return;
     }
@@ -363,19 +353,19 @@ fn animate_discord_button(
     discord_button.timer.tick(time.delta());
 
     if discord_button.timer.just_finished() {
-        image.color.set_alpha(1.0);
+        image.color = image.color.with_alpha(1.0);
         return;
     }
 
-    if discord_button.timer.finished() {
+    if discord_button.timer.is_finished() {
         return;
     }
 
     let alpha = discord_button.timer.elapsed_secs() / discord_button.timer.duration().as_secs_f32();
-    image.color.set_alpha(alpha);
+    image.color = image.color.with_alpha(alpha);
 }
 
-fn open_discord_link(mut ev_button_pressed: EventReader<MainMenuButtonPressed>) {
+fn open_discord_link(mut ev_button_pressed: MessageReader<MainMenuButtonPressed>) {
     if !ev_button_pressed
         .read()
         .any(|ev| ev.0 == ButtonAction::Discord)
@@ -402,16 +392,16 @@ fn open_discord_link(mut ev_button_pressed: EventReader<MainMenuButtonPressed>) 
 }
 
 fn set_button_action_normal_on_delay(
-    mut ev_main_menu_button_pressed: EventWriter<MainMenuButtonPressed>,
+    mut ev_main_menu_button_pressed: MessageWriter<MainMenuButtonPressed>,
 ) {
-    ev_main_menu_button_pressed.send(MainMenuButtonPressed(ButtonAction::Normal));
+    ev_main_menu_button_pressed.write(MainMenuButtonPressed(ButtonAction::Normal));
 }
 
 pub struct MainMenuPlugin;
 
 impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<MainMenuButtonPressed>()
+        app.add_message::<MainMenuButtonPressed>()
             .add_systems(OnEnter(GameState::MainMenu), (spawn_main_menu,))
             .add_systems(
                 Update,

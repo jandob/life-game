@@ -1,7 +1,7 @@
 use bevy::prelude::*;
-use bevy_trickfilm::prelude::*;
 use bevy_tweening::{lens::*, *};
 
+use crate::animation::{SpriteAnimator, DIALOGUE_START_HINT};
 use crate::{
     npc::Npc,
     player::{chat::PlayerStartedChat, Player, PlayerState, NPC_PROXIMITY_DISTANCE},
@@ -16,10 +16,7 @@ const SCALE_DURATION: f32 = 0.5;
 struct StartHint;
 
 fn spawn_hint(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec3) {
-    let mut animator = AnimationPlayer2D::default();
-    animator
-        .play(assets.dialogue_start_hint_animations[0].clone())
-        .repeat();
+    let animator = SpriteAnimator::looping(DIALOGUE_START_HINT);
 
     let tween = Tween::new(
         EaseFunction::QuarticInOut,
@@ -33,17 +30,16 @@ fn spawn_hint(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec3) {
     let sprite = commands
         .spawn((
             animator,
-            Animator::new(tween),
-            SpriteBundle {
-                texture: assets.dialogue_start_hint_texture.clone(),
-                transform: Transform::from_translation(Vec3::new(0.0, 40.0, 0.0))
-                    .with_scale(Vec3::ZERO),
+            TweenAnim::new(tween),
+            Sprite {
+                image: assets.dialogue_start_hint_texture.clone(),
+                texture_atlas: Some(TextureAtlas {
+                    layout: assets.dialogue_start_hint_layout.clone(),
+                    index: DIALOGUE_START_HINT.first_frame,
+                }),
                 ..default()
             },
-            TextureAtlas {
-                layout: assets.dialogue_start_hint_layout.clone(),
-                ..default()
-            },
+            Transform::from_translation(Vec3::new(0.0, 40.0, 0.0)).with_scale(Vec3::ZERO),
         ))
         .id();
 
@@ -51,12 +47,9 @@ fn spawn_hint(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec3) {
         .spawn((
             StartHint,
             YSort(100.0),
-            SpatialBundle {
-                transform: Transform::from_translation(pos),
-                ..default()
-            },
+            Transform::from_translation(pos),
         ))
-        .push_children(&[sprite]);
+        .add_children(&[sprite]);
 }
 
 fn spawn_hints(
@@ -70,7 +63,7 @@ fn spawn_hints(
         return;
     }
 
-    let (player_transform, player) = match q_player.get_single() {
+    let (player_transform, player) = match q_player.single() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -95,12 +88,12 @@ fn despawn_hint(
     mut commands: Commands,
     q_player: Query<(&Transform, &Player)>,
     q_start_hints: Query<(Entity, &Transform), (With<StartHint>, Without<Player>)>,
-    mut ev_player_started_chat: EventReader<PlayerStartedChat>,
+    mut ev_player_started_chat: MessageReader<PlayerStartedChat>,
 ) {
     if !ev_player_started_chat.is_empty() {
         ev_player_started_chat.clear();
         for (entity, _) in &q_start_hints {
-            commands.entity(entity).despawn_recursive();
+            commands.entity(entity).despawn();
         }
         return;
     }
@@ -109,14 +102,14 @@ fn despawn_hint(
         return;
     }
 
-    let (player_transform, player) = match q_player.get_single() {
+    let (player_transform, player) = match q_player.single() {
         Ok(r) => r,
         Err(_) => return,
     };
 
     if player.state == PlayerState::Talking {
         for (entity, _) in &q_start_hints {
-            commands.entity(entity).despawn_recursive();
+            commands.entity(entity).despawn();
         }
         return;
     }
@@ -128,7 +121,7 @@ fn despawn_hint(
             .distance_squared(transform.translation.xy())
             > NPC_PROXIMITY_DISTANCE.powi(2)
         {
-            commands.entity(entity).despawn_recursive();
+            commands.entity(entity).despawn();
             break;
         }
     }

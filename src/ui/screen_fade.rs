@@ -18,13 +18,10 @@ fn fade_out_intro_screen(mut commands: Commands) {
     );
 
     commands.spawn((
-        Animator::new(tween),
-        ImageBundle {
-            style: Style {
-                width: Val::Vw(110.0),
-                height: Val::Vh(110.0),
-                ..default()
-            },
+        TweenAnim::new(tween),
+        Node {
+            width: Val::Vw(110.0),
+            height: Val::Vh(110.0),
             ..default()
         },
     ));

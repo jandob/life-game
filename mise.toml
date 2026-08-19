@@ -1,0 +1,10 @@
+[tools]
+"github:mapeditor/tiled" = "latest"
+node = "latest"
+npm = "latest"
+"npm:@fission-ai/openspec" = { version = "latest" }
+#"npm:@spekjs/core" = "latest"
+#"npm:@spekjs/ui" = "latest"
+python = "latest"
+rust = "latest"
+"github:ToruAI/openspec-ui" = "latest"

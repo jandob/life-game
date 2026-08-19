@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy::utils::HashSet;
+use std::collections::HashSet;
 use chrono::{Timelike, Utc};
 use noisy_bevy::simplex_noise_2d_seeded;
 

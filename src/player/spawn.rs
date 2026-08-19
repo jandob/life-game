@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use bevy_trickfilm::prelude::*;
 
+use crate::animation::{SpriteAnimator, PLAYER_CLIPS};
 use crate::world::camera::YSort;
 use crate::{GameAssets, GameState};
 
@@ -13,14 +13,11 @@ fn spawn_player(mut commands: Commands, assets: Res<GameAssets>) {
             Collider::ball(16.0),
             ActiveEvents::COLLISION_EVENTS,
             PLAYER_COLLISION_GROUPS,
-            TransformBundle::from_transform(Transform::from_translation(Vec3::new(
-                0.0, -32.0, 0.0,
-            ))),
+            Transform::from_translation(Vec3::new(0.0, -32.0, 0.0)),
         ))
         .id();
 
-    let mut animator = AnimationPlayer2D::default();
-    animator.play(assets.player_animations[0].clone());
+    let animator = SpriteAnimator::looping(PLAYER_CLIPS[0]);
 
     commands
         .spawn((
@@ -31,17 +28,17 @@ fn spawn_player(mut commands: Commands, assets: Res<GameAssets>) {
             Ccd::enabled(),
             YSort(0.0),
             animator,
-            SpriteBundle {
-                texture: assets.player_texture.clone(),
-                transform: Transform::from_translation(PLAYER_SPAWN_POS).with_scale(PLAYER_SCALE),
+            Sprite {
+                image: assets.player_texture.clone(),
+                texture_atlas: Some(TextureAtlas {
+                    layout: assets.player_layout.clone(),
+                    index: PLAYER_CLIPS[0].first_frame,
+                }),
                 ..default()
             },
-            TextureAtlas {
-                layout: assets.player_layout.clone(),
-                ..default()
-            },
+            Transform::from_translation(PLAYER_SPAWN_POS).with_scale(PLAYER_SCALE),
         ))
-        .push_children(&[collider]);
+        .add_child(collider);
 }
 
 pub struct PlayerSpawnPlugin;

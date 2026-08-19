@@ -1,0 +1,6 @@
+{
+  "sources": [
+    { "name": "life-game", "path": "./openspec" }
+  ],
+  "port": 3000
+}

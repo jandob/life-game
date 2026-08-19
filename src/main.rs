@@ -1,5 +1,6 @@
 #![allow(clippy::too_many_arguments, clippy::type_complexity)]
 
+mod animation;
 mod assets;
 mod audio;
 mod npc;
@@ -16,9 +17,8 @@ use bevy::prelude::*;
 use bevy::window::{PresentMode, Window, WindowMode, WindowResolution};
 
 use bevy_asset_loader::prelude::*;
-use bevy_particle_systems::ParticleSystemPlugin;
+use bevy_hanabi::prelude::*;
 use bevy_rapier2d::prelude::*;
-use bevy_trickfilm::Animation2DPlugin;
 use bevy_tweening::*;
 use bevy_yarnspinner::prelude::*;
 
@@ -35,6 +35,9 @@ pub enum GameState {
 }
 
 fn main() {
+    const DEFAULT_WINDOW_WIDTH_PX: u32 = 1280;
+    const DEFAULT_WINDOW_HEIGHT_PX: u32 = (DEFAULT_WINDOW_WIDTH as f32 * 9.0 / 16.0) as u32;
+
     App::new()
         .add_plugins((
             DefaultPlugins
@@ -51,8 +54,8 @@ fn main() {
                         fit_canvas_to_parent: false,
                         canvas: Some("#game-canvas".to_string()),
                         resolution: WindowResolution::new(
-                            DEFAULT_WINDOW_WIDTH,
-                            DEFAULT_WINDOW_WIDTH * 9.0 / 16.0,
+                            DEFAULT_WINDOW_WIDTH_PX,
+                            DEFAULT_WINDOW_HEIGHT_PX,
                         ),
                         ..default()
                     }),
@@ -64,18 +67,21 @@ fn main() {
                 enabled: false,
                 ..default()
             },
-            ParticleSystemPlugin,
-            Animation2DPlugin,
-            YarnSpinnerPlugin::with_yarn_sources([
-                YarnFileSource::file("dialogue/eleonore.yarn"),
-                YarnFileSource::file("dialogue/jotem.yarn"),
-                YarnFileSource::file("dialogue/isabelle.yarn"),
-                YarnFileSource::file("dialogue/ionas-and-antonius.yarn"),
-            ])
-            .with_development_file_generation(DevelopmentFileGeneration::None),
+            HanabiPlugin,
+            animation::SpriteAnimationPlugin,
+            {
+                let plugin = YarnSpinnerPlugin::with_yarn_sources([
+                    YarnFileSource::file("dialogue/eleonore.yarn"),
+                    YarnFileSource::file("dialogue/jotem.yarn"),
+                    YarnFileSource::file("dialogue/isabelle.yarn"),
+                    YarnFileSource::file("dialogue/ionas-and-antonius.yarn"),
+                ]);
+                #[cfg(not(target_arch = "wasm32"))]
+                let plugin = plugin.with_development_file_generation(DevelopmentFileGeneration::None);
+                plugin
+            },
             TweeningPlugin,
         ))
-        .insert_resource(Msaa::Off)
         .init_state::<GameState>()
         .add_loading_state(
             LoadingState::new(GameState::AssetLoading)

@@ -9,12 +9,12 @@ use crate::{
 
 use super::{input::PlayerInput, Player, PlayerState, NPC_PROXIMITY_DISTANCE};
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct PlayerStartedChat {
     pub dialogue: NpcDialogue,
     pub direction: Vec2,
 }
-#[derive(Event)]
+#[derive(Message)]
 pub struct PlayerStoppedChat;
 
 fn start_chat(
@@ -22,7 +22,7 @@ fn start_chat(
     mut q_player: Query<(&Transform, &mut Player)>,
     q_npcs: Query<(&Transform, &Npc), Without<Player>>,
     q_dialogue_runners: Query<&RunnerFlags, With<DialogueRunner>>,
-    mut ev_player_started_chat: EventWriter<PlayerStartedChat>,
+    mut ev_player_started_chat: MessageWriter<PlayerStartedChat>,
 ) {
     if !player_input.dialogue {
         return;
@@ -33,7 +33,7 @@ fn start_chat(
         }
     }
 
-    let (player_transform, mut player) = match q_player.get_single_mut() {
+    let (player_transform, mut player) = match q_player.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -46,7 +46,7 @@ fn start_chat(
             <= NPC_PROXIMITY_DISTANCE.powi(2)
         {
             player.state = PlayerState::Talking;
-            ev_player_started_chat.send(PlayerStartedChat {
+            ev_player_started_chat.write(PlayerStartedChat {
                 dialogue: npc.dialogue,
                 direction: npc_transform.translation.xy() - player_transform.translation.xy(),
             });
@@ -58,9 +58,9 @@ fn start_chat(
 fn stop_chat(
     player_input: Res<PlayerInput>,
     q_player: Query<&Player>,
-    mut ev_player_stopped_chat: EventWriter<PlayerStoppedChat>,
+    mut ev_player_stopped_chat: MessageWriter<PlayerStoppedChat>,
 ) {
-    let player = match q_player.get_single() {
+    let player = match q_player.single() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -73,15 +73,15 @@ fn stop_chat(
         return;
     }
 
-    ev_player_stopped_chat.send(PlayerStoppedChat);
+    ev_player_stopped_chat.write(PlayerStoppedChat);
 }
 
 pub struct PlayerChatPlugin;
 
 impl Plugin for PlayerChatPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<PlayerStartedChat>()
-            .add_event::<PlayerStoppedChat>()
+        app.add_message::<PlayerStartedChat>()
+            .add_message::<PlayerStoppedChat>()
             .add_systems(
                 Update,
                 (start_chat, stop_chat).run_if(in_state(GameState::Gaming)),

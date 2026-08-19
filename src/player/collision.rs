@@ -10,7 +10,7 @@ fn toggle_player_collision(
     mut q_player: Query<&Children, With<Player>>,
     mut q_colliders: Query<&mut CollisionGroups>,
 ) {
-    let children = match q_player.get_single_mut() {
+    let children = match q_player.single_mut() {
         Ok(p) => p,
         Err(_) => return,
     };

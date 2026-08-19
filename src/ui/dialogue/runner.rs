@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_yarnspinner::{events::DialogueCompleteEvent, prelude::*};
+use bevy_yarnspinner::{events::DialogueCompleted, prelude::*};
 
 use crate::{
     npc::{Npc, NpcDialogue},
@@ -26,12 +26,12 @@ pub struct RunnerFlags {
 }
 
 /// This is only fired when the dialogue runner isn't cached yet and was thus never spawned.
-#[derive(Event)]
+#[derive(Message)]
 struct SpawnDialogueRunner {
     dialogue: NpcDialogue,
 }
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct UpdateTargetNpcs;
 
 impl RunnerFlags {
@@ -50,8 +50,8 @@ fn spawn_dialogue_runner(
     mut typewriter: ResMut<Typewriter>,
     project: Res<YarnProject>,
     mut q_npcs: Query<&mut Npc>,
-    mut ev_spawn_dialogue_runner: EventReader<SpawnDialogueRunner>,
-    mut ev_update_target_npcs: EventWriter<UpdateTargetNpcs>,
+    mut ev_spawn_dialogue_runner: MessageReader<SpawnDialogueRunner>,
+    mut ev_update_target_npcs: MessageWriter<UpdateTargetNpcs>,
 ) {
     for ev in ev_spawn_dialogue_runner.read() {
         for mut npc in &mut q_npcs {
@@ -61,16 +61,19 @@ fn spawn_dialogue_runner(
         }
 
         typewriter.reset();
-        let mut dialogue_runner = project.create_dialogue_runner();
+        let stop_chat = commands.register_system(stop_chat_command);
+        let target_npc = commands.register_system(target_npc_mentioned_command);
+        let trigger_ending = commands.register_system(trigger_ending_command);
+        let mut dialogue_runner = project.create_dialogue_runner(&mut commands);
         dialogue_runner
             .commands_mut()
-            .add_command("stop_chat", stop_chat_command)
-            .add_command("target_npc_mentioned", target_npc_mentioned_command)
-            .add_command("trigger_ending", trigger_ending_command);
+            .add_command("stop_chat", stop_chat)
+            .add_command("target_npc_mentioned", target_npc)
+            .add_command("trigger_ending", trigger_ending);
 
         dialogue_runner.start_node(ev.dialogue.to_string());
         commands.spawn((dialogue_runner, RunnerFlags::new(ev.dialogue)));
-        ev_update_target_npcs.send(UpdateTargetNpcs);
+        ev_update_target_npcs.write(UpdateTargetNpcs);
     }
 }
 
@@ -80,12 +83,12 @@ fn activate_dialogue_runner(
     mut q_runner_flags: Query<&mut RunnerFlags>,
     mut q_dialogue: Query<&mut Visibility, With<DialogueRoot>>,
     mut q_dialogue_content: Query<&mut Text, With<DialogueContent>>,
-    mut ev_player_started_chat: EventReader<PlayerStartedChat>,
-    mut ev_create_options: EventWriter<CreateOptions>,
-    mut ev_write_dialogue_text: EventWriter<WriteDialogueText>,
-    mut ev_spawn_dialogue_runner: EventWriter<SpawnDialogueRunner>,
+    mut ev_player_started_chat: MessageReader<PlayerStartedChat>,
+    mut ev_create_options: MessageWriter<CreateOptions>,
+    mut ev_write_dialogue_text: MessageWriter<WriteDialogueText>,
+    mut ev_spawn_dialogue_runner: MessageWriter<SpawnDialogueRunner>,
 ) {
-    let mut visibility = match q_dialogue.get_single_mut() {
+    let mut visibility = match q_dialogue.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -99,20 +102,20 @@ fn activate_dialogue_runner(
                 cached = true;
                 flags.active = true;
                 if let Some(option_selection) = &flags.options {
-                    ev_create_options.send(CreateOptions(option_selection.clone()));
+                    ev_create_options.write(CreateOptions(option_selection.clone()));
                     commands.insert_resource(option_selection.clone());
                 }
                 if let Some(line) = &flags.line {
                     typewriter.set_completed_line(line);
-                    ev_write_dialogue_text.send(WriteDialogueText);
+                    ev_write_dialogue_text.write(WriteDialogueText);
                 }
             }
         }
         if !cached {
-            if let Ok(mut dialogue_content) = q_dialogue_content.get_single_mut() {
+            if let Ok(mut dialogue_content) = q_dialogue_content.single_mut() {
                 *dialogue_content = Text::default();
             }
-            ev_spawn_dialogue_runner.send(SpawnDialogueRunner {
+            ev_spawn_dialogue_runner.write(SpawnDialogueRunner {
                 dialogue: ev.dialogue,
             });
         }
@@ -158,7 +161,7 @@ fn update_mentioned_by(
 fn update_target_npcs(
     q_npcs: Query<&Npc>,
     mut q_dialogue_runners: Query<(&mut DialogueRunner, &RunnerFlags)>,
-    mut ev_update_target_npcs: EventReader<UpdateTargetNpcs>,
+    mut ev_update_target_npcs: MessageReader<UpdateTargetNpcs>,
     mut started: Local<bool>,
     mut frames: Local<usize>,
 ) {
@@ -193,21 +196,25 @@ fn update_target_npcs(
 }
 
 fn hide_dialogue(mut q_dialogue: Query<&mut Visibility, With<DialogueRoot>>) {
-    let mut visibility = match q_dialogue.get_single_mut() {
+    let mut visibility = match q_dialogue.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
     *visibility = Visibility::Hidden;
 }
 
-fn despawn_dialogue_runner(
-    mut commands: Commands,
-    mut ev_dialogue_completed: EventReader<DialogueCompleteEvent>,
+fn despawn_dialogue_runner(trigger: On<DialogueCompleted>, mut commands: Commands) {
+    if let Ok(mut r) = commands.get_entity(trigger.entity) {
+        r.despawn();
+    }
+}
+
+fn hide_dialogue_on_completed(
+    _trigger: On<DialogueCompleted>,
+    mut q_dialogue: Query<&mut Visibility, With<DialogueRoot>>,
 ) {
-    for ev in ev_dialogue_completed.read() {
-        if let Some(r) = commands.get_entity(ev.source) {
-            r.despawn_recursive();
-        }
+    if let Ok(mut visibility) = q_dialogue.single_mut() {
+        *visibility = Visibility::Hidden;
     }
 }
 
@@ -235,8 +242,10 @@ pub struct DialogueRunnerPlugin;
 
 impl Plugin for DialogueRunnerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<SpawnDialogueRunner>()
-            .add_event::<UpdateTargetNpcs>()
+        app.add_message::<SpawnDialogueRunner>()
+            .add_message::<UpdateTargetNpcs>()
+            .add_observer(despawn_dialogue_runner)
+            .add_observer(hide_dialogue_on_completed)
             .add_systems(
                 Update,
                 (activate_dialogue_runner, spawn_dialogue_runner)
@@ -246,17 +255,14 @@ impl Plugin for DialogueRunnerPlugin {
             .add_systems(
                 Update,
                 (
-                    despawn_dialogue_runner,
-                    deactivate_dialogue_runner.run_if(on_event::<PlayerStoppedChat>()),
+                    deactivate_dialogue_runner.run_if(on_message::<PlayerStoppedChat>),
                     monitor_active_runners,
                     update_target_npcs,
                 ),
             )
             .add_systems(
                 Update,
-                hide_dialogue.run_if(on_event::<DialogueCompleteEvent>().or_else(
-                    on_event::<PlayerStoppedChat>().or_else(on_event::<EndingTriggered>()),
-                )),
+                hide_dialogue.run_if(on_message::<PlayerStoppedChat>.or_else(on_message::<EndingTriggered>)),
             );
     }
 }

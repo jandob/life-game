@@ -1,6 +1,6 @@
 use chrono::Utc;
 
-use bevy::{prelude::*, transform::TransformSystem};
+use bevy::{prelude::*, transform::TransformSystems};
 use noisy_bevy::simplex_noise_2d_seeded;
 
 use super::MainCamera;
@@ -50,14 +50,14 @@ impl CameraShake {
 }
 
 fn decay_shake_trauma(time: Res<Time>, mut shake: ResMut<CameraShake>) {
-    shake.reduce_trauma(time.delta_seconds());
+    shake.reduce_trauma(time.delta_secs());
 }
 
 pub fn update_camera(
     mut q_camera: Query<&mut Transform, With<MainCamera>>,
     shake: ResMut<CameraShake>,
 ) {
-    let mut transform = match q_camera.get_single_mut() {
+    let mut transform = match q_camera.single_mut() {
         Ok(t) => t,
         Err(_) => return,
     };
@@ -81,7 +81,7 @@ impl Plugin for CameraShakePlugin {
             .init_resource::<CameraShake>()
             .add_systems(
                 PostUpdate,
-                update_camera.before(TransformSystem::TransformPropagate),
+                update_camera.before(TransformSystems::Propagate),
             );
     }
 }

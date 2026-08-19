@@ -20,7 +20,7 @@ const END_COLOR: Color = Color::srgba(0.0, 0.0, 0.0, 1.0);
 const BACKGROUND_SPRITE_YSORT: f32 = 40_000.0;
 const CHARACTER_YSORT: f32 = 50_000.0;
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct EndingTriggered {
     pub dialogue: NpcDialogue,
 }
@@ -28,9 +28,9 @@ pub struct EndingTriggered {
 fn increase_ysorts(
     mut q_player: Query<&mut YSort, With<Player>>,
     mut q_npcs: Query<(&mut YSort, &Npc), Without<Player>>,
-    mut ev_ending_triggered: EventReader<EndingTriggered>,
+    mut ev_ending_triggered: MessageReader<EndingTriggered>,
 ) {
-    let mut player_ysort = match q_player.get_single_mut() {
+    let mut player_ysort = match q_player.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -59,16 +59,13 @@ fn fade_in_black_sprite(mut commands: Commands, assets: Res<GameAssets>) {
 
     commands.spawn((
         YSort(BACKGROUND_SPRITE_YSORT),
-        Animator::new(tween),
-        SpriteBundle {
-            texture: assets.white_pixel.clone(),
-            transform: Transform::from_scale(Vec3::splat(10_000.0)),
-            sprite: Sprite {
-                color: START_COLOR,
-                ..default()
-            },
+        TweenAnim::new(tween),
+        Sprite {
+            image: assets.white_pixel.clone(),
+            color: START_COLOR,
             ..default()
         },
+        Transform::from_scale(Vec3::splat(10_000.0)),
     ));
 }
 
@@ -107,17 +104,14 @@ fn fade_in_black_screen(
     );
 
     commands.spawn((
-        Animator::new(tween),
-        ImageBundle {
-            style: Style {
-                width: Val::Vw(110.0),
-                height: Val::Vh(110.0),
-                ..default()
-            },
-            background_color: BackgroundColor(START_COLOR),
-            z_index: ZIndex::Global(100),
+        TweenAnim::new(tween),
+        Node {
+            width: Val::Vw(110.0),
+            height: Val::Vh(110.0),
             ..default()
         },
+        BackgroundColor(START_COLOR),
+        ZIndex(100),
     ));
 }
 
@@ -132,16 +126,17 @@ impl Plugin for EndingPlugin {
         app.add_systems(
             Update,
             (
-                increase_ysorts,
-                fade_in_black_sprite.run_if(on_event::<EndingTriggered>()),
-                change_game_state.run_if(on_event::<EndingTriggered>()),
-            )
-                .run_if(not(in_state(GameState::AssetLoading))),
+                increase_ysorts.run_if(not(in_state(GameState::AssetLoading))),
+                fade_in_black_sprite
+                    .run_if(on_message::<EndingTriggered>.and_then(not(in_state(GameState::AssetLoading)))),
+                change_game_state
+                    .run_if(on_message::<EndingTriggered>.and_then(not(in_state(GameState::AssetLoading)))),
+            ),
         )
-        .add_event::<EndingTriggered>()
+        .add_message::<EndingTriggered>()
         .add_systems(
             Update,
-            (fade_in_black_screen,).run_if(in_state(GameState::Ending)),
+            fade_in_black_screen.run_if(in_state(GameState::Ending)),
         );
     }
 }

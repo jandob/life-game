@@ -1,11 +1,11 @@
 use std::time::Duration;
 
+use bevy::audio::{AudioPlayer, AudioSink, PlaybackMode, PlaybackSettings, Volume};
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 use noisy_bevy::simplex_noise_2d_seeded;
 
 use crate::{
-    audio::{GameAudio, PlaySound},
+    audio::PlaySound,
     GameAssets, GameState,
 };
 
@@ -25,10 +25,8 @@ const SEED: f32 = 64.0;
 #[derive(Resource, Deref, DerefMut)]
 struct StepsTimer(Timer);
 
-#[derive(Resource, Deref, DerefMut)]
-struct BirdSound {
-    handle: Handle<AudioInstance>,
-}
+#[derive(Component)]
+struct BirdSound;
 
 impl Default for StepsTimer {
     fn default() -> Self {
@@ -39,17 +37,20 @@ impl Default for StepsTimer {
     }
 }
 
-fn spawn_bird_sound(mut commands: Commands, assets: Res<GameAssets>, audio: Res<Audio>) {
-    let handle = audio
-        .play(assets.bird_sounds.clone())
-        .with_volume(0.0)
-        .looped()
-        .handle();
-    commands.insert_resource(BirdSound { handle });
+fn spawn_bird_sound(mut commands: Commands, assets: Res<GameAssets>) {
+    commands.spawn((
+        AudioPlayer(assets.bird_sounds.clone()),
+        PlaybackSettings {
+            mode: PlaybackMode::Loop,
+            volume: Volume::Linear(0.0),
+            ..default()
+        },
+        BirdSound,
+    ));
 }
 
-fn spawn_cricket_sound(assets: Res<GameAssets>, mut ev_play_sound: EventWriter<PlaySound>) {
-    ev_play_sound.send(PlaySound {
+fn spawn_cricket_sound(assets: Res<GameAssets>, mut ev_play_sound: MessageWriter<PlaySound>) {
+    ev_play_sound.write(PlaySound {
         clip: assets.cricket_sounds.clone(),
         volume: 0.35,
         repeat: true,
@@ -57,17 +58,12 @@ fn spawn_cricket_sound(assets: Res<GameAssets>, mut ev_play_sound: EventWriter<P
     });
 }
 
-fn update_bird_sound(
-    time: Res<Time>,
-    game_audio: Res<GameAudio>,
-    mut audio_instances: ResMut<Assets<AudioInstance>>,
-    bird_sound: Res<BirdSound>,
-) {
-    let noise = simplex_noise_2d_seeded(Vec2::ONE * time.elapsed_seconds() * NOISE_ZOOM, SEED)
+fn update_bird_sound(time: Res<Time>, mut q_bird: Query<&mut AudioSink, With<BirdSound>>) {
+    let noise = simplex_noise_2d_seeded(Vec2::ONE * time.elapsed_secs() * NOISE_ZOOM, SEED)
         .max(BIRD_MIN_VOLUME);
-    let volume = noise as f64 * game_audio.main_volume * BIRD_MAX_VOLUME;
-    if let Some(instance) = audio_instances.get_mut(bird_sound.handle.id()) {
-        instance.set_volume(volume, AudioTween::default());
+    let volume = noise as f64 * BIRD_MAX_VOLUME;
+    for mut sink in q_bird.iter_mut() {
+        sink.set_volume(Volume::Linear(volume as f32));
     }
 }
 
@@ -79,9 +75,9 @@ fn play_step_sounds(
     assets: Res<GameAssets>,
     mut steps_timer: ResMut<StepsTimer>,
     q_player: Query<&Player>,
-    mut ev_play_sound: EventWriter<PlaySound>,
+    mut ev_play_sound: MessageWriter<PlaySound>,
 ) {
-    let player_state = match q_player.get_single() {
+    let player_state = match q_player.single() {
         Ok(p) => p.state,
         Err(_) => return,
     };
@@ -113,7 +109,7 @@ fn play_step_sounds(
     };
 
     if let Some(s) = sound {
-        ev_play_sound.send(s);
+        ev_play_sound.write(s);
     }
 }
 
@@ -124,7 +120,7 @@ impl Plugin for PlayerAudioPlugin {
         app.add_systems(
             Update,
             (
-                update_bird_sound.run_if(resource_exists::<BirdSound>),
+                update_bird_sound,
                 (play_step_sounds, tick_steps_timers).run_if(in_state(GameState::Gaming)),
             ),
         )

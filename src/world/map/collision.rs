@@ -91,12 +91,9 @@ fn spawn_water_collision(
 
     let pos = Vec3::new(x as f32 * TILE_SIZE, y as f32 * TILE_SIZE, 0.0);
     let collision = commands
-        .spawn((
-            collider,
-            TransformBundle::from_transform(Transform::from_translation(pos + offset)),
-        ))
+        .spawn((collider, Transform::from_translation(pos + offset)))
         .id();
-    commands.entity(*entity).push_children(&[collision]);
+    commands.entity(*entity).add_children(&[collision]);
 }
 
 pub fn spawn_water_collisions(

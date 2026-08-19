@@ -1,5 +1,5 @@
 use bevy::input::mouse::{MouseScrollUnit, MouseWheel};
-use bevy::input::InputSystem;
+use bevy::input::InputSystems;
 use bevy::prelude::*;
 use bevy::window::{PrimaryWindow, Window};
 
@@ -32,18 +32,18 @@ pub fn fetch_mouse_world_coords(
     q_window: Query<&Window, With<PrimaryWindow>>,
     q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
 ) {
-    let (camera, camera_transform) = match q_camera.get_single() {
+    let (camera, camera_transform) = match q_camera.single() {
         Ok(c) => (c.0, c.1),
         Err(_) => return,
     };
-    let window = match q_window.get_single() {
+    let window = match q_window.single() {
         Ok(w) => w,
         Err(_) => return,
     };
 
     if let Some(world_position) = window
         .cursor_position()
-        .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
+        .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor).ok())
         .map(|ray| ray.origin.truncate())
     {
         mouse_coords.0 = world_position;
@@ -51,7 +51,7 @@ pub fn fetch_mouse_world_coords(
 }
 
 fn fetch_scroll_events(
-    mut scroll_evr: EventReader<MouseWheel>,
+    mut scroll_evr: MessageReader<MouseWheel>,
     mut player_input: ResMut<PlayerInput>,
 ) {
     for ev in scroll_evr.read() {
@@ -176,10 +176,10 @@ impl Plugin for InputPlugin {
                 toggle_debug,
             )
                 .run_if(not(in_state(GameState::AssetLoading)))
-                .after(InputSystem),
+                .after(InputSystems),
         )
         .init_resource::<PlayerInput>()
         .init_resource::<MouseWorldCoords>()
-        .add_systems(PreUpdate, reset_player_input.before(InputSystem));
+        .add_systems(PreUpdate, reset_player_input.before(InputSystems));
     }
 }

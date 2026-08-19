@@ -13,14 +13,14 @@ fn player_movement(
     debug_active: Res<DebugActive>,
     mut q_player: Query<(&mut Velocity, &mut Player)>,
 ) {
-    let (mut velocity, mut player) = match q_player.get_single_mut() {
+    let (mut velocity, mut player) = match q_player.single_mut() {
         Ok(p) => p,
         Err(_) => return,
     };
 
     let direction = player_input.move_direction;
     if player.state == PlayerState::Talking || direction == Vec2::ZERO {
-        velocity.linvel = Vec2::ZERO;
+        velocity.linear = Vec2::ZERO;
         return;
     };
 
@@ -36,15 +36,15 @@ fn player_movement(
     };
 
     player.current_direction = direction;
-    velocity.linvel = direction * speed;
+    velocity.linear = direction * speed;
 }
 
 fn face_npc(
     mut q_player: Query<&mut Player>,
-    mut ev_player_started_chat: EventReader<PlayerStartedChat>,
+    mut ev_player_started_chat: MessageReader<PlayerStartedChat>,
 ) {
     for ev in ev_player_started_chat.read() {
-        let mut player = match q_player.get_single_mut() {
+        let mut player = match q_player.single_mut() {
             Ok(p) => p,
             Err(_) => return,
         };

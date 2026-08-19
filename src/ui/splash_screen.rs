@@ -1,11 +1,9 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
-use bevy_tweening::{lens::TransformScaleLens, Animator, EaseFunction, Tween, TweenCompleted};
+use bevy_tweening::{lens::TransformScaleLens, Tween, TweenAnim, CycleCompletedEvent};
 
 use crate::GameState;
-
-const SPASH_SCREEN_TWEEN_ID: u64 = 100;
 
 #[derive(Component)]
 struct SplashScreen;
@@ -13,27 +11,23 @@ struct SplashScreen;
 fn spawn_splash_screen(mut commands: Commands, asset_server: Res<AssetServer>) {
     let icon = asset_server.load("ui/bevy_icon.png");
     let image = commands
-        .spawn(ImageBundle {
-            image: UiImage::new(icon),
-            style: Style {
+        .spawn((
+            Node {
                 width: Val::Px(200.0),
                 ..default()
             },
-            z_index: ZIndex::Global(1000),
-            ..default()
-        })
+            ImageNode::new(icon),
+            ZIndex(1000),
+        ))
         .id();
 
     commands
         .spawn((
-            NodeBundle {
-                style: Style {
-                    align_items: AlignItems::Center,
-                    justify_content: JustifyContent::Center,
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(100.0),
-                    ..default()
-                },
+            Node {
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 ..default()
             },
             SplashScreen,
@@ -54,19 +48,17 @@ fn fade_out_splash_screen(
                 end: Vec3::ZERO,
             },
         )
-        .with_completed_event(SPASH_SCREEN_TWEEN_ID);
-        commands.entity(entity).insert(Animator::new(tween));
+        .with_cycle_completed_event(true);
+        commands.entity(entity).insert(TweenAnim::new(tween));
     }
 }
 
 fn despawn_splash_screen(
     mut commands: Commands,
-    mut ev_tween_completed: EventReader<TweenCompleted>,
+    mut ev_tween_completed: MessageReader<CycleCompletedEvent>,
 ) {
     for ev in ev_tween_completed.read() {
-        if ev.user_data == SPASH_SCREEN_TWEEN_ID {
-            commands.entity(ev.entity).despawn_recursive();
-        }
+        commands.entity(ev.anim_entity).despawn();
     }
 }
 

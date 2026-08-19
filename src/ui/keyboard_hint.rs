@@ -2,8 +2,8 @@ use std::f32::consts::TAU;
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use bevy_trickfilm::prelude::*;
 
+use crate::animation::{SpriteAnimator, KEY_ICON, SHIFT_ICON};
 use crate::{
     world::{camera::YSort, map::generation::BitMap},
     GameAssets, GameState,
@@ -70,18 +70,18 @@ fn spawn_icon(
     let icon = commands
         .spawn((
             KeyboardIcon,
-            SpriteBundle {
-                texture,
-                transform,
+            Sprite {
+                image: texture,
+                texture_atlas: Some(TextureAtlas {
+                    layout,
+                    index: KEY_ICON.first_frame,
+                }),
                 ..default()
             },
-            TextureAtlas {
-                layout,
-                ..default()
-            },
+            transform,
         ))
         .id();
-    commands.entity(root).push_children(&[icon]);
+    commands.entity(root).add_child(icon);
     icon
 }
 
@@ -94,23 +94,20 @@ fn spawn_key_buttons(
 ) {
     let entity = spawn_icon(commands, assets, root, icon, offset);
 
-    let mut animator = AnimationPlayer2D::default();
-    animator.play(assets.ui_keys_animations[0].clone()).repeat();
-
     commands
         .entity(entity)
-        .insert((Collider::cuboid(16.0, 16.0), animator));
+        .insert((Collider::cuboid(16.0, 16.0), SpriteAnimator::looping(KEY_ICON)));
 }
 
 fn spawn_arrows_icon(commands: &mut Commands, assets: &Res<GameAssets>, root: Entity) {
     let icon = commands
         .spawn((
             KeyboardIcon,
-            SpriteBundle {
-                texture: assets.ui_arrows_key.clone(),
-                transform: Transform::from_scale(Vec3::splat(1.0)),
+            Sprite {
+                image: assets.ui_arrows_key.clone(),
                 ..default()
             },
+            Transform::from_scale(Vec3::splat(1.0)),
         ))
         .id();
 
@@ -126,12 +123,9 @@ fn spawn_shift_icon(
 ) {
     let entity = spawn_icon(commands, assets, root, icon, offset);
 
-    let mut animator = AnimationPlayer2D::default();
-    animator.play(assets.ui_keys_animations[1].clone()).repeat();
-
     commands
         .entity(entity)
-        .insert((Collider::cuboid(16.0, 16.0), animator));
+        .insert((Collider::cuboid(16.0, 16.0), SpriteAnimator::looping(SHIFT_ICON)));
 }
 
 fn calculate_dir(vecs: &Vec<Vec2>) -> Vec2 {
@@ -159,9 +153,9 @@ fn calculate_dir(vecs: &Vec<Vec2>) -> Vec2 {
     let mut max_angle = angles[0] + TAU - angles[angles.len() - 1];
     let mut current_angle = angles[angles.len() - 1];
     for i in 0..angles.len() - 1 {
-        let angle_between = angles[i + 1] - angles[i];
-        if angle_between > max_angle {
-            max_angle = angle_between;
+        let angle_to = angles[i + 1] - angles[i];
+        if angle_to > max_angle {
+            max_angle = angle_to;
             current_angle = angles[i];
         }
     }
@@ -181,11 +175,7 @@ fn spawn_keyboard_ui(mut commands: Commands, assets: Res<GameAssets>, bitmap: Re
     )
     .with_scale(Vec3::splat(ICON_SIZE));
     let root = commands
-        .spawn((
-            KeyboardHint,
-            YSort(-200.0),
-            SpatialBundle::from_transform(transform),
-        ))
+        .spawn((KeyboardHint, YSort(-200.0), transform))
         .id();
 
     spawn_key_buttons(

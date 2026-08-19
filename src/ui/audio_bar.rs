@@ -18,32 +18,34 @@ impl Default for Bar {
 }
 
 fn spawn_bar(mut commands: Commands, assets: Res<GameAssets>) {
-    let text_style = TextStyle {
-        font: assets.pixel_font.clone(),
-        font_size: 30.0,
-        color: Color::WHITE,
-    };
-    let text_bundle = TextBundle::from_sections([TextSection::new("", text_style)]);
-    let text = commands.spawn((BarText, text_bundle)).id();
+    let text = commands
+        .spawn((
+            BarText,
+            Text::new(String::new()),
+            TextFont {
+                font: assets.pixel_font.clone().into(),
+                font_size: 30.0.into(),
+                ..default()
+            },
+            TextColor::WHITE,
+        ))
+        .id();
 
     commands
         .spawn((
             Bar::default(),
-            NodeBundle {
-                style: Style {
-                    bottom: Val::Percent(15.0),
-                    width: Val::Percent(100.0),
-                    flex_direction: FlexDirection::Column,
-                    align_items: AlignItems::Center,
-                    position_type: PositionType::Absolute,
-                    ..default()
-                },
-                visibility: Visibility::Hidden,
-                z_index: ZIndex::Local(101),
+            Node {
+                bottom: Val::Percent(15.0),
+                width: Val::Percent(100.0),
+                flex_direction: FlexDirection::Column,
+                align_items: AlignItems::Center,
+                position_type: PositionType::Absolute,
                 ..default()
             },
+            Visibility::Hidden,
+            ZIndex(101),
         ))
-        .push_children(&[text]);
+        .add_children(&[text]);
 }
 
 fn string_bar(x: f64) -> String {
@@ -58,16 +60,16 @@ fn string_bar(x: f64) -> String {
 }
 
 fn update_bar(game_audio: Res<GameAudio>, mut q_bar: Query<&mut Text, With<BarText>>) {
-    let mut text = match q_bar.get_single_mut() {
+    let mut text = match q_bar.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
 
-    text.sections[0].value = format!("VOLUME: {}", string_bar(game_audio.main_volume));
+    text.0 = format!("VOLUME: {}", string_bar(game_audio.main_volume));
 }
 
 fn tick_bar_timer(time: Res<Time>, mut q_bar: Query<&mut Bar>) {
-    let mut bar = match q_bar.get_single_mut() {
+    let mut bar = match q_bar.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -80,7 +82,7 @@ fn show_bar(player_input: Res<PlayerInput>, mut q_bar: Query<(&mut Visibility, &
         return;
     }
 
-    let (mut visibility, mut bar) = match q_bar.get_single_mut() {
+    let (mut visibility, mut bar) = match q_bar.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -90,7 +92,7 @@ fn show_bar(player_input: Res<PlayerInput>, mut q_bar: Query<(&mut Visibility, &
 }
 
 fn hide_bar(mut q_bar: Query<(&mut Visibility, &Bar)>) {
-    let (mut visibility, bar) = match q_bar.get_single_mut() {
+    let (mut visibility, bar) = match q_bar.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };

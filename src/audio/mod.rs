@@ -1,12 +1,10 @@
 mod sound;
-mod spacial;
 
 use std::time::Duration;
 
+use bevy::audio::{GlobalVolume, Volume};
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 
-#[allow(unused_imports)]
 pub use sound::PlaySound;
 
 use crate::{player::input::PlayerInput, world::ending::EndingTriggered, GameState};
@@ -20,14 +18,14 @@ pub struct GameAudioPlugin;
 
 impl Plugin for GameAudioPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(AudioPlugin)
-            .add_plugins((spacial::SpacialAudioPlugin, sound::GameSoundPlugin))
+        app.add_plugins(sound::GameSoundPlugin)
             .init_resource::<GameAudio>()
             .add_systems(OnExit(GameState::MainMenu), reset_main_volume)
             .add_systems(
                 Update,
                 (
                     update_main_volume,
+                    sync_global_volume.run_if(resource_changed::<GameAudio>),
                     fade_in_volume.run_if(in_state(GameState::Gaming)),
                     fade_out_volume,
                 ),
@@ -52,6 +50,11 @@ impl GameAudio {
     pub fn update(&mut self, x: f64) {
         self.main_volume = (self.main_volume + x).clamp(0.0, 1.0);
     }
+}
+
+/// Applies the game's main volume to Bevy's global audio volume.
+fn sync_global_volume(game_audio: Res<GameAudio>, mut global_volume: ResMut<GlobalVolume>) {
+    global_volume.volume = Volume::Linear(game_audio.main_volume as f32);
 }
 
 fn update_main_volume(player_input: Res<PlayerInput>, mut game_audio: ResMut<GameAudio>) {
@@ -92,7 +95,7 @@ fn fade_in_volume(
 fn fade_out_volume(
     time: Res<Time>,
     mut game_audio: ResMut<GameAudio>,
-    mut ev_ending_triggered: EventReader<EndingTriggered>,
+    mut ev_ending_triggered: MessageReader<EndingTriggered>,
     mut timer: Local<Timer>,
     mut is_started: Local<bool>,
     mut is_finished: Local<bool>,

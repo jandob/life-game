@@ -1,4 +1,5 @@
-use bevy::{prelude::*, utils::HashSet};
+use bevy::prelude::*;
+use std::collections::HashSet;
 
 fn number_of_edges(vertex_index: usize, edges: &HashSet<(usize, usize)>) -> usize {
     edges

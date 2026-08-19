@@ -3,8 +3,9 @@ use crate::{world::MainCamera, GameAssets, GameState};
 use super::{
     generation::BitMap, BACKGROUND_ZINDEX_ABS, CHUNK_SIZE, RENDERED_CHUNKS_RADIUS, TILE_SIZE,
 };
-use bevy::{math::Vec3Swizzles, prelude::*, utils::HashSet};
+use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
+use std::collections::HashSet;
 
 const RENDER_TILE_SIZE: TilemapTileSize = TilemapTileSize {
     x: TILE_SIZE,
@@ -23,12 +24,12 @@ pub struct ChunkManager {
 #[derive(Component, Deref)]
 pub struct ChunkIndex(pub IVec2);
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct SpawnedChunk {
     pub pos: IVec2,
 }
 
-#[derive(Event)]
+#[derive(Message)]
 pub struct DespawnedChunk {
     pub chunk_pos: IVec2,
 }
@@ -126,9 +127,9 @@ pub fn spawn_chunks(
     mut chunk_manager: ResMut<ChunkManager>,
     mut bitmap: ResMut<BitMap>,
     q_camera: Query<&Transform, With<MainCamera>>,
-    mut ev_spawned_chunk: EventWriter<SpawnedChunk>,
+    mut ev_spawned_chunk: MessageWriter<SpawnedChunk>,
 ) {
-    let camera_transform = match q_camera.get_single() {
+    let camera_transform = match q_camera.single() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -142,7 +143,7 @@ pub fn spawn_chunks(
                 let chunk_pos = IVec2::new(x, y);
                 chunk_manager.spawned_chunks.insert(chunk_pos);
                 spawn_chunk(&mut commands, &assets, &mut bitmap, chunk_pos);
-                ev_spawned_chunk.send(SpawnedChunk { pos: chunk_pos });
+                ev_spawned_chunk.write(SpawnedChunk { pos: chunk_pos });
             }
         }
     }
@@ -153,9 +154,9 @@ pub fn despawn_chunks(
     mut chunk_manager: ResMut<ChunkManager>,
     q_camera: Query<&Transform, With<MainCamera>>,
     q_chunks: Query<(Entity, &ChunkIndex)>,
-    mut ev_despawned_chunk: EventWriter<DespawnedChunk>,
+    mut ev_despawned_chunk: MessageWriter<DespawnedChunk>,
 ) {
-    let camera_transform = match q_camera.get_single() {
+    let camera_transform = match q_camera.single() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -168,8 +169,8 @@ pub fn despawn_chunks(
         {
             let chunk_pos = IVec2::new(chunk.x, chunk.y);
             chunk_manager.spawned_chunks.remove(&chunk_pos);
-            ev_despawned_chunk.send(DespawnedChunk { chunk_pos });
-            commands.entity(entity).despawn_recursive();
+            ev_despawned_chunk.write(DespawnedChunk { chunk_pos });
+            commands.entity(entity).despawn();
         }
     }
 }
@@ -180,8 +181,8 @@ impl Plugin for ChunkManagerPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(TilemapPlugin)
             .insert_resource(ChunkManager::default())
-            .add_event::<SpawnedChunk>()
-            .add_event::<DespawnedChunk>()
+            .add_message::<SpawnedChunk>()
+            .add_message::<DespawnedChunk>()
             .add_systems(
                 Update,
                 (
