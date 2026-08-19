@@ -1,0 +1,11 @@
+[package]
+name = "dialogue_graph"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+petgraph = "0.6.5"
+petgraph-evcxr = "0.2.0"
+
+[dev-dependencies]
+pretty_assertions = "1.4.0"
