@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use bevy::{prelude::*, time::common_conditions::once_after_delay};
-use bevy_tweening::{lens::TransformScaleLens, Tween, TweenAnim};
+use bevy_tweening::{lens::UiTransformScaleLens, Tween, TweenAnim};
 use bevy_yarnspinner::prelude::*;
 
 use super::dialogue::Typewriter;
@@ -108,9 +108,9 @@ fn spawn_main_menu(mut commands: Commands, assets: Res<GameAssets>) {
     let tween = Tween::new(
         EaseFunction::ExponentialOut,
         Duration::from_secs_f32(SCALE_TWEEN_TIME),
-        TransformScaleLens {
-            start: Vec3::splat(HOVERED_SCALE),
-            end: Vec3::splat(PRESSED_SCALE),
+        UiTransformScaleLens {
+            start: Vec2::splat(HOVERED_SCALE),
+            end: Vec2::splat(PRESSED_SCALE),
         },
     );
     let normal_dialogue_button = commands
@@ -140,9 +140,9 @@ fn spawn_main_menu(mut commands: Commands, assets: Res<GameAssets>) {
     let tween = Tween::new(
         EaseFunction::ExponentialIn,
         Duration::from_secs_f32(SPAWN_DELAY),
-        TransformScaleLens {
-            start: Vec3::ZERO,
-            end: Vec3::ONE,
+        UiTransformScaleLens {
+            start: Vec2::ZERO,
+            end: Vec2::ONE,
         },
     );
 
@@ -185,9 +185,9 @@ fn highlight_buttons(
                 Tween::new(
                     EaseFunction::ExponentialOut,
                     Duration::from_secs_f32(SCALE_TWEEN_TIME),
-                    TransformScaleLens {
-                        start: Vec3::splat(HOVERED_SCALE),
-                        end: Vec3::splat(PRESSED_SCALE),
+                    UiTransformScaleLens {
+                        start: Vec2::splat(HOVERED_SCALE),
+                        end: Vec2::splat(PRESSED_SCALE),
                     },
                 )
             }
@@ -200,18 +200,18 @@ fn highlight_buttons(
                 Tween::new(
                     EaseFunction::ExponentialOut,
                     Duration::from_secs_f32(SCALE_TWEEN_TIME),
-                    TransformScaleLens {
-                        start: Vec3::splat(NORMAL_SCALE),
-                        end: Vec3::splat(HOVERED_SCALE),
+                    UiTransformScaleLens {
+                        start: Vec2::splat(NORMAL_SCALE),
+                        end: Vec2::splat(HOVERED_SCALE),
                     },
                 )
             }
             (Interaction::None, None) => Tween::new(
                 EaseFunction::ExponentialOut,
                 Duration::from_secs_f32(SCALE_TWEEN_TIME),
-                TransformScaleLens {
-                    start: Vec3::splat(HOVERED_SCALE),
-                    end: Vec3::splat(NORMAL_SCALE),
+                UiTransformScaleLens {
+                    start: Vec2::splat(HOVERED_SCALE),
+                    end: Vec2::splat(NORMAL_SCALE),
                 },
             ),
         };
@@ -242,9 +242,9 @@ fn dehighlight_buttons(
                 let tween = Tween::new(
                     EaseFunction::ExponentialOut,
                     Duration::from_secs_f32(SCALE_TWEEN_TIME),
-                    TransformScaleLens {
-                        start: Vec3::splat(PRESSED_SCALE),
-                        end: Vec3::splat(NORMAL_SCALE),
+                    UiTransformScaleLens {
+                        start: Vec2::splat(PRESSED_SCALE),
+                        end: Vec2::splat(NORMAL_SCALE),
                     },
                 );
                 commands

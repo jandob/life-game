@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
-use bevy_tweening::{lens::TransformScaleLens, Tween, TweenAnim, CycleCompletedEvent};
+use bevy_tweening::{lens::UiTransformScaleLens, Tween, TweenAnim, CycleCompletedEvent};
 
 use crate::GameState;
 
@@ -43,9 +43,9 @@ fn fade_out_splash_screen(
         let tween = Tween::new(
             EaseFunction::ExponentialIn,
             Duration::from_secs_f32(0.5),
-            TransformScaleLens {
-                start: Vec3::ONE,
-                end: Vec3::ZERO,
+            UiTransformScaleLens {
+                start: Vec2::ONE,
+                end: Vec2::ZERO,
             },
         )
         .with_cycle_completed_event(true);
