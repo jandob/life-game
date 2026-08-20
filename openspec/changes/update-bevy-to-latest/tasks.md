@@ -37,4 +37,4 @@
 
 - [x] 6.1 `cargo build` (native) succeeds and the game runs; verify every scenario in `specs/visual-effects/spec.md`: player idle/walking/running × 4 facing directions, NPC idles, dialogue start hint + key icon animations, petal particles spawning/drifting/fading and despawning with their flora entity
 - [x] 6.2 `cargo build --target wasm32-unknown-unknown --profile wasm` succeeds; confirm `push_to_itch.sh` flow is unaffected
-- [ ] 6.3 Commit the verified migration in logical chunks (deps, core migration, particles, animation, wasm verification)
+- [x] 6.3 Commit the verified migration in logical chunks (deps, core migration, particles, animation, wasm verification)
