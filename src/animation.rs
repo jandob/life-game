@@ -1,11 +1,7 @@
 //! Looping sprite-sheet animation.
 //!
-//! Bevy 0.19 removed the built-in 2D sprite animation feature (`AnimationPlayer2D` /
-//! `AnimationClip2D`), so this module replaces `bevy_trickfilm` with a small
-//! hand-rolled system that drives `Sprite::texture_atlas.index`.
-//!
-//! All clip definitions were converted from the old `*.trickfilm` RON manifests,
-//! preserving the exact keyframe ranges (start..end, end exclusive) and durations.
+//! Hand-rolled system that drives `Sprite::texture_atlas.index` for
+//! sprite-sheet animation clips.
 
 use std::time::Duration;
 
@@ -24,8 +20,8 @@ pub struct SpriteAnimationClip {
 }
 
 impl SpriteAnimationClip {
-    /// Converts the old trickfilm `KeyframesRange((start: s, end: e))` + `duration`
-    /// into a clip. The old range end was exclusive.
+    /// Creates a clip from an exclusive keyframe range `(start, end)` plus total
+    /// loop duration.
     pub const fn from_keyframe_range(start: usize, end: usize, duration: f32) -> Self {
         Self {
             first_frame: start,
@@ -74,6 +70,15 @@ impl SpriteAnimator {
 
 fn animate_sprites(time: Res<Time>, mut q_sprites: Query<(&mut SpriteAnimator, &mut Sprite)>) {
     for (mut animator, mut sprite) in &mut q_sprites {
+        // Always keep the atlas index within the current clip's range, so that
+        // clip switches (via SpriteAnimator::play) don't leave the index stuck
+        // in the old clip's range.
+        if let Some(atlas) = &mut sprite.texture_atlas {
+            if atlas.index < animator.clip.first_frame || atlas.index > animator.clip.last_frame {
+                atlas.index = animator.clip.first_frame;
+            }
+        }
+
         animator.frame_timer.tick(time.delta());
         if animator.frame_timer.just_finished() {
             if let Some(atlas) = &mut sprite.texture_atlas {
@@ -95,7 +100,7 @@ impl Plugin for SpriteAnimationPlugin {
 }
 
 // ---------------------------------------------------------------------------
-// Clip data converted from assets/*.trickfilm
+// Clip data
 // ---------------------------------------------------------------------------
 
 /// Player animations, indexed like the old `player_animations` collection:
@@ -129,7 +134,7 @@ pub const IONAS_IDLE: SpriteAnimationClip =
 pub const DIALOGUE_START_HINT: SpriteAnimationClip =
     SpriteAnimationClip::from_keyframe_range(0, 2, 1.5);
 
-/// Key icons: `keys.trickfilm` `key` (down/up/left/right) and `shift`.
+/// Key icons: down/up/left/right and shift.
 pub const KEY_ICON: SpriteAnimationClip =
     SpriteAnimationClip::from_keyframe_range(0, 2, 1.0);
 pub const SHIFT_ICON: SpriteAnimationClip =

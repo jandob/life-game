@@ -31,7 +31,7 @@
 - [x] 5.3 Rework player animation in `src/player/spawn.rs` and `src/player/state.rs` to swap clips via `SpriteAnimation` per state (idle/walking/running) and facing direction
 - [x] 5.4 Rework NPC idle animations in `src/npc/spawn.rs` to use the new clip asset directly
 - [x] 5.5 Rework UI animations in `src/ui/keyboard_hint.rs` and `src/ui/dialogue/start_hint.rs` (dialogue hint + key icons)
-- [ ] 5.6 Remove all `bevy_trickfilm` imports/usages and `Animation2DPlugin` registration; after visual verification, delete the `.trickfilm` manifest files
+- [x] 5.6 Remove all `bevy_trickfilm` imports/usages and `Animation2DPlugin` registration; after visual verification, delete the `.trickfilm` manifest files
 
 ## 6. Verification & wasm
 

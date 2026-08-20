@@ -61,8 +61,8 @@ fn switch_player_move_state(
     player.state = state;
 }
 
-fn update_animation(mut q_player: Query<(&mut SpriteAnimator, &Player)>) {
-    let (mut animator, player) = match q_player.single_mut() {
+fn update_animation(mut q_player: Query<(&mut SpriteAnimator, &mut Sprite, &Player)>) {
+    let (mut animator, mut sprite, player) = match q_player.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -100,6 +100,14 @@ fn update_animation(mut q_player: Query<(&mut SpriteAnimator, &Player)>) {
         PlayerState::Running => PLAYER_CLIPS[8 + direction_index],
         PlayerState::Talking => PLAYER_CLIPS[direction_index],
     };
+
+    // Set the atlas index immediately when switching clips, so the sprite
+    // doesn't show a stale frame from the old clip until the next timer tick.
+    if animator.clip != clip {
+        if let Some(atlas) = &mut sprite.texture_atlas {
+            atlas.index = clip.first_frame;
+        }
+    }
 
     animator.play(clip);
 }
