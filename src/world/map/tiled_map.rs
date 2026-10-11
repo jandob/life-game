@@ -183,9 +183,10 @@ impl TiledMap {
         let map_width = self.width as i32;
         let map_height = self.height as i32;
 
-        // Convert from game coordinates (centered origin) to Tiled coordinates (top-left origin)
+        // Convert from game coordinates (centered origin, y-up) to Tiled coordinates
+        // (top-left origin, y-down), so the map looks the same in Tiled and in game.
         let tx = x + map_width / 2;
-        let ty = y + map_height / 2;
+        let ty = map_height / 2 - 1 - y;
 
         if tx < 0 || ty < 0 || tx >= map_width || ty >= map_height {
             return None;
@@ -219,10 +220,17 @@ impl TiledMap {
 
     /// Convert a Tiled pixel position (top-left origin, y-down) to
     /// game world position (centered origin, y-up).
+    ///
+    /// Game tiles are centered on their grid position, so tile (0, 0) spans
+    /// -8..8 in game space; the half-tile shift keeps objects aligned with
+    /// the ground as drawn in Tiled.
     pub fn tiled_to_game(&self, tiled_x: f32, tiled_y: f32) -> Vec2 {
         let half_w = self.width as f32 * TILE_SIZE / 2.0;
         let half_h = self.height as f32 * TILE_SIZE / 2.0;
-        Vec2::new(tiled_x - half_w, -(tiled_y - half_h))
+        Vec2::new(
+            tiled_x - half_w - TILE_SIZE / 2.0,
+            half_h - tiled_y - TILE_SIZE / 2.0,
+        )
     }
 }
 

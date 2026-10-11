@@ -769,7 +769,8 @@ fn main() {
     // Step 4: Build tile layer data
     println!("  -> building tile layer data...");
     let mut tile_data: Vec<u32> = Vec::with_capacity((MAP_WIDTH * MAP_HEIGHT) as usize);
-    for y in 0..MAP_HEIGHT {
+    // Tiled rows run top-down while game y runs up, so emit rows from the top.
+    for y in (0..MAP_HEIGHT).rev() {
         for x in 0..MAP_WIDTH {
             let v = IVec2::new(origin_x + x as i32, origin_y + y as i32);
             let index = bitmap.get_tile_index(v);

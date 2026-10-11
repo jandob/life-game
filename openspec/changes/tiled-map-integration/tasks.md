@@ -85,3 +85,4 @@
 - [x] 11.7 Verify YSort rendering is correct (player walks under trees, behind NPCs, etc.)
 - [x] 11.8 Verify the bootstrap map is playable and visually similar to current procedural output
 - [x] 11.9 Verify the wasm build runs: map loads via asset server, WebGPU backend (Hanabi needs compute), `std::time::Instant` → `bevy::platform::time::Instant` in typewriter, `#game-canvas` is a `<canvas>`
+- [x] 11.10 Store the Ground layer in Tiled's top-down row order (`tile_at` flips y, `world.tmj` rows reversed, bootstrapper emits rows top-down) and shift `tiled_to_game` by half a tile, so the map in Tiled matches the game
