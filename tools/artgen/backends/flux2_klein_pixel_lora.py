@@ -41,6 +41,9 @@ class Flux2KleinPixelLora(Backend):
                   "background": "transparent background"},
         prompt_template="pixel art sprite, {prompt}, game asset, {background}",
     )
+    # Used by inpaint(): scene tiles, not sprites on a transparent background.
+    inpaint_template = ("pixel art, {prompt}, top-down 3/4 view video game map, 16-bit tiles, "
+                        "flat colours, crisp pixels")
 
     def __init__(self) -> None:
         self.pipe = None
@@ -192,6 +195,67 @@ class Flux2KleinPixelLora(Backend):
                 kwargs["image"] = refs if len(refs) > 1 else refs[0]
             with torch.no_grad():
                 img = self.pipe(**kwargs).images[0]
+            if self.device == "mps":
+                torch.mps.synchronize()
+            times.append(time.perf_counter() - t1)
+            self._track_mem()
+            out.append(img)
+        self._in_gen = False
+        self._stats["last_encode_s"] = round(t_enc, 2)
+        self._stats["last_image_s"] = [round(x, 2) for x in times]
+        return out
+
+    # --------------------------------------------------------------- inpaint
+    def apply_inpaint_template(self, subject: str) -> str:
+        return self.inpaint_template.format(prompt=subject)
+
+    def _inpaint_pipe(self):
+        """Flux2KleinInpaintPipeline sharing every component (and the LoRA) with the text pipeline."""
+        if getattr(self, "_ipipe", None) is None:
+            from diffusers import Flux2KleinInpaintPipeline
+            self._ipipe = Flux2KleinInpaintPipeline(**self.pipe.components,
+                                                    is_distilled=bool(self.pipe.config.is_distilled))
+            self._ipipe.set_progress_bar_config(disable=True)
+        return self._ipipe
+
+    def inpaint(self, prompt: str, image: Image.Image, mask: Image.Image, seed: int = 0, n: int = 1,
+                strength: float = 0.75, steps: int = 4, guidance: float = 1.0, lora_scale: float = 1.0,
+                ref=None, **_ignored) -> list[Image.Image]:
+        """Masked img2img: white mask pixels are repainted from ``image`` at ``strength``; black ones are kept.
+
+        ``image`` is also given to the transformer as a conditioning image, so the model sees the whole canvas.
+        Width and height must be multiples of 16. Image i uses seed + i. ``ref``: reference image path(s).
+        """
+        if self.pipe is None:
+            self.load()
+        torch = self.torch
+        if image.width % 16 or image.height % 16:
+            raise ValueError(f"canvas {image.size} must be a multiple of 16")
+        if mask.size != image.size:
+            raise ValueError(f"mask {mask.size} does not match canvas {image.size}")
+        self._set_lora_scale(float(lora_scale))
+        ipipe = self._inpaint_pipe()
+        refs = None
+        if ref:
+            paths = ref if isinstance(ref, (list, tuple)) else [ref]
+            refs = [Image.open(p).convert("RGB") for p in paths]
+            refs = [r.resize(refs[0].size, Image.NEAREST) if r.size != refs[0].size else r for r in refs]
+        t0 = time.perf_counter()
+        embeds = self._encode(prompt)   # moves the text encoder back to CPU afterwards (free_te)
+        t_enc = time.perf_counter() - t0
+        self._in_gen = True
+        out, times = [], []
+        for i in range(n):
+            g = torch.Generator("cpu").manual_seed(int(seed) + i)
+            t1 = time.perf_counter()
+            kwargs = dict(prompt_embeds=embeds, image=image.convert("RGB"), mask_image=mask.convert("L"),
+                          height=image.height, width=image.width, strength=strength,
+                          num_inference_steps=steps, guidance_scale=guidance, generator=g,
+                          callback_on_step_end=lambda p, k, t, kw: (self._track_mem(), kw)[1])
+            if refs:
+                kwargs["image_reference"] = refs if len(refs) > 1 else refs[0]
+            with torch.no_grad():
+                img = ipipe(**kwargs).images[0]
             if self.device == "mps":
                 torch.mps.synchronize()
             times.append(time.perf_counter() - t1)

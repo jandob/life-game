@@ -2,7 +2,7 @@
 
 Phase 1 of the `scene-authoring-toolkit` change. Tiled `.tmj`/`.tsj` stays the master copy. You edit pixels; the tool
 turns them into tiles in a shared paged library (`assets/library/tilesets/gen/`), dedups them and never changes other
-scenes by accident. No model is involved (generation and inpainting come in phase 2).
+scenes by accident. Phase 2 adds model-backed `generate`, `fill` and `apply` (FLUX.2 klein in `tools/artgen/.venv`, as a subprocess).
 
 Run from the repo root with the mise python (Pillow only):
 
@@ -12,7 +12,7 @@ mise exec -- python3 tools/scenekit/scene.py <command> ...
 
 Every command prints ONE JSON object (`{"ok": true, ...}` or `{"ok": false, "error", "code", ...}`) and exits non-zero
 on error. Codes: `bad_input`, `not_found`, `stale`, `conflict`, `impact`, `refused`, `locked`, `mismatch`,
-`check_failed`, `unsupported`. Tests: `mise exec -- python3 tools/scenekit/test_scenekit.py`.
+`check_failed`, `unsupported`, `too_large`. Tests: `mise exec -- python3 tools/scenekit/test_scenekit.py` and `test_generate.py` (stub model).
 
 ## Concepts
 
@@ -76,6 +76,44 @@ for the region's cells; hand-made tiles are always forked. `--global --expect-us
 `undo [--steps N]` restores the latest journal entry only if every file still has the hash the command wrote;
 otherwise it refuses (`refused`) and names the files changed since. `journal` lists entries.
 
+## Generate, fill, apply (phase 2)
+
+Needs `tools/artgen/.venv` and the cached FLUX.2 klein weights (no downloads). Every other command still runs without them.
+`generate` and `fill` write ONLY a job directory (`tools/scenekit/out/jobs/<id>/`: `canvas.png`, `mask.png`, `raw-K.png`,
+`cand-K.png` (region at 1x), `preview-K.png` (before | after, 4x, grid + yellow outline of the generated cells), `contact.png`,
+`job.json`, `model.log`); they never touch the map or the library. `apply` commits one candidate.
+
+`generate MAP --layer L --region x,y,w,h [--layout FILE] --prompt TEXT [--n 4] [--seed 1] [--strength 0.75] [--context 2]
+[--scale auto|2..8] [--palette scene|none|FILE.hex] [--colours 32] [--alpha] [--ref PNG...] [--grid fixed|detect] [--near N] [--dry-run] [--if-hash H]`
+
+- Canvas = the composite of layers up to L around the region plus `--context` cells (clipped; shrinks if too big), the
+  block-out drawn inside the region, upscaled by an integer S (nearest). `auto` = largest S with the long side <= 1024 px.
+  Region more than 512 px (32 cells) on a side: error `too_large`, split it. Mask: white on the region.
+- `--layout`: text grid, one char per cell, chars from `materials.json` (`.` floor `#` wall `^` wall_top `~` water `F` furniture
+  `c` counter `D` door; space or `_` = keep what is there; `@ X = material` adds a legend line), or a PNG with one pixel per cell
+  in a material's `colour`. Materials may have `"texture": "planks"|"wall"`, which draws structure into the block-out
+  (boards, a lit top lip and baseboard for 3/4 wall faces) so the model refines instead of inventing the layout. Material
+  `hint`s are appended to the prompt.
+- Output is snapped by an exact S x S block mode (no grid detection; `--grid detect` is only a fallback), locked to a palette
+  (`scene` = colours of the map outside the region; adaptive `--colours` when the map has < 8), cleaned up, cut to the region.
+  `--alpha` generates on a key colour and cuts it out. `--dry-run` writes only canvas and mask: look at them first.
+- Strength: ~0.75 keeps the block-out almost as is (recolours it); 0.9 lets the model add detail; 1.0 is pure inpaint.
+  One model process makes all `--n` candidates (about 45-70 s each at 600-900 px on this machine, plus about 30 s load/encode):
+  run it in the background.
+- Warnings: a layout material whose `layer` hint differs from `--layer` is written to `--layer` anyway.
+
+`fill MAP --layer L (--cells "x,y;x,y" | --mask PNG | --empty --region R) [--like TILE] [--ring 1] [--context 3] [--strength 1.0] ...`
+is the same pipeline for any cell set; only those cells are candidate pixels (`--ring 1` adds the first context ring, which then
+goes through copy-on-write like any other cell). `--like` passes the tile (upscaled) as a reference image. `--mask` is one
+pixel per cell (map-sized, or `--region`-sized).
+
+`apply JOB --pick K [--force] [--near N[:T]] [--if-hash H] [--dry-run]` runs the import core (dedup, copy-on-write): origin
+`generate`/`fill`, `gen` provenance (prompt, seed, strength, steps, scale, refs, layout hash, palette), the layout cell's
+material and its collision shape. Cells that changed since the job was made give `conflict` unless they already show the
+candidate, so re-applying a candidate is a no-op (0 new tiles).
+
+Always LOOK at `contact.png` and `preview-K.png` before `apply`.
+
 ## Worked example
 
 ```
@@ -98,6 +136,6 @@ and `validate` before finishing.
 
 ## Limits (phase 1)
 
-Orthogonal finite maps, tile layers only for pixels; layer offsets/parallax are refused. The game loader reads one
-tileset and one layer until phase 3; `validate` warns about that. `gen` pages are 256 tiles (WebGPU array-layer limit).
+Orthogonal finite maps, tile layers only for pixels; layer offsets/parallax are refused. The game loader reads all
+layers and tilesets (and `above=true` layers). `gen` pages are 256 tiles (WebGPU array-layer limit).
 Library writes are serialised; do not run two agents on the library in parallel branches (binary page merges).

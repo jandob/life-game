@@ -45,9 +45,8 @@ pub struct GameAssets {
     pub ionas_layout: Handle<TextureAtlasLayout>,
 
     // --- MAP ---
-    #[asset(path = "library/tilesets/forest/tileset.png")]
-    pub tileset: Handle<Image>,
-    #[asset(path = "maps/forest.tmj")]
+    // Start map: `world_map` in assets/start.assets.ron
+    #[asset(key = "world_map")]
     pub world_map: Handle<crate::world::map::tiled_map::TiledMap>,
 
     // --- FLORA ---

@@ -1,0 +1,4 @@
+// Start map. Point "world_map" at another .tmj (e.g. "maps/enginetest.tmj") to start there.
+({
+    "world_map": File(path: "maps/forest.tmj"),
+})

@@ -1,0 +1,2454 @@
+{
+ "version": 1,
+ "library": "gen",
+ "tile_size": 16,
+ "page_tiles": 256,
+ "next_id": 79,
+ "tiles": {
+  "0": {
+   "hash": "sha256:a51f3a1522f10c5d55b52e74bc47b8b3d7ec2860fe1099b4495a745b247fbc15",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 5,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "1": {
+   "hash": "sha256:babe7e086384b41cf08f656fb3693cbf6cfad7f3d0c6ff28d588be5d0f314933",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 6,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "2": {
+   "hash": "sha256:34ec1cd6f3c9467e2afe776dcf967b47306d4b2a2acb4c5f6cced1dea7368989",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 7,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "3": {
+   "hash": "sha256:e9ddae428a78af15d4a47b622ed91118ccdbb54605898545eb9a2bd8f1640166",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 8,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "4": {
+   "hash": "sha256:a22a04b478929d6be477a93e832939e2841ad6705220a7d97e47c64309fa4052",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 9,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "5": {
+   "hash": "sha256:0f19f639cc7fdc5c5bad3dce959bf9ad831a09b37b95daac1593265b64aece37",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 10,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "6": {
+   "hash": "sha256:d3bcdbe43d913a4db920fb66a8c1aedbbe4cdd488494175a61f1d8dd867e092f",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 11,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "7": {
+   "hash": "sha256:a834201db4bae984d59e7b20db0f29224fbe223ba85e2aea73867cb5c1117954",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 12,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "8": {
+   "hash": "sha256:acd9d02048e8c72b5dcfbb1752e00a7f625d5638d56cfd463983574239e26f9b",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 13,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "9": {
+   "hash": "sha256:beadd413537f872b3e3ab59d8cd30691d69e76a431bcb91d7e4c646751cc9387",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 14,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "10": {
+   "hash": "sha256:a7b25ea5c47f9cf80d21bf6f3d6de3961c3a47603f722210e40cf784c10d14a5",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 5,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "11": {
+   "hash": "sha256:856d1d6ffcb397ab854641d40e555537cf4d3e4de7a194adab3fe87e8d2451cc",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 6,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "12": {
+   "hash": "sha256:fe7a84cf9f94705df825a3c65cead302747bb4ea6784efda0124a9920f65c98e",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 7,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "13": {
+   "hash": "sha256:82df1ccf9544e86ea7d99144b423c3dbc3831b461e14a82b83910396aa20474b",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 12,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "14": {
+   "hash": "sha256:3bcc7f341d0e7bd28e30bac258cce94360ef5fa1895a9c50a55421050d4d679e",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 13,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "15": {
+   "hash": "sha256:964dbfe1e56d767f34a5c82401f16d47c516acf7058621ba5154351f749aedc4",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 14,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "16": {
+   "hash": "sha256:84f000066d5ec6e32387ca855b4086a0203c0648c70288d62f36ca30658d2bdd",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 5,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "17": {
+   "hash": "sha256:4295561b95e734a29c09355ff0506f5ccbf2a357599de52127fcd892afdaf396",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 6,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "18": {
+   "hash": "sha256:e3a4d0ebc10d2eb6216e74f1703bdaa3eb88a55946fc2c3bfdf8480bebac6156",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 7,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "19": {
+   "hash": "sha256:82fda196cbcd3d18ca1f95ab63b17b7eb1237358538b953f6e7fe58520e4eda9",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 8,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "20": {
+   "hash": "sha256:c92e17bb0e264c64e727f66f4bc8cbdcf146faea0ec48b54d6cc0657249259ec",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 10,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "21": {
+   "hash": "sha256:ab3b25d9c9f86c2e2ceab17f114af609e82b81ec34f19c704bcc9b5fd0e5ed89",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 11,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "22": {
+   "hash": "sha256:021f52a9b5db94efb1c19afaf45dc8bcf783a1f3b08d48ad3be40d83fc493f48",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 12,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "23": {
+   "hash": "sha256:b3a8238746fe55edef11c9e26c4970059676135045a427ccce424d9fcbc768f1",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 13,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "24": {
+   "hash": "sha256:f57ed9b19d1a9fa9ef33fab86994fdfb44376267f1dd9c1fa6cfa55791bad7c6",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 14,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "25": {
+   "hash": "sha256:4764e3fae4bc200ef9b05cf868bd1d0374d46d1619fba235a138d15475a9f660",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 5,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "26": {
+   "hash": "sha256:678bbeaf1019003016c9135dee98c1eedaf6f650fc022df78da9187124e5ec13",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 6,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "27": {
+   "hash": "sha256:39f9f9d0e91065f0f3eb4cee45dcc3ed354805683fa8dc496f0a72e1ae795f52",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 7,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "28": {
+   "hash": "sha256:3f15cb5238faba3d2f0cadf2fbd47ebbca5b8a016368498b77a989d5847d4aa5",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 8,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "29": {
+   "hash": "sha256:a5d4dbfef5a935542fc410b596d20069bee53c43b848b78efa574f3bc96878a3",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 9,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "30": {
+   "hash": "sha256:ebfdf594c3a75bab63571b2c97e1ce6e1b4b8f0c3ae32eac35a7f7f51820e627",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 10,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "31": {
+   "hash": "sha256:5d90b07528b8fd5441a3f17445ede414d8c55f7fe59485135e6b4998beb5af19",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 11,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "32": {
+   "hash": "sha256:87befbbae54e2bbfbc5d9de3d09d4dd2af56a0e2ee66708c74b2c767f39c33eb",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 12,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "33": {
+   "hash": "sha256:0a12b49f9fa7024819060bec48846f0254f414b7a3ee1f33ca58e8ce3b3110c6",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 13,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "34": {
+   "hash": "sha256:ca800cb28e1748232c2b8ab5523363b5f3227614f47f9c53902f2a8cce883eeb",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 14,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "35": {
+   "hash": "sha256:482f1b166cf76b6d8053088dbba81627cd9deaa0b9538e6600501a6bfd22abae",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 5,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "36": {
+   "hash": "sha256:cb1d2956ae9be1fb74ec8557d7ead61e03ff24454fdbc06c7a4325721c57797e",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 6,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "37": {
+   "hash": "sha256:59f2b74591105606893af028b34aa26760cbaf1a2b3891abecdba32f166f90c1",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 7,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "38": {
+   "hash": "sha256:6c0590169411b96f151e4fd86b16ddd95941dc12a353fc3ffb50c5b62fc7f409",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 8,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "39": {
+   "hash": "sha256:3cd8a68c4171babc7df768f0e3f8aa6b4a91422b3ba632d86361212b5fded939",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 9,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "40": {
+   "hash": "sha256:c7a4f8f03797ce34599b89ae2317adce2f14addaf9b763fbd97f8f2a852313d6",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 10,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "41": {
+   "hash": "sha256:a6d7dd1c180bfa81078b198f83063a19fc6c949820109dd111aced5b6a3ac82f",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 11,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "42": {
+   "hash": "sha256:429bff755b7054ec6e03a03555a031a12b9238d607b663cccb30d38272e95c83",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 12,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "43": {
+   "hash": "sha256:e706e2bfc9ff3d63ee6bd86503a3bce848754eab32e5472dc15c9917dcd692c9",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 13,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "44": {
+   "hash": "sha256:0a14f3c1a8016a52dd217a053f041236ae56ed0dff99058d6ccb70220eff3ff8",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 14,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "45": {
+   "hash": "sha256:6563b3a2d247db2fbca5245fa2f71705500d3ba29c4a9b798b8dc9a36136df8a",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 5,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "46": {
+   "hash": "sha256:c8a1b56a2a415ebedb64d4bc0aaa5968f9c9619dc27cf31c76b1673ad1835bfc",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 6,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "47": {
+   "hash": "sha256:30bb26041f3b5e4b5ff9cd5edfe2ba543c6207ec5218d8237e045d2ade22e90e",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 7,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "48": {
+   "hash": "sha256:9014802dd8504987aa3a413b681b4f180f253f78760af1e9c25444293a5e545d",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 8,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "49": {
+   "hash": "sha256:888bc5ec6cbd8367aa6b5994ba3e8b12000f9f7f39d0f1f2fc014f0b525b6d70",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 9,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "50": {
+   "hash": "sha256:f52024cb5bebb2f9b4eb8af79599790b150de354dbf17718d1c4b3ddb7156719",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 10,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "51": {
+   "hash": "sha256:76c14594c48210ed26fc09c68e63f25f377a19dfa25d8de8a1a27b9421f36fd3",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 11,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "52": {
+   "hash": "sha256:c6493e01616adf251b0ed679b6db54639853f358b245dabdc38711603a3810f4",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 12,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "53": {
+   "hash": "sha256:bb3ae742fab2dab1ca9804df38ae1117ce683819ff081ef9136beda4a80c0801",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 13,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "54": {
+   "hash": "sha256:470a1240f3fbad7714de1bbaf6dc85691147a11aa77389c59aeaf4509d251611",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 14,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "55": {
+   "hash": "sha256:5062be5454aac363f70991acd575a7a8c4868096a6871ec0e7b792468a536bc3",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 5,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "56": {
+   "hash": "sha256:eb07ac01d6a0574d18d2e4845b5bea61df0573a4ee8b9c55b152e62a8022a1d0",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 6,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "57": {
+   "hash": "sha256:efe0e605fed67cd459689f1e8af13bc3730c0c746cb5033fa6dbc0851dc90496",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 7,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "58": {
+   "hash": "sha256:ada4b282cb52b46fb38da58a4fc008ac7d6ebabfbac073d8c2b09100f7ca8577",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 8,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "59": {
+   "hash": "sha256:97da50df5434394fbf6557fd2eea815f3f6090c2e4690dabe7940d39d8387809",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 9,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "60": {
+   "hash": "sha256:1010c44f2159d55fe4d3f379dd49079511549ab4fa1f404475834244594f5793",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 10,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "61": {
+   "hash": "sha256:9860859bbfbc3126102c33e534ae793438c07059a398b671c8d25929dad66650",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 11,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "62": {
+   "hash": "sha256:68f07f4b79c62d7581b5e63825fe23138d134ca51dcc32a5927266c66126396f",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 12,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "63": {
+   "hash": "sha256:21df7f6dac15cacf0bf0ec9fda7894f6fd17c52f230479730fa20f20ca9f07fb",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 13,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "64": {
+   "hash": "sha256:0d2970f903bd72678651e0c38da399dec7a4909825847ab5d3b5edd2604c9c66",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 14,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "65": {
+   "hash": "sha256:c71d4481dbe7189b3d8c912b992548e798b6c3244bd118cdc7be735df0541fec",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 5,
+    "y": 10
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "66": {
+   "hash": "sha256:e3ab03cb3c403b5e233d3b966593e0ab81e87909cbbf2247566515f1d6b70737",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 6,
+    "y": 10
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "67": {
+   "hash": "sha256:f3a1c75791d9ea5653c207d5fc357032974d217944861e296a86aa6f91e6f49a",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 7,
+    "y": 10
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "68": {
+   "hash": "sha256:910954e202acfeca9576d754fbaaa9ce4410b960fe05d7bd9633cfddb1f9546d",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 8,
+    "y": 10
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "69": {
+   "hash": "sha256:8d63884b7eff77caf344c7a3fa48aca3b2daccbf72bdd76b67109e5347c96aeb",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 9,
+    "y": 10
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "70": {
+   "hash": "sha256:1fb6662eadcf44e41eae52b30f37699a2f549e0fa4d3f43647eb15c947cea62a",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 10,
+    "y": 10
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "71": {
+   "hash": "sha256:56d53db90000049429878f1d289904a4d7acb375cbd640a6610687196805bec1",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 11,
+    "y": 10
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "72": {
+   "hash": "sha256:42056cb9276bec5ea45efff91366e5bf7c61d20a004322ab9aad4a4437daaf0f",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 12,
+    "y": 10
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "73": {
+   "hash": "sha256:d00767a303c3c6b97844e81d084ba455211d7d02ed2583787d07181b707c953e",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 13,
+    "y": 10
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "74": {
+   "hash": "sha256:fc3aeb1dfd802a37d825b20c29a8efaafb3534bcf619c654d1c577e6e6b8d89d",
+   "created": "2026-10-11T17:20:45Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-171651-304c",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 14,
+    "y": 10
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, interior room, plaster wall, wooden plank floor, wooden floor planks, wall face, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 21,
+    "strength": 0.9,
+    "steps": 4,
+    "scale": 3,
+    "refs": [],
+    "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "75": {
+   "hash": "sha256:0d6dbcc4d2a7a70d0e913aeda4b7f3d15a2b8f44955f82f94def882b5c5e2be9",
+   "created": "2026-10-11T17:26:20Z",
+   "origin": "fill",
+   "parent": null,
+   "job": "20261011-172354-3bdf",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 8,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, wooden plank floor, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 41,
+    "strength": 0.85,
+    "steps": 4,
+    "scale": 4,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   }
+  },
+  "76": {
+   "hash": "sha256:6cac0413eb8ff94dd9b58a1f8d9829f00a0d7a303eba1ab0584e2f9c85487ab8",
+   "created": "2026-10-11T17:26:20Z",
+   "origin": "fill",
+   "parent": null,
+   "job": "20261011-172354-3bdf",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 9,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, wooden plank floor, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 41,
+    "strength": 0.85,
+    "steps": 4,
+    "scale": 4,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   }
+  },
+  "77": {
+   "hash": "sha256:4e4ff05b412dddd0a5aacb932ada9f12a3441ab13065be9b2fd63afc40979802",
+   "created": "2026-10-11T17:26:20Z",
+   "origin": "fill",
+   "parent": null,
+   "job": "20261011-172354-3bdf",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 8,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, wooden plank floor, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 41,
+    "strength": 0.85,
+    "steps": 4,
+    "scale": 4,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   }
+  },
+  "78": {
+   "hash": "sha256:779d36206c5b5adf6335295db5e49fd0fa21e7eb48f472fca6cc4a78d20898d2",
+   "created": "2026-10-11T17:26:20Z",
+   "origin": "fill",
+   "parent": null,
+   "job": "20261011-172354-3bdf",
+   "source": {
+    "map": "assets/maps/scratch_p2.tmj",
+    "layer": "Ground",
+    "x": 9,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, wooden plank floor, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 41,
+    "strength": 0.85,
+    "steps": 4,
+    "scale": 4,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/interior.hex",
+    "alpha": false
+   }
+  }
+ }
+}

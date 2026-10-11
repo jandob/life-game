@@ -354,13 +354,13 @@ def parse_shape(spec):
 
 
 DEFAULT_MATERIALS = {
-    "floor": {"shape": "none", "colour": "#8a6d4b", "hint": "wooden floor planks", "layer": "Floor"},
-    "wall": {"shape": "full", "colour": "#5b5f73", "hint": "wall face", "layer": "Walls"},
-    "wall_top": {"shape": "none", "colour": "#3b3e4f", "hint": "top edge of a wall", "layer": "Above", "above": True},
-    "water": {"shape": "full", "colour": "#3d6fb5", "hint": "water", "layer": "Floor"},
-    "furniture": {"shape": "full", "colour": "#a0522d", "hint": "furniture", "layer": "Decor"},
-    "counter": {"shape": "bottom", "colour": "#c8b08a", "hint": "counter top", "layer": "Decor"},
-    "door": {"shape": "none", "colour": "#7a4b2a", "hint": "door", "layer": "Walls"},
+    "floor": {"char": ".", "shape": "none", "colour": "#8a6d4b", "hint": "wooden floor planks", "texture": "planks", "layer": "Floor"},
+    "wall": {"char": "#", "shape": "full", "colour": "#5b5f73", "hint": "wall face", "texture": "wall", "layer": "Walls"},
+    "wall_top": {"char": "^", "shape": "none", "colour": "#3b3e4f", "hint": "top edge of a wall", "layer": "Above", "above": True},
+    "water": {"char": "~", "shape": "full", "colour": "#3d6fb5", "hint": "water", "layer": "Floor"},
+    "furniture": {"char": "F", "shape": "full", "colour": "#a0522d", "hint": "furniture", "layer": "Decor"},
+    "counter": {"char": "c", "shape": "bottom", "colour": "#c8b08a", "hint": "counter top", "layer": "Decor"},
+    "door": {"char": "D", "shape": "none", "colour": "#7a4b2a", "hint": "door", "layer": "Walls"},
 }
 
 

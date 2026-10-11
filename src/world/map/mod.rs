@@ -9,6 +9,11 @@ use bevy::prelude::*;
 const TILE_SIZE: f32 = 16.0;
 const CHUNK_SIZE: u32 = 16;
 const BACKGROUND_ZINDEX_ABS: f32 = 800.0;
+// Above layers draw over every YSorted entity (z is roughly within +-1, see camera.rs)
+// and stay inside the camera's 1000 range.
+// Above every YSort value. Note: this also draws over world-space hints and the
+// ending sequence where they overlap an above layer.
+const ABOVE_ZINDEX: f32 = 500.0;
 
 const RENDERED_CHUNKS_RADIUS: u32 = 3;
 

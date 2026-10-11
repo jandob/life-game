@@ -134,6 +134,55 @@ def build():
             mutating(q)
         p.set_defaults(fn=f"meta.{kind}")
 
+    def gen_flags(p, strength):
+        p.add_argument("--prompt", default="", help="what to draw; layout material hints are appended")
+        p.add_argument("--ref", nargs="*", help="reference image(s) for the masked area")
+        p.add_argument("--context", type=int, default=2 if strength < 1 else 3, help="context ring of K cells around the region")
+        p.add_argument("--strength", type=float, default=strength, help="0.05..1; 1.0 = pure inpaint, ~0.75 keeps a block-out")
+        p.add_argument("--seed", type=int, default=1, help="first seed; candidate i uses seed+i")
+        p.add_argument("--n", type=int, default=4, help="number of candidates (one model process)")
+        p.add_argument("--palette", default="scene", help="scene | none | path to .hex/.gpl/.png palette")
+        p.add_argument("--colours", type=int, default=32, help="adaptive palette size when 'scene' has too few colours")
+        p.add_argument("--alpha", action="store_true", help="generate on a flat key colour and cut it out (decor layers)")
+        p.add_argument("--scale", default="auto", help="integer upscale 2..8 or auto (largest with long side <= 1024)")
+        p.add_argument("--grid", default="fixed", choices=["fixed", "detect"], help="detect = fallback if the model drifts off the grid")
+        p.add_argument("--cleanup", type=int, default=1, choices=[0, 1, 2])
+        p.add_argument("--steps", type=int, default=4)
+        p.add_argument("--lora-scale", type=float, default=1.0)
+        p.add_argument("--near", help="N[:T] count (and later reuse) near-duplicate tiles")
+        p.add_argument("--timeout", type=int, default=3600, help="seconds for each model subprocess")
+        p.add_argument("--dry-run", action="store_true", help="build canvas and mask only, run no model")
+        p.add_argument("--if-hash", help="fail with 'stale' unless the map's current sha256 matches")
+
+    p = sp.add_parser("generate", help="candidate job: generate a region as masked img2img on a block-out")
+    p.add_argument("map")
+    p.add_argument("--layer", required=True)
+    p.add_argument("--region", required=True)
+    p.add_argument("--layout", help="text grid or one-pixel-per-cell PNG of materials (see materials.json)")
+    gen_flags(p, 0.75)
+    p.set_defaults(fn="gen.cmd_generate")
+
+    p = sp.add_parser("fill", help="candidate job: inpaint arbitrary cells using the surroundings as context")
+    p.add_argument("map")
+    p.add_argument("--layer", required=True)
+    p.add_argument("--cells", help="'x,y;x,y'")
+    p.add_argument("--mask", help="PNG, one pixel per cell, white = fill (map-sized, or --region-sized)")
+    p.add_argument("--empty", action="store_true", help="all empty cells of --region")
+    p.add_argument("--region")
+    p.add_argument("--like", help="tile whose look to follow (passed as a reference image)")
+    p.add_argument("--ring", type=int, default=0, help="1 = also regenerate the first ring of context cells")
+    gen_flags(p, 1.0)
+    p.set_defaults(fn="gen.cmd_fill")
+
+    p = sp.add_parser("apply", help="commit one candidate of a job through the import core")
+    p.add_argument("job", help="job id (under tools/scenekit/out/jobs/) or job directory")
+    p.add_argument("--pick", type=int, required=True)
+    p.add_argument("--force", action="store_true", help="overwrite cells that changed since the job was made")
+    p.add_argument("--near", help="N[:T] reuse near-duplicate tiles")
+    p.add_argument("--no-inherit", action="store_true")
+    mutating(p)
+    p.set_defaults(fn="gen.cmd_apply")
+
     p = sp.add_parser("undo", help="restore the latest journal entry if nothing changed since")
     p.add_argument("--steps", type=int, default=1)
     p.add_argument("--dry-run", action="store_true")
@@ -164,6 +213,9 @@ def dispatch(a):
         a.tile = a.args[0]
         return viewcmds.cmd_tile(a)
     mod, name = fn.split(".", 1)
+    if mod == "gen":
+        import gencmds
+        return getattr(gencmds, name)(a)
     if mod == "view":
         import viewcmds
         return getattr(viewcmds, name)(a)

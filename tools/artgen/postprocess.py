@@ -285,6 +285,73 @@ def downscale(img: Image.Image, scale_x: float, scale_y: float | None = None,
     return Image.fromarray(out)
 
 
+def downscale_fixed(img: Image.Image, factor: int, phase: tuple[int, int] = (0, 0),
+                    keep_dark: float | None = None) -> Image.Image:
+    """Downscale by a known integer factor on a known grid: one output pixel per ``factor`` x ``factor`` block.
+
+    Use this when the grid is fixed by construction (the canvas was upscaled by nearest neighbour, so the model's
+    pixels lie on factor-sized blocks starting at ``phase``). Each output pixel is the mode colour of its whole
+    block (``centre=1``): no grid detection, no drift. Pixels left of / above the phase are dropped, and a partial
+    block at the right / bottom edge is dropped, so the output is ``(W - px) // factor`` wide."""
+    if factor < 1 or int(factor) != factor:
+        raise ValueError(f"factor must be a positive integer, got {factor}")
+    factor = int(factor)
+    px, py = phase
+    if not (0 <= px < factor and 0 <= py < factor):
+        raise ValueError(f"phase {phase} must be inside one block (0..{factor - 1})")
+    w = (img.width - px) // factor * factor
+    h = (img.height - py) // factor * factor
+    if w <= 0 or h <= 0:
+        raise ValueError(f"image {img.size} is smaller than one block of {factor}")
+    crop = img.convert("RGBA").crop((px, py, px + w, py + h))
+    return downscale(crop, factor, factor, 0, 0, centre=1.0, keep_dark=keep_dark)
+
+
+def key_to_alpha(img: Image.Image, key: tuple[int, int, int], tol: float = 60.0) -> Image.Image:
+    """Make pixels within ``tol`` (euclidean RGB) of the flat key colour transparent."""
+    a = to_rgba_array(img)
+    d = np.sqrt(((a[..., :3].astype(np.float32) - np.array(key, np.float32)) ** 2).sum(-1))
+    a[..., 3] = np.where(d <= tol, 0, 255)
+    return Image.fromarray(a)
+
+
+def snap_fixed(img: Image.Image, factor: int, *, palette: list[tuple[int, int, int]] | None = None,
+               colours: int | None = None, cleanup_level: int = 1, key: tuple[int, int, int] | None = None,
+               key_tol: float = 60.0, grid: str = "fixed", target: tuple[int, int] | None = None
+               ) -> tuple[Image.Image, dict]:
+    """Model output -> game pixels on a fixed grid, then palette and cleanup. Returns (image, report).
+
+    ``grid="fixed"``: exact block downscale by ``factor``. ``grid="detect"``: fallback when the model drifted
+    off the grid; ``detect_grid`` finds the real pitch and offset, the image is sampled there and then resized
+    (nearest) to ``target`` (the cell-exact size the canvas should have)."""
+    rep: dict = {"mode": grid, "factor": factor}
+    if grid == "detect":
+        g = detect_grid(img.convert("RGBA"), smin=max(1.0, factor / 2), smax=factor * 2.0)
+        rep["detected"] = g.to_dict()
+        small = downscale(img.convert("RGBA"), g.scale_x, g.scale_y, g.off_x, g.off_y, centre=1.0)
+        if target and small.size != tuple(target):
+            small = small.resize(tuple(target), Image.NEAREST)
+            rep["resized_to"] = list(target)
+    else:
+        small = downscale_fixed(img, factor)
+    if key is not None:
+        small = key_to_alpha(small, key, key_tol)
+    if palette:
+        small = quantize(small, palette=palette)
+        rep["palette"] = f"fixed-{len(palette)}"
+    elif colours:
+        small = quantize(small, colours=colours)
+        rep["palette"] = f"adaptive-{colours}"
+    else:
+        rep["palette"] = "none"
+    if cleanup_level:
+        small = cleanup(small, min_island=4 if cleanup_level == 1 else 8, orphans=True)
+    a = to_rgba_array(small)
+    rep["colours_used"] = int(len(np.unique(a[a[..., 3] == 255][:, :3], axis=0)))
+    rep["size"] = list(small.size)
+    return small, rep
+
+
 def scale_for_height(img: Image.Image, target_h: int) -> float:
     """Grid size that maps the opaque bounding box height onto ``target_h``."""
     a = to_rgba_array(img)

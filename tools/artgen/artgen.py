@@ -5,6 +5,8 @@ reproduced.
 
     artgen.py backends
     artgen.py generate --backend flux2_klein_pixel_lora --prompt "..." --seed 1 --n 4 --out DIR
+    artgen.py inpaint --image canvas.png --mask mask.png --prompt "..." --strength 0.75 --n 4 --out DIR
+    artgen.py snap DIR/*.png --factor 4 --palette p.hex --out DIR2
     artgen.py post DIR/*.png --grid fit --cell 64x128 --feet-row 105 --shadow --out DIR2
     artgen.py palette-from IMAGE --out palettes/x.hex
 
@@ -110,6 +112,62 @@ def cmd_generate(a) -> None:
     print(json.dumps(b.stats()), file=sys.stderr)
 
 
+# -------------------------------------------------------------- inpaint
+def cmd_inpaint(a) -> None:
+    """Masked img2img on a canvas: n candidates, one PNG + sidecar each. Prints one JSON object on stdout."""
+    from PIL import Image
+    b = get_backend(a.backend)
+    if not hasattr(b, "inpaint"):
+        raise SystemExit(f"backend {a.backend} has no inpaint()")
+    opts = {k: v for k, v in b.info.defaults.items() if v is not None}
+    opts.update(parse_opts(a.opt))
+    b.load(**{k: v for k, v in opts.items() if k in {"offload", "dtype"}})
+    img, mask = Image.open(a.image).convert("RGB"), Image.open(a.mask).convert("L")
+    prompt = a.prompt if a.raw_prompt else b.apply_inpaint_template(a.prompt)
+    gen = {k: opts[k] for k in ("steps", "guidance", "lora_scale") if k in opts}
+    t0 = time.perf_counter()
+    imgs = b.inpaint(prompt, img, mask, seed=a.seed, n=a.n, strength=a.strength, ref=a.ref, **gen)
+    total = time.perf_counter() - t0
+    stats = b.stats()
+    out = Path(a.out)
+    out.mkdir(parents=True, exist_ok=True)
+    files = []
+    for i, im in enumerate(imgs):
+        p = out / f"{a.name}-{i}.png"
+        im.save(p)
+        write_sidecar(p, {"kind": "inpaint", "backend": b.info.to_dict(), "subject": a.prompt, "prompt": prompt,
+                          "seed": a.seed + i, "strength": a.strength, "image": str(a.image), "mask": str(a.mask),
+                          "size": list(im.size), "refs": a.ref or [], "opts": gen,
+                          "timings": {"call_total_s": round(total, 2),
+                                      "image_s": (stats.get("last_image_s") or [None] * a.n)[i],
+                                      "encode_s": stats.get("last_encode_s"), "load_s": stats.get("load_s")},
+                          "stats": stats, "created": datetime.now(timezone.utc).isoformat()})
+        files.append(str(p))
+    print(json.dumps({"ok": True, "files": files, "prompt": prompt, "seeds": [a.seed + i for i in range(a.n)],
+                      "gen_opts": gen, "stats": stats, "total_s": round(total, 2)}))
+
+
+# ----------------------------------------------------------------- snap
+def cmd_snap(a) -> None:
+    """Fixed-grid downscale + palette + cleanup of model output (no model needed). One JSON object on stdout."""
+    from PIL import Image
+    pal = pp.load_palette(a.palette) if a.palette else None
+    key = tuple(int(a.key.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4)) if a.key else None
+    out = Path(a.out)
+    out.mkdir(parents=True, exist_ok=True)
+    res = []
+    for s in a.inputs:
+        src = Path(s)
+        im = Image.open(src)
+        tgt = tuple(int(v) for v in a.target.split("x")) if a.target else None
+        small, rep = pp.snap_fixed(im, a.factor, palette=pal, colours=a.colours, cleanup_level=a.cleanup,
+                                   key=key, grid=a.grid, target=tgt)
+        dst = out / f"{src.stem}-snap.png"
+        small.save(dst)
+        res.append({"source": str(src), "out": str(dst), "report": rep})
+    print(json.dumps({"ok": True, "results": res}))
+
+
 # ----------------------------------------------------------------- post
 def post_kwargs(a) -> dict:
     return dict(grid=a.grid, bg=a.bg, colours=a.colours, palette=a.palette,
@@ -187,6 +245,31 @@ def main(argv=None) -> None:
     g.add_argument("--name", help="output file stem")
     g.add_argument("--out", required=True)
 
+    ip = sub.add_parser("inpaint", help="masked img2img on a canvas (white mask = repaint)")
+    ip.add_argument("--backend", default="flux2_klein_pixel_lora", choices=list(REGISTRY))
+    ip.add_argument("--image", required=True, help="canvas PNG (multiple of 16 px)")
+    ip.add_argument("--mask", required=True, help="mask PNG, white = repaint, same size as the canvas")
+    ip.add_argument("--prompt", required=True)
+    ip.add_argument("--raw-prompt", action="store_true", help="send --prompt without the inpaint template")
+    ip.add_argument("--strength", type=float, default=0.75)
+    ip.add_argument("--seed", type=int, default=0)
+    ip.add_argument("--n", type=int, default=1)
+    ip.add_argument("--ref", nargs="*", help="reference image(s) for the masked area")
+    ip.add_argument("--opt", action="append", help="backend option k=v (steps, lora_scale, offload, ...)")
+    ip.add_argument("--name", default="inpaint")
+    ip.add_argument("--out", required=True)
+
+    sn = sub.add_parser("snap", help="downscale model output by a fixed integer factor, palette, cleanup")
+    sn.add_argument("inputs", nargs="+")
+    sn.add_argument("--factor", type=int, required=True)
+    sn.add_argument("--grid", default="fixed", choices=["fixed", "detect"])
+    sn.add_argument("--target", help="WxH in output pixels (used by --grid detect)")
+    sn.add_argument("--palette", help="fixed palette (.hex, .gpl or .png)")
+    sn.add_argument("--colours", type=int, help="adaptive palette size when no --palette")
+    sn.add_argument("--cleanup", type=int, default=1, choices=[0, 1, 2])
+    sn.add_argument("--key", help="flat key colour #rrggbb to make transparent (alpha layers)")
+    sn.add_argument("--out", required=True)
+
     p = sub.add_parser("post", help="post-process images into pixel art")
     p.add_argument("inputs", nargs="+")
     add_post_args(p)
@@ -206,6 +289,10 @@ def main(argv=None) -> None:
                 print(f"{name}: (failed to import: {e})")
     elif a.cmd == "generate":
         cmd_generate(a)
+    elif a.cmd == "inpaint":
+        cmd_inpaint(a)
+    elif a.cmd == "snap":
+        cmd_snap(a)
     elif a.cmd == "post":
         cmd_post(a)
     elif a.cmd == "palette-from":

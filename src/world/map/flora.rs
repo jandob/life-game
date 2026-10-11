@@ -22,7 +22,7 @@ struct SakuraPetal;
 
 /// Links a petal effect entity to its parent Flora for cleanup.
 #[derive(Component)]
-struct PetalSpawner(Entity);
+struct PetalSpawner(#[allow(dead_code)] Entity);
 
 /// Marker component for flora entities spawned from Tiled object layers.
 #[derive(Component)]

@@ -117,8 +117,7 @@ fn is_free(map: &TiledMap, pos: Vec2) -> bool {
     .iter()
     .all(|offset| {
         let tile = ((feet + *offset) / TILE).round();
-        map.tile_collision_shape(tile.x as i32, tile.y as i32)
-            .is_none()
+        !map.has_collision(tile.x as i32, tile.y as i32)
     })
 }
 

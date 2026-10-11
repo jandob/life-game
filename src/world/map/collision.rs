@@ -25,17 +25,18 @@ pub fn spawn_water_collisions(
                     y as i32 + chunk.y * CHUNK_SIZE as i32,
                 );
 
-                // Query the TiledMap for a collision shape on this tile
-                if let Some(collider) = tiled_map.tile_collision_shape(v.x, v.y) {
-                    let pos = Vec3::new(
-                        x as f32 * TILE_SIZE,
-                        y as f32 * TILE_SIZE,
-                        0.0,
-                    );
-                    let collision = commands
-                        .spawn((collider, Transform::from_translation(pos)))
-                        .id();
-                    commands.entity(entity).add_children(&[collision]);
+                // Every colliding layer contributes the shape of its tile
+                for (layer_index, layer) in tiled_map.layers.iter().enumerate() {
+                    if !layer.collides {
+                        continue;
+                    }
+                    if let Some(collider) = tiled_map.tile_collision_shape(layer_index, v.x, v.y) {
+                        let pos = Vec3::new(x as f32 * TILE_SIZE, y as f32 * TILE_SIZE, 0.0);
+                        let collision = commands
+                            .spawn((collider, Transform::from_translation(pos)))
+                            .id();
+                        commands.entity(entity).add_children(&[collision]);
+                    }
                 }
             }
         }

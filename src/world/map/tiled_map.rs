@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use bevy::asset::{io::Reader, AssetLoader, LoadContext};
 use bevy::prelude::*;
+use bevy::render::renderer::RenderDevice;
 use bevy_rapier2d::prelude::*;
 use bevy_rapier2d::rapier::math::Pose;
 use bevy_rapier2d::rapier::parry::shape::SharedShape;
@@ -20,15 +21,67 @@ pub struct TiledMap {
     pub width: u32,
     /// Map height in tiles
     pub height: u32,
-    /// Tile layer data: row-major vec of tile GIDs (0 = empty)
-    pub tile_data: Vec<u32>,
-    /// GID of the first tile in the tileset
-    first_gid: u32,
-    /// Collision shapes per tileset tile index, in tile-local game space
-    /// (origin at tile center, y-up).
-    tile_colliders: HashMap<u32, Collider>,
+    /// Tile layers in file order (bottom to top)
+    pub layers: Vec<TileLayer>,
+    /// Tilesets sorted by `first_gid`
+    pub tilesets: Vec<Tileset>,
     /// Object layers
     pub object_layers: Vec<ObjectLayerData>,
+}
+
+/// A tile layer of the map.
+#[derive(Clone)]
+pub struct TileLayer {
+    pub name: String,
+    /// Row-major tile GIDs including flip bits (0 = empty)
+    data: Vec<u32>,
+    /// Renders above the player and every YSorted entity (`above = true`)
+    pub above: bool,
+    /// Whether tiles of this layer spawn colliders (`collides`, default `!above`)
+    pub collides: bool,
+    /// Hidden layers are not drawn but still collide when `collides` is set.
+    pub visible: bool,
+}
+
+/// A tileset referenced by the map.
+#[derive(Clone)]
+pub struct Tileset {
+    pub first_gid: u32,
+    pub tile_count: u32,
+    pub image: Handle<Image>,
+    /// Collision shapes per local tile id, in tile-local game space
+    /// (origin at tile center, y-up).
+    colliders: HashMap<u32, Collider>,
+}
+
+/// Tiled's flip flags of a cell.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct TileFlags {
+    pub x: bool,
+    pub y: bool,
+    pub d: bool,
+}
+
+/// A resolved cell: which tileset, which tile in it, and how it is flipped.
+#[derive(Clone, Copy, Debug)]
+pub struct TileRef {
+    pub tileset: usize,
+    pub local: u32,
+    pub flip: TileFlags,
+}
+
+const FLIP_H: u32 = 0x8000_0000;
+const FLIP_V: u32 = 0x4000_0000;
+const FLIP_D: u32 = 0x2000_0000;
+const FLIP_HEX: u32 = 0x1000_0000;
+const FLIP_MASK: u32 = FLIP_H | FLIP_V | FLIP_D | FLIP_HEX;
+
+fn layer_bool_property(layer: &Value, name: &str) -> Option<bool> {
+    layer["properties"]
+        .as_array()?
+        .iter()
+        .find(|p| p["name"].as_str() == Some(name))
+        .and_then(|p| p["value"].as_bool())
 }
 
 /// Parsed object layer data from the TMJ file.
@@ -175,11 +228,9 @@ fn parse_object_layer(layer: &Value) -> ObjectLayerData {
 }
 
 impl TiledMap {
-    /// Get the tile index at the given world tile coordinate.
-    /// Returns `None` if out of bounds or empty (GID = 0).
-    ///
-    /// The returned index is 0-based and matches the tileset image position.
-    pub fn tile_at(&self, x: i32, y: i32) -> Option<u32> {
+    /// Resolve the cell of `layer` at the given world tile coordinate.
+    /// Returns `None` if out of bounds, empty (GID = 0) or not covered by a tileset.
+    pub fn tile_at(&self, layer: usize, x: i32, y: i32) -> Option<TileRef> {
         let map_width = self.width as i32;
         let map_height = self.height as i32;
 
@@ -193,19 +244,66 @@ impl TiledMap {
         }
 
         let idx = ty as usize * self.width as usize + tx as usize;
-        let gid = *self.tile_data.get(idx)?;
-        if gid < self.first_gid {
+        let raw = *self.layers.get(layer)?.data.get(idx)?;
+        let gid = raw & !FLIP_MASK;
+        if gid == 0 {
             return None;
         }
-        Some(gid - self.first_gid)
+        // Tilesets are sorted by first_gid: the last one starting at or below gid.
+        let tileset = self.tilesets.partition_point(|t| t.first_gid <= gid).checked_sub(1)?;
+        let local = gid - self.tilesets[tileset].first_gid;
+        if local >= self.tilesets[tileset].tile_count {
+            return None;
+        }
+        Some(TileRef {
+            tileset,
+            local,
+            flip: TileFlags {
+                x: raw & FLIP_H != 0,
+                y: raw & FLIP_V != 0,
+                d: raw & FLIP_D != 0,
+            },
+        })
     }
 
-    /// Get the collision shape for a tile at the given world tile coordinate,
-    /// as drawn in the tileset's collision editor. The collider is centered
-    /// on the tile.
-    pub fn tile_collision_shape(&self, x: i32, y: i32) -> Option<Collider> {
-        let index = self.tile_at(x, y)?;
-        self.tile_colliders.get(&index).cloned()
+    /// Get the collision shape for a tile of `layer` at the given world tile
+    /// coordinate, as drawn in the tileset's collision editor. The collider is
+    /// centered on the tile. Flipped tiles use their unflipped shape.
+    pub fn tile_collision_shape(&self, layer: usize, x: i32, y: i32) -> Option<Collider> {
+        let tile = self.tile_at(layer, x, y)?;
+        self.tilesets[tile.tileset].colliders.get(&tile.local).cloned()
+    }
+
+    /// Whether any colliding layer has a tile with a collision shape here.
+    pub fn has_collision(&self, x: i32, y: i32) -> bool {
+        self.layers
+            .iter()
+            .enumerate()
+            .any(|(i, layer)| layer.collides && self.tile_collision_shape(i, x, y).is_some())
+    }
+
+    /// Flipped collision is not supported yet: warn once per map about every
+    /// flipped colliding tile (which keeps its unflipped shape).
+    fn warn_flipped_colliders(&self) {
+        let flipped = self
+            .layers
+            .iter()
+            .filter(|layer| layer.collides)
+            .flat_map(|layer| layer.data.iter())
+            .filter(|&&raw| raw & (FLIP_H | FLIP_V | FLIP_D) != 0)
+            .filter(|&&raw| {
+                let gid = raw & !FLIP_MASK;
+                let Some(i) = self.tilesets.partition_point(|t| t.first_gid <= gid).checked_sub(1)
+                else {
+                    return false;
+                };
+                let t = &self.tilesets[i];
+                t.colliders.contains_key(&(gid - t.first_gid))
+            })
+            .count();
+        if flipped > 0 {
+            warn!("{flipped} flipped tile(s) with collision shapes: flipped collision is not supported, using the unflipped shape");
+        }
     }
 
     /// The rectangle covered by the map's tiles, in game world coordinates.
@@ -237,8 +335,9 @@ impl TiledMap {
     /// -8..8 in game space; the half-tile shift keeps objects aligned with
     /// the ground as drawn in Tiled.
     pub fn tiled_to_game(&self, tiled_x: f32, tiled_y: f32) -> Vec2 {
-        let half_w = self.width as f32 * TILE_SIZE / 2.0;
-        let half_h = self.height as f32 * TILE_SIZE / 2.0;
+        // Integer halves, like `tile_at` and `world_bounds`, so odd-sized maps stay on the grid.
+        let half_w = (self.width / 2) as f32 * TILE_SIZE;
+        let half_h = (self.height / 2) as f32 * TILE_SIZE;
         Vec2::new(
             tiled_x - half_w - TILE_SIZE / 2.0,
             half_h - tiled_y - TILE_SIZE / 2.0,
@@ -246,7 +345,7 @@ impl TiledMap {
     }
 }
 
-/// Loads `.tmj` maps and the (single) external `.tsj` tileset they reference.
+/// Loads `.tmj` maps and the external or embedded tilesets they reference.
 #[derive(Default, TypePath)]
 pub struct TiledMapLoader;
 
@@ -272,58 +371,96 @@ impl AssetLoader for TiledMapLoader {
         let width = json["width"].as_u64().ok_or("Missing width")? as u32;
         let height = json["height"].as_u64().ok_or("Missing height")? as u32;
 
-        let tileset_ref = json["tilesets"]
+        let tileset_refs = json["tilesets"]
             .as_array()
-            .and_then(|t| t.first())
+            .filter(|t| !t.is_empty())
             .ok_or("Map references no tileset")?;
-        let first_gid = tileset_ref["firstgid"].as_u64().unwrap_or(1) as u32;
-        let tile_colliders = match tileset_ref["source"].as_str() {
-            Some(source) => {
-                let tileset_path = load_context
-                    .path()
-                    .resolve_embed_str(source)
-                    .map_err(|e| format!("Invalid tileset path {source}: {e}"))?;
-                let tileset_bytes = load_context
-                    .read_asset_bytes(tileset_path)
-                    .await
-                    .map_err(|e| format!("Failed to read tileset {source}: {e}"))?;
-                let tileset: Value = serde_json::from_slice(&tileset_bytes)
-                    .map_err(|e| format!("Failed to parse TSJ {source}: {e}"))?;
-                parse_tile_colliders(&tileset)
-            }
-            // Embedded tileset
-            None => parse_tile_colliders(tileset_ref),
-        };
+        let mut tilesets = Vec::new();
+        for tileset_ref in tileset_refs {
+            let first_gid = tileset_ref["firstgid"].as_u64().unwrap_or(1) as u32;
+            // `image` is relative to the file that defines the tileset.
+            let (tileset, base) = match tileset_ref["source"].as_str() {
+                Some(source) => {
+                    let tileset_path = load_context
+                        .path()
+                        .resolve_embed_str(source)
+                        .map_err(|e| format!("Invalid tileset path {source}: {e}"))?;
+                    let tileset_bytes = load_context
+                        .read_asset_bytes(tileset_path.clone())
+                        .await
+                        .map_err(|e| format!("Failed to read tileset {source}: {e}"))?;
+                    let tileset: Value = serde_json::from_slice(&tileset_bytes)
+                        .map_err(|e| format!("Failed to parse TSJ {source}: {e}"))?;
+                    (tileset, tileset_path)
+                }
+                // Embedded tileset
+                None => (tileset_ref.clone(), load_context.path().clone()),
+            };
+            let image_src = tileset["image"]
+                .as_str()
+                .ok_or_else(|| format!("Tileset at firstgid {first_gid} has no image"))?;
+            let image_path = base
+                .resolve_embed_str(image_src)
+                .map_err(|e| format!("Invalid tileset image path {image_src}: {e}"))?;
+            let tile_count = match tileset["tilecount"].as_u64() {
+                Some(count) => count as u32,
+                None => {
+                    let columns = tileset["columns"].as_u64().unwrap_or(0);
+                    let tile_h = tileset["tileheight"].as_u64().unwrap_or(0).max(1);
+                    let rows = tileset["imageheight"].as_u64().unwrap_or(0) / tile_h;
+                    (columns * rows) as u32
+                }
+            };
+            tilesets.push(Tileset {
+                first_gid,
+                tile_count,
+                image: load_context.load(image_path),
+                colliders: parse_tile_colliders(&tileset),
+            });
+        }
+        tilesets.sort_by_key(|t| t.first_gid);
 
-        let layers = json["layers"].as_array().ok_or("Missing layers array")?;
+        let layers_json = json["layers"].as_array().ok_or("Missing layers array")?;
 
-        let mut tile_data = Vec::new();
+        let mut layers = Vec::new();
         let mut object_layers = Vec::new();
 
-        for layer in layers {
+        for layer in layers_json {
             match layer["type"].as_str().unwrap_or("") {
                 "tilelayer" => {
                     let data = layer["data"]
                         .as_array()
                         .ok_or("Missing data in tile layer")?;
-                    tile_data = data
-                        .iter()
-                        .map(|v| v.as_u64().unwrap_or(0) as u32)
-                        .collect();
+                    let above = layer_bool_property(layer, "above").unwrap_or(false);
+                    layers.push(TileLayer {
+                        name: layer["name"].as_str().unwrap_or("").to_string(),
+                        data: data
+                            .iter()
+                            .map(|v| v.as_u64().unwrap_or(0) as u32)
+                            .collect(),
+                        above,
+                        collides: layer_bool_property(layer, "collides").unwrap_or(!above),
+                        visible: layer["visible"].as_bool().unwrap_or(true),
+                    });
                 }
                 "objectgroup" => object_layers.push(parse_object_layer(layer)),
+                "group" => warn!(
+                    "Layer group {:?} is not supported, its layers are ignored",
+                    layer["name"].as_str().unwrap_or("")
+                ),
                 _ => {}
             }
         }
 
-        Ok(TiledMap {
+        let map = TiledMap {
             width,
             height,
-            tile_data,
-            first_gid,
-            tile_colliders,
+            layers,
+            tilesets,
             object_layers,
-        })
+        };
+        map.warn_flipped_colliders();
+        Ok(map)
     }
 
     fn extensions(&self) -> &[&str] {
@@ -336,11 +473,25 @@ fn insert_tiled_map_resource(
     mut commands: Commands,
     assets: Res<GameAssets>,
     maps: Res<Assets<TiledMap>>,
+    render_device: Option<Res<RenderDevice>>,
 ) {
-    match maps.get(&assets.world_map) {
-        Some(map) => commands.insert_resource(map.clone()),
-        None => error!("Tiled map asset missing after loading"),
+    let Some(map) = maps.get(&assets.world_map) else {
+        error!("Tiled map asset missing after loading");
+        return;
+    };
+    // Each tileset becomes a 2D texture array with one layer per tile.
+    if let Some(device) = render_device {
+        let max_layers = device.limits().max_texture_array_layers;
+        for (i, tileset) in map.tilesets.iter().enumerate() {
+            if tileset.tile_count > max_layers {
+                warn!(
+                    "Tileset #{i} has {} tiles, more than the device's max_texture_array_layers ({max_layers})",
+                    tileset.tile_count
+                );
+            }
+        }
     }
+    commands.insert_resource(map.clone());
 }
 
 pub struct TiledMapPlugin;

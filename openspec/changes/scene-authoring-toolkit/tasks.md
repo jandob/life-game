@@ -29,28 +29,28 @@ Phase 1 acceptance (on a copy of `sandbox.tmj`):
 
 ## 2. Phase 2: generate region and inpaint with FLUX.2 klein
 
-- [ ] 2.1 `tools/artgen`: `inpaint` command and backend method using `Flux2KleinInpaintPipeline` (image, mask_image, image_reference, strength, size), same weights and LoRA handling, sidecar like `generate`
-- [ ] 2.2 `postprocess.downscale` with a given fixed grid (factor S, phase 0), reused by scenekit
-- [ ] 2.3 Canvas builder: context ring, block-out from a text or PNG layout via `materials.json`, auto scale, mask
-- [ ] 2.4 `generate` -> job dir (candidates, previews, `job.json`); `--palette scene|hex|none`; `--alpha`
-- [ ] 2.5 `fill` (`--cells`, `--mask`, `--empty`, `--like`, `--ring`)
-- [ ] 2.6 `apply JOB --pick K` through the import core with full provenance and layout materials/collision
+- [x] 2.1 `tools/artgen`: `inpaint` command and backend method using `Flux2KleinInpaintPipeline` (image, mask_image, image_reference, strength, size), same weights and LoRA handling, sidecar like `generate`
+- [x] 2.2 `postprocess.downscale` with a given fixed grid (factor S, phase 0), reused by scenekit
+- [x] 2.3 Canvas builder: context ring, block-out from a text or PNG layout via `materials.json`, auto scale, mask
+- [x] 2.4 `generate` -> job dir (candidates, previews, `job.json`); `--palette scene|hex|none`; `--alpha`
+- [x] 2.5 `fill` (`--cells`, `--mask`, `--empty`, `--like`, `--ring`)
+- [x] 2.6 `apply JOB --pick K` through the import core with full provenance and layout materials/collision
 
 Phase 2 acceptance (on a scratch map):
-- [ ] 2.A1 A 10x8 floor region with a layout produces 4 candidates in one run; every candidate lies on the 16 px grid (no half-pixels when shown at 4x) and uses only palette colours
-- [ ] 2.A2 `apply` changes only cells inside the region (`diff`); every new tile has complete provenance; `library check` passes
-- [ ] 2.A3 A 2x2 hole filled with `fill` changes only those cells; seams judged acceptable in the 4x preview (agent and user review)
-- [ ] 2.A4 Re-applying the same candidate adds 0 tiles (dedup)
+- [x] 2.A1 A 10x8 floor region with a layout produces 4 candidates in one run; every candidate lies on the 16 px grid (no half-pixels when shown at 4x) and uses only palette colours
+- [x] 2.A2 `apply` changes only cells inside the region (`diff`); every new tile has complete provenance; `library check` passes
+- [x] 2.A3 A 2x2 hole filled with `fill` changes only those cells; seams judged acceptable in the 4x preview (agent and user review)
+- [x] 2.A4 Re-applying the same candidate adds 0 tiles (dedup)
 
 ## 3. Phase 3: engine changes and the demo apartment room
 
-- [ ] 3.1 E1: `TiledMap` keeps all tile layers (`above`, `collides` properties); chunk manager renders each layer at its own z below YSort
-- [ ] 3.2 E2: loader reads all tilesets, loads their images as map dependencies; `tile_at(layer, x, y)` returns (tileset, local, flip); one tilemap per (chunk, layer, tileset used); collision from every tileset and every colliding layer; warn above `max_texture_array_layers`
-- [ ] 3.3 E3: mask flip bits, set `TileFlip`; verify the diagonal flag against Tiled with an asymmetric tile; warn on flipped tiles with collision
-- [ ] 3.4 E4: `above = true` layers at a fixed z above every YSort value, no colliders by default
-- [ ] 3.5 E5: start map via `bevy_asset_loader` dynamic assets (`assets/start.assets.ron`); check flora, NPC, wanderer and ending systems tolerate a map without `Flora`/`NPCs`
-- [ ] 3.6 `cargo check` (native) and `cargo check --target wasm32-unknown-unknown`
-- [ ] 3.7 Forest regression: forest map renders and collides as before (F3 off)
+- [x] 3.1 E1: `TiledMap` keeps all tile layers (`above`, `collides` properties); chunk manager renders each layer at its own z below YSort
+- [x] 3.2 E2: loader reads all tilesets, loads their images as map dependencies; `tile_at(layer, x, y)` returns (tileset, local, flip); one tilemap per (chunk, layer, tileset used); collision from every tileset and every colliding layer; warn above `max_texture_array_layers`
+- [x] 3.3 E3: mask flip bits, set `TileFlip`; verify the diagonal flag against Tiled with an asymmetric tile; warn on flipped tiles with collision
+- [x] 3.4 E4: `above = true` layers at a fixed z above every YSort value, no colliders by default
+- [x] 3.5 E5: start map via `bevy_asset_loader` dynamic assets (`assets/start.assets.ron`); check flora, NPC, wanderer and ending systems tolerate a map without `Flora`/`NPCs`
+- [x] 3.6 `cargo check` (native) and `cargo check --target wasm32-unknown-unknown`
+- [x] 3.7 Forest regression: forest map renders and collides as before (F3 off)
 - [ ] 3.8 Demo: `assets/maps/apartment.tmj` (about 20x14 tiles; layers `Floor`, `Walls`, `Decor`, `Above` with `above=true`; `Spawn` with `SpawnPoint`) built only with scenekit commands by an agent; materials and collision set through `material`/`collide`; `validate` passes; opens in Tiled 1.12
 - [ ] 3.9 Run native with the apartment as start map: player spawns inside, collides with walls and furniture (F3 off), can't leave the room, south wall top covers the player
 - [ ] 3.10 Wasm build via `push_to_itch.sh` steps (without publishing) and a browser run on WebGPU: the room renders, console has no errors

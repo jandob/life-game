@@ -86,6 +86,7 @@ fn main() {
         .add_loading_state(
             LoadingState::new(GameState::AssetLoading)
                 .continue_to_state(GameState::MainMenu)
+                .with_dynamic_assets_file::<StandardDynamicAssetCollection>("start.assets.ron")
                 .load_collection::<GameAssets>(),
         )
         .insert_resource(ClearColor(BACKGROUND_COLOR))

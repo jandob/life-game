@@ -1,11 +1,11 @@
-use crate::{world::MainCamera, GameAssets, GameState};
+use crate::{world::MainCamera, GameState};
 
 use super::{
-    tiled_map::TiledMap, BACKGROUND_ZINDEX_ABS, CHUNK_SIZE, RENDERED_CHUNKS_RADIUS, TILE_SIZE,
+    tiled_map::TiledMap, ABOVE_ZINDEX, BACKGROUND_ZINDEX_ABS, CHUNK_SIZE, RENDERED_CHUNKS_RADIUS, TILE_SIZE,
 };
 use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 const RENDER_TILE_SIZE: TilemapTileSize = TilemapTileSize {
     x: TILE_SIZE,
@@ -24,63 +24,88 @@ pub struct ChunkManager {
 #[derive(Component, Deref)]
 pub struct ChunkIndex(pub IVec2);
 
-fn spawn_chunk(
-    commands: &mut Commands,
-    assets: &Res<GameAssets>,
-    tiled_map: &Res<TiledMap>,
-    chunk_pos: IVec2,
-) {
-    let tilemap_entity = commands.spawn(ChunkIndex(chunk_pos)).id();
+fn spawn_chunk(commands: &mut Commands, tiled_map: &Res<TiledMap>, chunk_pos: IVec2) {
+    // The root carries the chunk's xy position (colliders hang off it); the
+    // tilemaps are its children and only differ in z.
+    let chunk_entity = commands
+        .spawn((
+            ChunkIndex(chunk_pos),
+            Transform::from_translation(Vec3::new(
+                chunk_pos.x as f32 * CHUNK_SIZE as f32 * RENDER_TILE_SIZE.x,
+                chunk_pos.y as f32 * CHUNK_SIZE as f32 * RENDER_TILE_SIZE.y,
+                0.0,
+            )),
+            Visibility::default(),
+        ))
+        .id();
 
-    let mut tile_storage = TileStorage::empty(TilemapSize::new(CHUNK_SIZE, CHUNK_SIZE));
+    let mut above_index = 0;
+    let mut below_index = 0;
+    for (layer_index, layer) in tiled_map.layers.iter().enumerate() {
+        let z = if layer.above {
+            above_index += 1;
+            ABOVE_ZINDEX + (above_index - 1) as f32
+        } else {
+            below_index += 1;
+            -BACKGROUND_ZINDEX_ABS + (below_index - 1) as f32
+        };
+        if !layer.visible {
+            continue;
+        }
 
-    for x in 0..CHUNK_SIZE {
-        for y in 0..CHUNK_SIZE {
-            let v = IVec2::new(
-                x as i32 + chunk_pos.x * CHUNK_SIZE as i32,
-                y as i32 + chunk_pos.y * CHUNK_SIZE as i32,
-            );
-            let tile_pos = TilePos { x, y };
+        // One tilemap per tileset used in this chunk and layer.
+        let mut tilemaps: HashMap<usize, (Entity, TileStorage)> = HashMap::new();
+        for x in 0..CHUNK_SIZE {
+            for y in 0..CHUNK_SIZE {
+                let v = IVec2::new(
+                    x as i32 + chunk_pos.x * CHUNK_SIZE as i32,
+                    y as i32 + chunk_pos.y * CHUNK_SIZE as i32,
+                );
+                // Out of bounds or empty tile: nothing to spawn
+                let Some(tile) = tiled_map.tile_at(layer_index, v.x, v.y) else {
+                    continue;
+                };
+                let tile_pos = TilePos { x, y };
 
-            // Read tile from TiledMap; out-of-bounds = empty (no tile spawned)
-            let tile_entity = if let Some(index) = tiled_map.tile_at(v.x, v.y) {
-                commands
+                let (tilemap_entity, storage) = tilemaps.entry(tile.tileset).or_insert_with(|| {
+                    let entity = commands.spawn_empty().id();
+                    commands.entity(chunk_entity).add_child(entity);
+                    (entity, TileStorage::empty(TilemapSize::new(CHUNK_SIZE, CHUNK_SIZE)))
+                });
+                let tile_entity = commands
                     .spawn(TileBundle {
                         position: tile_pos,
-                        tilemap_id: TilemapId(tilemap_entity),
-                        texture_index: TileTextureIndex(index),
+                        tilemap_id: TilemapId(*tilemap_entity),
+                        texture_index: TileTextureIndex(tile.local),
+                        flip: TileFlip {
+                            x: tile.flip.x,
+                            y: tile.flip.y,
+                            d: tile.flip.d,
+                        },
                         ..Default::default()
                     })
-                    .id()
-            } else {
-                // Out of bounds or empty tile — skip spawning
-                continue;
-            };
+                    .id();
+                commands.entity(*tilemap_entity).add_child(tile_entity);
+                storage.set(&tile_pos, tile_entity);
+            }
+        }
 
-            commands.entity(tilemap_entity).add_child(tile_entity);
-            tile_storage.set(&tile_pos, tile_entity);
+        for (tileset, (tilemap_entity, storage)) in tilemaps {
+            commands.entity(tilemap_entity).insert(TilemapBundle {
+                grid_size: RENDER_TILE_SIZE.into(),
+                size: TilemapSize::new(CHUNK_SIZE, CHUNK_SIZE),
+                storage,
+                texture: TilemapTexture::Single(tiled_map.tilesets[tileset].image.clone()),
+                tile_size: RENDER_TILE_SIZE,
+                transform: Transform::from_translation(Vec3::new(0.0, 0.0, z)),
+                render_settings: TilemapRenderSettings {
+                    render_chunk_size: RENDER_CHUNK_SIZE,
+                    ..Default::default()
+                },
+                ..Default::default()
+            });
         }
     }
-
-    let transform = Transform::from_translation(Vec3::new(
-        chunk_pos.x as f32 * CHUNK_SIZE as f32 * RENDER_TILE_SIZE.x,
-        chunk_pos.y as f32 * CHUNK_SIZE as f32 * RENDER_TILE_SIZE.y,
-        -BACKGROUND_ZINDEX_ABS,
-    ));
-
-    commands.entity(tilemap_entity).insert(TilemapBundle {
-        grid_size: RENDER_TILE_SIZE.into(),
-        size: TilemapSize::new(CHUNK_SIZE, CHUNK_SIZE),
-        storage: tile_storage,
-        texture: TilemapTexture::Single(assets.tileset.clone()),
-        tile_size: RENDER_TILE_SIZE,
-        transform,
-        render_settings: TilemapRenderSettings {
-            render_chunk_size: RENDER_CHUNK_SIZE,
-            ..Default::default()
-        },
-        ..Default::default()
-    });
 }
 
 fn camera_pos_to_chunk_pos(camera_pos: &Vec2) -> IVec2 {
@@ -98,7 +123,6 @@ fn camera_pos_to_chunk_pos(camera_pos: &Vec2) -> IVec2 {
 
 pub fn spawn_chunks(
     mut commands: Commands,
-    assets: Res<GameAssets>,
     mut chunk_manager: ResMut<ChunkManager>,
     tiled_map: Res<TiledMap>,
     q_camera: Query<&Transform, With<MainCamera>>,
@@ -116,7 +140,7 @@ pub fn spawn_chunks(
             if !chunk_manager.spawned_chunks.contains(&IVec2::new(x, y)) {
                 let chunk_pos = IVec2::new(x, y);
                 chunk_manager.spawned_chunks.insert(chunk_pos);
-                spawn_chunk(&mut commands, &assets, &tiled_map, chunk_pos);
+                spawn_chunk(&mut commands, &tiled_map, chunk_pos);
             }
         }
     }

@@ -20,13 +20,13 @@ Every command prints one JSON line and exits non-zero on error (`{"ok": false, "
 - Coordinates are Tiled tile coordinates: origin top-left, x right, y down. Object positions are pixels.
 - A **tile** is a global gid (`17`), or `"tilesetname:localid"` (`"tileset:16"`; the name is the `name` field of
   the .tsj, shown by `layer`/`tileset`/`new`). `0`/`null` = empty. Flip flags: `"tileset:7|h"`, `|v`, `|d`
-  (combinable: `"tileset:7|h|d"`). Flags are written to the file, but **the game loader does not mask them yet**,
-  so flipped tiles render wrong in game (validate warns). Tiled and tmxrasterizer render them correctly.
+  (combinable: `"tileset:7|h|d"`). The game loader masks the flip bits and renders flipped tiles (flipped *collision*
+  shapes are not flipped).
 - Property values (`--prop k=v`) are parsed as JSON where possible: `true`, `12`, `1.5`, else string (`'"12"'` forces string).
 
 ## Game-loader limits (validate warns about them)
 
-- Only the LAST tile layer is used; only the first tileset's collision/first gid is used.
+- The loader reads all tile layers and all tilesets; a layer with the bool property `above=true` draws over the player.
 - Object layers `Spawn` (object named `SpawnPoint`), `NPCs`, `Flora` are read by name. The loader treats object x,y as a
   point and ignores size, so point objects placed with `--tile` land on the tile centre.
 - Tile collision comes from the tileset's per-tile collision shapes.
@@ -84,8 +84,8 @@ layer list. Collision overlay ignores flip flags. Use `--region` on big maps.
 ### validate
 `validate MAP [--no-tiled]` : checks orthogonal/finite, tileset files and images exist, every gid resolves to a tileset,
 layer data is a JSON array of length w*h, exactly one `SpawnPoint` inside the map and not on a collision tile, objects
-in bounds, and that `tiled --export-map` can load the file. Exit 1 on errors. Warnings (do not fail): multiple tile
-layers, multiple tilesets, flip flags, SpawnPoint outside layer `Spawn`, duplicate object ids.
+in bounds, and that `tiled --export-map` can load the file. Exit 1 on errors. Warnings (do not fail):
+SpawnPoint outside layer `Spawn`, duplicate object ids.
 
 `validate` also errors on tilesets above 256 tiles, library pages (`page-NNN.tsj`) that are not 256x256, `gen` gids missing
 from the neighbouring `tiles.json`, and a non-bool `above` layer property. See `tools/scenekit/` for the library tools.
@@ -120,4 +120,4 @@ see it, `validate` before finishing.
 
 - Orthogonal, finite, tile layers + object layers only (no image/group layers, no infinite maps, no Wang auto-tiling).
 - Object shapes: points and rectangles only. Embedded tilesets are read but `new` only creates external refs.
-- Flip flags are not supported by the game loader yet. Rotated collision shapes are not drawn rotated.
+- Flipped/rotated collision shapes are not flipped by the game loader; the debug overlay does not draw them rotated.

@@ -44,8 +44,6 @@ def validate(m, run_tiled=True):
         errors.append("infinite maps are not supported")
     if not d.get("tilesets"):
         errors.append("map references no tileset (loader requires one)")
-    if len(m.tilesets) > 1:
-        warnings.append("loader only reads the first tileset's collision/first_gid; others render wrong in game")
 
     # tilesets
     ranges = []
@@ -82,8 +80,6 @@ def validate(m, run_tiled=True):
     tls = m.tile_layers()
     if not tls:
         errors.append("map has no tile layer (loader needs one)")
-    elif len(tls) > 1:
-        warnings.append(f"{len(tls)} tile layers: the game loader keeps only the LAST one ('{tls[-1]['name']}')")
     for l in m.layers:
         for p in l.get("properties", []):
             if p.get("name") == "above" and not (isinstance(p.get("value"), bool) and p.get("type", "bool") == "bool"):
@@ -95,7 +91,6 @@ def validate(m, run_tiled=True):
     if len(set(names)) != len(names):
         errors.append("duplicate layer names")
 
-    flipped = 0
     for l in tls:
         data = l.get("data")
         if not isinstance(data, list):
@@ -112,8 +107,6 @@ def validate(m, run_tiled=True):
             if not isinstance(gid, int) or gid < 0:
                 errors.append(f"layer '{l['name']}': bad value {gid!r} at cell {i}")
                 break
-            if gid & FLIP_MASK:
-                flipped += 1
             if gid and m.tileset_for_gid(gid) is None:
                 bad.setdefault(gid & ~FLIP_MASK, []).append((i % w, i // w))
             elif gid:
@@ -129,8 +122,6 @@ def validate(m, run_tiled=True):
                           f"(first at {cells[0]}, {len(cells)} cells)")
         for gid, cells in bad.items():
             errors.append(f"layer '{l['name']}': gid {gid} resolves to no tileset (first at {cells[0]}, {len(cells)} cells)")
-    if flipped:
-        warnings.append(f"{flipped} tiles use flip/rotation flags; the game loader does not mask them yet (renders wrong)")
 
     # objects
     seen_ids = set()
