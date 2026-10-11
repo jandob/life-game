@@ -1,0 +1,53 @@
+{
+  "_comment": "Model registry for the sdxl backend. 'path' = local file (read-only, never copied), 'hf' = [repo, file] in the Hugging Face cache. '~' is expanded. Set ARTGEN_MODELS=/other/models.json to use another file.",
+  "models": {
+    "illustrious_v1": {
+      "family": "illustrious",
+      "hf": ["OnomaAIResearch/Illustrious-XL-v1.0", "Illustrious-XL-v1.0.safetensors"],
+      "licence": "CreativeML Open RAIL++-M",
+      "defaults": {"steps": 28, "guidance": 6.0, "sampler": "euler_a"}
+    },
+    "wai_v17": {
+      "family": "illustrious",
+      "path": "~/Downloads/waiIllustriousSDXL_v170.safetensors",
+      "licence": "FAIPL-1.0-SD (Civitai flags: sell images allowed)",
+      "defaults": {"steps": 28, "guidance": 6.0, "sampler": "euler_a"}
+    },
+    "cyberrealistic_pony_v18": {
+      "family": "pony",
+      "hf": ["cyberdelia/CyberRealisticPony", "CyberRealisticPony_V18.0_F16.safetensors"],
+      "licence": "modified FAIPL (Pony V6 base); HF repo tagged creativeml-openrail-m",
+      "defaults": {"steps": 30, "guidance": 5.0, "sampler": "dpmpp_sde_karras"}
+    },
+    "sdxl_base": {
+      "family": "sdxl",
+      "path": "~/ComfyUI-Shared/models/checkpoints/sd_xl_base_1.0.safetensors",
+      "licence": "CreativeML Open RAIL++-M",
+      "defaults": {"steps": 30, "guidance": 7.0, "sampler": "euler_a"}
+    }
+  },
+  "loras": {
+    "pixel_art_xl": {
+      "hf": ["nerijs/pixel-art-xl", "pixel-art-xl.safetensors"],
+      "trigger": "pixel art",
+      "scale": 1.0,
+      "licence": "creativeml-openrail-m"
+    }
+  },
+  "vae": {"hf_repo": "madebyollin/sdxl-vae-fp16-fix"},
+  "ip_adapter": {
+    "path": "~/ComfyUI-Shared/models/ipadapter/ip-adapter-plus_sdxl_vit-h.safetensors",
+    "image_encoder": "~/ComfyUI-Shared/models/clip_vision/CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+    "image_encoder_config": ["h94/IP-Adapter", "models/image_encoder/config.json"]
+  },
+  "controlnet": {
+    "openpose": {"hf_repo": "thibaud/controlnet-openpose-sdxl-1.0"}
+  },
+  "z_image_turbo": {
+    "transformer": "~/ComfyUI-Shared/models/diffusion_models/z_image_turbo_bf16.safetensors",
+    "text_encoder": "~/ComfyUI-Shared/models/text_encoders/qwen_3_4b.safetensors",
+    "vae": "~/ComfyUI-Shared/models/vae/ae.safetensors",
+    "config_repo": "Tongyi-MAI/Z-Image-Turbo",
+    "tokenizer_repo": "Tongyi-MAI/Z-Image"
+  }
+}

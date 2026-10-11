@@ -31,6 +31,12 @@ class Backend:
     """Subclass this, fill in ``info`` and implement ``load`` and ``generate``."""
 
     info: BackendInfo
+    # Options artgen.py/bench.py pass to load() (the rest go to generate()).
+    load_keys: frozenset = frozenset({"offload", "dtype"})
+    # String options are normally template fields only; these are also given to generate().
+    passthrough_opts: frozenset = frozenset({"ref"})
+    # Options artgen.py inpaint passes to inpaint().
+    inpaint_keys: tuple = ("steps", "guidance", "lora_scale")
 
     def load(self) -> None:
         """Load weights / open a client. Called once before generate()."""

@@ -6,6 +6,7 @@ reproduced.
     artgen.py backends
     artgen.py generate --backend flux2_klein_pixel_lora --prompt "..." --seed 1 --n 4 --out DIR
     artgen.py inpaint --image canvas.png --mask mask.png --prompt "..." --strength 0.75 --n 4 --out DIR
+    artgen.py pose --preset stand_front --size 832x1216 --out pose.png
     artgen.py snap DIR/*.png --factor 4 --palette p.hex --out DIR2
     artgen.py post DIR/*.png --grid fit --cell 64x128 --feet-row 105 --shadow --out DIR2
     artgen.py palette-from IMAGE --out palettes/x.hex
@@ -64,7 +65,8 @@ def generate_images(backend, subject: str, *, raw_prompt: bool, seed: int, n: in
     out_dir.mkdir(parents=True, exist_ok=True)
     tmpl_fields = {k: v for k, v in opts.items() if isinstance(v, str)}
     prompt = subject if raw_prompt else backend.apply_template(subject, **tmpl_fields)
-    gen_opts = {k: v for k, v in opts.items() if k not in tmpl_fields or k == "ref"}
+    gen_opts = {k: v for k, v in opts.items()
+                if k not in tmpl_fields or k in backend.passthrough_opts}
     t0 = time.perf_counter()
     imgs = backend.generate(prompt, negative=negative, width=width, height=height,
                             seed=seed, n=n, **gen_opts)
@@ -101,7 +103,7 @@ def cmd_generate(a) -> None:
     opts.update(parse_opts(a.opt))
     if a.ref:
         opts["ref"] = a.ref
-    load_keys = {"offload", "dtype"}
+    load_keys = b.load_keys
     b.load(**{k: v for k, v in opts.items() if k in load_keys})
     gen = {k: v for k, v in opts.items() if k not in load_keys}
     paths = generate_images(b, a.prompt, raw_prompt=a.raw_prompt, seed=a.seed, n=a.n,
@@ -121,10 +123,10 @@ def cmd_inpaint(a) -> None:
         raise SystemExit(f"backend {a.backend} has no inpaint()")
     opts = {k: v for k, v in b.info.defaults.items() if v is not None}
     opts.update(parse_opts(a.opt))
-    b.load(**{k: v for k, v in opts.items() if k in {"offload", "dtype"}})
+    b.load(**{k: v for k, v in opts.items() if k in b.load_keys})
     img, mask = Image.open(a.image).convert("RGB"), Image.open(a.mask).convert("L")
     prompt = a.prompt if a.raw_prompt else b.apply_inpaint_template(a.prompt)
-    gen = {k: opts[k] for k in ("steps", "guidance", "lora_scale") if k in opts}
+    gen = {k: opts[k] for k in b.inpaint_keys if k in opts}
     t0 = time.perf_counter()
     imgs = b.inpaint(prompt, img, mask, seed=a.seed, n=a.n, strength=a.strength, ref=a.ref, **gen)
     total = time.perf_counter() - t0
@@ -145,6 +147,26 @@ def cmd_inpaint(a) -> None:
         files.append(str(p))
     print(json.dumps({"ok": True, "files": files, "prompt": prompt, "seeds": [a.seed + i for i in range(a.n)],
                       "gen_opts": gen, "stats": stats, "total_s": round(total, 2)}))
+
+
+# ----------------------------------------------------------------- pose
+def cmd_pose(a) -> None:
+    """Draw an OpenPose skeleton PNG (control image for the sdxl backend's pose option)."""
+    import pose as posemod
+    if a.keypoints:
+        kps = json.loads(Path(a.keypoints).read_text())
+    else:
+        if a.preset not in posemod.PRESETS:
+            raise SystemExit(f"unknown preset {a.preset!r}; known: {', '.join(posemod.PRESETS)}")
+        kps = posemod.PRESETS[a.preset]
+    size = tuple(int(v) for v in a.size.lower().split("x"))
+    img = posemod.draw_pose(kps, size)
+    out = Path(a.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    tmp = out.with_name(out.name + ".tmp.png")
+    img.save(tmp)
+    tmp.replace(out)
+    print(json.dumps({"ok": True, "file": str(out), "size": list(size)}))
 
 
 # ----------------------------------------------------------------- snap
@@ -275,6 +297,12 @@ def main(argv=None) -> None:
     add_post_args(p)
     p.add_argument("--out", required=True)
 
+    po = sub.add_parser("pose", help="draw an OpenPose skeleton PNG (control image for sdxl pose=)")
+    po.add_argument("--preset", default="stand_front")
+    po.add_argument("--keypoints", help="JSON file: 18 [x, y] pairs in 0..1 (or null)")
+    po.add_argument("--size", default="832x1216")
+    po.add_argument("--out", required=True)
+
     pf = sub.add_parser("palette-from", help="extract a .hex palette from an image")
     pf.add_argument("image")
     pf.add_argument("--out", required=True)
@@ -291,6 +319,8 @@ def main(argv=None) -> None:
         cmd_generate(a)
     elif a.cmd == "inpaint":
         cmd_inpaint(a)
+    elif a.cmd == "pose":
+        cmd_pose(a)
     elif a.cmd == "snap":
         cmd_snap(a)
     elif a.cmd == "post":
