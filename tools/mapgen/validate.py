@@ -1,6 +1,7 @@
 """Map validation for tools/mapgen."""
 import json
 import os
+import re
 import subprocess
 import tempfile
 
@@ -8,6 +9,28 @@ from PIL import Image
 
 from preview import find_tool
 from tmjlib import FLIP_MASK, TiledMap, object_tile
+
+PAGE_RE = re.compile(r"^page-(\d+)\.tsj$")
+PAGE_TILES = 256
+
+
+def _page_no(ts):
+    """Library page number when the tileset is a generated-library page (page-NNN.tsj), else None."""
+    if not ts.path:
+        return None
+    mm = PAGE_RE.match(os.path.basename(ts.path))
+    return int(mm.group(1)) if mm else None
+
+
+def _manifest_ids(ts, cache):
+    p = os.path.join(os.path.dirname(ts.path), "tiles.json")
+    if p not in cache:
+        try:
+            with open(p) as f:
+                cache[p] = set(int(k) for k in json.load(f).get("tiles", {}))
+        except (OSError, ValueError):
+            cache[p] = None
+    return cache[p]
 
 
 def validate(m, run_tiled=True):
@@ -41,6 +64,14 @@ def validate(m, run_tiled=True):
                 iw, ih = Image.open(img).size
                 if ts.columns and ts.columns * ts.tilew > iw:
                     errors.append(f"tileset '{ts.name}' image {iw}x{ih} is smaller than its columns/tilewidth")
+        if ts.tilecount > PAGE_TILES:
+            errors.append(f"tileset '{ts.name}' has {ts.tilecount} tiles; more than {PAGE_TILES} breaks the "
+                          f"WebGPU 256-array-layer guarantee (use pages of {PAGE_TILES})")
+        if _page_no(ts) is not None:
+            if ts.tilecount != PAGE_TILES:
+                errors.append(f"library page '{ts.name}' has tilecount {ts.tilecount}, expected {PAGE_TILES}")
+            if img and os.path.isfile(img) and Image.open(img).size != (256, 256):
+                errors.append(f"library page '{ts.name}' image must be exactly 256x256, is {Image.open(img).size}")
         ranges.append((ts.firstgid, ts.firstgid + ts.tilecount, ts.name))
     ranges.sort()
     for a, b in zip(ranges, ranges[1:]):
@@ -53,6 +84,10 @@ def validate(m, run_tiled=True):
         errors.append("map has no tile layer (loader needs one)")
     elif len(tls) > 1:
         warnings.append(f"{len(tls)} tile layers: the game loader keeps only the LAST one ('{tls[-1]['name']}')")
+    for l in m.layers:
+        for p in l.get("properties", []):
+            if p.get("name") == "above" and not (isinstance(p.get("value"), bool) and p.get("type", "bool") == "bool"):
+                errors.append(f"layer '{l['name']}': property 'above' must be a bool, is {p.get('value')!r} ({p.get('type')})")
     ids = [l.get("id") for l in m.layers]
     if len(set(ids)) != len(ids):
         errors.append("duplicate layer ids")
@@ -71,6 +106,8 @@ def validate(m, run_tiled=True):
         if (l.get("width"), l.get("height")) != (w, h):
             errors.append(f"layer '{l['name']}': size {l.get('width')}x{l.get('height')} != map {w}x{h}")
         bad = {}
+        manifest_cache = {}
+        missing_gen = {}
         for i, gid in enumerate(data):
             if not isinstance(gid, int) or gid < 0:
                 errors.append(f"layer '{l['name']}': bad value {gid!r} at cell {i}")
@@ -79,6 +116,17 @@ def validate(m, run_tiled=True):
                 flipped += 1
             if gid and m.tileset_for_gid(gid) is None:
                 bad.setdefault(gid & ~FLIP_MASK, []).append((i % w, i // w))
+            elif gid:
+                ts = m.tileset_for_gid(gid)
+                pn = _page_no(ts)
+                if pn is not None:
+                    gen_id = pn * PAGE_TILES + (gid & ~FLIP_MASK) - ts.firstgid
+                    ids_ = _manifest_ids(ts, manifest_cache)
+                    if ids_ is None or gen_id not in ids_:
+                        missing_gen.setdefault(gen_id, []).append((i % w, i // w))
+        for gen_id, cells in missing_gen.items():
+            errors.append(f"layer '{l['name']}': gen:{gen_id} is not in the library manifest tiles.json "
+                          f"(first at {cells[0]}, {len(cells)} cells)")
         for gid, cells in bad.items():
             errors.append(f"layer '{l['name']}': gid {gid} resolves to no tileset (first at {cells[0]}, {len(cells)} cells)")
     if flipped:

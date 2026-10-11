@@ -228,6 +228,16 @@ class TiledMap:
                 best = ts
         return best
 
+    def resolve_gid(self, gid):
+        """raw gid (flags in the high bits) -> (tileset, local id, flag bits); None for empty or unresolved gids."""
+        if not gid:
+            return None
+        ts = self.tileset_for_gid(gid)
+        if ts is None:
+            return None
+        base = gid & ~FLIP_MASK
+        return ts, base - ts.firstgid, gid & FLIP_MASK
+
     def parse_tile(self, spec):
         """int gid | 'name:id[|h|v|d]' | '12[|h]' | None -> raw gid (flags in the high bits)."""
         if spec is None or spec is False:
@@ -280,6 +290,23 @@ class TiledMap:
         with open(tmp, "w") as f:
             f.write(text)
         os.replace(tmp, path)
+
+
+def append_tileset(m, tsj_path, data=None):
+    """Append a tileset to the END of the map's tileset list with the next free firstgid.
+
+    Existing firstgids (and therefore every existing gid) never change. Returns the Tileset; if the map already
+    references that file, returns the existing one. `data` lets the caller pass tileset JSON that is not on disk yet."""
+    tsj_path = os.path.abspath(tsj_path)
+    for ts in m.tilesets:
+        if ts.path and os.path.abspath(ts.path) == tsj_path:
+            return ts
+    firstgid = max([t.firstgid + t.tilecount for t in m.tilesets], default=1)
+    source = os.path.relpath(tsj_path, m.dir).replace(os.sep, "/")
+    ts = Tileset(tsj_path, data, firstgid, source) if data is not None else Tileset.load(tsj_path, firstgid, source)
+    m.data.setdefault("tilesets", []).append({"firstgid": firstgid, "source": source})
+    m.tilesets.append(ts)
+    return ts
 
 
 def dumps_map(data):

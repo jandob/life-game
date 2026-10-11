@@ -5,3 +5,8 @@
 /tools/artgen/.venv/
 /tools/artgen/out/
 __pycache__/
+
+# scenekit (scene authoring toolkit)
+/tools/scenekit/out/
+/tools/scenekit/.cache/
+/assets/library/tilesets/gen/.lock
