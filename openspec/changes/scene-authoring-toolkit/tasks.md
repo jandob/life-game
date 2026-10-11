@@ -69,4 +69,4 @@ Phase 2 acceptance (on a scratch map):
 ## 4. Phase 4: scene-designer agent
 
 - [ ] 4.1 `.claude/agents/scene-designer.md`: scope (scenes under `assets/maps/`, the `gen` library), tools (Bash, Read; Edit/Write only for ops/layout files and maps through the CLI), conventions (always `--if-hash`; inspect before and after every write; candidates reviewed before `apply`; copy-on-write by default; never `--global` or `--allow-foreign` without the lead's approval; no commits; adults only), working loop, report format (files changed, previews, verification, decisions stopped on)
-- [ ] 4.2 Trial: brief the agent with "a small kitchen next to the apartment room"; it delivers using only scenekit and reports; the lead reviews renders and `diff`
+- [x] 4.2 Trial: brief the agent with "a small kitchen next to the apartment room"; it delivers using only scenekit and reports; the lead reviews renders and `diff`

@@ -3,7 +3,7 @@
  "library": "gen",
  "tile_size": 16,
  "page_tiles": 256,
- "next_id": 188,
+ "next_id": 285,
  "tiles": {
   "0": {
    "hash": "sha256:a51f3a1522f10c5d55b52e74bc47b8b3d7ec2860fe1099b4495a745b247fbc15",
@@ -4260,6 +4260,2036 @@
     "y": 12
    },
    "material": "wall_top"
+  },
+  "188": {
+   "hash": "sha256:c94edc0325ed07bad5133e3e92cd884c5263f9657d369e82048140c678b6babc",
+   "created": "2026-10-11T19:43:35Z",
+   "origin": "edit",
+   "parent": "gen:185",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Walls",
+    "x": 19,
+    "y": 1
+   },
+   "material": "wall"
+  },
+  "189": {
+   "hash": "sha256:aeb85b060c3d268c543e4f5f2fd8e7a02d44454bfaef675e911203a96c78190a",
+   "created": "2026-10-11T19:43:35Z",
+   "origin": "edit",
+   "parent": "gen:185",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Walls",
+    "x": 19,
+    "y": 7
+   },
+   "material": "wall"
+  },
+  "190": {
+   "hash": "sha256:f44b7238c3a9d5dac8accd2cd668367cfe06f39d245ceef083dd5ea61ef63c5f",
+   "created": "2026-10-11T19:43:35Z",
+   "origin": "edit",
+   "parent": "gen:185",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Walls",
+    "x": 19,
+    "y": 10
+   },
+   "material": "wall"
+  },
+  "191": {
+   "hash": "sha256:51cf00091e40bc0ed77a067aec509a6976b82fb372bc6cda88788c9b85002bc5",
+   "created": "2026-10-11T19:45:47Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Floor",
+    "x": 20,
+    "y": 3
+   },
+   "material": "floor"
+  },
+  "192": {
+   "hash": "sha256:005ee50b0985390b9fd929c8ac88ccb3e80e286c093ee1bc66026276e6f79fbd",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 27,
+    "y": 1
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "193": {
+   "hash": "sha256:1aa7b3115943bf04285d970620352c3f38747cad66e747f1ae76c4d7f8e6587e",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 28,
+    "y": 1
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "194": {
+   "hash": "sha256:bbe5caf8c71c6ce679d98d118fb8c0d11af17e86a50e81e74820ba0d11b9d31e",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 20,
+    "y": 2
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "195": {
+   "hash": "sha256:e5c980b655abd6eca25d1c0b433a9955fbb0ef89c8ba9156cf2bb256f000a0f9",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 21,
+    "y": 2
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "196": {
+   "hash": "sha256:169a6c2bee7590501a98eca95af6a0d857a0f29f53efa3a0bdff4c90ab37ac93",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 22,
+    "y": 2
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "197": {
+   "hash": "sha256:18601f8e0498377e33ecf7046dfa471171965da09395a499ccf772794b3458e3",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 23,
+    "y": 2
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "198": {
+   "hash": "sha256:4bd0ffbc32a774f2cb24bee8d8a289b532fbaa674bfa97b6b7a287a1d64019cf",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 2
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "199": {
+   "hash": "sha256:2d68859edb1e88810f4caee403288168955584fb2b01f4be4418e8d71f834cdd",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 2
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "200": {
+   "hash": "sha256:2ad1292d76be8212a296ba76bbd27fa692687ec9f5ca74afe9b44e2fa053777b",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 26,
+    "y": 2
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "201": {
+   "hash": "sha256:020c24d11ec6c279f1742eea7f9531d1b286da274af196929d132b73c0e51ed3",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 27,
+    "y": 2
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "202": {
+   "hash": "sha256:fd161a03f4204818f878b31cd37343ef9cf4f199b1145bfca7a4b22876cf294c",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 28,
+    "y": 2
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "203": {
+   "hash": "sha256:14f91fdcef9abb0a62f1632e2ba16264a3332725424c2ff73b8c481e4d75eacc",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 20,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "204": {
+   "hash": "sha256:db58055d72be05d0380ecd3511bcb5f1ae885b629ce100aaee452151681917fa",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 21,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "205": {
+   "hash": "sha256:036dad6ff516d839ef52d6b934f3cdcdcf925ed6ddef3cc18f3a342e87ba07fd",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 22,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "206": {
+   "hash": "sha256:7ffb08258647dfc6e7fb182c3dba9935b9ed181fcc4771b3707921cc600e6282",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 23,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "207": {
+   "hash": "sha256:f8cf1b6dc80511d453ee3e3622b463c9c875cffb9e00d9ca24d1333d2e667af5",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "208": {
+   "hash": "sha256:9d079a24a7803551429c66fd362d3174313f3c9b826094ce86c4987ce2e28227",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "209": {
+   "hash": "sha256:535c07bec2193342856f7fa4d83984ffda55c00ef8dd852a5d678c9c007544e9",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 26,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "210": {
+   "hash": "sha256:8e94e3fca7a8c931cedf77f362ec3fe2df20e8037a98e2455e4165c467c72e91",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 27,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "211": {
+   "hash": "sha256:adfcbdfffa33cc36b033bed71799acc3a880d399c30e15313eccbdd2f5b84738",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 28,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "212": {
+   "hash": "sha256:449f8a0e3b12150180711f7a12760c90924817b3065ae29b135cb5a39cbb3b26",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 20,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "213": {
+   "hash": "sha256:c043f74dde86e6100e3ae13f4db32d1cd6fead5a4ad2c384fbea007ce453fa02",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 21,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "214": {
+   "hash": "sha256:dcecfb9fa27048753ae04cd3d7d3467c1d888c704c6f7ca99f613552d8af86ab",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 22,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "215": {
+   "hash": "sha256:abce1f47d76dca1d166c3da670ed3a82e1d45bdbf433272d6042b07debe797f0",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 23,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "216": {
+   "hash": "sha256:99c785a462ff0ff87ac391d1c0b34b5bab1bed01f72d6684a3cc4aeec3c441bc",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "217": {
+   "hash": "sha256:311830d3a59c970bc38d9c4d5fa3e5fac51983641aaeecbff3b5ae49ade60f0b",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "218": {
+   "hash": "sha256:68192debda5ac65a37264023932326fdc46e4c2070eea1dcdf33bd40d9b645e3",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 26,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "counter"
+  },
+  "219": {
+   "hash": "sha256:fb99cbbc581f5e20cef2c5ad32bbf6fbee8738fe3c73593279d5481794b7425c",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 27,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "220": {
+   "hash": "sha256:d76df838d34ecbea0d4427100ed6c7de6ff645a8e6a366baae19ff98e34dce3b",
+   "created": "2026-10-11T19:47:16Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194537-1ee2",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 28,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art kitchen counter run in 3/4 top-down view: light stone worktop with a steel sink and a black ceramic cooktop with four rings, sage green cabinet doors below with an oven, a tall cream fridge freezer on the right, flat clean colours, 1px dark outline, counter top, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 3,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 5,
+    "refs": [],
+    "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "221": {
+   "hash": "sha256:7ff6ffc16bcbe3127c97646551f54af4d3f835fed2ca96ff8793b8853f4eebc0",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:192",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 27,
+    "y": 1
+   },
+   "material": "furniture"
+  },
+  "222": {
+   "hash": "sha256:474e633563601bf3b4ef264918e155e637bb571d19512dad83a12716ad39074d",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:193",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 28,
+    "y": 1
+   },
+   "material": "furniture"
+  },
+  "223": {
+   "hash": "sha256:1249519ecb33551f013866128da6127ac62577c7d5712078dcc1cad5e6a21c6c",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:194",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 20,
+    "y": 2
+   }
+  },
+  "224": {
+   "hash": "sha256:e73e8b3700ceb259f84f27508d7961f571cc6b1240f512e8e03a260b4871c30a",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:195",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 21,
+    "y": 2
+   }
+  },
+  "225": {
+   "hash": "sha256:6bbcbff7ff8c67302ef2d7d05b83d113960c2e765ff580523acb65c4e4deb7c7",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:196",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 22,
+    "y": 2
+   }
+  },
+  "226": {
+   "hash": "sha256:2efd2e8bf72e93cb30bc5238fb55f72d13fbfcdffdfa1fdb15c52072903c3563",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:198",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 2
+   }
+  },
+  "227": {
+   "hash": "sha256:c21bb055a13bbf35083a7cc56cffda3288d050f15882c9fcce793e13c2e6b56a",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:199",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 2
+   }
+  },
+  "228": {
+   "hash": "sha256:e60755c5e233cc4595cb94cad02079386b2579f9d096fa7a7326aea4bfa817d2",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:201",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 27,
+    "y": 2
+   },
+   "material": "furniture"
+  },
+  "229": {
+   "hash": "sha256:082ef6253b5395419f9958f122bbef9135cc73b6265ee6bf5794600449cbf77e",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:202",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 28,
+    "y": 2
+   },
+   "material": "furniture"
+  },
+  "230": {
+   "hash": "sha256:8d9380c8214c508fdf341ee31dc47ae9a15010098677115fbf57a948981ad1b5",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:203",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 20,
+    "y": 3
+   },
+   "material": "counter"
+  },
+  "231": {
+   "hash": "sha256:0b54cbc0578c7cfb6557ef03d20f30e3b7c598e288a59091fe97993636199a3b",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:204",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 21,
+    "y": 3
+   },
+   "material": "counter"
+  },
+  "232": {
+   "hash": "sha256:9dab182708e99fedf46d15f36446d69ec8f286354f7fc6def9ba08e093a3c3be",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:205",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 22,
+    "y": 3
+   },
+   "material": "counter"
+  },
+  "233": {
+   "hash": "sha256:7f4e9d4c671c29c5722976051ccdb9a9250e0cf0457ee4c53e18eb27770f497b",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:207",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 3
+   },
+   "material": "counter"
+  },
+  "234": {
+   "hash": "sha256:4f5666550f4f78315781df0623de7a1e28ab35b2fa227fe9ad28aab163228202",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:208",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 3
+   },
+   "material": "counter"
+  },
+  "235": {
+   "hash": "sha256:e6e562a6900191fe941b8ba33f2eac9e55bdb894c77bd2d6f9e538f8df803dd2",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:210",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 27,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "236": {
+   "hash": "sha256:5bae9b8be1e135f4060555fbac1bfbd7de1a869ec9d73b284d624030ef14ce1a",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:211",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 28,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "237": {
+   "hash": "sha256:1c9e0a94f961a8a167a9edbab25747eed4804ab3053ee7021bdd34ca6d8d5d14",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:212",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 20,
+    "y": 4
+   },
+   "material": "counter"
+  },
+  "238": {
+   "hash": "sha256:911c5eb513fe97c5655d987c1664675c96bd587ddec5fb4ca94135818115f921",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:213",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 21,
+    "y": 4
+   },
+   "material": "counter"
+  },
+  "239": {
+   "hash": "sha256:e6242dc537efcace7bbdefc13141e796c5433e65b08e687ddae8ad8b0d0aa104",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:214",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 22,
+    "y": 4
+   },
+   "material": "counter"
+  },
+  "240": {
+   "hash": "sha256:8e3b91cbc3bcf46aac17f49d304fe0fc5a191a6fe813c7ff6a01dc6154f6eabd",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:215",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 23,
+    "y": 4
+   },
+   "material": "counter"
+  },
+  "241": {
+   "hash": "sha256:909e8c862c7dc417aaa6b532bd8bf150ae91d191a5b1c456fd5a782911829371",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:216",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 4
+   },
+   "material": "counter"
+  },
+  "242": {
+   "hash": "sha256:71620eb9581c316421124cc416072d1b0a2f3776a75bae76eb622f676e6f4674",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:217",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 4
+   },
+   "material": "counter"
+  },
+  "243": {
+   "hash": "sha256:b5163849442e85938685e7ac42fb0710e52b96793cd5a3b1abced47343c69481",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:218",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 26,
+    "y": 4
+   },
+   "material": "counter"
+  },
+  "244": {
+   "hash": "sha256:a4c0acaf6efd789a6f4555647648a9de2caefd5cea914a1fce87a8995a1511f1",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:219",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 27,
+    "y": 4
+   },
+   "material": "furniture"
+  },
+  "245": {
+   "hash": "sha256:79695b126e35ecbb4ca43f0462929bcd0c1d13800db6be6408c7855da3c2e708",
+   "created": "2026-10-11T19:47:41Z",
+   "origin": "edit",
+   "parent": "gen:220",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 28,
+    "y": 4
+   },
+   "material": "furniture"
+  },
+  "246": {
+   "hash": "sha256:22d18be76372fc69e873e345c5ed3148ee6745a918bbce701b5e577d87e3fa44",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:221",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 27,
+    "y": 1
+   },
+   "material": "furniture"
+  },
+  "247": {
+   "hash": "sha256:87b59f459f9663a613d3a242bfe70fa5adea61a2af40e22298aa70df24e476f5",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:222",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 28,
+    "y": 1
+   },
+   "material": "furniture"
+  },
+  "248": {
+   "hash": "sha256:c12636e7a372a81c6ec6ed37f663c7040893c53c639325c59685d8120a32c838",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:226",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 2
+   }
+  },
+  "249": {
+   "hash": "sha256:0c7577e0092757659e73b0ca58df6bf33b1e28cce6ce1630fb07384db1c8e27e",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:227",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 2
+   }
+  },
+  "250": {
+   "hash": "sha256:f3a09e23cc6f336c85c9b85f9fb51ec8dc4b75f755517c555374d6fe6092fd0e",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:229",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 28,
+    "y": 2
+   },
+   "material": "furniture"
+  },
+  "251": {
+   "hash": "sha256:7361ca73ec975b3ae07653207307cb3d1cd171a29c8c95f0f2fa5d4bff784b9c",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:230",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 20,
+    "y": 3
+   },
+   "material": "counter"
+  },
+  "252": {
+   "hash": "sha256:0ab6d12ddbd25736293edf022f0feb7071069e5a91226cd2663a70ba593d3efa",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:231",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 21,
+    "y": 3
+   },
+   "material": "counter"
+  },
+  "253": {
+   "hash": "sha256:2e98b8f157df1b4a931791c520c406dc25252c50b9ae5d6ef64341d61e4af2be",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:232",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 22,
+    "y": 3
+   },
+   "material": "counter"
+  },
+  "254": {
+   "hash": "sha256:a35d913555f81359802759c21e8f8103bdaf2c0768a9d25996b9fa0b4abeb670",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:236",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 28,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "255": {
+   "hash": "sha256:169117e874b88ec6431e3600d7127e81b619ffea6244b423fe4b687168e1590f",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:237",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 20,
+    "y": 4
+   },
+   "material": "counter"
+  },
+  "256": {
+   "hash": "sha256:a55a623265f7f8ca8b6df33e8ac067fd99de41ae29380fb70af0bbbaea2ede99",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:238",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 21,
+    "y": 4
+   },
+   "material": "counter"
+  },
+  "257": {
+   "hash": "sha256:adaa8203e34aabffb982d3b4ae2ff1d84758c9995f8e37a826aa908ea0c8ed3e",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:241",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 4
+   },
+   "material": "counter"
+  },
+  "258": {
+   "hash": "sha256:dd763f1d40c5b344cb12f53f66fe2ae90ab6ff999da91c6e041173fc6f0dfe82",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:242",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 4
+   },
+   "material": "counter"
+  },
+  "259": {
+   "hash": "sha256:10882e14a9ce6d8c5d23f321b5ce1e6d637a1cbb34c86818e8dd0e9ac41530d8",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:243",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 26,
+    "y": 4
+   },
+   "material": "counter"
+  },
+  "260": {
+   "hash": "sha256:dda106a9b67bc6177555b226f9ee2317a134125ace317cd7ab614504f72aa0eb",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:244",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 27,
+    "y": 4
+   },
+   "material": "furniture"
+  },
+  "261": {
+   "hash": "sha256:ffad611b0e9f507f676b0b2a167fdfddd0f9f95f35697a7704c09c264a9d577b",
+   "created": "2026-10-11T19:47:59Z",
+   "origin": "edit",
+   "parent": "gen:245",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 28,
+    "y": 4
+   },
+   "material": "furniture"
+  },
+  "262": {
+   "hash": "sha256:edae2657990127826e73bcc3e7cb8d32e01c651093017a5799b85f76b1d2eb87",
+   "created": "2026-10-11T19:51:30Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194942-e92f",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 23,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art small wooden kitchen table with two wooden chairs facing each other, 3/4 top-down view, flat clean colours, 1px dark outline, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 11,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 6,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "263": {
+   "hash": "sha256:7a840449672e05c514032307317bed4b2f440e585731107c026be902486c5cb5",
+   "created": "2026-10-11T19:51:30Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194942-e92f",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art small wooden kitchen table with two wooden chairs facing each other, 3/4 top-down view, flat clean colours, 1px dark outline, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 11,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 6,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "264": {
+   "hash": "sha256:8213abcf52ceaf5dfb3db40ccb0c5d25af0c85539d86bbfa9a8a17d57357c7cd",
+   "created": "2026-10-11T19:51:30Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194942-e92f",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art small wooden kitchen table with two wooden chairs facing each other, 3/4 top-down view, flat clean colours, 1px dark outline, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 11,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 6,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "265": {
+   "hash": "sha256:83ecec76e37205c81207cb6b8255e2558f3d60ff632351d9a263b9afacbd54e9",
+   "created": "2026-10-11T19:51:30Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194942-e92f",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 26,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art small wooden kitchen table with two wooden chairs facing each other, 3/4 top-down view, flat clean colours, 1px dark outline, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 11,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 6,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "266": {
+   "hash": "sha256:5101e08efba29b85340a31b3c211e8042d9293e18609e6e3f31f82889766e0a3",
+   "created": "2026-10-11T19:51:30Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194942-e92f",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 23,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art small wooden kitchen table with two wooden chairs facing each other, 3/4 top-down view, flat clean colours, 1px dark outline, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 11,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 6,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "267": {
+   "hash": "sha256:a31cfc5710cd09cfc4705171351dd07edb50f79dd348b589433f59432eb5960e",
+   "created": "2026-10-11T19:51:30Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194942-e92f",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art small wooden kitchen table with two wooden chairs facing each other, 3/4 top-down view, flat clean colours, 1px dark outline, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 11,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 6,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "268": {
+   "hash": "sha256:7c5f7e73dbc1831d7ae27f7f6d6530ceebebd015e6a0130d81fd58159b0befa1",
+   "created": "2026-10-11T19:51:30Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194942-e92f",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art small wooden kitchen table with two wooden chairs facing each other, 3/4 top-down view, flat clean colours, 1px dark outline, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 11,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 6,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "269": {
+   "hash": "sha256:6d988e00ec2da9fa04a2a251c65c9f657f8c578623b92bc163cc0b48946502a0",
+   "created": "2026-10-11T19:51:30Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194942-e92f",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 26,
+    "y": 8
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art small wooden kitchen table with two wooden chairs facing each other, 3/4 top-down view, flat clean colours, 1px dark outline, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 11,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 6,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "270": {
+   "hash": "sha256:32f0776de89796bc0610cda80dede55746facc4d0913cbce657782390511d8d8",
+   "created": "2026-10-11T19:51:30Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194942-e92f",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 23,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art small wooden kitchen table with two wooden chairs facing each other, 3/4 top-down view, flat clean colours, 1px dark outline, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 11,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 6,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "271": {
+   "hash": "sha256:01c667d043c45d5efdfc3b359744fed28eb032aace8b085f0f6490854c2eaae2",
+   "created": "2026-10-11T19:51:30Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194942-e92f",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art small wooden kitchen table with two wooden chairs facing each other, 3/4 top-down view, flat clean colours, 1px dark outline, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 11,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 6,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "272": {
+   "hash": "sha256:c2892f8d4afab0b7e415081e41ed1a35929148b7eac60e67ba1251b2696ee252",
+   "created": "2026-10-11T19:51:30Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194942-e92f",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art small wooden kitchen table with two wooden chairs facing each other, 3/4 top-down view, flat clean colours, 1px dark outline, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 11,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 6,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "273": {
+   "hash": "sha256:3a11cd1e8d7dac41ae92e89badbfa68da3b8dcc904855c74c0a6eb6ba17c3d5e",
+   "created": "2026-10-11T19:51:30Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261011-194942-e92f",
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 26,
+    "y": 9
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art small wooden kitchen table with two wooden chairs facing each other, 3/4 top-down view, flat clean colours, 1px dark outline, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 11,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 6,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "alpha": true
+   }
+  },
+  "274": {
+   "hash": "sha256:d61cd998c2fcd77cd163ea4e3e706006e67c19eccda21ed3c06738be6d110f65",
+   "created": "2026-10-11T19:51:46Z",
+   "origin": "edit",
+   "parent": "gen:262",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 23,
+    "y": 7
+   },
+   "material": "furniture"
+  },
+  "275": {
+   "hash": "sha256:dee1cf4d5de0d02e5c1bc250f7ed4792e62d32c3919f85b42640278334c07944",
+   "created": "2026-10-11T19:51:46Z",
+   "origin": "edit",
+   "parent": "gen:263",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 7
+   },
+   "material": "furniture"
+  },
+  "276": {
+   "hash": "sha256:272d9be0b93676d9c2aca25a8376b6b61fc1736daedcf0764a6f3530b51f1699",
+   "created": "2026-10-11T19:51:46Z",
+   "origin": "edit",
+   "parent": "gen:264",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 7
+   },
+   "material": "furniture"
+  },
+  "277": {
+   "hash": "sha256:63d121eca40ae98f6db18f20eb158ae1494ddc517f6fe0e50a27ee9fa2b5e9da",
+   "created": "2026-10-11T19:51:46Z",
+   "origin": "edit",
+   "parent": "gen:266",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 23,
+    "y": 8
+   },
+   "material": "furniture"
+  },
+  "278": {
+   "hash": "sha256:d5ff80a799da90209a31e77d80607bf88d7e708306d689136922b6f6c15ddbe9",
+   "created": "2026-10-11T19:51:46Z",
+   "origin": "edit",
+   "parent": "gen:267",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 8
+   },
+   "material": "furniture"
+  },
+  "279": {
+   "hash": "sha256:a91576240e61e9f50273737623d9195b0a9a3b6e16d3ec2845196a8d3d7aa540",
+   "created": "2026-10-11T19:51:46Z",
+   "origin": "edit",
+   "parent": "gen:268",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 8
+   },
+   "material": "furniture"
+  },
+  "280": {
+   "hash": "sha256:19bec3c26080fa1b2909fa932c15792aacd3ba8542938a884895c1fbec5fd9db",
+   "created": "2026-10-11T19:51:46Z",
+   "origin": "edit",
+   "parent": "gen:269",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 26,
+    "y": 8
+   },
+   "material": "furniture"
+  },
+  "281": {
+   "hash": "sha256:f220f369f07c010ce3816201d53bdf89e8d51ad9b91738cb932b2727cd85682f",
+   "created": "2026-10-11T19:51:46Z",
+   "origin": "edit",
+   "parent": "gen:270",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 23,
+    "y": 9
+   },
+   "material": "furniture"
+  },
+  "282": {
+   "hash": "sha256:3a2866c9e1ba3672b1af032668b0b6961c05ef71a77ebba3b8a8065f2350817f",
+   "created": "2026-10-11T19:51:46Z",
+   "origin": "edit",
+   "parent": "gen:271",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 24,
+    "y": 9
+   },
+   "material": "furniture"
+  },
+  "283": {
+   "hash": "sha256:a5f970ee22d7da2e9d89cd3426d05ea6e0d60ffb7da55b75026c6ec8ed7bfbd0",
+   "created": "2026-10-11T19:51:46Z",
+   "origin": "edit",
+   "parent": "gen:272",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 25,
+    "y": 9
+   },
+   "material": "furniture"
+  },
+  "284": {
+   "hash": "sha256:4bbdf27e64c409b8f96f90e6c28437668edf279a562722e58cb06f3a2d538b48",
+   "created": "2026-10-11T19:51:46Z",
+   "origin": "edit",
+   "parent": "gen:273",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment_v2.tmj",
+    "layer": "Decor",
+    "x": 26,
+    "y": 9
+   },
+   "material": "furniture"
   }
  }
 }
