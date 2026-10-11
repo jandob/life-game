@@ -9,7 +9,7 @@ use crate::GameState;
 struct SplashScreen;
 
 fn spawn_splash_screen(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let icon = asset_server.load("ui/bevy_icon.png");
+    let icon = asset_server.load("library/ui/bevy_icon.png");
     let image = commands
         .spawn((
             Node {

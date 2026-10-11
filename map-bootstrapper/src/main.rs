@@ -851,7 +851,7 @@ fn main() {
         layers: vec![ground_layer, flora_layer, npc_layer, spawn_layer],
         tilesets: vec![TilesetRef {
             firstgid: 1,
-            source: "tileset.tsj".to_string(),
+            source: "../library/tilesets/forest/tileset.tsj".to_string(),
         }],
         nextlayerid: 5,
         nextobjectid: 100,
@@ -881,10 +881,12 @@ fn main() {
     };
 
     // Step 9: Write files
-    let assets_dir = Path::new("assets/map");
-    std::fs::create_dir_all(assets_dir).expect("Failed to create assets/map directory");
+    let maps_dir = Path::new("assets/maps");
+    std::fs::create_dir_all(maps_dir).expect("Failed to create assets/maps directory");
+    let assets_dir = Path::new("assets/library/tilesets/forest");
+    std::fs::create_dir_all(assets_dir).expect("Failed to create tileset directory");
 
-    let tmj_path = assets_dir.join("world.tmj");
+    let tmj_path = maps_dir.join("forest.tmj");
     let tmj_json = serde_json::to_string_pretty(&tiled_map).expect("Failed to serialize TMJ");
     std::fs::write(&tmj_path, &tmj_json).expect("Failed to write TMJ");
     println!("  -> wrote {}", tmj_path.display());
