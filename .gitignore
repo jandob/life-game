@@ -1,2 +1,7 @@
 /target
 /graphs
+
+# artgen (local AI art pipeline)
+/tools/artgen/.venv/
+/tools/artgen/out/
+__pycache__/

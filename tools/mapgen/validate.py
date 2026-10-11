@@ -1,0 +1,148 @@
+"""Map validation for tools/mapgen."""
+import json
+import os
+import subprocess
+import tempfile
+
+from PIL import Image
+
+from preview import find_tool
+from tmjlib import FLIP_MASK, TiledMap, object_tile
+
+
+def validate(m, run_tiled=True):
+    errors, warnings = [], []
+    d = m.data
+    w, h = d.get("width"), d.get("height")
+
+    if d.get("orientation") != "orthogonal":
+        errors.append(f"orientation is {d.get('orientation')!r}, loader needs orthogonal")
+    if d.get("infinite"):
+        errors.append("infinite maps are not supported")
+    if not d.get("tilesets"):
+        errors.append("map references no tileset (loader requires one)")
+    if len(m.tilesets) > 1:
+        warnings.append("loader only reads the first tileset's collision/first_gid; others render wrong in game")
+
+    # tilesets
+    ranges = []
+    for ts in m.tilesets:
+        label = ts.source or ts.name
+        if getattr(ts, "missing", False):
+            errors.append(f"tileset file missing: {label} (resolved to {ts.path})")
+            continue
+        if (ts.tilew, ts.tileh) != (m.tilew, m.tileh):
+            errors.append(f"tileset '{ts.name}' tile size {ts.tilew}x{ts.tileh} differs from map {m.tilew}x{m.tileh}")
+        img = ts.image_path()
+        if img:
+            if not os.path.isfile(img):
+                errors.append(f"tileset '{ts.name}' image missing: {img}")
+            else:
+                iw, ih = Image.open(img).size
+                if ts.columns and ts.columns * ts.tilew > iw:
+                    errors.append(f"tileset '{ts.name}' image {iw}x{ih} is smaller than its columns/tilewidth")
+        ranges.append((ts.firstgid, ts.firstgid + ts.tilecount, ts.name))
+    ranges.sort()
+    for a, b in zip(ranges, ranges[1:]):
+        if b[0] < a[1]:
+            errors.append(f"tilesets '{a[2]}' and '{b[2]}' have overlapping gid ranges")
+
+    # layers
+    tls = m.tile_layers()
+    if not tls:
+        errors.append("map has no tile layer (loader needs one)")
+    elif len(tls) > 1:
+        warnings.append(f"{len(tls)} tile layers: the game loader keeps only the LAST one ('{tls[-1]['name']}')")
+    ids = [l.get("id") for l in m.layers]
+    if len(set(ids)) != len(ids):
+        errors.append("duplicate layer ids")
+    names = [l["name"] for l in m.layers]
+    if len(set(names)) != len(names):
+        errors.append("duplicate layer names")
+
+    flipped = 0
+    for l in tls:
+        data = l.get("data")
+        if not isinstance(data, list):
+            errors.append(f"layer '{l['name']}': data is not a JSON array (compressed/encoded?)")
+            continue
+        if len(data) != w * h:
+            errors.append(f"layer '{l['name']}': data length {len(data)} != width*height {w * h}")
+        if (l.get("width"), l.get("height")) != (w, h):
+            errors.append(f"layer '{l['name']}': size {l.get('width')}x{l.get('height')} != map {w}x{h}")
+        bad = {}
+        for i, gid in enumerate(data):
+            if not isinstance(gid, int) or gid < 0:
+                errors.append(f"layer '{l['name']}': bad value {gid!r} at cell {i}")
+                break
+            if gid & FLIP_MASK:
+                flipped += 1
+            if gid and m.tileset_for_gid(gid) is None:
+                bad.setdefault(gid & ~FLIP_MASK, []).append((i % w, i // w))
+        for gid, cells in bad.items():
+            errors.append(f"layer '{l['name']}': gid {gid} resolves to no tileset (first at {cells[0]}, {len(cells)} cells)")
+    if flipped:
+        warnings.append(f"{flipped} tiles use flip/rotation flags; the game loader does not mask them yet (renders wrong)")
+
+    # objects
+    seen_ids = set()
+    spawns = []
+    for l in m.layers:
+        if l["type"] != "objectgroup":
+            continue
+        for o in l["objects"]:
+            if o["id"] in seen_ids:
+                warnings.append(f"duplicate object id {o['id']} (Tiled expects ids unique per map; the game ignores ids)")
+            seen_ids.add(o["id"])
+            if not (0 <= o["x"] <= w * m.tilew and 0 <= o["y"] <= h * m.tileh):
+                errors.append(f"object '{o['name']}' (id {o['id']}) at ({o['x']},{o['y']}) is outside the map")
+            if o["name"] == "SpawnPoint":
+                spawns.append((l, o))
+    if len(spawns) != 1:
+        errors.append(f"expected exactly one SpawnPoint object, found {len(spawns)}")
+    elif w and h:
+        l, o = spawns[0]
+        if l["name"] != "Spawn":
+            warnings.append(f"SpawnPoint is in layer '{l['name']}', the game reads layer 'Spawn'")
+        tx, ty = object_tile(m, o)
+        if not (0 <= tx < w and 0 <= ty < h):
+            pass  # already reported as outside the map
+        else:
+            for tl in tls:
+                data = tl.get("data")
+                if not isinstance(data, list) or len(data) != w * h:
+                    continue
+                gid = data[ty * w + tx]
+                if not gid:
+                    continue
+                ts = m.tileset_for_gid(gid)
+                if ts and ts.has_collision((gid & ~FLIP_MASK) - ts.firstgid):
+                    errors.append(f"SpawnPoint stands on tile ({tx},{ty}) with collision "
+                                  f"({m.format_tile(gid)} in layer '{tl['name']}')")
+
+    # Tiled round trip as a format oracle
+    tiled_result = "skipped"
+    if run_tiled:
+        exe = find_tool("tiled")
+        if not exe:
+            warnings.append("tiled binary not found, skipped --export-map check")
+            tiled_result = "unavailable"
+        else:
+            with tempfile.TemporaryDirectory() as td:
+                out = os.path.join(td, "out.tmj")
+                env = dict(os.environ)
+                r = subprocess.run([exe, "--export-map", "json", m.path, out], capture_output=True, text=True, env=env, timeout=120)
+                if r.returncode != 0:
+                    tiled_result = "failed"
+                    errors.append(f"tiled --export-map failed: {(r.stderr or r.stdout).strip()}")
+                else:
+                    tiled_result = "ok"
+                    # sanity: Tiled should see the same cell count
+                    try:
+                        with open(out) as f:
+                            ex = json.load(f)
+                        if ex.get("width") != w or ex.get("height") != h:
+                            errors.append("tiled re-export changed the map size")
+                    except Exception as e:
+                        errors.append(f"tiled export unreadable: {e}")
+    return {"ok": not errors, "errors": errors, "warnings": warnings, "tiled_export": tiled_result}
