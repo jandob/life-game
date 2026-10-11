@@ -136,7 +136,7 @@ def run(args) -> None:
     b = get_backend(args.backend)
     base_opts = {k: v for k, v in b.info.defaults.items() if v is not None}
     base_opts.update(parse_opts(args.opt))
-    load_keys = {"offload", "dtype"}
+    load_keys = b.load_keys
     t0 = time.perf_counter()
     if not args.post_only:
         b.load(**{k: v for k, v in base_opts.items() if k in load_keys})

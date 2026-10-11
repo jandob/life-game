@@ -8,7 +8,7 @@ seed, options, timings), so any image can be reproduced.
 
 ```
 tools/artgen/
-  artgen.py            CLI: backends | generate | post | palette-from
+  artgen.py            CLI: backends | generate | inpaint | pose | snap | post | palette-from
   bench.py             runs a backend over prompts/bench.yaml -> contact sheets + table
   compare.py           item x run grid to compare variants or backends side by side
   postprocess.py       grid detect, downscale, bg removal, palette, cleanup, outline, cell fit
@@ -16,7 +16,14 @@ tools/artgen/
     base.py            Backend interface + BackendInfo metadata
     __init__.py        registry (name -> module:Class)
     flux2_klein_pixel_lora.py
+    sdxl.py            SDXL checkpoints: Illustrious, WAI, Pony, SDXL base (+ LoRA, ref, pose, inpaint)
+    z_image_turbo.py   Z-Image-Turbo built from the ComfyUI single files
+    _common.py         models.json reader, HF cache helpers, memory tracker
     example_stub.py    template for new backends
+  models.json          registry for sdxl / z_image_turbo: model files (paths or HF files), LoRAs, VAE, IP-Adapter
+  pose.py              draws OpenPose skeleton PNGs (artgen.py pose)
+  STYLES.md            ready-to-run command templates per style (S2/S3/S4) x backend
+  test_backends.py     tests for the two backends above
   prompts/bench.yaml   the fixed benchmark prompt set
   palettes/player_ref.hex  37 colours from assets/library/characters/player/player.png
 ```
@@ -177,3 +184,65 @@ download or sign up.
 multiples of 16; scene prompt template). Prints one JSON object. `artgen.py snap IMG... --factor S [--palette P.hex|--colours N]
 [--key #rrggbb] [--grid fixed|detect --target WxH] --out DIR` downscales by an exact integer block mode
 (`postprocess.downscale_fixed`), locks the palette and cleans up. See `tools/scenekit/README.md`.
+
+## SDXL and Z-Image backends
+
+Two in-process diffusers backends next to FLUX. For ready-made commands per style see
+`STYLES.md`. Model files are never copied: `models.json` points at the HF cache, at
+`~/Downloads` (WAI v17) and at the shared ComfyUI folder `~/ComfyUI-Shared/models/`
+(read-only; ComfyUI itself is not used). Edit `models.json`, or set `ARTGEN_MODELS=/path/other.json`,
+to add a checkpoint.
+
+### `sdxl`
+
+```sh
+.venv/bin/python artgen.py generate --backend sdxl \
+    --opt model=illustrious_v1 --opt loras=pixel_art_xl:0.8 \
+    --prompt "1boy, solo, adult, brown hair, grey hoodie, jeans, standing, front view, full body, anime style pixel art" \
+    --opt background="plain flat white background" --width 768 --height 1152 --seed 11 --out out/man
+```
+
+| `--opt` | Meaning |
+|---|---|
+| `model` | `illustrious_v1` (default), `wai_v17`, `cyberrealistic_pony_v18`, `sdxl_base`. Switching model reloads (about 5-10 s). |
+| `loras` | `pixel_art_xl:0.8`, comma separated, or a path to a `.safetensors`. A registered LoRA's trigger (`pixel art`) is added to the prompt. `0` or omitted = none. |
+| `rating` | `safe` (default), `questionable`, `explicit`. Becomes `rating_*` (Pony) or `general` / `sensitive` / `nsfw, explicit` (Illustrious, WAI). Not used for `sdxl_base`. |
+| `background` | Text appended to the prompt (default `simple background`). `quality=` replaces the family's quality prefix (empty = none). |
+| `steps`, `guidance`, `sampler` | Defaults per model in `models.json` (28 / 6.0 / `euler_a` for Illustrious and WAI, 30 / 5.0 / `dpmpp_sde_karras` for Pony, 30 / 7.0 for base). Samplers: `euler_a`, `dpmpp_2m_karras`, `dpmpp_sde_karras`. |
+| `--negative` / `negative_extra` | `--negative` replaces the family default negative, `--opt negative_extra=...` appends to it. |
+| `--ref FILE` + `ip_scale` | Reference image through IP-Adapter Plus (ViT-H), default scale 0.6. It carries colours and look more than exact identity. |
+| `pose` + `pose_scale`, `pose_end` | Skeleton PNG (below) through the OpenPose ControlNet (scale 0.8, released at 80 % of the steps). |
+
+- **Prompts follow each family's convention** (`--raw-prompt` turns that off). Pony: `score_9, score_8_up, score_7_up, rating_safe, ...`.
+  Illustrious and WAI: `masterpiece, best quality, amazing quality, very aesthetic, absurdres, newest, general, ...`; Danbooru tags mixed with
+  plain English work. Their default negative contains `child, loli, shota, young` because these checkpoints skew young: put `adult` and an
+  age description in your prompt. `sdxl_base` takes plain English only.
+- **Prompts longer than 77 CLIP tokens are not truncated**: the backend encodes them in 75-token chunks and joins the embeddings
+  (an explicit `clip_skip` option falls back to diffusers' encoder and truncates). Pony's "clip skip 2" is diffusers' default for SDXL.
+- fp16 on MPS uses `madebyollin/sdxl-vae-fp16-fix` (the stock VAE gives black images). Image `i` is reproducible from `seed + i`
+  (CPU generator), but not identical to ComfyUI or Civitai seeds.
+- **Sizes**: SDXL wants about 1 MP: 768x1152 or 832x1216 for characters, 1024x768 for props. Multiples of 8. At 832x1216 a 28-step image takes
+  about 45 s on the M5, peaking at 13 GB on MPS.
+- `inpaint` works: `artgen.py inpaint --backend sdxl --image canvas.png --mask mask.png --prompt "..." --strength 0.75 --opt model=wai_v17`
+  (`StableDiffusionXLInpaintPipeline` on the loaded weights, white mask = repaint, sides multiples of 8; without `--raw-prompt` the
+  family's quality prefix is added).
+- **Pose (OpenPose ControlNet)**: `artgen.py pose --preset stand_front --size 768x1152 --out pose.png` draws the skeleton ourselves
+  (presets `stand_front`, `stand_front_arms_out`, `stand_side`, `sit_front`, or `--keypoints my.json` with 18 `[x, y]` pairs in 0..1).
+  No annotator model is used. The ControlNet weights (`thibaud/controlnet-openpose-sdxl-1.0`) are **not** in the cache yet: that
+  repo only ships a 5 GB fp32 file, which was not approved. The code path is tested with an untrained ControlNet copied from the
+  UNet, so it proves the wiring, not the pose quality. See "Not done" in the change notes.
+
+### `z_image_turbo`
+
+Built from `z_image_turbo_bf16.safetensors`, `qwen_3_4b.safetensors` and `ae.safetensors` plus a few kB of
+config JSON from `Tongyi-MAI/Z-Image-Turbo`. 8 steps, guidance 0 (negative prompts ignored). Natural-language prompts only, no tags, no
+LoRA support yet. The text encoder (8 GB) and the transformer (12 GB) are never in memory together: a prompt is encoded first, the
+encoder is dropped, then the transformer loads to MPS (12 s). Peak about 18 GB on MPS, so close other heavy apps.
+`--opt style="anime style pixel art. "` is prepended to the prompt; `--opt background=...` is appended.
+
+```sh
+.venv/bin/python artgen.py generate --backend z_image_turbo --width 768 --height 1152 --seed 11 \
+    --opt style="detailed hi-res pixel art, limited palette. " --prompt "a young man in a grey hoodie, front view, full body" --out out/z
+```
+
+Tests: `.venv/bin/python test_backends.py` (fast), `ARTGEN_TEST_MODELS=1 .venv/bin/python test_backends.py` (loads WAI v17 and Z-Image).

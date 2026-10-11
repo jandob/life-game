@@ -12,6 +12,8 @@ from .base import Backend, BackendInfo
 
 REGISTRY: dict[str, str] = {
     "flux2_klein_pixel_lora": "flux2_klein_pixel_lora:Flux2KleinPixelLora",
+    "sdxl": "sdxl:Sdxl",
+    "z_image_turbo": "z_image_turbo:ZImageTurbo",
     # Template only: raises NotImplementedError until someone fills it in.
     "example_stub": "example_stub:ExampleStub",
 }
