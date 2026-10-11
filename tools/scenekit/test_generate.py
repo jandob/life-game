@@ -344,5 +344,160 @@ class TestDownscaleFixed(unittest.TestCase):
         self.assertEqual(out.splitlines(), ["True True", "True", "err"])
 
 
+class TestToolkitFeedback(Gen):
+    """Section 5 of the change: --compose, legend overrides, --init, --quiet, --rerun, layer-scoped staleness."""
+
+    def add_decor(self):
+        d = json.load(open(self.map))
+        base = d["layers"][0]
+        dec = dict(base, id=d.get("nextlayerid", 10), name="Decor", data=[0] * len(base["data"]))
+        dec.pop("properties", None)
+        d["layers"].insert(1, dec)
+        d["nextlayerid"] = dec["id"] + 1
+        json.dump(d, open(self.map, "w"))
+
+    def decor_gen(self, *extra, ok=True):
+        return self.run_cli("generate", self.map, "--layer", "Decor", "--region", "5,3,4,3", "--layout", self.layout4,
+                            "--prompt", "chair", "--scale", "4", "--n", "1", "--palette", self.hex, *extra, ok=ok)
+
+    def setUp(self):
+        super().setUp()
+        self.layout4 = os.path.join(self.tmp, "decor.txt")
+        open(self.layout4, "w").write("@ F = furniture\nFF_F\n____\n_FF_\n")
+        self.add_decor()
+
+    def canvas_px(self, out, cell, off=(2, 2)):
+        im = Image.open(os.path.join(self.job_dir(out), "canvas.png")).convert("RGB")
+        bx, by = out["box"][0], out["box"][1]
+        return im.getpixel(((cell[0] - bx) * 64 + off[0], (cell[1] - by) * 64 + off[1]))
+
+    # 5.1
+    def test_compose_modes(self):
+        ground = self.run_cli("render", self.map, "--layers", "Ground", "--region", "3,3,1,1", "--scale", 1, "--out",
+                              os.path.join(self.tmp, "g.png"))
+        gpx = Image.open(os.path.join(self.tmp, "g.png")).convert("RGB").getpixel((2, 2))
+        key = (255, 0, 255)
+        cases = {}
+        for mode in ("below", "none", "all"):
+            out = self.decor_gen("--alpha", "--compose", mode, "--dry-run")
+            self.assertEqual(out["compose"], mode)
+            cases[mode] = self.canvas_px(out, (3, 3))          # a context cell left of the region
+        self.assertEqual(cases["below"], gpx)                  # default behaviour: the floor is composited in
+        self.assertEqual(cases["all"], gpx)
+        self.assertEqual(cases["none"], key)                   # only the target layer: floor not baked in
+        default = self.decor_gen("--alpha", "--dry-run")
+        self.assertEqual(default["compose"], "below")
+        self.assertEqual(self.canvas_px(default, (3, 3)), gpx)
+
+    # 5.2
+    def test_legend_override_colour_and_texture(self):
+        mats_before = sha(os.path.join(self.root, "assets", "library", "tilesets", "gen", "materials.json")) \
+            if os.path.isfile(os.path.join(self.lib, "materials.json")) else None
+        g = G.parse_layout_text("@ O = wall #ddd5c4 texture=none\n@ P = wall #101010\nO#P\n", 3, 1, dict(load_materials()))
+        self.assertEqual(len(set(g[0])), 3)
+        m = dict(load_materials())
+        g = G.parse_layout_text("@ O = wall #ddd5c4 texture=none\n@ P = wall #101010\nO#P\n", 3, 1, m)
+        self.assertEqual(G.base_material(g[0][0], m), "wall")
+        self.assertEqual(m[g[0][0]]["colour"], "#ddd5c4")
+        self.assertEqual(m[g[0][2]]["colour"], "#101010")
+        self.assertEqual(m[g[0][1]]["colour"], load_materials()["wall"]["colour"])
+        for bad in ("@ O = wall #zzzzzz\nO\n", "@ O = wall texture=lava\nO\n", "@ O = nothing #ffffff\nO\n"):
+            with self.assertRaises(SceneError):
+                G.parse_layout_text(bad, 1, 1, dict(load_materials()))
+        # through the CLI: the block-out has the override colour; nothing shared changed
+        open(self.layout4, "w").write("@ F = furniture #ddd5c4 texture=none\nFF_F\n____\n_FF_\n")
+        out = self.decor_gen("--dry-run")
+        self.assertEqual(self.canvas_px(out, (5, 3), (30, 30)), (0xdd, 0xd5, 0xc4))
+        job = json.load(open(os.path.join(self.job_dir(out), "job.json")))
+        self.assertEqual(set(job["materials"].values()), {"furniture"})
+        self.assertEqual(list(job["layout_variants"].values())[0]["colour"], "#ddd5c4")
+        if mats_before:
+            self.assertEqual(mats_before, sha(os.path.join(self.lib, "materials.json")))
+
+    # 5.3
+    def test_init_png_is_canvas_only(self):
+        init = Image.new("RGBA", (4 * 16, 3 * 16), (0, 0, 0, 0))
+        for y in range(16):
+            for x in range(16):
+                init.putpixel((x, y), (200, 30, 30, 255))
+        ip = os.path.join(self.tmp, "init.png")
+        init.save(ip)
+        before = self.snapshot()
+        out = self.run_cli("generate", self.map, "--layer", "Decor", "--region", "5,3,4,3", "--init", ip, "--compose", "none",
+                           "--alpha", "--scale", "4", "--dry-run")
+        self.assertEqual(self.canvas_px(out, (5, 3), (30, 30)), (200, 30, 30))
+        self.assertEqual(self.canvas_px(out, (6, 3), (30, 30)), (255, 0, 255))
+        self.assertEqual(before, self.snapshot())            # neither map nor library written
+        job = json.load(open(os.path.join(self.job_dir(out), "job.json")))
+        self.assertEqual(job["init"], "sha256:" + sha(ip))
+        bad = os.path.join(self.tmp, "bad.png")
+        Image.new("RGBA", (10, 10)).save(bad)
+        e = self.run_cli("generate", self.map, "--layer", "Decor", "--region", "5,3,4,3", "--init", bad, "--dry-run", ok=False)
+        self.assertEqual(e["code"], "bad_input")
+
+    # 5.4 (apply --quiet) and 5.6
+    def test_scoped_staleness_and_rerun(self):
+        # a Ground edit first, so the gen page is already in the map and later edits don't change the tileset list
+        self.run_cli("edit", self.map, "--layer", "Ground", "--ops", json.dumps(self.px_ops((1, 1), ["#ff0000"])))
+        job_none = self.decor_gen("--compose", "none", "--alpha", "--seed", "3")
+        job_below = self.decor_gen("--seed", "3")
+        jn, jb = job_none["job"], job_below["job"]
+        self.assertEqual(sorted(json.load(open(os.path.join(self.job_dir(job_none), "job.json")))["scope"]["layers"]), ["Decor"])
+        self.assertEqual(sorted(json.load(open(os.path.join(self.job_dir(job_below), "job.json")))["scope"]["layers"]),
+                         ["Decor", "Ground"])
+        # an unrelated write (Ground) leaves the none-job valid and makes the below-job stale
+        self.run_cli("edit", self.map, "--layer", "Ground", "--ops", json.dumps(self.px_ops((2, 1), ["#00ff00"])))
+        stale = self.run_cli("apply", jb, "--pick", 0, "--if-hash", "job", ok=False)
+        self.assertEqual(stale["code"], "stale")
+        self.assertIn("layer 'Ground' changed", stale["reasons"])
+        # the same job applied without --if-hash job keeps today's behaviour
+        self.run_cli("apply", jb, "--pick", 0, "--dry-run")
+        # a write to a layer it writes (Decor, outside the region's cells) makes the none-job stale too
+        ok = self.run_cli("apply", jn, "--pick", 0, "--if-hash", "job", "--quiet", "--dry-run")
+        self.assertTrue(ok["quiet"])
+        self.assertNotIn("cells_changed", ok)
+        self.assertEqual(ok["counts"]["cells_changed"], 12)
+        self.run_cli("edit", self.map, "--layer", "Decor", "--ops", json.dumps(self.px_ops((12, 8), ["#0000ff"])))
+        s2 = self.run_cli("apply", jn, "--pick", 0, "--if-hash", "job", ok=False)
+        self.assertEqual(s2["code"], "stale")
+        self.assertIn("layer 'Decor' changed", s2["reasons"])
+        # rerun: new seed, same inputs; works from the map as it is now
+        re1 = self.run_cli("generate", "--rerun", jn, "--seed", "40")
+        self.assertEqual([c["seed"] for c in re1["candidates"]], [40])
+        self.assertEqual(re1["rerun_of"], jn)
+        j1 = json.load(open(os.path.join(self.job_dir(re1), "job.json")))
+        j0 = json.load(open(os.path.join(self.job_dir(job_none), "job.json")))
+        for k in ("layer", "region", "prompt_subject", "layout", "alpha", "compose", "strength", "palette"):
+            self.assertEqual(j1[k], j0[k], k)
+        self.run_cli("apply", re1["job"], "--pick", 0, "--if-hash", "job", "--quiet")      # fresh scope: valid
+        # default seed = previous seed + n; the layout file is not needed any more (the job kept a copy)
+        os.remove(self.layout4)
+        re2 = self.run_cli("generate", "--rerun", re1["job"], "--dry-run")
+        self.assertEqual(json.load(open(os.path.join(self.job_dir(re2), "job.json")))["seed"], 41)
+        # other inputs cannot be combined with --rerun
+        e = self.run_cli("generate", "--rerun", jn, "--layer", "Ground", ok=False)
+        self.assertEqual(e["code"], "bad_input")
+        # structure: a new layer makes a job stale
+        d = json.load(open(self.map))
+        d["layers"].append(dict(d["layers"][0], id=99, name="Extra"))
+        json.dump(d, open(self.map, "w"))
+        st = self.run_cli("apply", re1["job"], "--pick", 0, "--if-hash", "job", ok=False)
+        self.assertEqual(st["code"], "stale")
+        self.assertTrue(any("structure" in r for r in st["reasons"]))
+
+    def test_rerun_fill_and_variant_apply(self):
+        open(self.layout4, "w").write("@ F = furniture #ddd5c4\nFF_F\n____\n_FF_\n")
+        out = self.decor_gen("--seed", "2")
+        res = self.run_cli("apply", out["job"], "--pick", 0, "--quiet")
+        self.assertGreater(res["counts"]["cells_changed"], 0)
+        self.assertNotIn("cells_changed", res)
+        man = json.load(open(os.path.join(self.lib, "tiles.json")))
+        self.assertIn("furniture", {t.get("material") for t in man["tiles"].values()})   # variant -> base material
+        f = self.run_cli("fill", self.map, "--layer", "Ground", "--cells", "2,2;3,2", "--n", "1", "--palette", self.hex)
+        f2 = self.run_cli("fill", "--rerun", f["job"], "--seed", "9")
+        self.assertEqual(f2["candidates"][0]["seed"], 9)
+        self.assertEqual(f2["rerun_of"], f["job"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

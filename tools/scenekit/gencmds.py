@@ -1,9 +1,11 @@
 """Model-backed commands: generate (region), fill (cells), apply (commit a candidate through the import core).
 
 The model runs as a subprocess in the artgen venv; this module only needs Pillow."""
+import argparse
 import json
 import os
 import secrets
+import shutil
 import subprocess
 import sys
 import time
@@ -56,6 +58,68 @@ def run_artgen(args, log_path, timeout):
     raise SceneError(f"artgen {args[0]} printed no JSON; see {rel(log_path)}", "error")
 
 
+# --------------------------------------------------------------------------- argument defaults, scope hashes
+
+GEN_DEFAULTS = {"prompt": "", "strength": None, "context": None, "seed": 1, "n": 4, "palette": "scene", "colours": 32,
+                "alpha": False, "scale": "auto", "grid": "fixed", "cleanup": 1, "steps": 4, "lora_scale": 1.0, "timeout": 3600,
+                "dry_run": False, "compose": "below", "ref": None, "near": None, "layout": None, "init": None}
+# flags a --rerun may set; everything else comes from the job
+RERUN_FLAGS = ("rerun", "seed", "n", "dry_run", "if_hash", "cmd", "fn")
+INPUT_FILES = {"layout": "layout-src", "mask": "mask-src", "init": "init-src"}
+
+
+def normalize_gen_args(a, strength):
+    """argparse leaves every generate/fill flag None so --rerun can tell what was given; fill in the defaults here."""
+    for k, v in GEN_DEFAULTS.items():
+        if getattr(a, k, None) is None:
+            setattr(a, k, v)
+    if a.strength is None:
+        a.strength = strength
+    if a.context is None:
+        a.context = 2 if strength < 1 else 3
+    if getattr(a, "ring", None) is None:
+        a.ring = 0
+    for k in ("cells", "mask", "empty", "like", "region"):
+        if not hasattr(a, k):
+            setattr(a, k, None)
+    return a
+
+
+def layer_hash(layer):
+    return sha(json.dumps(layer, sort_keys=True).encode())
+
+
+def structure_hash(m):
+    """Map-level structure: size, the layer list (names and types, in order) and the tileset list."""
+    ts = [[t.firstgid, rel(t.path) if t.path else t.name] for t in m.tilesets]
+    return sha(json.dumps([m.width, m.height, [[l.get("name"), l["type"]] for l in m.layers], ts]).encode())
+
+
+def job_scope(m, read_layers, write_layer):
+    """What a job depends on: hashes of the tile layers it read (canvas context) and writes, plus the map structure."""
+    names = sorted({l["name"] for l in read_layers} | {write_layer["name"]})
+    return {"layers": {n: layer_hash(m.layer(n)) for n in names}, "structure": structure_hash(m)}
+
+
+def check_scope(m, job):
+    """-> list of reasons the job is stale for map m (empty = still valid). Only the layers the job read or writes count."""
+    scope = job.get("scope")
+    if not scope:
+        raise SceneError(f"job {job['id']} has no recorded scope (made by an older scenekit); pass an explicit --if-hash", "bad_input")
+    why = []
+    if structure_hash(m) != scope["structure"]:
+        why.append("map structure changed (layer added/removed/renamed/reordered, tileset list or map size changed)")
+    for name, h in scope["layers"].items():
+        try:
+            cur = layer_hash(m.layer(name))
+        except Exception:
+            why.append(f"layer '{name}' is gone")
+            continue
+        if cur != h:
+            why.append(f"layer '{name}' changed")
+    return why
+
+
 # --------------------------------------------------------------------------- shared helpers
 
 def new_job_id():
@@ -89,7 +153,8 @@ def cell_metas(layout, region, materials):
     for j, row in enumerate(layout):
         for i, mat in enumerate(row):
             if mat:
-                out[(rx + i, ry + j)] = (mat, make_meta(parse_shape(materials[mat].get("shape", "none")), "", mat))
+                base = G.base_material(mat, materials)
+                out[(rx + i, ry + j)] = (base, make_meta(parse_shape(materials[mat].get("shape", "none")), "", base))
     return out
 
 
@@ -149,14 +214,23 @@ def write_png(path, img):
 
 # --------------------------------------------------------------------------- the pipeline
 
-def run_pipeline(a, kind, m, sc, layer, cells, region, layout, layout_hash, layout_materials):
+def run_pipeline(a, kind, m, sc, layer, cells, region, layout, layout_hash, layout_materials, materials=None, init=None,
+                 inputs=None):
+    """`materials`: materials.json plus this job's layout legend variants; `init`: --init image; `inputs`: {name: source
+    path} of files copied into the job dir so that `generate --rerun` can reuse them."""
     t_all = time.perf_counter()
-    materials = load_materials()
+    materials = materials if materials is not None else load_materials()
     alpha = bool(a.alpha)
-    canvas = G.build_canvas(sc, m, layer, cells, region, layout, a.context, a.scale, alpha)
+    compose = a.compose
+    canvas = G.build_canvas(sc, m, layer, cells, region, layout, a.context, a.scale, alpha, compose, init, materials)
     job = new_job_id()
     job_dir = os.path.join(JOBS_DIR, job)
     os.makedirs(job_dir)
+    saved_inputs = {}
+    for name, src in (inputs or {}).items():
+        fname = INPUT_FILES[name] + os.path.splitext(src)[1]
+        shutil.copyfile(src, os.path.join(job_dir, fname))
+        saved_inputs[name] = fname
     log = os.path.join(job_dir, "model.log")
     write_png(os.path.join(job_dir, "canvas.png"), canvas.image)
     write_png(os.path.join(job_dir, "mask.png"), canvas.mask)
@@ -185,6 +259,13 @@ def run_pipeline(a, kind, m, sc, layer, cells, region, layout, layout_hash, layo
         "strength": a.strength, "steps": a.steps, "lora_scale": a.lora_scale, "seed": a.seed, "n": a.n,
         "palette": pal_desc, "alpha": alpha, "grid": a.grid, "near": a.near, "ring_fill": getattr(a, "ring", 0),
         "refs": [sha(open(r, "rb").read()) for r in refs], "layout": layout_hash,
+        "compose": compose, "init": sha(open(inputs["init"], "rb").read()) if inputs and "init" in inputs else None,
+        "layout_variants": {k: {"base": v["base"], "colour": v.get("colour"), "texture": v.get("texture", "none")}
+                            for k, v in materials.items() if "base" in v and layout is not None
+                            and any(k in row for row in layout)},
+        "scope": job_scope(m, G.compose_layers(m, layer, compose), layer), "inputs": saved_inputs,
+        "args": {k: v for k, v in vars(a).items() if k not in ("fn", "cmd", "rerun", "if_hash") and
+                 isinstance(v, (str, int, float, bool, list, type(None)))},
         "materials": {f"{x},{y}": mat for (x, y), (mat, _meta) in layout_materials.items()},
         "layer_gids": {f"{x},{y}": layer["data"][y * m.width + x] for (x, y) in sorted(cells)},
         "backend": BACKEND, "models": MODELS, "created": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -200,7 +281,7 @@ def run_pipeline(a, kind, m, sc, layer, cells, region, layout, layout_hash, layo
         return {"ok": True, "job": job, "dir": rel(job_dir), "dry_run": True, "canvas": rel(os.path.join(job_dir, "canvas.png")),
                 "mask": rel(os.path.join(job_dir, "mask.png")), "scale": canvas.scale, "box": list(canvas.box),
                 "context": canvas.ring, "canvas_px": info["canvas_px"], "prompt_subject": subject, "palette": pal_desc,
-                "warnings": info.get("warnings", [])}
+                "compose": compose, "warnings": info.get("warnings", [])}
 
     # 1. model
     t0 = time.perf_counter()
@@ -247,7 +328,8 @@ def run_pipeline(a, kind, m, sc, layer, cells, region, layout, layout_hash, layo
             "prompt": info["prompt"], "palette": pal_desc, "contact": rel(contact), "timings": info["timings"],
             "candidates": [{k: c[k] for k in ("k", "seed", "file", "preview", "tiles_new", "deduped", "near_matches",
                                               "cells_changed")} | {"colours": c["snap_report"]["colours_used"]} for c in cands],
-            "warnings": info.get("warnings", []), "next": f"scene.py apply {job} --pick K"}
+            "warnings": info.get("warnings", []), "compose": compose, "scope_layers": sorted(info["scope"]["layers"]),
+            "next": f"scene.py apply {job} --pick K"}
 
 
 def check_common(a):
@@ -260,6 +342,11 @@ def check_common(a):
 
 
 def cmd_generate(a):
+    if a.rerun:
+        return rerun(a, "generate")
+    if not (a.map and a.layer and a.region):
+        raise SceneError("generate needs MAP, --layer and --region (or --rerun JOB)", "bad_input")
+    normalize_gen_args(a, 0.75)
     check_common(a)
     sc = Scene("generate", True)
     m = sc.load_map(abspath_from_root(a.map), a.if_hash)
@@ -269,14 +356,60 @@ def cmd_generate(a):
         raise SceneError(f"region {a.region} reaches outside the {m.width}x{m.height} map", "bad_input")
     rx, ry, rw, rh = region
     cells = {(x, y) for y in range(ry, ry + rh) for x in range(rx, rx + rw)}
+    materials = dict(load_materials())          # per-job copy: layout legends may add colour/texture variants
     layout = layout_hash = None
+    inputs = {}
     if a.layout:
-        layout, layout_hash = G.load_layout(abspath_from_root(a.layout), rw, rh, load_materials())
+        layout, layout_hash = G.load_layout(abspath_from_root(a.layout), rw, rh, materials)
+        inputs["layout"] = abspath_from_root(a.layout)
+    init = None
+    if a.init:
+        init = G.load_init(abspath_from_root(a.init), rw, rh)
+        inputs["init"] = abspath_from_root(a.init)
     return run_pipeline(a, "generate", m, sc, layer, cells, region, layout, layout_hash,
-                        cell_metas(layout, region, load_materials()))
+                        cell_metas(layout, region, materials), materials, init, inputs)
+
+
+def rerun(a, kind):
+    """generate/fill --rerun JOB [--seed N] [--n K]: the same inputs (map layer, region, prompt, layout, refs, parameters),
+    new seeds. Works from the map as it is now, so it is never "stale"; the new job records its own scope."""
+    jdir, job = load_job(a.rerun, allow_dry=True)
+    if job["kind"] != kind:
+        raise SceneError(f"job {job['id']} is a {job['kind']} job; use `{job['kind']} --rerun`", "bad_input")
+    if "args" not in job:
+        raise SceneError(f"job {job['id']} has no recorded arguments (made by an older scenekit)", "bad_input")
+    given = [k for k, v in vars(a).items() if v is not None and v is not False and k not in RERUN_FLAGS]
+    if given:
+        raise SceneError(f"--rerun reuses the job's inputs; only --seed, --n, --if-hash and --dry-run may be given "
+                         f"(got: {', '.join('--' + k.replace('_', '-') for k in sorted(given))})", "bad_input")
+    args = dict(job["args"])
+    args.update(map=job["map"], layer=job["layer"], rerun=None, if_hash=a.if_hash)
+    args["seed"] = a.seed if a.seed is not None else job["seed"] + job["n"]
+    if a.n is not None:
+        args["n"] = a.n
+    args["dry_run"] = bool(a.dry_run)
+    for name in INPUT_FILES:
+        if name in job.get("inputs", {}):
+            args[name] = os.path.join(jdir, job["inputs"][name])
+    refs = [abspath_from_root(r) for r in (args.get("ref") or [])]
+    for r, want in zip(refs, job["refs"]):
+        if not os.path.isfile(r):
+            raise SceneError(f"reference image not found: {r}", "not_found")
+        if sha(open(r, "rb").read()) != want:
+            raise SceneError(f"reference image {rel(r)} changed since job {job['id']}; not the same inputs", "stale")
+    b = argparse.Namespace(**args)
+    b.rerun = None
+    res = (cmd_generate if kind == "generate" else cmd_fill)(b)
+    res["rerun_of"] = job["id"]
+    return res
 
 
 def cmd_fill(a):
+    if a.rerun:
+        return rerun(a, "fill")
+    if not (a.map and a.layer):
+        raise SceneError("fill needs MAP and --layer (or --rerun JOB)", "bad_input")
+    normalize_gen_args(a, 1.0)
     check_common(a)
     if a.ring not in (0, 1):
         raise SceneError("--ring must be 0 or 1", "bad_input")
@@ -313,12 +446,13 @@ def cmd_fill(a):
     if a.ring:
         cells |= {(x + dx, y + dy) for (x, y) in cells for dx in (-1, 0, 1) for dy in (-1, 0, 1)
                   if 0 <= x + dx < m.width and 0 <= y + dy < m.height}
-    return run_pipeline(a, "fill", m, sc, layer, cells, G.bbox_of(cells), None, None, {})
+    inputs = {"mask": abspath_from_root(a.mask)} if a.mask else {}
+    return run_pipeline(a, "fill", m, sc, layer, cells, G.bbox_of(cells), None, None, {}, None, None, inputs)
 
 
 # --------------------------------------------------------------------------- apply
 
-def load_job(spec):
+def load_job(spec, allow_dry=False):
     p = abspath_from_root(spec)
     if not os.path.isdir(p):
         p = os.path.join(JOBS_DIR, spec)
@@ -327,7 +461,7 @@ def load_job(spec):
         raise SceneError(f"job not found: {spec} (looked for {jp})", "not_found")
     with open(jp) as f:
         job = json.load(f)
-    if job.get("dry_run"):
+    if job.get("dry_run") and not allow_dry:
         raise SceneError(f"job {job['id']} is a dry run (no candidates)", "bad_input")
     return p, job
 
@@ -339,7 +473,14 @@ def cmd_apply(a):
         raise SceneError(f"job {job['id']} has candidates {sorted(cands)}, not {a.pick}", "bad_input")
     c = cands[a.pick]
     sc = Scene("apply", a.dry_run)
-    m = sc.load_map(abspath_from_root(job["map"]), a.if_hash)
+    m = sc.load_map(abspath_from_root(job["map"]), None if a.if_hash == "job" else a.if_hash)
+    if a.if_hash == "job":
+        # layer-scoped staleness: only the layers the job read or writes (and the map structure) count, so writes to
+        # unrelated layers don't invalidate a queued job
+        why = check_scope(m, job)
+        if why:
+            raise SceneError(f"job {job['id']} is stale: {'; '.join(why)}; regenerate (generate --rerun {job['id']} --seed N)",
+                             "stale", reasons=why, map_hash=sc.map_hash(m))
     layer = m.layer(job["layer"], "tilelayer")
     cells = [tuple(x) for x in job["cells"]]
     cand = Image.open(os.path.join(jdir, c["file"])).convert("RGBA")
@@ -367,6 +508,6 @@ def cmd_apply(a):
     o = Opts(a, origin=job["kind"], job=job["id"], gen=gen)
     o.near = __import__("editcore").parse_near(near)
     res = apply_cells(sc, m, layer, new_cells, o, meta_override=meta_over or None)
-    res = summarize(finish(sc, m, res, bool(res["cells_changed"])))
+    res = summarize(finish(sc, m, res, bool(res["cells_changed"])), getattr(a, "quiet", False))
     res.update(job=job["id"], pick=a.pick, seed=c["seed"], region=job["region"], layer=job["layer"])
     return res

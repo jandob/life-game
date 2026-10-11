@@ -425,7 +425,14 @@ class Scene:
         if data is None:
             raise SceneError(f"map not found: {path}", "not_found")
         if if_hash:
-            want = if_hash if if_hash.startswith("sha256:") else "sha256:" + if_hash
+            if if_hash == "auto":
+                want = journal_hash_after_last_write(path)
+                if want is None:
+                    raise SceneError(f"--if-hash auto: the journal has no write to {rel(path)}, so there is no hash to trust; "
+                                     f"pass the map_hash you looked at (current: {self.reads[path]})",
+                                     "stale", map_hash=self.reads[path])
+            else:
+                want = if_hash if if_hash.startswith("sha256:") else "sha256:" + if_hash
             if want != self.reads[path]:
                 raise SceneError(f"{rel(path)} changed since you looked (hash is {self.reads[path]}, you passed {want})",
                                  "stale", map_hash=self.reads[path])
@@ -593,6 +600,19 @@ def journal_entries():
             e["name"] = n
             out.append(e)
     return out
+
+
+def journal_hash_after_last_write(path):
+    """sha256 this tool's journal says `path` had after its own last write (or undo) of it; None if it never wrote it.
+
+    This is what `--if-hash auto` compares against: if anybody else touched the file since (hand edit in Tiled, another
+    agent), the current hash differs and the command refuses like a stale explicit hash."""
+    path = os.path.abspath(path)
+    for e in reversed(journal_entries()):
+        for f in e["files"]:
+            if f["abs"] == path:
+                return f["old_sha"] if e["undone"] else f["new_sha"]
+    return None
 
 
 def undo(steps=1, dry_run=False):

@@ -354,8 +354,20 @@ def finish(sc, m, res, map_dirty):
     return res
 
 
-def summarize(res):
+QUIET_LISTS = ("cells_changed", "tiles_new", "tiles_reused", "near_matches", "meta_variants", "tiles_updated", "in_place",
+               "forked", "unchanged")
+
+
+def summarize(res, quiet=False):
+    """Add `counts`. With quiet, drop the per-cell / per-tile lists so only the summary (counts, hashes, files) remains."""
     res["counts"] = {"cells_changed": len(res["cells_changed"]), "tiles_new": len(res["tiles_new"])}
+    if "tiles_updated" in res:
+        res["counts"]["tiles_updated"] = len(res["tiles_updated"])
+    if quiet:
+        res["counts"].update(tiles_reused=len(res.get("tiles_reused", [])), near_matches=len(res.get("near_matches", [])))
+        for k in QUIET_LISTS:
+            res.pop(k, None)
+        res["quiet"] = True
     return res
 
 
@@ -377,7 +389,7 @@ def cmd_edit(a):
                 new_cells[(cx, cy)] = c
     res = apply_cells(sc, m, layer, new_cells, o)
     dirty = bool(res["cells_changed"]) and not o.global_
-    return summarize(finish(sc, m, res, dirty))
+    return summarize(finish(sc, m, res, dirty), getattr(a, "quiet", False))
 
 
 def cmd_tile_edit(sc_args):
@@ -502,7 +514,7 @@ def cmd_import(a):
                     l["data"][i] = 0
         res["cleared"] = cleared
     res["conflicts_overridden"] = conflicts if a.force else []
-    return summarize(finish(sc, m, res, bool(res["cells_changed"]) and not o.global_))
+    return summarize(finish(sc, m, res, bool(res["cells_changed"]) and not o.global_), getattr(a, "quiet", False))
 
 
 # --------------------------------------------------------------------------- collide / material
@@ -561,13 +573,15 @@ def cmd_meta_tile(kind, a):
     ts, local = sc.resolve_key(key)
     total = check_tile_uses(sc, key, a.expect_uses)
     change, what = meta_changer(kind, a)
-    new = change(sc.tile_meta(ts, local))
+    old = sc.tile_meta(ts, local)
+    new = change(old)
     if gen:
         sc.library.set_meta(int(key.split(":")[1]), new)
     else:
         set_foreign_meta(sc, ts, local, new)
-    res = {"tile": key, "uses": total, "meta": new, **what, "cells_changed": [], "tiles_new": []}
-    return finish(sc, None, res, False)
+    res = {"tile": key, "uses": total, "meta": new, **what, "cells_changed": [], "tiles_new": [],
+           "tiles_updated": [key] if meta_sig(new) != meta_sig(old) else []}
+    return summarize(finish(sc, None, res, False), getattr(a, "quiet", False))
 
 
 def cmd_meta_region(kind, a):
@@ -613,7 +627,7 @@ def cmd_meta_region(kind, a):
             raise SceneError(f"--global changes {global_total} use(s) in total; pass --expect-uses {global_total}. "
                              f"Nothing was written.", "impact", total=global_total)
     res = new_result()
-    res.update(in_place=[], forked=[], unchanged=[])
+    res.update(in_place=[], forked=[], unchanged=[], tiles_updated=[])
     for key, how, cells, ts, local, new in plan:
         if how == "unchanged":
             res["unchanged"].append(key)
@@ -623,6 +637,7 @@ def cmd_meta_region(kind, a):
             else:
                 set_foreign_meta(sc, ts, local, new)
             res["in_place"].append(key)
+            res["tiles_updated"].append(key)
         else:
             tid, status, _ = sc.library.insert(sc.tile_image(ts, local), new, origin="fork", parent=key,
                                                source={"map": mp, "layer": layer["name"], "x": cells[0][0], "y": cells[0][1]})
@@ -634,4 +649,4 @@ def cmd_meta_region(kind, a):
             if status in ("new", "meta_variant"):
                 res["tiles_new"].append(f"gen:{tid}")
     res.update(what)
-    return summarize(finish(sc, m, res, bool(res["cells_changed"])))
+    return summarize(finish(sc, m, res, bool(res["cells_changed"])), getattr(a, "quiet", False))

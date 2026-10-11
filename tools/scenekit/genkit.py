@@ -11,6 +11,7 @@ from compose import composite_image, tile_layers
 BG = (127, 127, 127)          # canvas colour of empty cells (the model needs RGB)
 KEY = (255, 0, 255)           # flat key colour for --alpha layers
 MIN_SCALE, MAX_SCALE, MAX_SIDE = 2, 8, 1024
+TEXTURES = {"planks", "wall", "none"}
 
 
 # --------------------------------------------------------------------------- layout
@@ -29,10 +30,48 @@ def material_chars(materials):
     return out
 
 
+def legend_material(ln, line, toks, materials):
+    """'wall #ddd5c4 texture=none' -> a per-job variant of material 'wall' with another block-out colour / texture.
+
+    The variant is added to `materials` (the caller's per-job copy) as 'wall@ddd5c4/none' with "base": "wall"; it keeps
+    the base material's shape, hint and layer, and is written to the map as the base material. materials.json is never
+    touched. Plain 'name' returns the name unchanged."""
+    name, over = toks[0], toks[1:]
+    if not over:
+        return name
+    spec = dict(materials[name])
+    key = name
+    for t in over:
+        if t.startswith("texture="):
+            tex = t[len("texture="):]
+            if tex not in TEXTURES:
+                raise SceneError(f"layout line {ln}: unknown texture '{tex}' in '{line}' (use {', '.join(sorted(TEXTURES))})",
+                                 "bad_input")
+            spec["texture"] = tex
+            key += f"/{tex}"
+        else:
+            try:
+                r, g, b = parse_colour(t)[:3]
+            except Exception:
+                raise SceneError(f"layout line {ln}: '{t}' in '{line}' is neither a colour (#rrggbb) nor texture=NAME",
+                                 "bad_input")
+            spec["colour"] = "#%02x%02x%02x" % (r, g, b)
+            key += "@%02x%02x%02x" % (r, g, b)
+    spec["base"] = name
+    materials[key] = spec
+    return key
+
+
+def base_material(name, materials):
+    """Material name that is written to the map for a layout material (variants map back to their base)."""
+    return materials[name].get("base", name)
+
+
 def parse_layout_text(text, rw, rh, materials):
     """Text grid -> rows of material names (None = keep the current pixels). One character per cell.
 
-    Lines starting with '@' add legend entries ('@ X = wall'); blank lines and lines starting with '//' are skipped.
+    Lines starting with '@' add legend entries ('@ X = wall', or with a per-job colour / texture override:
+    '@ X = wall #ddd5c4 texture=none'; the override variants are added to `materials`); blank lines and lines starting with '//' are skipped.
     ' ' and '_' mean "no block-out: keep what is there". Rows must be exactly rw wide, rh tall."""
     chars = material_chars(materials)
     rows = []
@@ -40,11 +79,11 @@ def parse_layout_text(text, rw, rh, materials):
         line = raw.rstrip("\r\n")
         if line.startswith("@"):
             lhs, _, rhs = line[1:].partition("=")
-            c, name = lhs.strip(), rhs.strip()
-            if len(c) != 1 or name not in materials:
-                raise SceneError(f"layout line {ln}: bad legend '{line}' (use '@ X = material'; known: {sorted(materials)})",
-                                 "bad_input")
-            chars[c] = name
+            c, toks = lhs.strip(), rhs.split()
+            if len(c) != 1 or not toks or toks[0] not in materials:
+                raise SceneError(f"layout line {ln}: bad legend '{line}' (use '@ X = material [#rrggbb] [texture=planks|wall|none]'; "
+                                 f"known: {sorted(materials)})", "bad_input")
+            chars[c] = legend_material(ln, line, toks, materials)
         elif line.strip() and not line.startswith("//"):
             rows.append((ln, line))
     if len(rows) != rh:
@@ -96,6 +135,17 @@ def load_layout(path, rw, rh, materials):
         return parse_layout_png(path, rw, rh, materials), sha(open(path, "rb").read())
     data = open(path, "rb").read()
     return parse_layout_text(data.decode("utf-8"), rw, rh, materials), sha(data)
+
+
+def load_init(path, rw, rh):
+    """--init PNG: the block-out canvas of the region, exactly (rw*16) x (rh*16) pixels, RGBA (transparent = keep)."""
+    if not os.path.isfile(path):
+        raise SceneError(f"--init image not found: {path}", "not_found")
+    im = Image.open(path).convert("RGBA")
+    if im.size != (rw * TILE, rh * TILE):
+        raise SceneError(f"--init image is {im.size[0]}x{im.size[1]}, the region is {rw * TILE}x{rh * TILE} px "
+                         f"({rw}x{rh} cells at 16 px)", "bad_input")
+    return im
 
 
 def blockout_tile(material, materials):
@@ -218,7 +268,26 @@ class Canvas:
             box, scale, region, cells, base, image, mask, ring
 
 
-def build_canvas(sc, m, layer, cells, region, layout, ring, scale="auto", alpha=False):
+COMPOSE_MODES = ("below", "none", "all")
+
+
+def compose_layers(m, layer, compose="below"):
+    """Visible tile layers the canvas shows around the region: below (default) = up to and including `layer`; none = only
+    `layer`; all = every visible tile layer (plus `layer`)."""
+    if compose not in COMPOSE_MODES:
+        raise SceneError(f"--compose must be one of {', '.join(COMPOSE_MODES)}, got '{compose}'", "bad_input")
+    idx = m.layers.index(layer)
+    if compose == "none":
+        return [layer]
+    layers = [l for l in tile_layers(m) if compose == "all" or m.layers.index(l) <= idx]
+    if layer not in layers:
+        layers.append(layer)
+        layers.sort(key=lambda l: m.layers.index(l))
+    return layers
+
+
+def build_canvas(sc, m, layer, cells, region, layout, ring, scale="auto", alpha=False, compose="below", init=None,
+                 materials=None):
     """Composite the layers up to and including `layer` around `cells`, draw the block-out inside the region, scale
     by an integer with nearest neighbour and make the mask.
 
@@ -227,12 +296,10 @@ def build_canvas(sc, m, layer, cells, region, layout, ring, scale="auto", alpha=
     anyway); cells without a layout entry keep their current pixels. Empty pixels become grey (or the key colour for
     --alpha)."""
     from common import load_materials
-    materials = load_materials()
+    materials = materials if materials is not None else load_materials()
     box, ring_used, s = fit_box(m.width, m.height, region, ring, scale)
     bx, by, bw, bh = box
-    layers = [l for l in tile_layers(m) if m.layers.index(l) <= m.layers.index(layer)]
-    if layer not in layers:
-        layers.append(layer)
+    layers = compose_layers(m, layer, compose)
     base = composite_image(sc, m, layers, box)
     rx, ry, _rw, _rh = region
     flat = Image.new("RGBA", base.size, KEY + (255,) if alpha else BG + (255,))
@@ -245,6 +312,16 @@ def build_canvas(sc, m, layer, cells, region, layout, ring, scale="auto", alpha=
                 if mat and (x, y) in cells:
                     work.paste(bo.crop((i * TILE, j * TILE, (i + 1) * TILE, (j + 1) * TILE)),
                                ((x - bx) * TILE, (y - by) * TILE))
+    if init is not None:
+        # --init: a block-out image (region size, RGBA); its opaque pixels replace the region's pixels on the canvas only
+        for (x, y) in cells:
+            ix, iy = (x - rx) * TILE, (y - ry) * TILE
+            piece = init.crop((ix, iy, ix + TILE, iy + TILE))
+            if piece.getchannel("A").getbbox() is None:
+                continue
+            cx, cy = (x - bx) * TILE, (y - by) * TILE
+            tile = work.crop((cx, cy, cx + TILE, cy + TILE))
+            work.paste(Image.alpha_composite(tile, piece), (cx, cy))
     if layout is None and not alpha:
         work = smear_fill(work, box, cells)
     img = Image.alpha_composite(flat, work).convert("RGB")

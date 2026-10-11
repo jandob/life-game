@@ -52,9 +52,19 @@ Phase 2 acceptance (on a scratch map):
 - [x] 3.6 `cargo check` (native) and `cargo check --target wasm32-unknown-unknown`
 - [x] 3.7 Forest regression: forest map renders and collides as before (F3 off)
 - [x] 3.8 Demo: `assets/maps/apartment.tmj` (about 20x14 tiles; layers `Floor`, `Walls`, `Decor`, `Above` with `above=true`; `Spawn` with `SpawnPoint`) built only with scenekit commands by an agent; materials and collision set through `material`/`collide`; `validate` passes; opens in Tiled 1.12
-- [ ] 3.9 Run native with the apartment as start map: player spawns inside, collides with walls and furniture (F3 off), can't leave the room, south wall top covers the player
+- [x] 3.9 Run native with the apartment as start map: player spawns inside, collides with walls and furniture (F3 off), can't leave the room, south wall top covers the player
 - [x] 3.10 Wasm build via `push_to_itch.sh` steps (without publishing) and a browser run on WebGPU: the room renders, console has no errors
 - [x] 3.11 `assets/library/LIBRARY.md` entry for `tilesets/gen/`
+
+## 5. Toolkit feedback from the first real use (apartment build)
+
+- [x] 5.1 `generate --alpha` composes only the target layer (`--compose none|below|all`, default `below` = unchanged; named `--compose` because `--context` is already the ring size) so furniture on `Decor` isn't baked onto the floor; no layer reordering needed
+- [x] 5.2 Per-job material colour/texture overrides in the layout (e.g. `@ # = wall #ddd5c4`) without editing `materials.json`
+- [x] 5.3 `generate --init PNG`: use a block-out image as the canvas without writing it to the map or library
+- [x] 5.4 `--quiet` (summary only) for `edit`, `apply`, `material`, `collide`; and `--if-hash auto` that uses the hash the journal recorded after the agent's last write, refusing if the file changed since
+- [x] 5.5 `material`/`collide` report `tiles_updated` (metadata changed in place) next to `cells_changed`
+- [x] 5.6 `generate --rerun JOB --seed N` (same inputs, new seed); queued jobs only go stale when a layer they read or write changed, not on any map write
+- [x] 5.7 README and scene-designer.md updated for 5.1–5.6
 
 ## 4. Phase 4: scene-designer agent
 

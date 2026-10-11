@@ -537,5 +537,71 @@ class TestValidate(Base):
         self.assertTrue(any("'above' must be a bool" in e for e in errs), errs)
 
 
+class TestFeedbackFixes(Base):
+    """Section 5: --quiet, --if-hash auto, tiles_updated."""
+
+    def paint(self, cell, colour, *extra, ok=True):
+        return self.run_cli("edit", self.map, "--layer", "Ground", "--ops", json.dumps(self.px_ops(cell, [colour])), *extra, ok=ok)
+
+    def test_quiet_keeps_summary_only(self):
+        full = self.paint((1, 1), "#ff0000", "--dry-run")
+        self.assertIn("cells_changed", full)
+        q = self.paint((1, 1), "#ff0000", "--quiet", "--dry-run")
+        self.assertTrue(q["quiet"])
+        for k in ("cells_changed", "tiles_new", "tiles_reused", "near_matches"):
+            self.assertNotIn(k, q)
+        self.assertEqual(q["counts"]["cells_changed"], 1)
+        self.assertEqual(q["counts"]["tiles_new"], 1)
+        for k in ("map_hash", "map_hash_before", "changed_files"):
+            self.assertIn(k, q)
+
+    def test_if_hash_auto_follows_own_journal_and_refuses_foreign_edits(self):
+        # no write by the tool yet: nothing to trust
+        e = self.paint((1, 1), "#ff0000", "--if-hash", "auto", ok=False)
+        self.assertEqual(e["code"], "stale")
+        r1 = self.paint((1, 1), "#ff0000")
+        # chained writes with no hash bookkeeping
+        r2 = self.paint((2, 1), "#00ff00", "--if-hash", "auto", "--quiet")
+        r3 = self.paint((3, 1), "#0000ff", "--if-hash", "auto", "--quiet")
+        self.assertEqual(r2["map_hash_before"], r1["map_hash"])
+        self.assertEqual(r3["map_hash_before"], r2["map_hash"])
+        # undo is the tool's own write too: the file is back at the hash before r3
+        self.run_cli("undo")
+        self.paint((3, 1), "#0000ff", "--if-hash", "auto", "--quiet")
+        # a hand edit (as Tiled would do) is refused, exactly like a stale explicit hash
+        d = json.load(open(self.map))
+        d["layers"][0]["data"][0] = d["layers"][0]["data"][1]
+        json.dump(d, open(self.map, "w"), indent=1)
+        before = sha(self.map)
+        e = self.paint((4, 1), "#ffff00", "--if-hash", "auto", ok=False)
+        self.assertEqual(e["code"], "stale")
+        self.assertEqual(e["map_hash"], "sha256:" + before)
+        self.assertEqual(sha(self.map), before)
+        e2 = self.paint((4, 1), "#ffff00", "--if-hash", "sha256:" + "0" * 64, ok=False)
+        self.assertEqual(e2["code"], "stale")
+        # after the human looked, an explicit hash works again and auto follows from that write
+        self.paint((4, 1), "#ffff00", "--if-hash", "sha256:" + before, "--quiet")
+        self.paint((5, 1), "#ffff00", "--if-hash", "auto", "--quiet")
+
+    def test_tiles_updated_reported_next_to_cells_changed(self):
+        self.paint((1, 1), "#ff0000")                  # a gen tile used once
+        res = self.run_cli("collide", "region", self.map, "--layer", "Ground", "--region", "1,1,1,1", "--shape", "full")
+        self.assertEqual(res["counts"]["cells_changed"], 0)
+        self.assertEqual(res["counts"]["tiles_updated"], 1)
+        self.assertEqual(len(res["tiles_updated"]), 1)
+        self.assertTrue(res["tiles_updated"][0].startswith("gen:"))
+        again = self.run_cli("collide", "region", self.map, "--layer", "Ground", "--region", "1,1,1,1", "--shape", "full")
+        self.assertEqual(again["counts"]["tiles_updated"], 0)          # already that shape
+        # a hand-made tile is forked instead: a cell changes, no tile is updated in place
+        res = self.run_cli("material", "region", self.map, "--layer", "Ground", "--region", "6,6,1,1", "wall", "--quiet")
+        self.assertEqual(res["counts"]["cells_changed"], 1)
+        self.assertEqual(res["counts"]["tiles_updated"], 0)
+        self.assertNotIn("cells_changed", res)
+        key = self.run_cli("cells", self.map, "--region", "1,1,1,1")["layers"][0]["cells"][0][0]["tile"]
+        t = self.run_cli("collide", "tile", key, "--shape", "none", "--expect-uses", 1)
+        self.assertEqual(t["tiles_updated"], [key])
+        self.assertEqual(t["counts"]["tiles_updated"], 1)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
