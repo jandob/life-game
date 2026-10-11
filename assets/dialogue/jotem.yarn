@@ -5,7 +5,7 @@ title: Jotem
 <<set $talked_with_target_npc = false>>
 <<set $mentioned_by_IonasAndAntonius = false>>
 
-{$name}: Greetin's, young lady.
+{$name}: Greetin's, young lad.
 {$name}: Well now, ain't seen a beauty like ya in a good while.
 -> Ey...
     {$name}: Haha sorry, I'm just foolin' around.

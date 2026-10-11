@@ -3,6 +3,7 @@
 //! Hand-rolled system that drives `Sprite::texture_atlas.index` for
 //! sprite-sheet animation clips.
 
+use std::f32::consts::PI;
 use std::time::Duration;
 
 use bevy::prelude::*;
@@ -103,9 +104,9 @@ impl Plugin for SpriteAnimationPlugin {
 // Clip data
 // ---------------------------------------------------------------------------
 
-/// Player animations, indexed like the old `player_animations` collection:
+/// Animations of the 64x128 character sheets (player and wanderer):
 /// `idle-down, idle-left, idle-right, idle-top, walking-*, running-*` (per direction).
-pub const PLAYER_CLIPS: [SpriteAnimationClip; 12] = [
+pub const CHARACTER_CLIPS: [SpriteAnimationClip; 12] = [
     SpriteAnimationClip::from_keyframe_range(0, 8, 0.8), // idle-down
     SpriteAnimationClip::from_keyframe_range(10, 18, 0.8), // idle-left
     SpriteAnimationClip::from_keyframe_range(20, 28, 0.8), // idle-right
@@ -139,3 +140,64 @@ pub const KEY_ICON: SpriteAnimationClip =
     SpriteAnimationClip::from_keyframe_range(0, 2, 1.0);
 pub const SHIFT_ICON: SpriteAnimationClip =
     SpriteAnimationClip::from_keyframe_range(0, 2, 3.5);
+
+// ---------------------------------------------------------------------------
+// Shared character clip selection
+// ---------------------------------------------------------------------------
+
+// Used to make sure we always play up/down animation when a character moves diagonally.
+const MOVEMENT_ANIMATION_ANGLE_BUFFER: f32 = 0.05;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CharacterAnim {
+    Idle,
+    Walk,
+    Run,
+}
+
+/// Picks the clip in [`CHARACTER_CLIPS`] for a facing direction and movement state.
+pub fn character_clip(dir: Vec2, anim: CharacterAnim) -> SpriteAnimationClip {
+    let dir = if dir == Vec2::ZERO { Vec2::NEG_X } else { dir };
+
+    let angle = Vec2::X.angle_to(dir);
+    let direction_index = if (-3.0 / 4.0 * PI - MOVEMENT_ANIMATION_ANGLE_BUFFER
+        ..=-1.0 / 4.0 * PI + MOVEMENT_ANIMATION_ANGLE_BUFFER)
+        .contains(&angle)
+    {
+        // Down
+        0
+    } else if (1.0 / 4.0 * PI - MOVEMENT_ANIMATION_ANGLE_BUFFER
+        ..=3.0 / 4.0 * PI + MOVEMENT_ANIMATION_ANGLE_BUFFER)
+        .contains(&angle)
+    {
+        // Up
+        3
+    } else if !(-3.0 / 4.0 * PI..=3.0 / 4.0 * PI).contains(&angle) {
+        // Left
+        1
+    } else {
+        // Right
+        2
+    };
+
+    match anim {
+        CharacterAnim::Idle => CHARACTER_CLIPS[direction_index],
+        CharacterAnim::Walk => CHARACTER_CLIPS[4 + direction_index],
+        CharacterAnim::Run => CHARACTER_CLIPS[8 + direction_index],
+    }
+}
+
+/// Plays `clip`, setting the atlas index immediately when switching clips so the
+/// sprite doesn't show a stale frame from the old clip until the next timer tick.
+pub fn play_character_clip(
+    animator: &mut SpriteAnimator,
+    sprite: &mut Sprite,
+    clip: SpriteAnimationClip,
+) {
+    if animator.clip != clip {
+        if let Some(atlas) = &mut sprite.texture_atlas {
+            atlas.index = clip.first_frame;
+        }
+    }
+    animator.play(clip);
+}

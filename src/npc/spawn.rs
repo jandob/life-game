@@ -210,6 +210,8 @@ fn spawn_npcs(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<Ti
             "Jotem" => spawn_jotem(&mut commands, &assets, pos),
             "Isabelle" => spawn_isabelle(&mut commands, &assets, pos),
             "IonasAntonius" => spawn_antonius_and_ionas(&mut commands, &assets, pos),
+            // Spawned by `wander::spawn_wanderer`, which reads this object itself.
+            "Wanderer" => {}
             _ => {
                 warn!("Unknown NPC name: {}", obj.name);
             }

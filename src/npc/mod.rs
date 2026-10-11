@@ -1,4 +1,5 @@
 mod spawn;
+mod wander;
 
 use strum_macros::{Display, EnumString};
 
@@ -20,7 +21,7 @@ pub struct NpcPlugin;
 
 impl Plugin for NpcPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(spawn::NpcSpawnPlugin)
+        app.add_plugins((spawn::NpcSpawnPlugin, wander::WanderPlugin))
             .add_systems(Update, (face_player,));
     }
 }

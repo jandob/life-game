@@ -10,6 +10,11 @@ pub struct GameAssets {
     pub player_layout: Handle<TextureAtlasLayout>,
 
     // --- NPC ---
+    #[asset(path = "npc/wanderer.png")]
+    pub wanderer_texture: Handle<Image>,
+    #[asset(texture_atlas(tile_size_x = 64, tile_size_y = 128, columns = 10, rows = 12))]
+    pub wanderer_layout: Handle<TextureAtlasLayout>,
+
     #[asset(path = "npc/eleonore.png")]
     pub eleonore_texture: Handle<Image>,
     #[asset(texture_atlas(tile_size_x = 64, tile_size_y = 64, columns = 9, rows = 1))]

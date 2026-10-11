@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::animation::{SpriteAnimator, PLAYER_CLIPS};
+use crate::animation::{SpriteAnimator, CHARACTER_CLIPS};
 use crate::world::camera::YSort;
 use crate::world::map::tiled_map::TiledMap;
 use crate::{GameAssets, GameState};
@@ -29,7 +29,7 @@ fn spawn_player(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<
         ))
         .id();
 
-    let animator = SpriteAnimator::looping(PLAYER_CLIPS[0]);
+    let animator = SpriteAnimator::looping(CHARACTER_CLIPS[0]);
 
     commands
         .spawn((
@@ -44,7 +44,7 @@ fn spawn_player(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<
                 image: assets.player_texture.clone(),
                 texture_atlas: Some(TextureAtlas {
                     layout: assets.player_layout.clone(),
-                    index: PLAYER_CLIPS[0].first_frame,
+                    index: CHARACTER_CLIPS[0].first_frame,
                 }),
                 ..default()
             },

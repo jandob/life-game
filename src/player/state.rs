@@ -1,16 +1,11 @@
-use std::f32::consts::PI;
-
 use bevy::prelude::*;
 use bevy_rapier2d::{dynamics::Velocity, plugin::PhysicsSet};
 use bevy_yarnspinner::events::DialogueCompleted;
 
-use crate::animation::{SpriteAnimator, PLAYER_CLIPS};
+use crate::animation::{character_clip, play_character_clip, CharacterAnim, SpriteAnimator};
 use crate::GameState;
 
 use super::{chat::PlayerStoppedChat, input::PlayerInput, Player};
-
-// Used to make sure we always play up/down animation when player moves diagonally.
-const MOVEMENT_ANIMATION_ANGLE_BUFFER: f32 = 0.05;
 
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
 pub enum PlayerState {
@@ -67,49 +62,14 @@ fn update_animation(mut q_player: Query<(&mut SpriteAnimator, &mut Sprite, &Play
         Err(_) => return,
     };
 
-    let dir = if player.current_direction == Vec2::ZERO {
-        Vec2::NEG_X
-    } else {
-        player.current_direction
+    let anim = match player.state {
+        PlayerState::Idling | PlayerState::Talking => CharacterAnim::Idle,
+        PlayerState::Walking => CharacterAnim::Walk,
+        PlayerState::Running => CharacterAnim::Run,
     };
 
-    let angle = Vec2::X.angle_to(dir);
-    let direction_index = if (-3.0 / 4.0 * PI - MOVEMENT_ANIMATION_ANGLE_BUFFER
-        ..=-1.0 / 4.0 * PI + MOVEMENT_ANIMATION_ANGLE_BUFFER)
-        .contains(&angle)
-    {
-        // Down
-        0
-    } else if (1.0 / 4.0 * PI - MOVEMENT_ANIMATION_ANGLE_BUFFER
-        ..=3.0 / 4.0 * PI + MOVEMENT_ANIMATION_ANGLE_BUFFER)
-        .contains(&angle)
-    {
-        // Up
-        3
-    } else if !(-3.0 / 4.0 * PI..=3.0 / 4.0 * PI).contains(&angle) {
-        // Left
-        1
-    } else {
-        // Right
-        2
-    };
-
-    let clip = match player.state {
-        PlayerState::Idling => PLAYER_CLIPS[direction_index],
-        PlayerState::Walking => PLAYER_CLIPS[4 + direction_index],
-        PlayerState::Running => PLAYER_CLIPS[8 + direction_index],
-        PlayerState::Talking => PLAYER_CLIPS[direction_index],
-    };
-
-    // Set the atlas index immediately when switching clips, so the sprite
-    // doesn't show a stale frame from the old clip until the next timer tick.
-    if animator.clip != clip {
-        if let Some(atlas) = &mut sprite.texture_atlas {
-            atlas.index = clip.first_frame;
-        }
-    }
-
-    animator.play(clip);
+    let clip = character_clip(player.current_direction, anim);
+    play_character_clip(&mut animator, &mut sprite, clip);
 }
 
 pub struct PlayerStatePlugin;
