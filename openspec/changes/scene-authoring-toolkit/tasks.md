@@ -51,10 +51,10 @@ Phase 2 acceptance (on a scratch map):
 - [x] 3.5 E5: start map via `bevy_asset_loader` dynamic assets (`assets/start.assets.ron`); check flora, NPC, wanderer and ending systems tolerate a map without `Flora`/`NPCs`
 - [x] 3.6 `cargo check` (native) and `cargo check --target wasm32-unknown-unknown`
 - [x] 3.7 Forest regression: forest map renders and collides as before (F3 off)
-- [ ] 3.8 Demo: `assets/maps/apartment.tmj` (about 20x14 tiles; layers `Floor`, `Walls`, `Decor`, `Above` with `above=true`; `Spawn` with `SpawnPoint`) built only with scenekit commands by an agent; materials and collision set through `material`/`collide`; `validate` passes; opens in Tiled 1.12
+- [x] 3.8 Demo: `assets/maps/apartment.tmj` (about 20x14 tiles; layers `Floor`, `Walls`, `Decor`, `Above` with `above=true`; `Spawn` with `SpawnPoint`) built only with scenekit commands by an agent; materials and collision set through `material`/`collide`; `validate` passes; opens in Tiled 1.12
 - [ ] 3.9 Run native with the apartment as start map: player spawns inside, collides with walls and furniture (F3 off), can't leave the room, south wall top covers the player
-- [ ] 3.10 Wasm build via `push_to_itch.sh` steps (without publishing) and a browser run on WebGPU: the room renders, console has no errors
-- [ ] 3.11 `assets/library/LIBRARY.md` entry for `tilesets/gen/`
+- [x] 3.10 Wasm build via `push_to_itch.sh` steps (without publishing) and a browser run on WebGPU: the room renders, console has no errors
+- [x] 3.11 `assets/library/LIBRARY.md` entry for `tilesets/gen/`
 
 ## 4. Phase 4: scene-designer agent
 

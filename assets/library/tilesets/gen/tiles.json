@@ -3,7 +3,7 @@
  "library": "gen",
  "tile_size": 16,
  "page_tiles": 256,
- "next_id": 79,
+ "next_id": 188,
  "tiles": {
   "0": {
    "hash": "sha256:a51f3a1522f10c5d55b52e74bc47b8b3d7ec2860fe1099b4495a745b247fbc15",
@@ -2449,6 +2449,1817 @@
     "palette": "file tools/artgen/palettes/interior.hex",
     "alpha": false
    }
+  },
+  "79": {
+   "hash": "sha256:33bce39760b83311678d94393795585761e06e9d249958dda31174165412bc56",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 0,
+    "y": 0
+   },
+   "material": "wall"
+  },
+  "80": {
+   "hash": "sha256:639d18ba9f56274d1fefc899ebe9464491ab3a5a25d18d5dab5a3f8186668456",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 1,
+    "y": 0
+   },
+   "material": "wall"
+  },
+  "81": {
+   "hash": "sha256:c5aa2faaea0dede2a47963a0c900c8ac659a2e514d1c79d9444ca671460fc27a",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 0,
+    "y": 1
+   },
+   "material": "wall"
+  },
+  "82": {
+   "hash": "sha256:c767102d978d90013149ae8a92b50242e020055734fbea24092031aa7b83fbd2",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 1,
+    "y": 1
+   },
+   "material": "wall"
+  },
+  "83": {
+   "hash": "sha256:c2bc4a4e10fe07cfb204e218fa3143c0247417a00e472b66567af83dc2d4b55c",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 7,
+    "y": 1
+   },
+   "material": "wall"
+  },
+  "84": {
+   "hash": "sha256:12b17432c7e3eb1cc2f3c656ef6c1974147abf4a9daac4d008a30aa96dc731fe",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 8,
+    "y": 1
+   },
+   "material": "wall"
+  },
+  "85": {
+   "hash": "sha256:ecb9eb8ac33e59b648b9f67986b5fc87ba39e341e926039695174137f9988b60",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 9,
+    "y": 1
+   },
+   "material": "wall"
+  },
+  "86": {
+   "hash": "sha256:5d84ff53ae7ef0735ea9c49f46470955f53d6a137c9d5d787dc97a6c449e6946",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 10,
+    "y": 1
+   },
+   "material": "wall"
+  },
+  "87": {
+   "hash": "sha256:571122d96dfd93f54d43c8aadd6e3fcf100a6c703e8a4efc755b65a9329b5fbd",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 19,
+    "y": 1
+   },
+   "material": "wall"
+  },
+  "88": {
+   "hash": "sha256:debb7148172708cd525bfde6f2ba079d5355236e845fc738837d0aac31206811",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 1,
+    "y": 2
+   },
+   "material": "wall"
+  },
+  "89": {
+   "hash": "sha256:c0f59c2785bb0e336d75f8c59a71cffaea57b63928385d1aae0d53cbeaaa62ad",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 7,
+    "y": 2
+   },
+   "material": "wall"
+  },
+  "90": {
+   "hash": "sha256:11ad332e87f8cd3910e9de53a9c183b46c57fbc825d06a9d9a05f279f2555f56",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 8,
+    "y": 2
+   },
+   "material": "wall"
+  },
+  "91": {
+   "hash": "sha256:362bd7ed4943b2f972971c41dd7fdd1042fd2aea173a5500a5cab99b8f2fa848",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 9,
+    "y": 2
+   },
+   "material": "wall"
+  },
+  "92": {
+   "hash": "sha256:c1b97e22fc9ea7315a3e56b29fc50a58ef67dcaf6517ee88001875ad743f6d11",
+   "created": "2026-10-11T19:14:24Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 10,
+    "y": 2
+   },
+   "material": "wall"
+  },
+  "93": {
+   "hash": "sha256:57ac5bc2014dfea6b5b697974fc19f43680dd2e39d6e812ae6aa416216fd88e4",
+   "created": "2026-10-11T19:15:04Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Above",
+    "x": 0,
+    "y": 12
+   },
+   "material": "wall_top"
+  },
+  "94": {
+   "hash": "sha256:3fedb778f2c922189d7c14a04cbcc9a19ccad27d9dbcbbb9bb660ee1aeaa4dd0",
+   "created": "2026-10-11T19:15:04Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Above",
+    "x": 1,
+    "y": 12
+   },
+   "material": "wall_top"
+  },
+  "95": {
+   "hash": "sha256:988a3d0e76fbc201f4bd0375f84aef83074b6650a6468ae4a5b1cb6e6a2f6d21",
+   "created": "2026-10-11T19:15:04Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Above",
+    "x": 8,
+    "y": 12
+   },
+   "material": "wall_top"
+  },
+  "96": {
+   "hash": "sha256:9da7044574c90a85150a40e6371a5930f38f7015f492e4ccb49e66a0f2258190",
+   "created": "2026-10-11T19:15:04Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Above",
+    "x": 11,
+    "y": 12
+   },
+   "material": "wall_top"
+  },
+  "97": {
+   "hash": "sha256:ba1018f097024d116e917739cb8fad74b11d1924dd0d8da533c682659b8f7f8d",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 3
+   }
+  },
+  "98": {
+   "hash": "sha256:f2b46aa209b4e58e4b2a89b017b509c17f1afb4cf01dcc881ae5569f4d8f0288",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 3
+   }
+  },
+  "99": {
+   "hash": "sha256:6995504c359bcba17b6a4bba5e1904393ff26d35b26c06c7475bda1d1f798522",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 3
+   }
+  },
+  "100": {
+   "hash": "sha256:7be2d1368ccdf3b7b5aa93c55dea0f0a0c7490f8adca8049b1c7fb0367450351",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 7,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "101": {
+   "hash": "sha256:700ed9ea736f530f6533b9e48f7e94f4d2411fb0a3fc2d733ee5bbe149ef18c4",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 8,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "102": {
+   "hash": "sha256:23f5bf86989840251ec0a3c2c2835fb6b9c6c4a1c4d7d7a3a4e1b1477260f655",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 9,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "103": {
+   "hash": "sha256:5dcf2fcce8918d32617163f857e06db05cf4a9eee0b008bb01a45755cf3caec9",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 10,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "104": {
+   "hash": "sha256:2aeab15848f969a5e115376a0735476fa6fd8e2a6658469655bf19c0d6273d24",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 15,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "105": {
+   "hash": "sha256:d4e70009aaea175bfcb8f582ae986e565e92230cf5c5be5fb27775a6c7df09b2",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 16,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "106": {
+   "hash": "sha256:9d9c2f39464ea25a522a3615919edcfa1b55ff172f3b681ccfd530a4a502dbf7",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 17,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "107": {
+   "hash": "sha256:146681d6adc6ea2dc40f14b379e864a66a65d21d15e7e72dedd134473a27a46e",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 4
+   }
+  },
+  "108": {
+   "hash": "sha256:08a26f3f43e05f023afa76144b3156d43e86433e102e95616e2480c6ec59e856",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 4
+   }
+  },
+  "109": {
+   "hash": "sha256:b085dadeca7cc309325d33b65ff1d496b53b4f26279164fbb858c39fe53903c3",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 4
+   }
+  },
+  "110": {
+   "hash": "sha256:b99e23b5d40ca64c14960f8d3670da7727603aba1ae4f022f1ebd7934f6dfad3",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 7,
+    "y": 4
+   },
+   "material": "furniture"
+  },
+  "111": {
+   "hash": "sha256:95c7464d1ff80aa21fe66046a5f1032b0084c7900d5e63189bdb1e1e24b84858",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 8,
+    "y": 4
+   },
+   "material": "furniture"
+  },
+  "112": {
+   "hash": "sha256:25cea554642e6a94c9a11e84083ca9b2634d0373cb2dbc4732b8240b0a1d5214",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 9,
+    "y": 4
+   },
+   "material": "furniture"
+  },
+  "113": {
+   "hash": "sha256:01157886e0c3167f5323510b3bea6e4613f7883741eca58adaa6caca9b1ce86b",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 10,
+    "y": 4
+   },
+   "material": "furniture"
+  },
+  "114": {
+   "hash": "sha256:6cd797c56d188e3ed458c427627f3541b8e0f9c4d70da5a602298b69add93733",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 15,
+    "y": 4
+   },
+   "material": "furniture"
+  },
+  "115": {
+   "hash": "sha256:965ba527d649655d475c52554a2ba7d2ac98004266b48ea6114496c63c99ec4b",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 16,
+    "y": 4
+   },
+   "material": "furniture"
+  },
+  "116": {
+   "hash": "sha256:b8ff0c0fe97d9e090f69adfdfa6312af5828b756aca0939999becff4d4888703",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 17,
+    "y": 4
+   },
+   "material": "furniture"
+  },
+  "117": {
+   "hash": "sha256:bf975626b986c7d709042b0678c9f719e56be1c0709acc8b8cb33a04248c55de",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 5
+   }
+  },
+  "118": {
+   "hash": "sha256:2f06e3c934bbdd77813161de3c57dccd2a2b49b7c2b387d0065478ed317fc904",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 5
+   }
+  },
+  "119": {
+   "hash": "sha256:05c9253cd67389c9610dff2ca7c96ec931056b55315e297e19fb1e446716e40e",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 5
+   }
+  },
+  "120": {
+   "hash": "sha256:082c9480b87f60e595699ab3b048f4ceff01c10f3441c482b346a72bb76caa34",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 7,
+    "y": 5
+   }
+  },
+  "121": {
+   "hash": "sha256:27f56276e3f849695ddc29018001a4575dc93dd13242fe78ae3b3976074c051c",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 8,
+    "y": 5
+   }
+  },
+  "122": {
+   "hash": "sha256:988d8c7ab6c99257cf8f73f5fb452d082c54b0fbaa033d3ea202f25b2fe4315f",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 11,
+    "y": 5
+   }
+  },
+  "123": {
+   "hash": "sha256:b4c2469bd2ede9fd85e7bf1d6fa602b91a6f64fd2329ef3d4076274da410f5ea",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 6
+   }
+  },
+  "124": {
+   "hash": "sha256:93d7887e3ee3fd891f0c0675c1a8ba6cd5385f1d049654f5e202d3f70618a3ba",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 6
+   }
+  },
+  "125": {
+   "hash": "sha256:26f9220bd5585a915eee927760ada89ae5e9f68e61169c41f2ec8ab8fb95cadc",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 6
+   }
+  },
+  "126": {
+   "hash": "sha256:a6901fde9a24e174dea3406bf87e8a63af262eeaf7048ec8b6a80d3275ae76c8",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 7,
+    "y": 6
+   },
+   "material": "floor"
+  },
+  "127": {
+   "hash": "sha256:06936272de399894b045340415751908fa615ac64b80d22a381b5557bcaa7fae",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 8,
+    "y": 6
+   },
+   "material": "floor"
+  },
+  "128": {
+   "hash": "sha256:51e91b3b8113af0282a5e1ea3c092a6dc746bbea349557984c9f34875796e700",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 9,
+    "y": 6
+   }
+  },
+  "129": {
+   "hash": "sha256:28e37592233cc69da94d05e7c33fe40c23af065a0c95e76e7ac0d7e261a5d40f",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 11,
+    "y": 6
+   },
+   "material": "floor"
+  },
+  "130": {
+   "hash": "sha256:0de4a29072452730289f37dec283e9b56bdfffbbd6ddd27ad86ce69e9b116c92",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 7
+   }
+  },
+  "131": {
+   "hash": "sha256:f9555d5e58c01f8c44f5bcc638d6bf71f724e2d01539fbd999417f1509238c41",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 7
+   }
+  },
+  "132": {
+   "hash": "sha256:0a80afa1c25c4e3fa74f2fb4dd6f83ba6c8e3db4f11a586c74b59b252110e73d",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 7
+   }
+  },
+  "133": {
+   "hash": "sha256:49225f0528099d878312314749e15ef59371e77a33461a3f1b3e85a0a0c3959f",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 7,
+    "y": 7
+   }
+  },
+  "134": {
+   "hash": "sha256:f3f6b11ac30f8389da2490f2a173ba6bc5904bae312c223745f3d9a2571373c5",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 8,
+    "y": 7
+   }
+  },
+  "135": {
+   "hash": "sha256:8587ebe7b5a5b222a7041f0bff2521713b63903852bbeea4d246db84eada17bd",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 11,
+    "y": 7
+   }
+  },
+  "136": {
+   "hash": "sha256:0f43f3cd88ff2925359c50756d41a150bdf1a7e9c2022e8c927f301117708c95",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 9
+   }
+  },
+  "137": {
+   "hash": "sha256:4401654e5bcdd071fd665f7da971f6fb52c27a4664ac1a4f9d979409544b7fdf",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 9
+   }
+  },
+  "138": {
+   "hash": "sha256:ceeb2091c4281d63154d6e06101a1de303f2da4b667a79345a403f648df8a18b",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 10
+   }
+  },
+  "139": {
+   "hash": "sha256:f7babcc2daa93a99651d3682c517524e31440cf1e0f49be2502f631e1f0c90b1",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 10
+   }
+  },
+  "140": {
+   "hash": "sha256:42ceee273cd179775eae805fcdc33bee3f3bb0b9c6799198164683e6de651481",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 11
+   }
+  },
+  "141": {
+   "hash": "sha256:30908b411d0a0ccb564347a3c4a421f489c4b05f63ee05ca13111d22bb682e5a",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 11
+   }
+  },
+  "142": {
+   "hash": "sha256:ea24223cb06296a27e2cc878ccd62c3521f63c5ed45121f616c8fd082a674851",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 16,
+    "y": 11
+   },
+   "material": "furniture"
+  },
+  "143": {
+   "hash": "sha256:512cf6cd0f9fe8e130928490bc034261ccf7a1aa25565160a5253ddc35e8b6b2",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 17,
+    "y": 11
+   },
+   "material": "furniture"
+  },
+  "144": {
+   "hash": "sha256:91d0fcb405d0f0a3884c843dafd26d7c19f5c7efd8c9f088a2620f838ef4864e",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 9,
+    "y": 12
+   },
+   "material": "floor"
+  },
+  "145": {
+   "hash": "sha256:bf6af174965381d76049cc375adc4c166736d4166511d7417652c20e388f49db",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 10,
+    "y": 12
+   },
+   "material": "floor"
+  },
+  "146": {
+   "hash": "sha256:6fcce56c23d7502d0de1ee990c41f58da889d24b71e7337c751272fd6c8a6e14",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 16,
+    "y": 12
+   },
+   "material": "furniture"
+  },
+  "147": {
+   "hash": "sha256:10b91e162b16b3d9378ec67b8ec50156a0d180da71443b64ccfe55e992484c0a",
+   "created": "2026-10-11T19:16:15Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 17,
+    "y": 12
+   },
+   "material": "furniture"
+  },
+  "148": {
+   "hash": "sha256:48e7258b6b93ed85e9d1300f9dd797ade8842bd282ef3b957b3844093a983bb9",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:97",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   }
+  },
+  "149": {
+   "hash": "sha256:98ee83ba059b68631c43d37c3bad2516ae57d1686a97892cbe7d8fbe00dd7c75",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:98",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   }
+  },
+  "150": {
+   "hash": "sha256:7d6468105b38329ecfb4dba2535de48d8347e03ba522cd3080fc7d3ebed7ca46",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:99",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   }
+  },
+  "151": {
+   "hash": "sha256:67c3bc086ec46feddd8583063bca86856e9f1f2d1d49bcdb1defa9f5f28d050d",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:107",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   }
+  },
+  "152": {
+   "hash": "sha256:79a2d9532b8fff74d45dca270126c1236f093d62a2f45c5ed69ff9e3170ec698",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:108",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "153": {
+   "hash": "sha256:21e3e4c9fc806a419458fe26d25db700f61d6c8cfce64790a07c3b1569f911f0",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:109",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "154": {
+   "hash": "sha256:3de9602368710543c8899e906112e4b235beb06b155aa7623f3f167764d13564",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:117",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "155": {
+   "hash": "sha256:59884e0caa916c1df6fa9fa5fbe89cb116c4a5f0579e57559b9e15e6d87dfd09",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:118",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "156": {
+   "hash": "sha256:cc6f2af4b2f8a9e342c6164b2e24c980a52dea28041b9db936abef5e57ee3cbc",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:119",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "157": {
+   "hash": "sha256:0bc3adb9e7db49f5cc39dec430d0c3646bd70513b3ebc17e3a2caa67d1991bfd",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:123",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "158": {
+   "hash": "sha256:3bbbd432bc60bcffdeb0e679a582ca38010735133609819ae3f7dff19a90c49e",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:124",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "159": {
+   "hash": "sha256:26a97c5ca3fd1b666826b72d3668ab6cef53856c46a0abcf9585c976aa2b48b4",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:125",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "160": {
+   "hash": "sha256:6d7c40e5d085764ed6a3c62b56347efc7ca23a3c0879606247a21eab45d8e026",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:130",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   }
+  },
+  "161": {
+   "hash": "sha256:ce4c660501ff0bb08b7dbbe4956cc7133bdc9d86d509cec1e31f246c1a677965",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:131",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   }
+  },
+  "162": {
+   "hash": "sha256:83a07252faeaf31838169932ad08dbf27fdb10ed9c5f550874762aa698dac982",
+   "created": "2026-10-11T19:22:53Z",
+   "origin": "generate",
+   "parent": "gen:132",
+   "job": "20261011-191637-bef8",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, a single bed with a wooden headboard, white pillow, blue duvet, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 1,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   }
+  },
+  "163": {
+   "hash": "sha256:69e835210b94cbf11e4ef3b70827b25474410b73b5b4cda2fa7b6572b6918c12",
+   "created": "2026-10-11T19:22:57Z",
+   "origin": "generate",
+   "parent": "gen:138",
+   "job": "20261011-192030-2bb2",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 10
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, two stacked closed cardboard moving boxes with packing tape, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 2,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "164": {
+   "hash": "sha256:4cf183f650a878531becf138a220bf87780573f564714256505a9fed3c152c1c",
+   "created": "2026-10-11T19:22:57Z",
+   "origin": "generate",
+   "parent": "gen:139",
+   "job": "20261011-192030-2bb2",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 10
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, two stacked closed cardboard moving boxes with packing tape, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 2,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "165": {
+   "hash": "sha256:af097994e972703e3850cd967bec82a8e86994cf57ac91dd96396d314afbd73d",
+   "created": "2026-10-11T19:22:57Z",
+   "origin": "generate",
+   "parent": "gen:140",
+   "job": "20261011-192030-2bb2",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 11
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, two stacked closed cardboard moving boxes with packing tape, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 2,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "166": {
+   "hash": "sha256:47810ba2207261ef5faa079abc90ac07c3a6f09e3e5d83ab81e77f9ad9b2f887",
+   "created": "2026-10-11T19:22:57Z",
+   "origin": "generate",
+   "parent": "gen:141",
+   "job": "20261011-192030-2bb2",
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 11
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment interior, two stacked closed cardboard moving boxes with packing tape, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 2,
+    "strength": 0.8,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": null,
+    "palette": "file tools/artgen/palettes/apartment.hex",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "167": {
+   "hash": "sha256:72652459a2d3dfd5084f3f68ec0eda26c8094f16b9dd93851c0ec68888cd78b2",
+   "created": "2026-10-11T19:23:21Z",
+   "origin": "edit",
+   "parent": "gen:148",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 3
+   }
+  },
+  "168": {
+   "hash": "sha256:a9db1491a34e38c6198e97a7b2a07f483330393a4dbd1a9b51920bb2ee235e0a",
+   "created": "2026-10-11T19:23:21Z",
+   "origin": "edit",
+   "parent": "gen:149",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "169": {
+   "hash": "sha256:d8d1055d18a787c68f348c4a927b7736eb59a1ce1d195ac8a35ecfb8cb6841cb",
+   "created": "2026-10-11T19:23:21Z",
+   "origin": "edit",
+   "parent": "gen:150",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "170": {
+   "hash": "sha256:c548272f85cfaae461b6855566b7c27aefa2b6f7608c4ef6af082cb88d53e5cb",
+   "created": "2026-10-11T19:23:21Z",
+   "origin": "edit",
+   "parent": "gen:120",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 7,
+    "y": 5
+   },
+   "material": "floor"
+  },
+  "171": {
+   "hash": "sha256:7635ef6a71853cd0ecb7958ec86951d2543f3aba490926f3bada107827362f5b",
+   "created": "2026-10-11T19:23:21Z",
+   "origin": "edit",
+   "parent": "gen:121",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 8,
+    "y": 5
+   },
+   "material": "floor"
+  },
+  "172": {
+   "hash": "sha256:50ca7f639ebb878d7ccc666cf8b5c93ee9e208f0608fe8f490f39e3e417240e7",
+   "created": "2026-10-11T19:23:21Z",
+   "origin": "edit",
+   "parent": "gen:122",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 11,
+    "y": 5
+   },
+   "material": "floor"
+  },
+  "173": {
+   "hash": "sha256:564b4e2d2f9fbe7c54190710ac45dd060f487be0485db6bb56bdec060567a2fa",
+   "created": "2026-10-11T19:23:21Z",
+   "origin": "edit",
+   "parent": "gen:160",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 7
+   }
+  },
+  "174": {
+   "hash": "sha256:e3e12722a332ab359c3899d50c566c5e81a71c4a291bb4b0d41405b72ee34738",
+   "created": "2026-10-11T19:23:21Z",
+   "origin": "edit",
+   "parent": "gen:161",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 7
+   }
+  },
+  "175": {
+   "hash": "sha256:dcd1c77f70e12d40b1d128f0fd476044935310d46a070dc6d961dfc18ef49cf7",
+   "created": "2026-10-11T19:23:21Z",
+   "origin": "edit",
+   "parent": "gen:133",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 7,
+    "y": 7
+   },
+   "material": "floor"
+  },
+  "176": {
+   "hash": "sha256:0442bdc96553185fa7646124f7e080d962ad7f124bf1701947fa371e624bf56d",
+   "created": "2026-10-11T19:23:21Z",
+   "origin": "edit",
+   "parent": "gen:134",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 8,
+    "y": 7
+   },
+   "material": "floor"
+  },
+  "177": {
+   "hash": "sha256:30e8e66f6f6ef2721a33ea6cf77d0a071b3144cbe6e7d0ebe40314e69a3481d5",
+   "created": "2026-10-11T19:23:21Z",
+   "origin": "edit",
+   "parent": "gen:135",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 11,
+    "y": 7
+   },
+   "material": "floor"
+  },
+  "178": {
+   "hash": "sha256:4652bbb8a8c8932ee46e345ab9931172875a88a50e8503290638a0278f8e4933",
+   "created": "2026-10-11T19:23:32Z",
+   "origin": "edit",
+   "parent": "gen:167",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 3
+   },
+   "material": "furniture"
+  },
+  "179": {
+   "hash": "sha256:b4f6b005715970bed547eb6311c2d11088d088410f837565476aed764a516653",
+   "created": "2026-10-11T19:23:32Z",
+   "origin": "edit",
+   "parent": "gen:151",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 4
+   },
+   "material": "furniture"
+  },
+  "180": {
+   "hash": "sha256:c488caa99ed32eb9240a982f394fed49bdb4503bd40e1808cbb8238eb182b9fd",
+   "created": "2026-10-11T19:23:32Z",
+   "origin": "edit",
+   "parent": "gen:173",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 7
+   },
+   "material": "furniture"
+  },
+  "181": {
+   "hash": "sha256:9affca68abf90315e1c7eb1f1b7fcdc6f003537a37d10306dd6d629282d12e74",
+   "created": "2026-10-11T19:23:32Z",
+   "origin": "edit",
+   "parent": "gen:174",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 7
+   },
+   "material": "furniture"
+  },
+  "182": {
+   "hash": "sha256:611209468e504602309bc26e70da7120f3c12418b8a018a4d4bf262b54c9eff6",
+   "created": "2026-10-11T19:23:32Z",
+   "origin": "edit",
+   "parent": "gen:162",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 7
+   },
+   "material": "furniture"
+  },
+  "183": {
+   "hash": "sha256:33bce39760b83311678d94393795585761e06e9d249958dda31174165412bc56",
+   "created": "2026-10-11T19:23:51Z",
+   "origin": "fork",
+   "parent": "gen:79",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 0,
+    "y": 0
+   },
+   "material": "wall"
+  },
+  "184": {
+   "hash": "sha256:c5aa2faaea0dede2a47963a0c900c8ac659a2e514d1c79d9444ca671460fc27a",
+   "created": "2026-10-11T19:23:51Z",
+   "origin": "fork",
+   "parent": "gen:81",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 0,
+    "y": 1
+   },
+   "material": "wall"
+  },
+  "185": {
+   "hash": "sha256:571122d96dfd93f54d43c8aadd6e3fcf100a6c703e8a4efc755b65a9329b5fbd",
+   "created": "2026-10-11T19:23:51Z",
+   "origin": "fork",
+   "parent": "gen:87",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Walls",
+    "x": 19,
+    "y": 1
+   },
+   "material": "wall"
+  },
+  "186": {
+   "hash": "sha256:57ac5bc2014dfea6b5b697974fc19f43680dd2e39d6e812ae6aa416216fd88e4",
+   "created": "2026-10-11T19:23:52Z",
+   "origin": "fork",
+   "parent": "gen:93",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Above",
+    "x": 0,
+    "y": 12
+   },
+   "material": "wall_top"
+  },
+  "187": {
+   "hash": "sha256:3fedb778f2c922189d7c14a04cbcc9a19ccad27d9dbcbbb9bb660ee1aeaa4dd0",
+   "created": "2026-10-11T19:23:52Z",
+   "origin": "fork",
+   "parent": "gen:94",
+   "job": null,
+   "source": {
+    "map": "assets/maps/apartment.tmj",
+    "layer": "Above",
+    "x": 1,
+    "y": 12
+   },
+   "material": "wall_top"
   }
  }
 }
