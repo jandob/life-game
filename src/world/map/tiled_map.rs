@@ -208,6 +208,18 @@ impl TiledMap {
         self.tile_colliders.get(&index).cloned()
     }
 
+    /// The rectangle covered by the map's tiles, in game world coordinates.
+    pub fn world_bounds(&self) -> Rect {
+        // Tile x spans -width/2 ..= width - width/2 - 1 and tiles are centered
+        // on their grid position, so the outer edges sit half a tile further out.
+        let min = Vec2::new(
+            -((self.width / 2) as f32) * TILE_SIZE - TILE_SIZE / 2.0,
+            -((self.height - self.height / 2) as f32) * TILE_SIZE - TILE_SIZE / 2.0,
+        );
+        let size = Vec2::new(self.width as f32, self.height as f32) * TILE_SIZE;
+        Rect::from_corners(min, min + size)
+    }
+
     /// Get all objects from an object layer by name.
     pub fn object_layer(&self, name: &str) -> &[TiledObject] {
         for layer in &self.object_layers {
