@@ -1,7 +1,7 @@
 use crate::{world::MainCamera, GameAssets, GameState};
 
 use super::{
-    generation::BitMap, BACKGROUND_ZINDEX_ABS, CHUNK_SIZE, RENDERED_CHUNKS_RADIUS, TILE_SIZE,
+    tiled_map::TiledMap, BACKGROUND_ZINDEX_ABS, CHUNK_SIZE, RENDERED_CHUNKS_RADIUS, TILE_SIZE,
 };
 use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
@@ -24,20 +24,10 @@ pub struct ChunkManager {
 #[derive(Component, Deref)]
 pub struct ChunkIndex(pub IVec2);
 
-#[derive(Message)]
-pub struct SpawnedChunk {
-    pub pos: IVec2,
-}
-
-#[derive(Message)]
-pub struct DespawnedChunk {
-    pub chunk_pos: IVec2,
-}
-
 fn spawn_chunk(
     commands: &mut Commands,
     assets: &Res<GameAssets>,
-    map: &mut ResMut<BitMap>,
+    tiled_map: &Res<TiledMap>,
     chunk_pos: IVec2,
 ) {
     let tilemap_entity = commands.spawn(ChunkIndex(chunk_pos)).id();
@@ -52,26 +42,8 @@ fn spawn_chunk(
             );
             let tile_pos = TilePos { x, y };
 
-            let tile_entity = if map.get_water_sparkle_flag(v) {
-                // let tile_entity = if false {
-                let indices = map.get_water_sparkle_indices();
-                commands
-                    .spawn((
-                        TileBundle {
-                            position: tile_pos,
-                            tilemap_id: TilemapId(tilemap_entity),
-                            texture_index: TileTextureIndex(0),
-                            ..Default::default()
-                        },
-                        AnimatedTile {
-                            start: indices[0].into(),
-                            end: indices[1].into(),
-                            speed: indices[2] as f32 / 1000.0,
-                        },
-                    ))
-                    .id()
-            } else {
-                let index = map.get_tile_index(v) as u32;
+            // Read tile from TiledMap; out-of-bounds = empty (no tile spawned)
+            let tile_entity = if let Some(index) = tiled_map.tile_at(v.x, v.y) {
                 commands
                     .spawn(TileBundle {
                         position: tile_pos,
@@ -80,6 +52,9 @@ fn spawn_chunk(
                         ..Default::default()
                     })
                     .id()
+            } else {
+                // Out of bounds or empty tile — skip spawning
+                continue;
             };
 
             commands.entity(tilemap_entity).add_child(tile_entity);
@@ -125,9 +100,8 @@ pub fn spawn_chunks(
     mut commands: Commands,
     assets: Res<GameAssets>,
     mut chunk_manager: ResMut<ChunkManager>,
-    mut bitmap: ResMut<BitMap>,
+    tiled_map: Res<TiledMap>,
     q_camera: Query<&Transform, With<MainCamera>>,
-    mut ev_spawned_chunk: MessageWriter<SpawnedChunk>,
 ) {
     let camera_transform = match q_camera.single() {
         Ok(r) => r,
@@ -142,8 +116,7 @@ pub fn spawn_chunks(
             if !chunk_manager.spawned_chunks.contains(&IVec2::new(x, y)) {
                 let chunk_pos = IVec2::new(x, y);
                 chunk_manager.spawned_chunks.insert(chunk_pos);
-                spawn_chunk(&mut commands, &assets, &mut bitmap, chunk_pos);
-                ev_spawned_chunk.write(SpawnedChunk { pos: chunk_pos });
+                spawn_chunk(&mut commands, &assets, &tiled_map, chunk_pos);
             }
         }
     }
@@ -154,7 +127,6 @@ pub fn despawn_chunks(
     mut chunk_manager: ResMut<ChunkManager>,
     q_camera: Query<&Transform, With<MainCamera>>,
     q_chunks: Query<(Entity, &ChunkIndex)>,
-    mut ev_despawned_chunk: MessageWriter<DespawnedChunk>,
 ) {
     let camera_transform = match q_camera.single() {
         Ok(r) => r,
@@ -169,7 +141,6 @@ pub fn despawn_chunks(
         {
             let chunk_pos = IVec2::new(chunk.x, chunk.y);
             chunk_manager.spawned_chunks.remove(&chunk_pos);
-            ev_despawned_chunk.write(DespawnedChunk { chunk_pos });
             commands.entity(entity).despawn();
         }
     }
@@ -181,12 +152,10 @@ impl Plugin for ChunkManagerPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(TilemapPlugin)
             .insert_resource(ChunkManager::default())
-            .add_message::<SpawnedChunk>()
-            .add_message::<DespawnedChunk>()
             .add_systems(
                 Update,
                 (
-                    spawn_chunks.run_if(resource_exists::<BitMap>),
+                    spawn_chunks.run_if(resource_exists::<TiledMap>),
                     despawn_chunks,
                 )
                     .run_if(in_state(GameState::Gaming)),

@@ -1,9 +1,7 @@
-pub mod generation;
-
 mod chunk_manager;
 mod collision;
 mod flora;
-mod poisson_sampling;
+pub(crate) mod tiled_map;
 
 use bevy::prelude::*;
 
@@ -19,10 +17,10 @@ pub struct MapPlugin;
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
-            generation::MapGenerationPlugin,
             chunk_manager::ChunkManagerPlugin,
             collision::MapCollisionPlugin,
             flora::FloraPlugin,
+            tiled_map::TiledMapPlugin,
         ));
     }
 }

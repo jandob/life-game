@@ -4,11 +4,9 @@ use bevy_rapier2d::prelude::*;
 use crate::animation::{
     SpriteAnimator, ANTONIUS_IDLE, ELEONORE_IDLE, IONAS_IDLE, ISABELLE_IDLE, JOTEM_IDLE,
 };
+use crate::world::map::tiled_map::TiledMap;
 use crate::{
-    world::{
-        camera::{YSort, YSortChild},
-        map::generation::BitMap,
-    },
+    world::camera::{YSort, YSortChild},
     GameAssets, GameState,
 };
 
@@ -200,17 +198,22 @@ fn spawn_antonius_and_ionas(commands: &mut Commands, assets: &Res<GameAssets>, p
         .add_children(&[antonius, ionas]);
 }
 
-fn spawn_npcs(mut commands: Commands, bitmap: Res<BitMap>, assets: Res<GameAssets>) {
-    let hotspots = bitmap.get_furthest_hotspots(4);
-    let npcs = [
-        spawn_eleonore,
-        spawn_jotem,
-        spawn_isabelle,
-        spawn_antonius_and_ionas,
-    ];
+/// Spawn NPCs from the "NPCs" object layer in the TiledMap.
+/// Runs once on `OnEnter(GameState::Gaming)`.
+fn spawn_npcs(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<TiledMap>) {
+    let npc_objects = tiled_map.object_layer("NPCs");
+    for obj in npc_objects {
+        let pos = tiled_map.tiled_to_game(obj.x, obj.y);
 
-    for i in 0..hotspots.len() {
-        npcs[i](&mut commands, &assets, hotspots[i]);
+        match obj.name.as_str() {
+            "Eleonore" => spawn_eleonore(&mut commands, &assets, pos),
+            "Jotem" => spawn_jotem(&mut commands, &assets, pos),
+            "Isabelle" => spawn_isabelle(&mut commands, &assets, pos),
+            "IonasAntonius" => spawn_antonius_and_ionas(&mut commands, &assets, pos),
+            _ => {
+                warn!("Unknown NPC name: {}", obj.name);
+            }
+        }
     }
 }
 

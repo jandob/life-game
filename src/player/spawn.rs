@@ -3,11 +3,23 @@ use bevy_rapier2d::prelude::*;
 
 use crate::animation::{SpriteAnimator, PLAYER_CLIPS};
 use crate::world::camera::YSort;
+use crate::world::map::tiled_map::TiledMap;
 use crate::{GameAssets, GameState};
 
-use super::{Player, PLAYER_COLLISION_GROUPS, PLAYER_SCALE, PLAYER_SPAWN_POS};
+use super::{Player, PLAYER_COLLISION_GROUPS, PLAYER_SCALE};
 
-fn spawn_player(mut commands: Commands, assets: Res<GameAssets>) {
+fn spawn_player(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<TiledMap>) {
+    // Read the spawn point from the "Spawn" object layer in TiledMap
+    let spawn_objects = tiled_map.object_layer("Spawn");
+    let spawn_pos = spawn_objects
+        .iter()
+        .find(|obj| obj.name == "SpawnPoint")
+        .map(|obj| {
+            let pos = tiled_map.tiled_to_game(obj.x, obj.y);
+            Vec3::new(pos.x, pos.y, 0.0)
+        })
+        .unwrap_or(Vec3::ZERO); // Fallback: origin
+
     let collider = commands
         .spawn((
             Collider::ball(16.0),
@@ -36,7 +48,7 @@ fn spawn_player(mut commands: Commands, assets: Res<GameAssets>) {
                 }),
                 ..default()
             },
-            Transform::from_translation(PLAYER_SPAWN_POS).with_scale(PLAYER_SCALE),
+            Transform::from_translation(spawn_pos).with_scale(PLAYER_SCALE),
         ))
         .add_child(collider);
 }

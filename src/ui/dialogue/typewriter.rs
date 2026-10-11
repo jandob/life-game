@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use std::time::Instant;
+use bevy::platform::time::Instant;
 
 use unicode_segmentation::UnicodeSegmentation;
 

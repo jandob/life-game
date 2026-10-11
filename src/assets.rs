@@ -42,9 +42,8 @@ pub struct GameAssets {
     // --- MAP ---
     #[asset(path = "map/tileset.png")]
     pub tileset: Handle<Image>,
-
-    #[asset(path = "map/water_sparkles.png")]
-    pub water_sparkles: Handle<Image>,
+    #[asset(path = "map/world.tmj")]
+    pub world_map: Handle<crate::world::map::tiled_map::TiledMap>,
 
     // --- FLORA ---
     #[asset(path = "map/flora/tree.png")]

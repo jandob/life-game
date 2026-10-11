@@ -8,7 +8,7 @@
 
 <body>
   <div class="game-container">
-    <div id="game-canvas"></div>
+    <canvas id="game-canvas"></canvas>
     <div id="loading">
       <span class="loader"></span>
     </div>
@@ -24,21 +24,14 @@
       }
     });
 
-    // Hide loading screen and move canvas when the game starts
+    // Hide loading screen once Bevy takes over the canvas (it sets the size attributes)
     const loading = document.getElementById('loading');
+    const canvas = document.getElementById('game-canvas');
     const observer = new MutationObserver(() => {
-      console.log("checkign for canvas");
-      const canvas = document.querySelector('canvas');
-      if (canvas) {
-        loading.style.display = 'none';
-        observer.disconnect();
-      } else {
-        console.warn("no canvas item");
-      }
+      loading.style.display = 'none';
+      observer.disconnect();
     });
-
-    // Start observing the document for changes
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(canvas, { attributes: true, attributeFilter: ['width', 'height', 'style'] });
   </script>
 </body>
 </html>
