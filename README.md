@@ -169,3 +169,11 @@ download or sign up.
   encoding a new prompt (about 11 s), then back. Generation then peaks at
   about 10 GB and runs at about 5–11 s per 512² image (19 s with a `--ref`
   image). The bench's `--precompute` encodes every prompt once up front.
+
+## inpaint and snap (used by scenekit)
+
+`artgen.py inpaint --image canvas.png --mask mask.png --prompt "..." --strength 0.75 --n 4 --out DIR` runs
+`Flux2KleinInpaintPipeline` (same weights and LoRA, `--ref` images become `image_reference`; white mask = repaint; sides must be
+multiples of 16; scene prompt template). Prints one JSON object. `artgen.py snap IMG... --factor S [--palette P.hex|--colours N]
+[--key #rrggbb] [--grid fixed|detect --target WxH] --out DIR` downscales by an exact integer block mode
+(`postprocess.downscale_fixed`), locks the palette and cleans up. See `tools/scenekit/README.md`.
