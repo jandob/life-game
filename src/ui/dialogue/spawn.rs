@@ -71,7 +71,7 @@ fn text_style_option_text(assets: &Res<GameAssets>) -> (TextFont, TextColor) {
     (
         TextFont {
             font: assets.silver_font.clone().into(),
-            font_size: 50.0.into(),
+            font_size: 40.0.into(),
             ..default()
         },
         TextColor::WHITE,
@@ -224,21 +224,16 @@ fn spawn_dialogue_options(commands: &mut Commands, _assets: &Res<GameAssets>) ->
         .spawn((
             OptionsBackground,
             Node {
-                width: Val::Px(OPTIONS_WIDTH),
-                min_height: Val::Px(100.0),
-                max_height: Val::Px(720.0),
+                max_width: Val::Percent(60.0),
+                max_height: Val::Percent(80.0),
                 flex_direction: FlexDirection::Column,
-                justify_content: JustifyContent::SpaceAround,
                 align_items: AlignItems::FlexStart,
-                padding: UiRect {
-                    top: Val::Px(20.0),
-                    bottom: Val::Px(20.0),
-                    left: Val::Px(20.0),
-                    right: Val::Px(OPTIONS_WIDTH + 10.0),
-                },
-                top: Val::Percent(0.0),
-                right: Val::Percent(0.0),
+                row_gap: Val::Px(4.0),
+                padding: UiRect::all(Val::Px(OPTIONS_TEXT_BORDER * 2.0)),
+                top: Val::Px(10.0),
+                right: Val::Px(10.0),
                 position_type: PositionType::Absolute,
+                overflow: Overflow::clip_y(),
                 ..default()
             },
             BackgroundColor(Color::BLACK.with_alpha(BACKGROUND_ALPHA)),
@@ -349,7 +344,7 @@ fn spawn_option(
             font,
             color,
             Node {
-                width: Val::Px(OPTIONS_WIDTH - 2.0 * OPTIONS_TEXT_BORDER),
+                max_width: Val::Px(OPTIONS_WIDTH - 2.0 * OPTIONS_TEXT_BORDER),
                 ..default()
             },
         ))

@@ -182,7 +182,8 @@ fn select_option(
 
 fn despawn_options(
     mut commands: Commands,
-    mut q_options_node: Query<Entity, With<OptionsNode>>,
+    q_options_node: Query<Entity, With<OptionsNode>>,
+    mut q_options_background: Query<&mut Visibility, With<OptionsBackground>>,
     mut ev_despawn_option: MessageReader<DespawnOptions>,
 ) {
     if ev_despawn_option.is_empty() {
@@ -191,11 +192,13 @@ fn despawn_options(
     ev_despawn_option.clear();
 
     commands.remove_resource::<OptionSelection>();
-    let entity = match q_options_node.single_mut() {
-        Ok(r) => r,
-        Err(_) => return,
-    };
-    commands.entity(entity).despawn();
+    // Keep the node: later choices of the same dialogue need it again.
+    if let Ok(entity) = q_options_node.single() {
+        commands.entity(entity).despawn_children();
+    }
+    if let Ok(mut visibility) = q_options_background.single_mut() {
+        *visibility = Visibility::Hidden;
+    }
 }
 
 fn relay_despawn_option(

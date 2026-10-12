@@ -30,6 +30,7 @@ pub struct Actor(pub String);
 /// An active scripted walk along transform-space points.
 #[derive(Component)]
 pub struct ScriptedWalk {
+    path: String,
     points: Vec<Vec2>,
     next: usize,
     done: Arc<AtomicBool>,
@@ -38,8 +39,9 @@ pub struct ScriptedWalk {
 }
 
 impl ScriptedWalk {
-    fn new(points: Vec<Vec2>, done: Arc<AtomicBool>) -> Self {
+    fn new(path: &str, points: Vec<Vec2>, done: Arc<AtomicBool>) -> Self {
         Self {
+            path: path.to_string(),
             points,
             next: 0,
             done,
@@ -85,7 +87,7 @@ pub fn walk_command(
     let done = Arc::new(AtomicBool::new(false));
     commands
         .entity(entity)
-        .insert(ScriptedWalk::new(points, done.clone()));
+        .insert(ScriptedWalk::new(&path, points, done.clone()));
     if wait {
         done
     } else {
@@ -200,6 +202,7 @@ pub(crate) fn scripted_walk(
     time: Res<Time>,
     mut q_walkers: Query<(
         Entity,
+        Option<&Actor>,
         &mut ScriptedWalk,
         &mut Transform,
         Option<&mut Velocity>,
@@ -212,7 +215,7 @@ pub(crate) fn scripted_walk(
         return;
     }
 
-    for (entity, mut walk, mut transform, mut velocity, mut facing, mut player) in &mut q_walkers {
+    for (entity, actor, mut walk, mut transform, mut velocity, mut facing, mut player) in &mut q_walkers {
         let pos = transform.translation.truncate();
         let target = walk.points[walk.next];
         let to_target = target - pos;
@@ -224,7 +227,12 @@ pub(crate) fn scripted_walk(
                 walk.best_dist = dist;
                 walk.stuck.reset();
             } else if walk.stuck.tick(time.delta()).is_finished() {
-                warn!("Scripted walk is stuck {dist:.0}px from its point, placing the actor there");
+                warn!(
+                    "Scripted walk of '{}' on path '{}' is stuck {dist:.0}px from point {} {target:?} (actor at {pos:?}), placing the actor there",
+                    actor.map_or("?", |a| a.0.as_str()),
+                    walk.path,
+                    walk.next,
+                );
                 arrived = true;
             }
         }

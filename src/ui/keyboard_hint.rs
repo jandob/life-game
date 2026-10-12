@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+use crate::player::{Player, PlayerState};
+use crate::story::scripted::ScriptedWalk;
 use crate::animation::{SpriteAnimator, KEY_ICON, SHIFT_ICON};
 use crate::{
     world::camera::YSort,
@@ -138,7 +140,7 @@ fn spawn_keyboard_ui(mut commands: Commands, assets: Res<GameAssets>) {
     )
     .with_scale(Vec3::splat(ICON_SIZE));
     let root = commands
-        .spawn((KeyboardHint, YSort(-200.0), transform))
+        .spawn((KeyboardHint, YSort(-200.0), transform, Visibility::Inherited))
         .id();
 
     spawn_key_buttons(
@@ -179,10 +181,35 @@ fn spawn_keyboard_ui(mut commands: Commands, assets: Res<GameAssets>) {
     );
 }
 
+/// The hint is a first-steps tutorial: gone for good once the player has moved
+/// by himself, hidden while he talks or is walked by a script.
+fn update_keyboard_hint(
+    mut commands: Commands,
+    q_player: Query<(&Player, Has<ScriptedWalk>)>,
+    mut q_hint: Query<(Entity, &mut Visibility), With<KeyboardHint>>,
+) {
+    let Ok((player, scripted)) = q_player.single() else {
+        return;
+    };
+    for (entity, mut visibility) in &mut q_hint {
+        if !scripted && matches!(player.state, PlayerState::Walking | PlayerState::Running) {
+            commands.entity(entity).despawn();
+            continue;
+        }
+        let vis = if scripted || player.state == PlayerState::Talking {
+            Visibility::Hidden
+        } else {
+            Visibility::Inherited
+        };
+        visibility.set_if_neq(vis);
+    }
+}
+
 pub struct KeyboardUiPlugin;
 
 impl Plugin for KeyboardUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::Gaming), spawn_keyboard_ui);
+        app.add_systems(OnEnter(GameState::Gaming), spawn_keyboard_ui)
+            .add_systems(Update, update_keyboard_hint.run_if(in_state(GameState::Gaming)));
     }
 }
