@@ -3,6 +3,7 @@
 mod animation;
 mod assets;
 mod audio;
+mod character;
 mod npc;
 mod player;
 mod story;

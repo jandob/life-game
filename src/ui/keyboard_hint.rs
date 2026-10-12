@@ -12,7 +12,7 @@ use crate::{
 const ANCHOR_DIS: f32 = 90.0;
 const BUTTON_DIS: f32 = 35.0;
 const SHIFT_DIS: f32 = 35.0;
-const ICON_SIZE: f32 = 0.5;
+const ICON_SIZE: f32 = 1.5;
 
 #[derive(Component)]
 struct KeyboardIcon;
@@ -94,7 +94,7 @@ fn spawn_key_buttons(
 
     commands
         .entity(entity)
-        .insert((Collider::cuboid(16.0, 16.0), SpriteAnimator::looping(KEY_ICON)));
+        .insert((Collider::cuboid(48.0, 48.0), SpriteAnimator::looping(KEY_ICON)));
 }
 
 fn spawn_arrows_icon(commands: &mut Commands, assets: &Res<GameAssets>, root: Entity) {
@@ -123,7 +123,7 @@ fn spawn_shift_icon(
 
     commands
         .entity(entity)
-        .insert((Collider::cuboid(16.0, 16.0), SpriteAnimator::looping(SHIFT_ICON)));
+        .insert((Collider::cuboid(48.0, 48.0), SpriteAnimator::looping(SHIFT_ICON)));
 }
 
 /// Determine the direction for the keyboard hint UI.
@@ -140,7 +140,7 @@ fn spawn_keyboard_ui(mut commands: Commands, assets: Res<GameAssets>) {
     )
     .with_scale(Vec3::splat(ICON_SIZE));
     let root = commands
-        .spawn((KeyboardHint, YSort(-200.0), transform, Visibility::Inherited))
+        .spawn((KeyboardHint, YSort(-600.0), transform, Visibility::Inherited))
         .id();
 
     spawn_key_buttons(

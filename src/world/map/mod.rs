@@ -6,8 +6,7 @@ pub(crate) mod tiled_map;
 
 use bevy::prelude::*;
 
-// Values based on the used tileset, don't change!
-const TILE_SIZE: f32 = 16.0;
+// The tile size comes from each map (`TiledMap::tile_size`).
 const CHUNK_SIZE: u32 = 16;
 const BACKGROUND_ZINDEX_ABS: f32 = 800.0;
 // Above layers draw over every YSorted entity (z is roughly within +-1, see camera.rs)

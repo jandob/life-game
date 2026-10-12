@@ -127,6 +127,7 @@ mod tests {
             std::time::Duration::from_millis(50),
         ))
         .insert_resource(TiledMap {
+            tile_size: 48.0,
             width: 40,
             height: 40,
             layers: Vec::new(),

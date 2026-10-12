@@ -9,27 +9,26 @@ use rand::{thread_rng, Rng};
 use crate::animation::{
     character_clip, play_character_clip, CharacterAnim, SpriteAnimator, CHARACTER_CLIPS,
 };
+use crate::character::{FEET_BELOW_CENTRE, LEGACY};
 use crate::world::camera::YSort;
 use crate::world::map::tiled_map::TiledMap;
 use crate::world::MainCamera;
 use crate::{GameAssets, GameState};
 
-const SCALE: Vec3 = Vec3::splat(0.5);
-/// Collider centre relative to the transform (child at y = -32, parent scale 0.5).
-const FEET_OFFSET: Vec2 = Vec2::new(0.0, -16.0);
-const WANDER_RADIUS: f32 = 96.0;
-const WALK_SPEED: f32 = 60.0;
-const ARRIVE_DISTANCE: f32 = 4.0;
+/// Collider centre relative to the transform.
+const FEET_OFFSET: Vec2 = Vec2::new(0.0, -FEET_BELOW_CENTRE);
+const WANDER_RADIUS: f32 = 288.0;
+const WALK_SPEED: f32 = 180.0;
+const ARRIVE_DISTANCE: f32 = 12.0;
 const PAUSE_SECONDS: (f32, f32) = (2.0, 5.0);
 const TARGET_TRIES: usize = 8;
 const PATH_SAMPLES: usize = 4;
 const STUCK_SECONDS: f32 = 1.5;
-const STUCK_PROGRESS: f32 = 2.0;
+const STUCK_PROGRESS: f32 = 6.0;
 /// Water colliders only exist near the camera; stand still beyond this distance.
-const MAX_CAMERA_DISTANCE: f32 = 640.0;
-const TILE: f32 = 16.0;
+const MAX_CAMERA_DISTANCE: f32 = 1920.0;
 /// Extra clearance (roughly her collider radius) checked around a point.
-const CLEARANCE: f32 = 8.0;
+const CLEARANCE: f32 = 24.0;
 
 #[derive(Component)]
 pub struct Wanderer {
@@ -71,9 +70,8 @@ fn spawn_wanderer(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Re
 
     let collider = commands
         .spawn((
-            Collider::ball(16.0),
+            LEGACY.feet_collider(),
             CollisionGroups::default(),
-            Transform::from_translation(Vec3::new(0.0, -32.0, 0.0)),
         ))
         .id();
 
@@ -94,7 +92,7 @@ fn spawn_wanderer(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Re
                 }),
                 ..default()
             },
-            Transform::from_translation(pos.extend(0.0)).with_scale(SCALE),
+            LEGACY.transform(pos),
         ))
         .add_child(collider);
 }
@@ -114,7 +112,7 @@ fn is_free(map: &TiledMap, pos: Vec2) -> bool {
     ]
     .iter()
     .all(|offset| {
-        let tile = ((feet + *offset) / TILE).round();
+        let tile = ((feet + *offset) / map.tile_size).round();
         !map.has_collision(tile.x as i32, tile.y as i32)
     })
 }

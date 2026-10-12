@@ -8,7 +8,7 @@ use bevy_rapier2d::rapier::math::Pose;
 use bevy_rapier2d::rapier::parry::shape::SharedShape;
 use serde_json::Value;
 
-use super::TILE_SIZE;
+use crate::character::FEET_BELOW_CENTRE;
 use crate::{GameAssets, GameState};
 
 /// Parsed Tiled map data (loaded from a `.tmj` file plus its `.tsj` tileset).
@@ -17,6 +17,8 @@ use crate::{GameAssets, GameState};
 /// `GameAssets`, then copied into a resource when asset loading finishes.
 #[derive(Asset, Resource, TypePath, Clone)]
 pub struct TiledMap {
+    /// Tile width and height in px (`tilewidth`, equal to `tileheight`)
+    pub tile_size: f32,
     /// Map width in tiles
     pub width: u32,
     /// Map height in tiles
@@ -69,9 +71,6 @@ pub struct TileRef {
     pub local: u32,
     pub flip: TileFlags,
 }
-
-/// Height of a character's transform above its feet (collider centre), in px.
-const FEET_TO_TRANSFORM: f32 = 16.0;
 
 const FLIP_H: u32 = 0x8000_0000;
 const FLIP_V: u32 = 0x4000_0000;
@@ -199,13 +198,13 @@ impl From<&str> for TiledMapError {
 
 /// Convert a point in Tiled tile-local space (top-left origin, y-down) to
 /// tile-local game space (tile center origin, y-up).
-fn tile_local_to_game(x: f32, y: f32) -> Vect {
-    Vect::new(x - TILE_SIZE / 2.0, TILE_SIZE / 2.0 - y)
+fn tile_local_to_game(tile_size: f32, x: f32, y: f32) -> Vect {
+    Vect::new(x - tile_size / 2.0, tile_size / 2.0 - y)
 }
 
 /// Build the convex pieces of a single Tiled collision object, positioned
 /// inside the tile. Pieces are kept flat because compound shapes can't nest.
-fn parse_collision_object(obj: &Value) -> Vec<(Pose, SharedShape)> {
+fn parse_collision_object(tile_size: f32, obj: &Value) -> Vec<(Pose, SharedShape)> {
     let x = obj["x"].as_f64().unwrap_or(0.0) as f32;
     let y = obj["y"].as_f64().unwrap_or(0.0) as f32;
 
@@ -218,6 +217,7 @@ fn parse_collision_object(obj: &Value) -> Vec<(Pose, SharedShape)> {
             .iter()
             .map(|p| {
                 tile_local_to_game(
+                    tile_size,
                     x + p["x"].as_f64().unwrap_or(0.0) as f32,
                     y + p["y"].as_f64().unwrap_or(0.0) as f32,
                 )
@@ -246,7 +246,7 @@ fn parse_collision_object(obj: &Value) -> Vec<(Pose, SharedShape)> {
     if width <= 0.0 || height <= 0.0 {
         return Vec::new();
     }
-    let center = tile_local_to_game(x + width / 2.0, y + height / 2.0);
+    let center = tile_local_to_game(tile_size, x + width / 2.0, y + height / 2.0);
     vec![(
         Pose::new(center, 0.0),
         SharedShape::cuboid(width / 2.0, height / 2.0),
@@ -254,7 +254,7 @@ fn parse_collision_object(obj: &Value) -> Vec<(Pose, SharedShape)> {
 }
 
 /// Parse per-tile collision shapes from a TSJ tileset.
-fn parse_tile_colliders(tileset: &Value) -> HashMap<u32, Collider> {
+fn parse_tile_colliders(tileset: &Value, tile_size: f32) -> HashMap<u32, Collider> {
     let mut colliders = HashMap::new();
     let Some(tiles) = tileset["tiles"].as_array() else {
         return colliders;
@@ -269,7 +269,7 @@ fn parse_tile_colliders(tileset: &Value) -> HashMap<u32, Collider> {
         };
 
         let shapes: Vec<(Pose, SharedShape)> =
-            objects.iter().flat_map(parse_collision_object).collect();
+            objects.iter().flat_map(|obj| parse_collision_object(tile_size, obj)).collect();
 
         if !shapes.is_empty() {
             colliders.insert(id as u32, Collider::from(SharedShape::compound(shapes)));
@@ -385,10 +385,10 @@ impl TiledMap {
         // Tile x spans -width/2 ..= width - width/2 - 1 and tiles are centered
         // on their grid position, so the outer edges sit half a tile further out.
         let min = Vec2::new(
-            -((self.width / 2) as f32) * TILE_SIZE - TILE_SIZE / 2.0,
-            -((self.height - self.height / 2) as f32) * TILE_SIZE - TILE_SIZE / 2.0,
+            -((self.width / 2) as f32) * self.tile_size - self.tile_size / 2.0,
+            -((self.height - self.height / 2) as f32) * self.tile_size - self.tile_size / 2.0,
         );
-        let size = Vec2::new(self.width as f32, self.height as f32) * TILE_SIZE;
+        let size = Vec2::new(self.width as f32, self.height as f32) * self.tile_size;
         Rect::from_corners(min, min + size)
     }
 
@@ -404,8 +404,8 @@ impl TiledMap {
 
     /// A named route from the `Paths` object layer as transform-space points.
     ///
-    /// Path points are authored at the feet. Characters are drawn at scale 0.5 with
-    /// their collider 32 px below the transform, so every point is raised by 16 px.
+    /// Path points are authored at the feet (collider centre). The collider sits
+    /// `FEET_BELOW_CENTRE` (48 px) below the sprite centre, so every point is raised by that.
     /// A polyline gives all its points; a point or rectangle object gives its centre.
     pub fn path(&self, name: &str) -> Option<Vec<Vec2>> {
         let obj = self
@@ -420,7 +420,7 @@ impl TiledMap {
         Some(
             tiled_points
                 .into_iter()
-                .map(|p| self.tiled_to_game(p.x, p.y) + Vec2::new(0.0, FEET_TO_TRANSFORM))
+                .map(|p| self.tiled_to_game(p.x, p.y) + Vec2::new(0.0, FEET_BELOW_CENTRE))
                 .collect(),
         )
     }
@@ -429,17 +429,30 @@ impl TiledMap {
     /// game world position (centered origin, y-up).
     ///
     /// Game tiles are centered on their grid position, so tile (0, 0) spans
-    /// -8..8 in game space; the half-tile shift keeps objects aligned with
+    /// half a tile either side of the origin in game space; the half-tile shift keeps objects aligned with
     /// the ground as drawn in Tiled.
     pub fn tiled_to_game(&self, tiled_x: f32, tiled_y: f32) -> Vec2 {
         // Integer halves, like `tile_at` and `world_bounds`, so odd-sized maps stay on the grid.
-        let half_w = (self.width / 2) as f32 * TILE_SIZE;
-        let half_h = (self.height / 2) as f32 * TILE_SIZE;
+        let half_w = (self.width / 2) as f32 * self.tile_size;
+        let half_h = (self.height / 2) as f32 * self.tile_size;
         Vec2::new(
-            tiled_x - half_w - TILE_SIZE / 2.0,
-            half_h - tiled_y - TILE_SIZE / 2.0,
+            tiled_x - half_w - self.tile_size / 2.0,
+            half_h - tiled_y - self.tile_size / 2.0,
         )
     }
+}
+
+/// Every tileset of a map must use the map's tile size.
+fn check_tileset_tile_size(tileset: &Value, tile_size: f32, first_gid: u32) -> Result<(), TiledMapError> {
+    let w = tileset["tilewidth"].as_f64();
+    let h = tileset["tileheight"].as_f64();
+    if w != Some(tile_size as f64) || h != Some(tile_size as f64) {
+        return Err(format!(
+            "Tileset at firstgid {first_gid} has tile size {w:?}x{h:?}, but the map uses {tile_size}x{tile_size}"
+        )
+        .into());
+    }
+    Ok(())
 }
 
 /// Loads `.tmj` maps and the external or embedded tilesets they reference.
@@ -468,6 +481,12 @@ impl AssetLoader for TiledMapLoader {
         let width = json["width"].as_u64().ok_or("Missing width")? as u32;
         let height = json["height"].as_u64().ok_or("Missing height")? as u32;
 
+        let tile_size = json["tilewidth"].as_u64().ok_or("Missing tilewidth")?;
+        if json["tileheight"].as_u64() != Some(tile_size) || tile_size == 0 {
+            return Err("Map tiles must be square (tilewidth equal to tileheight)".into());
+        }
+        let tile_size = tile_size as f32;
+
         let tileset_refs = json["tilesets"]
             .as_array()
             .filter(|t| !t.is_empty())
@@ -493,6 +512,7 @@ impl AssetLoader for TiledMapLoader {
                 // Embedded tileset
                 None => (tileset_ref.clone(), load_context.path().clone()),
             };
+            check_tileset_tile_size(&tileset, tile_size, first_gid)?;
             let image_src = tileset["image"]
                 .as_str()
                 .ok_or_else(|| format!("Tileset at firstgid {first_gid} has no image"))?;
@@ -512,7 +532,7 @@ impl AssetLoader for TiledMapLoader {
                 first_gid,
                 tile_count,
                 image: load_context.load(image_path),
-                colliders: parse_tile_colliders(&tileset),
+                colliders: parse_tile_colliders(&tileset, tile_size),
             });
         }
         tilesets.sort_by_key(|t| t.first_gid);
@@ -550,6 +570,7 @@ impl AssetLoader for TiledMapLoader {
         }
 
         let map = TiledMap {
+            tile_size,
             width,
             height,
             layers,
@@ -608,6 +629,7 @@ mod tests {
     fn map_with_objects(layer_json: &str) -> TiledMap {
         let layer: Value = serde_json::from_str(layer_json).unwrap();
         TiledMap {
+            tile_size: 48.0,
             width: 30,
             height: 20,
             layers: Vec::new(),
@@ -624,7 +646,7 @@ mod tests {
                     {"x":0,"y":0},{"x":32,"y":0},{"x":32,"y":-16}]}]}"#,
         );
         let path = map.path("Walk").unwrap();
-        let expected = |x: f32, y: f32| map.tiled_to_game(x, y) + Vec2::new(0.0, 16.0);
+        let expected = |x: f32, y: f32| map.tiled_to_game(x, y) + Vec2::new(0.0, 48.0);
         assert_eq!(
             path,
             vec![expected(100.0, 50.0), expected(132.0, 50.0), expected(132.0, 34.0)]
@@ -639,7 +661,7 @@ mod tests {
                 {"name":"P","x":10,"y":20,"point":true},
                 {"name":"R","x":0,"y":0,"width":32,"height":16}]}"#,
         );
-        let at = |x: f32, y: f32| vec![map.tiled_to_game(x, y) + Vec2::new(0.0, 16.0)];
+        let at = |x: f32, y: f32| vec![map.tiled_to_game(x, y) + Vec2::new(0.0, 48.0)];
         assert_eq!(map.path("P").unwrap(), at(10.0, 20.0));
         assert_eq!(map.path("R").unwrap(), at(16.0, 8.0));
     }
@@ -662,5 +684,42 @@ mod tests {
         // Wrong type or missing
         assert_eq!(obj.prop_bool("node"), None);
         assert_eq!(obj.prop_str("missing"), None);
+    }
+
+    #[test]
+    fn inline_48px_map_uses_its_tile_size() {
+        let map = TiledMap {
+            tile_size: 48.0,
+            width: 10,
+            height: 8,
+            layers: Vec::new(),
+            tilesets: Vec::new(),
+            object_layers: Vec::new(),
+        };
+        // Tile (0, 0) of the game grid is centred on the origin, so Tiled's
+        // (5 * 48 + 24, 3 * 48 + 24) is the centre of that tile.
+        assert_eq!(map.tiled_to_game(5.0 * 48.0 + 24.0, 3.0 * 48.0 + 24.0), Vec2::ZERO);
+        let bounds = map.world_bounds();
+        assert_eq!(bounds.min, Vec2::new(-5.0 * 48.0 - 24.0, -4.0 * 48.0 - 24.0));
+        assert_eq!(bounds.size(), Vec2::new(480.0, 384.0));
+    }
+
+    #[test]
+    fn tile_colliders_use_the_tile_size() {
+        let tileset: Value = serde_json::from_str(
+            r#"{"tilewidth":48,"tileheight":48,"tiles":[{"id":3,"objectgroup":{"objects":[
+                {"x":0,"y":24,"width":48,"height":24}]}}]}"#,
+        )
+        .unwrap();
+        let colliders = parse_tile_colliders(&tileset, 48.0);
+        assert!(colliders.contains_key(&3));
+    }
+
+    #[test]
+    fn tileset_with_another_tile_size_is_rejected() {
+        let ts = |size: u32| serde_json::json!({"tilewidth": size, "tileheight": size});
+        assert!(check_tileset_tile_size(&ts(48), 48.0, 1).is_ok());
+        assert!(check_tileset_tile_size(&ts(16), 48.0, 1).is_err());
+        assert!(check_tileset_tile_size(&serde_json::json!({}), 48.0, 1).is_err());
     }
 }

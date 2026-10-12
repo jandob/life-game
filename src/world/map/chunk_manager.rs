@@ -1,16 +1,12 @@
 use crate::{world::MainCamera, GameState};
 
 use super::{
-    tiled_map::TiledMap, ABOVE_ZINDEX, BACKGROUND_ZINDEX_ABS, CHUNK_SIZE, RENDERED_CHUNKS_RADIUS, TILE_SIZE,
+    tiled_map::TiledMap, ABOVE_ZINDEX, BACKGROUND_ZINDEX_ABS, CHUNK_SIZE, RENDERED_CHUNKS_RADIUS,
 };
 use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
 use std::collections::{HashMap, HashSet};
 
-const RENDER_TILE_SIZE: TilemapTileSize = TilemapTileSize {
-    x: TILE_SIZE,
-    y: TILE_SIZE,
-};
 const RENDER_CHUNK_SIZE: UVec2 = UVec2 {
     x: CHUNK_SIZE * 2,
     y: CHUNK_SIZE * 2,
@@ -29,14 +25,18 @@ pub struct ChunkIndex(pub IVec2);
 pub struct TileLayerName(pub String);
 
 fn spawn_chunk(commands: &mut Commands, tiled_map: &Res<TiledMap>, chunk_pos: IVec2) {
+    let render_tile_size = TilemapTileSize {
+        x: tiled_map.tile_size,
+        y: tiled_map.tile_size,
+    };
     // The root carries the chunk's xy position (colliders hang off it); the
     // tilemaps are its children and only differ in z.
     let chunk_entity = commands
         .spawn((
             ChunkIndex(chunk_pos),
             Transform::from_translation(Vec3::new(
-                chunk_pos.x as f32 * CHUNK_SIZE as f32 * RENDER_TILE_SIZE.x,
-                chunk_pos.y as f32 * CHUNK_SIZE as f32 * RENDER_TILE_SIZE.y,
+                chunk_pos.x as f32 * CHUNK_SIZE as f32 * render_tile_size.x,
+                chunk_pos.y as f32 * CHUNK_SIZE as f32 * render_tile_size.y,
                 0.0,
             )),
             Visibility::default(),
@@ -96,11 +96,11 @@ fn spawn_chunk(commands: &mut Commands, tiled_map: &Res<TiledMap>, chunk_pos: IV
 
         for (tileset, (tilemap_entity, storage)) in tilemaps {
             commands.entity(tilemap_entity).insert((TileLayerName(layer.name.clone()), TilemapBundle {
-                grid_size: RENDER_TILE_SIZE.into(),
+                grid_size: render_tile_size.into(),
                 size: TilemapSize::new(CHUNK_SIZE, CHUNK_SIZE),
                 storage,
                 texture: TilemapTexture::Single(tiled_map.tilesets[tileset].image.clone()),
-                tile_size: RENDER_TILE_SIZE,
+                tile_size: render_tile_size,
                 transform: Transform::from_translation(Vec3::new(0.0, 0.0, z)),
                 render_settings: TilemapRenderSettings {
                     render_chunk_size: RENDER_CHUNK_SIZE,
@@ -112,10 +112,10 @@ fn spawn_chunk(commands: &mut Commands, tiled_map: &Res<TiledMap>, chunk_pos: IV
     }
 }
 
-fn camera_pos_to_chunk_pos(camera_pos: &Vec2) -> IVec2 {
+fn camera_pos_to_chunk_pos(camera_pos: &Vec2, tile_size: f32) -> IVec2 {
     let camera_pos = camera_pos.as_ivec2();
     let chunk_size = IVec2::ONE * CHUNK_SIZE as i32;
-    let tile_size = IVec2::ONE * TILE_SIZE as i32;
+    let tile_size = IVec2::ONE * tile_size as i32;
 
     let offset = IVec2::new(
         if camera_pos.x < 0 { -1 } else { 0 },
@@ -136,7 +136,7 @@ pub fn spawn_chunks(
         Err(_) => return,
     };
 
-    let camera_chunk_pos = camera_pos_to_chunk_pos(&camera_transform.translation.xy());
+    let camera_chunk_pos = camera_pos_to_chunk_pos(&camera_transform.translation.xy(), tiled_map.tile_size);
     let chunks_radius = IVec2::new(RENDERED_CHUNKS_RADIUS as i32, RENDERED_CHUNKS_RADIUS as i32);
 
     for y in (camera_chunk_pos.y - chunks_radius.y)..=(camera_chunk_pos.y + chunks_radius.y) {
@@ -153,6 +153,7 @@ pub fn spawn_chunks(
 pub fn despawn_chunks(
     mut commands: Commands,
     mut chunk_manager: ResMut<ChunkManager>,
+    tiled_map: Option<Res<TiledMap>>,
     q_camera: Query<&Transform, With<MainCamera>>,
     q_chunks: Query<(Entity, &ChunkIndex)>,
 ) {
@@ -161,7 +162,10 @@ pub fn despawn_chunks(
         Err(_) => return,
     };
 
-    let camera_chunk = camera_pos_to_chunk_pos(&camera_transform.translation.xy());
+    let Some(tiled_map) = tiled_map else {
+        return;
+    };
+    let camera_chunk = camera_pos_to_chunk_pos(&camera_transform.translation.xy(), tiled_map.tile_size);
 
     for (entity, chunk) in &q_chunks {
         if (chunk.x - camera_chunk.x).unsigned_abs() > RENDERED_CHUNKS_RADIUS

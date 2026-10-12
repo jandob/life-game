@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use crate::animation::{SpriteAnimator, CHARACTER_CLIPS};
+use crate::character::LEGACY;
 use crate::story::scripted::Actor;
 use crate::utils::COLLISION_GROUPS_NONE;
 use crate::world::map::tiled_map::TiledMap;
@@ -9,17 +10,14 @@ use crate::{world::camera::YSort, GameAssets, GameState};
 
 use super::{FourWayFacing, Npc, NpcDialogue};
 
-const SAMANTHA_SCALE: Vec3 = Vec3::splat(0.5);
-
 /// Samantha is a kinematic body: only scripted commands move her, she never gets
 /// pushed, and she pushes the player aside.
 fn spawn_samantha(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec2, hidden: bool) {
     let mut collider = commands.spawn((
-        Collider::ball(16.0),
+        LEGACY.feet_collider(),
         // Scripted scenes walk her and the player side by side through doorways;
         // a solid kinematic body there would shove him into the walls.
         COLLISION_GROUPS_NONE,
-        Transform::from_translation(Vec3::new(0.0, -32.0, 0.0)),
     ));
     if hidden {
         collider.insert(ColliderDisabled);
@@ -46,7 +44,7 @@ fn spawn_samantha(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec2, 
             }),
             ..default()
         },
-        Transform::from_translation(pos.extend(0.0)).with_scale(SAMANTHA_SCALE),
+        LEGACY.transform(pos),
     ));
     if hidden {
         samantha.insert(Visibility::Hidden);

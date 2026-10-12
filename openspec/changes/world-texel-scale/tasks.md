@@ -22,11 +22,11 @@ Decided by the user, 2026-10-12: 48 px tiles, C1 integer scaling, route1_flat re
 
 ## 3. Code (gameplay-engineer; lands with section 2)
 
-- [ ] 3.1 `TiledMap::tile_size` from the `.tmj`; loader error on a tileset with another tile size; remove `TILE_SIZE`; use the map value in `tiled_to_game`, `chunk_manager.rs`, `collision.rs` and `wander.rs` (design D4); a unit test with an inline 48 px map
-- [ ] 3.2 New `src/character.rs` (module in `src/main.rs`) with `FEET_RADIUS`, `FEET_BELOW_CENTRE`, `SheetFormat`, `LEGACY` (1.5), `feet_collider()` and `transform()`; the player, Samantha and the wanderer use `LEGACY` (design D5)
-- [ ] 3.3 Every constant in the design D5 table (speeds, distances, hint offsets and sizes, shake, `FEET_TO_TRANSFORM` → `FEET_BELOW_CENTRE`); update the `TiledMap::path` tests to the +48 offset
-- [ ] 3.4 `src/world/camera.rs`: per 0.2, C1 (`ScalingMode::WindowSize`, `ortho.scale = scale_factor / t × debug_zoom`, `t = max(1, round(physical_height / 540))`, recomputed on window or scale-factor changes) or C2 (`FixedVertical { viewport_height: 480 }`); `zoom_camera` changes the separate debug factor
-- [ ] 3.5 `cargo check`, `cargo check --target wasm32-unknown-unknown`, `cargo test`, `cargo clippy` clean for the touched files
+- [x] 3.1 `TiledMap::tile_size` from the `.tmj`; loader error on a tileset with another tile size; remove `TILE_SIZE`; use the map value in `tiled_to_game`, `chunk_manager.rs`, `collision.rs` and `wander.rs` (design D4); a unit test with an inline 48 px map
+- [x] 3.2 New `src/character.rs` (module in `src/main.rs`) with `FEET_RADIUS`, `FEET_BELOW_CENTRE`, `SheetFormat`, `LEGACY` (1.5), `feet_collider()` and `transform()`; the player, Samantha and the wanderer use `LEGACY` (design D5)
+- [x] 3.3 Every constant in the design D5 table (speeds, distances, hint offsets and sizes, shake, `FEET_TO_TRANSFORM` → `FEET_BELOW_CENTRE`); update the `TiledMap::path` tests to the +48 offset
+- [x] 3.4 `src/world/camera.rs`: per 0.2, C1 (`ScalingMode::WindowSize`, `ortho.scale = scale_factor / t × debug_zoom`, `t = max(1, round(physical_height / 540))`, recomputed on window or scale-factor changes) or C2 (`FixedVertical { viewport_height: 480 }`); `zoom_camera` changes the separate debug factor
+- [x] 3.5 `cargo check`, `cargo check --target wasm32-unknown-unknown`, `cargo test`, `cargo clippy` clean for the touched files
 
 ## 4. Verification (lead)
 
