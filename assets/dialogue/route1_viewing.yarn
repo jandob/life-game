@@ -1,0 +1,39 @@
+title: Route1Viewing
+tags: cutscene
+---
+// STUB for engine tests. The real scene is written by the game designer.
+<<declare $samantha_name = "_Samantha">>
+<<declare $r1_viewing_opening = "">>
+<<declare $r1_viewing_why = "">>
+<<declare $r1_viewing_question = "">>
+<<open_door Door3A>>
+<<show Samantha>>
+<<walk Samantha SamanthaOut>>
+<<face Samantha Player>>
+{$samantha_name}: Nobody is in there. That is sort of the point.
+{$samantha_name}: Let me get the keys.
+-> Hi.
+    <<set $r1_viewing_opening to "hi">>
+-> Sorry, am I early?
+    <<set $r1_viewing_opening to "early">>
+<<set $samantha_name to "Samantha">>
+<<walk Samantha SamanthaTo3B>>
+<<open_door Door3B>>
+<<face Samantha Player>>
+{$samantha_name}: I am Samantha. Come in.
+<<walk Samantha SamanthaToKitchen no_wait>>
+<<walk Player PlayerToKitchen>>
+<<await_walks>>
+<<face Samantha Player>>
+You: The stove works?
+{$samantha_name}: It does.
+<<walk Samantha SamanthaToLanding no_wait>>
+<<walk Player PlayerToLanding>>
+<<await_walks>>
+<<close_door Door3B>>
+{$samantha_name}: I'll let you know.
+<<walk Samantha SamanthaHome>>
+<<hide Samantha>>
+<<close_door Door3A>>
+<<end_demo>>
+===
