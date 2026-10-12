@@ -32,6 +32,12 @@
       "trigger": "pixel art",
       "scale": 1.0,
       "licence": "creativeml-openrail-m"
+    },
+    "lgwoman1": {
+      "path": "~/.cache/artgen/loras/lgwoman1/pytorch_lora_weights.safetensors",
+      "trigger": "lgwoman1",
+      "scale": 0.8,
+      "licence": "own training data (FLUX klein output) on WAI v17; weights kept out of git, see train/README.md"
     }
   },
   "vae": {"hf_repo": "madebyollin/sdxl-vae-fp16-fix"},
