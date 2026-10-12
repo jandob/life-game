@@ -1,4 +1,3 @@
-use std::str::FromStr;
 use bevy::platform::time::Instant;
 
 use unicode_segmentation::UnicodeSegmentation;
@@ -6,18 +5,15 @@ use unicode_segmentation::UnicodeSegmentation;
 use bevy::prelude::*;
 use bevy_yarnspinner::{events::*, prelude::*};
 
-use crate::npc::NpcDialogue;
 use crate::player::chat::PlayerStoppedChat;
 use crate::ui::main_menu::{ButtonAction, MainMenuButtonPressed};
 use crate::{GameAssets, GameState};
 
 use super::option_selection::OptionSelection;
 use super::spawn::{set_dialogue_text, DialogueContent};
+use super::speaker::{speaker, writer_speed, AVERAGE_SPEED};
 use super::DialogueViewSystemSet;
 
-// The average dialogue speed.
-// It's used to calculate the multiplier of the pauses caused by punctuation.
-const AVERAGE_SPEED: f32 = 20.0;
 
 #[derive(Message)]
 pub struct TypewriterFinished;
@@ -210,30 +206,8 @@ fn finish_stopped_dialoauge(
 }
 
 fn set_writer_speed(trigger: On<PresentLine>, mut typewriter: ResMut<Typewriter>) {
-    let ev = trigger.event();
-    let name = ev
-        .line
-        .character_name()
-        .unwrap_or_default()
-        .trim_start_matches('_');
-    let maybe_npc = NpcDialogue::from_str(name);
-    let speed = if let Ok(npc) = maybe_npc {
-        match npc {
-            NpcDialogue::Jotem => 18.0,
-            NpcDialogue::Eleonore => 20.0,
-            NpcDialogue::Isabelle => 20.0,
-            NpcDialogue::Ionas => 16.0,
-            NpcDialogue::Antonius => 19.0,
-            // Should never happen!
-            NpcDialogue::IonasAndAntonius => 300.0,
-        }
-    } else {
-        match name {
-            "You" => 20.0,
-            _ => AVERAGE_SPEED,
-        }
-    };
-    typewriter.current_speed = speed;
+    let name = trigger.event().line.character_name().unwrap_or_default();
+    typewriter.current_speed = writer_speed(speaker(name));
 }
 
 fn update_speed_multiplier(

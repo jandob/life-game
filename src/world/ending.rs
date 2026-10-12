@@ -20,9 +20,18 @@ const END_COLOR: Color = Color::srgba(0.0, 0.0, 0.0, 1.0);
 const BACKGROUND_SPRITE_YSORT: f32 = 40_000.0;
 const CHARACTER_YSORT: f32 = 50_000.0;
 
+/// Which ending sequence to play.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Ending {
+    /// The end of the playable slice: "To be continued".
+    Demo,
+}
+
 #[derive(Message)]
 pub struct EndingTriggered {
-    pub dialogue: NpcDialogue,
+    pub ending: Ending,
+    /// A character to show above the black fade next to the player.
+    pub npc: Option<NpcDialogue>,
 }
 
 fn increase_ysorts(
@@ -39,7 +48,7 @@ fn increase_ysorts(
         *player_ysort = YSort(CHARACTER_YSORT);
 
         for (mut npc_ysort, npc) in &mut q_npcs {
-            if npc.dialogue == ev.dialogue {
+            if ev.npc == Some(npc.id) {
                 *npc_ysort = YSort(CHARACTER_YSORT);
             }
         }

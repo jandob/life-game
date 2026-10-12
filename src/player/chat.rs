@@ -1,17 +1,23 @@
 use bevy::prelude::*;
 use bevy_yarnspinner::prelude::*;
 
-use crate::{
-    npc::{Npc, NpcDialogue},
-    ui::dialogue::runner::RunnerFlags,
-    GameState,
-};
+use crate::{ui::dialogue::runner::RunnerFlags, GameState};
 
 use super::{input::PlayerInput, Player, PlayerState, NPC_PROXIMITY_DISTANCE};
 
+/// Yarn node tag of scenes the player cannot leave with Escape.
+const CUTSCENE_TAG: &str = "cutscene";
+
+/// Anything the player can start a conversation with: an NPC or an interactable.
+#[derive(Component)]
+pub struct Talkable {
+    /// The Yarn node the conversation starts at.
+    pub node: String,
+}
+
 #[derive(Message)]
 pub struct PlayerStartedChat {
-    pub dialogue: NpcDialogue,
+    pub node: String,
     pub direction: Vec2,
 }
 #[derive(Message)]
@@ -20,7 +26,7 @@ pub struct PlayerStoppedChat;
 fn start_chat(
     player_input: Res<PlayerInput>,
     mut q_player: Query<(&Transform, &mut Player)>,
-    q_npcs: Query<(&Transform, &Npc), Without<Player>>,
+    q_talkables: Query<(&Transform, &Talkable), Without<Player>>,
     q_dialogue_runners: Query<&RunnerFlags, With<DialogueRunner>>,
     mut ev_player_started_chat: MessageWriter<PlayerStartedChat>,
 ) {
@@ -38,26 +44,40 @@ fn start_chat(
         Err(_) => return,
     };
 
-    for (npc_transform, npc) in &q_npcs {
+    for (transform, talkable) in &q_talkables {
         if player_transform
             .translation
             .xy()
-            .distance_squared(npc_transform.translation.xy())
+            .distance_squared(transform.translation.xy())
             <= NPC_PROXIMITY_DISTANCE.powi(2)
         {
             player.state = PlayerState::Talking;
             ev_player_started_chat.write(PlayerStartedChat {
-                dialogue: npc.dialogue,
-                direction: npc_transform.translation.xy() - player_transform.translation.xy(),
+                node: talkable.node.clone(),
+                direction: transform.translation.xy() - player_transform.translation.xy(),
             });
             break;
         }
     }
 }
 
+/// Whether the active conversation is in a node tagged `cutscene`.
+fn in_cutscene(q_runners: &Query<(&DialogueRunner, &RunnerFlags)>) -> bool {
+    q_runners
+        .iter()
+        .filter(|(_, flags)| flags.active)
+        .any(|(runner, _)| {
+            runner
+                .current_node()
+                .and_then(|node| runner.get_tags_for_node(&node))
+                .is_some_and(|tags| tags.iter().any(|tag| tag == CUTSCENE_TAG))
+        })
+}
+
 fn stop_chat(
     player_input: Res<PlayerInput>,
     q_player: Query<&Player>,
+    q_runners: Query<(&DialogueRunner, &RunnerFlags)>,
     mut ev_player_stopped_chat: MessageWriter<PlayerStoppedChat>,
 ) {
     let player = match q_player.single() {
@@ -70,6 +90,10 @@ fn stop_chat(
     }
 
     if player.state != PlayerState::Talking {
+        return;
+    }
+
+    if in_cutscene(&q_runners) {
         return;
     }
 

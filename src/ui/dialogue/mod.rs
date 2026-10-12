@@ -3,6 +3,7 @@ pub mod runner;
 mod command;
 mod option_selection;
 mod spawn;
+mod speaker;
 mod start_hint;
 #[cfg(test)]
 mod test;

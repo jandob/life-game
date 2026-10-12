@@ -1,15 +1,13 @@
-use std::str::FromStr;
-
 use bevy::prelude::*;
 use bevy_yarnspinner::{events::*, prelude::*};
 
-use crate::npc::NpcDialogue;
 use crate::player::chat::PlayerStoppedChat;
 use crate::player::input::PlayerInput;
 use crate::GameAssets;
 
 use super::option_selection::OptionSelection;
 use super::runner::RunnerFlags;
+use super::speaker::{portrait, speaker};
 use super::spawn::{DialogueCharacterIcon, DialogueContinueNode, DialogueNameNode};
 use super::typewriter::{Typewriter, TypewriterFinished, WriteDialogueText};
 use super::DialogueViewSystemSet;
@@ -21,29 +19,11 @@ fn convert_name(name: &str) -> String {
     name.to_string()
 }
 
-/// Return an Option so that you only set the texture when there is a proper NPC.
+/// Return an Option so that you only set the texture when there is a proper speaker.
 /// If there is a frame delay (due to events or similar), then we will simply
-/// display the previous NPC for couple of frames. That's okay.
-fn character_icon(assets: &Res<GameAssets>, name: &str) -> Option<Handle<Image>> {
-    let name = name.trim_start_matches('_');
-    if name == "You" {
-        return Some(assets.pai_icon.clone());
-    }
-
-    match NpcDialogue::from_str(name) {
-        Ok(r) => match r {
-            NpcDialogue::Eleonore => Some(assets.eleonore_icon.clone()),
-            NpcDialogue::Jotem => Some(assets.jotem_icon.clone()),
-            NpcDialogue::Isabelle => Some(assets.isabelle_icon.clone()),
-            NpcDialogue::Ionas => Some(assets.ionas_icon.clone()),
-            NpcDialogue::Antonius => Some(assets.antonius_icon.clone()),
-            NpcDialogue::IonasAndAntonius => {
-                error!("should never happen, you have used '$name' in antonius and ionas dialogue");
-                None
-            }
-        },
-        Err(_) => None,
-    }
+/// display the previous speaker for couple of frames. That's okay.
+fn character_icon(assets: &GameAssets, name: &str) -> Option<Handle<Image>> {
+    speaker(name).map(|speaker| portrait(assets, speaker))
 }
 
 fn present_line(

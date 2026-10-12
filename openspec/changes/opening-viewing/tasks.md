@@ -35,35 +35,35 @@ Decided by the user, 2026-10-12: all defaults (forest code removed, L1 one map, 
 
 ## 4. Code: forest out of the boot path (gameplay-engineer; assumes D1-A)
 
-- [ ] 4.1 `git mv assets/dialogue/{eleonore,jotem,isabelle,ionas-and-antonius}.yarn assets/dialogue/forest/`
-- [ ] 4.2 `assets/start.assets.ron`: `world_map` → `maps/route1_flat.tmj` (use `apartment_v2.tmj` temporarily until 2.x lands)
-- [ ] 4.3 `src/main.rs`: the only Yarn source is `dialogue/route1_viewing.yarn` (a stub file with a `Route1Viewing` node until section 7 lands)
-- [ ] 4.4 Remove the forest NPC code: forest `NpcDialogue` variants, `spawn_eleonore/jotem/isabelle/antonius/ionas`, `Npc::was_talked_to/was_mentioned_by`, `face_player`, `target_npc_mentioned_command`, `trigger_ending_command`, `update_target_npc(s)`/`update_mentioned_by`, the forest idle clips in `animation.rs`, and the forest arms in `typewriter.rs`, `updating.rs` and `ending_text.rs`
-- [ ] 4.5 `src/assets.rs`: drop the forest NPC sheets and portraits and `bird_sounds`/`cricket_sounds`; `src/player/audio.rs`: drop the bird and cricket spawn and `update_bird_sound` (files stay)
-- [ ] 4.6 `src/npc/wander.rs`: spawn only from a `Wanderer` object (remove the `SpawnPoint` fallback)
-- [ ] 4.7 `cargo check` (native and wasm32) and `cargo test` green with the stub Yarn file
+- [x] 4.1 `git mv assets/dialogue/{eleonore,jotem,isabelle,ionas-and-antonius}.yarn assets/dialogue/forest/`
+- [x] 4.2 `assets/start.assets.ron`: `world_map` → `maps/route1_flat.tmj` (use `apartment_v2.tmj` temporarily until 2.x lands) *(done with `apartment_v2.tmj` for now; switch to `route1_flat.tmj` when 2.x lands)*
+- [x] 4.3 `src/main.rs`: the only Yarn source is `dialogue/route1_viewing.yarn` (a stub file with a `Route1Viewing` node until section 7 lands)
+- [x] 4.4 Remove the forest NPC code: forest `NpcDialogue` variants, `spawn_eleonore/jotem/isabelle/antonius/ionas`, `Npc::was_talked_to/was_mentioned_by`, `face_player`, `target_npc_mentioned_command`, `trigger_ending_command`, `update_target_npc(s)`/`update_mentioned_by`, the forest idle clips in `animation.rs`, and the forest arms in `typewriter.rs`, `updating.rs` and `ending_text.rs`
+- [x] 4.5 `src/assets.rs`: drop the forest NPC sheets and portraits and `bird_sounds`/`cricket_sounds`; `src/player/audio.rs`: drop the bird and cricket spawn and `update_bird_sound` (files stay)
+- [x] 4.6 `src/npc/wander.rs`: spawn only from a `Wanderer` object (remove the `SpawnPoint` fallback)
+- [x] 4.7 `cargo check` (native and wasm32) and `cargo test` green with the stub Yarn file
 
 ## 5. Code: map objects, talk targets, story state (gameplay-engineer)
 
-- [ ] 5.1 `tiled_map.rs`: `TiledObject` gains `properties` (string, bool, int and float) and `points` (absolute polyline points); helpers `prop_str`/`prop_bool`; `TiledMap::path(name) -> Option<Vec<Vec2>>` (game space, feet +16 px y)
-- [ ] 5.2 `Talkable { node }`: `start_chat` and `spawn_hints` query it; `PlayerStartedChat { node, direction }`; `RunnerFlags` and the runner cache keyed by start node
-- [ ] 5.3 Spawn interactables from the `Interact` layer (`Talkable` + `Transform` at the object centre); missing `node` → `warn!` and skip
-- [ ] 5.4 `src/story/mod.rs`: `StoryVars(MemoryVariableStorage)`, fresh on `OnExit(MainMenu)`; `spawn_dialogue_runner` uses `build_dialogue_runner().with_variable_storage(clone_shallow())` with snapshot and restore around `build()` (design D4)
-- [ ] 5.5 `src/ui/dialogue/speaker.rs`: the speaker table (`You` → player and `player_icon`; `Samantha` → `samantha_icon`); used by `updating.rs` and `typewriter.rs`
-- [ ] 5.6 `GameAssets`: `samantha_texture` (placeholder `library/characters/wanderer/wanderer.png`), `samantha_layout` (64x128, 10x12), `samantha_icon` and `player_icon` (placeholder `library/portraits/pai.png`)
-- [ ] 5.7 `EndingTriggered { ending: Ending, npc: Option<NpcDialogue> }`; `<<end_demo>>` command; `ending_text.rs` "To be continued" plus "Thanks for Playing", no "- FIN -"
+- [x] 5.1 `tiled_map.rs`: `TiledObject` gains `properties` (string, bool, int and float) and `points` (absolute polyline points); helpers `prop_str`/`prop_bool`; `TiledMap::path(name) -> Option<Vec<Vec2>>` (game space, feet +16 px y)
+- [x] 5.2 `Talkable { node }`: `start_chat` and `spawn_hints` query it; `PlayerStartedChat { node, direction }`; `RunnerFlags` and the runner cache keyed by start node
+- [x] 5.3 Spawn interactables from the `Interact` layer (`Talkable` + `Transform` at the object centre); missing `node` → `warn!` and skip
+- [x] 5.4 `src/story/mod.rs`: `StoryVars(MemoryVariableStorage)`, fresh on `OnExit(MainMenu)`; `spawn_dialogue_runner` uses `build_dialogue_runner().with_variable_storage(clone_shallow())` with snapshot and restore around `build()` (design D4)
+- [x] 5.5 `src/ui/dialogue/speaker.rs`: the speaker table (`You` → player and `player_icon`; `Samantha` → `samantha_icon`); used by `updating.rs` and `typewriter.rs`
+- [x] 5.6 `GameAssets`: `samantha_texture` (placeholder `library/characters/wanderer/wanderer.png`), `samantha_layout` (64x128, 10x12), `samantha_icon` and `player_icon` (placeholder `library/portraits/pai.png`)
+- [x] 5.7 `EndingTriggered { ending: Ending, npc: Option<NpcDialogue> }`; `<<end_demo>>` command; `ending_text.rs` "To be continued" plus "Thanks for Playing", no "- FIN -"
 
 ## 6. Code: Samantha, scripted scenes, doors (gameplay-engineer)
 
-- [ ] 6.1 `NpcDialogue::Samantha`; `spawn_samantha` from the `NPCs` object (`hidden` property → `Visibility::Hidden` + `ColliderDisabled`); kinematic position-based body, `Actor("Samantha")`, `FourWayFacing`, scale 0.5, child `ball(16)` at y -32 (design D3)
-- [ ] 6.2 `Actor("Player")` on the player
-- [ ] 6.3 `src/story/scripted.rs`: `ScriptedWalk` + `scripted_walk` system (kinematic: transform step; player: velocity), 70 px/s, arrival at 2 px, 1.5 s fail-safe snap with `warn!`
-- [ ] 6.4 The player under `ScriptedWalk`: `player_movement`/`switch_player_move_state` skip; `update_animation` plays Walk in the travel direction while staying `Talking`
-- [ ] 6.5 `animate_actors` for `FourWayFacing` NPCs (PostUpdate, before `PhysicsSet::Writeback`): Walk while walking, else Idle in `facing`
-- [ ] 6.6 Commands `walk` (blocking through `Arc<AtomicBool>`, optional `no_wait`), `await_walks`, `face`, `show`, `hide`; unknown names → `error!` and finished; registered in `spawn_dialogue_runner`
-- [ ] 6.7 `src/world/map/doors.rs`: door colliders from `Doors`, `DoorStates` from `open`; `open_door`/`close_door` commands; `TileLayerName` on tilemaps in `chunk_manager::spawn_chunk`; `sync_door_layers` on state change and chunk spawn
-- [ ] 6.8 Cutscene nodes: Escape ignored while the active runner's current node has the tag `cutscene`; continue indicator hidden while a blocking command runs
-- [ ] 6.9 `cargo check` (native and wasm32), `cargo clippy` clean for the new code
+- [x] 6.1 `NpcDialogue::Samantha`; `spawn_samantha` from the `NPCs` object (`hidden` property → `Visibility::Hidden` + `ColliderDisabled`); kinematic position-based body, `Actor("Samantha")`, `FourWayFacing`, scale 0.5, child `ball(16)` at y -32 (design D3)
+- [x] 6.2 `Actor("Player")` on the player
+- [x] 6.3 `src/story/scripted.rs`: `ScriptedWalk` + `scripted_walk` system (kinematic: transform step; player: velocity), 70 px/s, arrival at 2 px, 1.5 s fail-safe snap with `warn!`
+- [x] 6.4 The player under `ScriptedWalk`: `player_movement`/`switch_player_move_state` skip; `update_animation` plays Walk in the travel direction while staying `Talking`
+- [x] 6.5 `animate_actors` for `FourWayFacing` NPCs (PostUpdate, before `PhysicsSet::Writeback`): Walk while walking, else Idle in `facing`
+- [x] 6.6 Commands `walk` (blocking through `Arc<AtomicBool>`, optional `no_wait`), `await_walks`, `face`, `show`, `hide`; unknown names → `error!` and finished; registered in `spawn_dialogue_runner`
+- [x] 6.7 `src/world/map/doors.rs`: door colliders from `Doors`, `DoorStates` from `open`; `open_door`/`close_door` commands; `TileLayerName` on tilemaps in `chunk_manager::spawn_chunk`; `sync_door_layers` on state change and chunk spawn
+- [x] 6.8 Cutscene nodes: Escape ignored while the active runner's current node has the tag `cutscene`; continue indicator hidden while a blocking command runs
+- [x] 6.9 `cargo check` (native and wasm32), `cargo clippy` clean for the new code
 
 ## 7. Dialogue (game-designer)
 
@@ -75,10 +75,10 @@ Decided by the user, 2026-10-12: all defaults (forest code removed, L1 one map, 
 
 ## 8. Tests and tools (gameplay-engineer)
 
-- [ ] 8.1 `test.rs`: drop the forest-only tests; update the custom command list; add the speaker-variable, first-line and scripted-command arity checks (design D6)
-- [ ] 8.2 Unit test: `StoryVars` value set through runner 1 survives building runner 2 (design D4)
-- [ ] 8.3 Unit test: `TiledMap::path` and `prop_*` on a small inline `.tmj` JSON (polyline, point, properties)
-- [ ] 8.4 Run `dialogue_graph` and `dialogue_lines` once on the new file; fix them or note what breaks
+- [x] 8.1 `test.rs`: drop the forest-only tests; update the custom command list; add the speaker-variable, first-line and scripted-command arity checks (design D6)
+- [x] 8.2 Unit test: `StoryVars` value set through runner 1 survives building runner 2 (design D4)
+- [x] 8.3 Unit test: `TiledMap::path` and `prop_*` on a small inline `.tmj` JSON (polyline, point, properties)
+- [x] 8.4 Run `dialogue_graph` and `dialogue_lines` once on the new file; fix them or note what breaks
 
 ## 9. Verification (lead; manual runs with F3 off)
 

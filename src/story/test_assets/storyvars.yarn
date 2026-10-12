@@ -1,0 +1,14 @@
+title: Start
+---
+<<declare $flag = "unset">>
+Npc: Hello
+===
+title: Walk
+tags: cutscene
+---
+Npc: Before
+<<walk Walker There>>
+Npc: Arrived
+<<walk Walker There no_wait>>
+Npc: Without waiting
+===

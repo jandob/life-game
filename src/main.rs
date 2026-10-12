@@ -5,6 +5,7 @@ mod assets;
 mod audio;
 mod npc;
 mod player;
+mod story;
 mod ui;
 mod utils;
 mod world;
@@ -70,12 +71,9 @@ fn main() {
             HanabiPlugin,
             animation::SpriteAnimationPlugin,
             {
-                let plugin = YarnSpinnerPlugin::with_yarn_sources([
-                    YarnFileSource::file("dialogue/eleonore.yarn"),
-                    YarnFileSource::file("dialogue/jotem.yarn"),
-                    YarnFileSource::file("dialogue/isabelle.yarn"),
-                    YarnFileSource::file("dialogue/ionas-and-antonius.yarn"),
-                ]);
+                let plugin = YarnSpinnerPlugin::with_yarn_sources([YarnFileSource::file(
+                    "dialogue/route1_viewing.yarn",
+                )]);
                 #[cfg(not(target_arch = "wasm32"))]
                 let plugin = plugin.with_development_file_generation(DevelopmentFileGeneration::None);
                 plugin
@@ -96,6 +94,7 @@ fn main() {
             audio::GameAudioPlugin,
             player::PlayerPlugin,
             npc::NpcPlugin,
+            story::StoryPlugin,
             utils::UtilsPlugin,
         ))
         .run();

@@ -3,8 +3,10 @@ use bevy_tweening::{lens::*, *};
 
 use crate::animation::{SpriteAnimator, DIALOGUE_START_HINT};
 use crate::{
-    npc::Npc,
-    player::{chat::PlayerStartedChat, Player, PlayerState, NPC_PROXIMITY_DISTANCE},
+    player::{
+        chat::{PlayerStartedChat, Talkable},
+        Player, PlayerState, NPC_PROXIMITY_DISTANCE,
+    },
     world::camera::YSort,
     GameAssets, GameState,
 };
@@ -56,7 +58,7 @@ fn spawn_hints(
     mut commands: Commands,
     assets: Res<GameAssets>,
     q_player: Query<(&Transform, &Player)>,
-    q_npcs: Query<&Transform, (With<Npc>, Without<Player>)>,
+    q_talkables: Query<&Transform, (With<Talkable>, Without<Player>)>,
     q_start_hints: Query<&StartHint>,
 ) {
     if !q_start_hints.is_empty() {
@@ -72,7 +74,7 @@ fn spawn_hints(
         return;
     }
 
-    for npc_transform in &q_npcs {
+    for npc_transform in &q_talkables {
         if player_transform
             .translation
             .xy()

@@ -24,6 +24,10 @@ pub struct ChunkManager {
 #[derive(Component, Deref)]
 pub struct ChunkIndex(pub IVec2);
 
+/// Name of the Tiled tile layer a tilemap entity was spawned from.
+#[derive(Component)]
+pub struct TileLayerName(pub String);
+
 fn spawn_chunk(commands: &mut Commands, tiled_map: &Res<TiledMap>, chunk_pos: IVec2) {
     // The root carries the chunk's xy position (colliders hang off it); the
     // tilemaps are its children and only differ in z.
@@ -91,7 +95,7 @@ fn spawn_chunk(commands: &mut Commands, tiled_map: &Res<TiledMap>, chunk_pos: IV
         }
 
         for (tileset, (tilemap_entity, storage)) in tilemaps {
-            commands.entity(tilemap_entity).insert(TilemapBundle {
+            commands.entity(tilemap_entity).insert((TileLayerName(layer.name.clone()), TilemapBundle {
                 grid_size: RENDER_TILE_SIZE.into(),
                 size: TilemapSize::new(CHUNK_SIZE, CHUNK_SIZE),
                 storage,
@@ -103,7 +107,7 @@ fn spawn_chunk(commands: &mut Commands, tiled_map: &Res<TiledMap>, chunk_pos: IV
                     ..Default::default()
                 },
                 ..Default::default()
-            });
+            }));
         }
     }
 }

@@ -121,17 +121,6 @@ pub const CHARACTER_CLIPS: [SpriteAnimationClip; 12] = [
     SpriteAnimationClip::from_keyframe_range(110, 118, 0.8), // running-top
 ];
 
-pub const ELEONORE_IDLE: SpriteAnimationClip =
-    SpriteAnimationClip::from_keyframe_range(0, 9, 0.9);
-pub const JOTEM_IDLE: SpriteAnimationClip =
-    SpriteAnimationClip::from_keyframe_range(0, 6, 0.6);
-pub const ISABELLE_IDLE: SpriteAnimationClip =
-    SpriteAnimationClip::from_keyframe_range(0, 7, 0.9);
-pub const ANTONIUS_IDLE: SpriteAnimationClip =
-    SpriteAnimationClip::from_keyframe_range(0, 5, 0.7);
-pub const IONAS_IDLE: SpriteAnimationClip =
-    SpriteAnimationClip::from_keyframe_range(0, 5, 0.55);
-
 pub const DIALOGUE_START_HINT: SpriteAnimationClip =
     SpriteAnimationClip::from_keyframe_range(0, 2, 1.5);
 

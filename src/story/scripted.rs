@@ -1,0 +1,421 @@
+//! Scripted movement for cutscene dialogue: actors, walks along Tiled paths,
+//! facing and visibility. The Yarn commands in here are registered on every
+//! dialogue runner by `ui::dialogue::runner`.
+
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+
+use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
+
+use crate::npc::FourWayFacing;
+use crate::player::Player;
+use crate::world::map::tiled_map::TiledMap;
+use crate::GameState;
+
+/// Walking speed of every scripted actor, in px/s.
+pub const SCRIPT_WALK_SPEED: f32 = 70.0;
+/// An actor this close to its target point has arrived.
+const ARRIVE_DISTANCE: f32 = 2.0;
+/// Seconds without progress after which an actor is placed at its target point.
+const STUCK_SECONDS: f32 = 1.5;
+/// Progress (px) below which an actor counts as not moving.
+const STUCK_PROGRESS: f32 = 2.0;
+const NO_WAIT: &str = "no_wait";
+
+/// Names an entity that dialogue commands can address, e.g. `Player` or `Samantha`.
+#[derive(Component)]
+pub struct Actor(pub String);
+
+/// An active scripted walk along transform-space points.
+#[derive(Component)]
+pub struct ScriptedWalk {
+    points: Vec<Vec2>,
+    next: usize,
+    done: Arc<AtomicBool>,
+    best_dist: f32,
+    stuck: Timer,
+}
+
+impl ScriptedWalk {
+    fn new(points: Vec<Vec2>, done: Arc<AtomicBool>) -> Self {
+        Self {
+            points,
+            next: 0,
+            done,
+            best_dist: f32::MAX,
+            stuck: Timer::from_seconds(STUCK_SECONDS, TimerMode::Once),
+        }
+    }
+}
+
+fn finished() -> Arc<AtomicBool> {
+    Arc::new(AtomicBool::new(true))
+}
+
+/// `<<walk ACTOR PATH [no_wait]>>`
+pub fn walk_command(
+    In((actor, path, flag)): In<(String, String, Option<String>)>,
+    mut commands: Commands,
+    tiled_map: Res<TiledMap>,
+    q_actors: Query<(Entity, &Actor, Option<&ScriptedWalk>)>,
+) -> Arc<AtomicBool> {
+    let Some((entity, _, old_walk)) = q_actors.iter().find(|(_, a, _)| a.0 == actor) else {
+        error!("walk: unknown actor '{actor}'");
+        return finished();
+    };
+    let Some(points) = tiled_map.path(&path).filter(|p| !p.is_empty()) else {
+        error!("walk: unknown or empty path '{path}'");
+        return finished();
+    };
+
+    // A walk that gets replaced must not hold the dialogue forever.
+    if let Some(old) = old_walk {
+        old.done.store(true, Ordering::Relaxed);
+    }
+
+    let wait = match flag.as_deref() {
+        None => true,
+        Some(NO_WAIT) => false,
+        Some(other) => {
+            warn!("walk: unknown option '{other}', expected '{NO_WAIT}'; waiting");
+            true
+        }
+    };
+    let done = Arc::new(AtomicBool::new(false));
+    commands
+        .entity(entity)
+        .insert(ScriptedWalk::new(points, done.clone()));
+    if wait {
+        done
+    } else {
+        finished()
+    }
+}
+
+/// `<<await_walks>>`: finished when no scripted walk is left.
+pub fn await_walks_command(q_walks: Query<&ScriptedWalk>) -> Vec<Arc<AtomicBool>> {
+    q_walks.iter().map(|w| w.done.clone()).collect()
+}
+
+fn direction_from_name(name: &str) -> Option<Vec2> {
+    match name {
+        "up" => Some(Vec2::Y),
+        "down" => Some(Vec2::NEG_Y),
+        "left" => Some(Vec2::NEG_X),
+        "right" => Some(Vec2::X),
+        _ => None,
+    }
+}
+
+/// `<<face ACTOR DIR>>`, `DIR` being up, down, left, right or another actor.
+pub fn face_command(
+    In((actor, dir)): In<(String, String)>,
+    q_actors: Query<(&Actor, &Transform)>,
+    mut q_npcs: Query<(&Actor, &mut FourWayFacing), Without<Player>>,
+    mut q_player: Query<(&Actor, &mut Player)>,
+) {
+    let Some(self_pos) = q_actors
+        .iter()
+        .find(|(a, _)| a.0 == actor)
+        .map(|(_, t)| t.translation.truncate())
+    else {
+        error!("face: unknown actor '{actor}'");
+        return;
+    };
+    let direction = match direction_from_name(&dir) {
+        Some(d) => d,
+        None => match q_actors.iter().find(|(a, _)| a.0 == dir) {
+            Some((_, t)) => t.translation.truncate() - self_pos,
+            None => {
+                error!("face: '{dir}' is neither a direction nor an actor");
+                return;
+            }
+        },
+    };
+
+    for (a, mut facing) in &mut q_npcs {
+        if a.0 == actor {
+            facing.facing = direction;
+        }
+    }
+    for (a, mut player) in &mut q_player {
+        if a.0 == actor {
+            player.current_direction = direction;
+        }
+    }
+}
+
+fn set_visible(
+    commands: &mut Commands,
+    actor: &str,
+    visible: bool,
+    q_actors: &Query<(Entity, &Actor, Option<&Children>)>,
+    q_colliders: &Query<(), With<Collider>>,
+) {
+    let Some((entity, _, children)) = q_actors.iter().find(|(_, a, _)| a.0 == actor) else {
+        error!("show/hide: unknown actor '{actor}'");
+        return;
+    };
+    commands.entity(entity).insert(if visible {
+        Visibility::Inherited
+    } else {
+        Visibility::Hidden
+    });
+    for child in children.into_iter().flatten() {
+        if q_colliders.contains(*child) {
+            if visible {
+                commands.entity(*child).remove::<ColliderDisabled>();
+            } else {
+                commands.entity(*child).insert(ColliderDisabled);
+            }
+        }
+    }
+}
+
+/// `<<show ACTOR>>`
+pub fn show_command(
+    In(actor): In<String>,
+    mut commands: Commands,
+    q_actors: Query<(Entity, &Actor, Option<&Children>)>,
+    q_colliders: Query<(), With<Collider>>,
+) {
+    set_visible(&mut commands, &actor, true, &q_actors, &q_colliders);
+}
+
+/// `<<hide ACTOR>>`
+pub fn hide_command(
+    In(actor): In<String>,
+    mut commands: Commands,
+    q_actors: Query<(Entity, &Actor, Option<&Children>)>,
+    q_colliders: Query<(), With<Collider>>,
+) {
+    set_visible(&mut commands, &actor, false, &q_actors, &q_colliders);
+}
+
+/// Moves every actor with a `ScriptedWalk`. Kinematic actors step their transform,
+/// dynamic ones (the player) get a velocity so that colliders still apply.
+pub(crate) fn scripted_walk(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut q_walkers: Query<(
+        Entity,
+        &mut ScriptedWalk,
+        &mut Transform,
+        Option<&mut Velocity>,
+        Option<&mut FourWayFacing>,
+        Option<&mut Player>,
+    )>,
+) {
+    let dt = time.delta_secs();
+    if dt <= 0.0 {
+        return;
+    }
+
+    for (entity, mut walk, mut transform, mut velocity, mut facing, mut player) in &mut q_walkers {
+        let pos = transform.translation.truncate();
+        let target = walk.points[walk.next];
+        let to_target = target - pos;
+        let dist = to_target.length();
+
+        let mut arrived = dist <= ARRIVE_DISTANCE;
+        if !arrived {
+            if dist < walk.best_dist - STUCK_PROGRESS {
+                walk.best_dist = dist;
+                walk.stuck.reset();
+            } else if walk.stuck.tick(time.delta()).is_finished() {
+                warn!("Scripted walk is stuck {dist:.0}px from its point, placing the actor there");
+                arrived = true;
+            }
+        }
+
+        if arrived {
+            transform.translation.x = target.x;
+            transform.translation.y = target.y;
+            walk.next += 1;
+            walk.best_dist = f32::MAX;
+            walk.stuck.reset();
+            if walk.next >= walk.points.len() {
+                if let Some(velocity) = velocity.as_mut() {
+                    velocity.linear = Vec2::ZERO;
+                }
+                walk.done.store(true, Ordering::Relaxed);
+                commands.entity(entity).remove::<ScriptedWalk>();
+            }
+            continue;
+        }
+
+        let dir = to_target / dist;
+        if let Some(facing) = facing.as_mut() {
+            facing.facing = dir;
+        }
+        if let Some(player) = player.as_mut() {
+            player.current_direction = dir;
+        }
+        match velocity.as_mut() {
+            Some(velocity) => velocity.linear = dir * SCRIPT_WALK_SPEED.min(dist / dt),
+            None => {
+                let step = (SCRIPT_WALK_SPEED * dt).min(dist);
+                transform.translation += (dir * step).extend(0.0);
+            }
+        }
+    }
+}
+
+pub struct ScriptedPlugin;
+
+impl Plugin for ScriptedPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, scripted_walk.run_if(in_state(GameState::Gaming)));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+
+    use bevy::time::TimeUpdateStrategy;
+    use bevy_yarnspinner::TaskFinishedIndicator;
+
+    use super::*;
+    use crate::world::map::tiled_map::{ObjectLayerData, TiledObject};
+
+    fn path_object(name: &str, points: &[Vec2]) -> TiledObject {
+        TiledObject {
+            name: name.to_string(),
+            obj_type: String::new(),
+            x: points[0].x,
+            y: points[0].y,
+            width: 0.0,
+            height: 0.0,
+            properties: Default::default(),
+            points: points.to_vec(),
+        }
+    }
+
+    fn test_app() -> App {
+        let mut app = App::new();
+        app.add_plugins(MinimalPlugins)
+            .insert_resource(TimeUpdateStrategy::ManualDuration(Duration::from_millis(50)))
+            .insert_resource(TiledMap {
+                width: 40,
+                height: 40,
+                layers: Vec::new(),
+                tilesets: Vec::new(),
+                object_layers: vec![ObjectLayerData {
+                    name: "Paths".to_string(),
+                    objects: vec![path_object(
+                        "There",
+                        &[Vec2::new(100.0, 100.0), Vec2::new(160.0, 100.0)],
+                    )],
+                }],
+            })
+            .add_systems(Update, scripted_walk);
+        app.world_mut().spawn((
+            Actor("Walker".to_string()),
+            FourWayFacing { facing: Vec2::NEG_Y },
+            Transform::from_xyz(0.0, 0.0, 0.0),
+        ));
+        app.update();
+        app
+    }
+
+    #[test]
+    fn blocking_walk_finishes_at_the_last_point() {
+        let mut app = test_app();
+        let walk = app.world_mut().register_system(walk_command);
+        let done = app
+            .world_mut()
+            .run_system_with(walk, ("Walker".to_string(), "There".to_string(), None))
+            .unwrap();
+        assert!(!done.is_finished());
+
+        let end = app.world().resource::<TiledMap>().path("There").unwrap()[1];
+        for _ in 0..400 {
+            if done.is_finished() {
+                break;
+            }
+            app.update();
+        }
+        assert!(done.is_finished(), "the walk never finished");
+
+        let mut q = app.world_mut().query::<(&Transform, &FourWayFacing)>();
+        let (transform, facing) = q.single(app.world()).unwrap();
+        assert!(transform.translation.truncate().distance(end) < 0.01);
+        assert!(facing.facing.x > 0.0, "faces the direction of the last segment");
+        let mut walks = app.world_mut().query::<&ScriptedWalk>();
+        assert_eq!(walks.iter(app.world()).count(), 0);
+    }
+
+    #[test]
+    fn face_show_and_hide_commands() {
+        let mut app = test_app();
+        let walker = {
+            let mut q = app.world_mut().query_filtered::<Entity, With<Actor>>();
+            q.single(app.world()).unwrap()
+        };
+        let collider = app.world_mut().spawn(Collider::ball(16.0)).id();
+        app.world_mut().entity_mut(walker).add_child(collider);
+        app.world_mut().spawn((
+            Actor("Other".to_string()),
+            Player::default(),
+            Transform::from_xyz(50.0, 0.0, 0.0),
+        ));
+
+        let face = app.world_mut().register_system(face_command);
+        let run_face = |app: &mut App, actor: &str, dir: &str| {
+            app.world_mut()
+                .run_system_with(face, (actor.to_string(), dir.to_string()))
+                .unwrap()
+        };
+        run_face(&mut app, "Walker", "up");
+        assert_eq!(app.world().get::<FourWayFacing>(walker).unwrap().facing, Vec2::Y);
+        run_face(&mut app, "Walker", "Other");
+        assert!(app.world().get::<FourWayFacing>(walker).unwrap().facing.x > 0.0);
+        run_face(&mut app, "Other", "left");
+        let mut q = app.world_mut().query::<&Player>();
+        assert_eq!(q.single(app.world()).unwrap().current_direction, Vec2::NEG_X);
+        // Unknown names only log
+        run_face(&mut app, "Nobody", "up");
+        run_face(&mut app, "Walker", "sideways");
+
+        let hide = app.world_mut().register_system(hide_command);
+        let show = app.world_mut().register_system(show_command);
+        app.world_mut().run_system_with(hide, "Walker".to_string()).unwrap();
+        assert_eq!(app.world().get::<Visibility>(walker), Some(&Visibility::Hidden));
+        assert!(app.world().get::<ColliderDisabled>(collider).is_some());
+        app.world_mut().run_system_with(show, "Walker".to_string()).unwrap();
+        assert_eq!(app.world().get::<Visibility>(walker), Some(&Visibility::Inherited));
+        assert!(app.world().get::<ColliderDisabled>(collider).is_none());
+    }
+
+    #[test]
+    fn no_wait_and_unknown_names_finish_immediately() {
+        let mut app = test_app();
+        let walk = app.world_mut().register_system(walk_command);
+
+        let no_wait = app
+            .world_mut()
+            .run_system_with(
+                walk,
+                ("Walker".to_string(), "There".to_string(), Some("no_wait".to_string())),
+            )
+            .unwrap();
+        assert!(no_wait.is_finished());
+
+        let await_walks = app.world_mut().register_system(await_walks_command);
+        let pending = app.world_mut().run_system(await_walks).unwrap();
+        assert!(!pending.is_finished(), "await_walks waits for the running walk");
+
+        let unknown_actor = app
+            .world_mut()
+            .run_system_with(walk, ("Nobody".to_string(), "There".to_string(), None))
+            .unwrap();
+        assert!(unknown_actor.is_finished());
+        let unknown_path = app
+            .world_mut()
+            .run_system_with(walk, ("Walker".to_string(), "Nowhere".to_string(), None))
+            .unwrap();
+        assert!(unknown_path.is_finished());
+    }
+}

@@ -1,5 +1,6 @@
 mod chunk_manager;
 mod collision;
+pub(crate) mod doors;
 mod flora;
 pub(crate) mod tiled_map;
 
@@ -24,6 +25,7 @@ impl Plugin for MapPlugin {
         app.add_plugins((
             chunk_manager::ChunkManagerPlugin,
             collision::MapCollisionPlugin,
+            doors::DoorsPlugin,
             flora::FloraPlugin,
             tiled_map::TiledMapPlugin,
         ));

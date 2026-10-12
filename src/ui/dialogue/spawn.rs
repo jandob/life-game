@@ -159,7 +159,7 @@ fn spawn_dialogue_bottom(commands: &mut Commands, assets: &Res<GameAssets>) -> E
                 height: Val::Px(128.0),
                 ..default()
             },
-            ImageNode::new(assets.eleonore_icon.clone()),
+            ImageNode::new(assets.samantha_icon.clone()),
             ZIndex(1),
             DialogueCharacterIcon,
         ))

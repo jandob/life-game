@@ -2,7 +2,10 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::{npc::NpcDialogue, world::ending::EndingTriggered, GameAssets, GameState};
+use crate::{
+    world::ending::{Ending, EndingTriggered},
+    GameAssets, GameState,
+};
 
 #[derive(Component)]
 struct WriteableText {
@@ -34,113 +37,50 @@ fn text_style_standard(assets: &Res<GameAssets>) -> (TextFont, TextColor) {
     )
 }
 
-fn spawn_story_header_text(
+fn spawn_text(
     commands: &mut Commands,
     assets: &Res<GameAssets>,
-    dialogue: &NpcDialogue,
+    text: &str,
+    time_between_chars: f32,
+    start_delay: f32,
 ) -> Entity {
-    let text = match dialogue {
-        NpcDialogue::Jotem => "Pai joins Jotem",
-        NpcDialogue::Eleonore => "Pai joins Eleonore",
-        NpcDialogue::Isabelle => "Pai joins Isabelle",
-        NpcDialogue::IonasAndAntonius => "Pai joins Ionas & Antonius",
-        _ => "SHOULD NEVER HAPPEN",
-    };
     commands
         .spawn((
             Text::new(String::new()),
             text_style_standard(assets),
             ZIndex(1),
-            WriteableText::new(text, 0.15, 1.35),
+            WriteableText::new(text, time_between_chars, start_delay),
         ))
         .id()
 }
 
-fn spawn_story_body_text(
-    commands: &mut Commands,
-    assets: &Res<GameAssets>,
-    dialogue: &NpcDialogue,
-) -> Entity {
-    let text = match dialogue {
-        NpcDialogue::Jotem => "Ending: Adventurer",
-        NpcDialogue::Eleonore => "Ending: Witch's Apprentice",
-        NpcDialogue::Isabelle => "Ending: Farm Girl",
-        NpcDialogue::IonasAndAntonius => "Ending: Truth Seeker",
-        _ => "SHOULD NEVER HAPPEN",
-    };
-    commands
-        .spawn((
-            Text::new(String::new()),
-            text_style_standard(assets),
-            ZIndex(1),
-            WriteableText::new(text, 0.15, 5.5),
-        ))
-        .id()
-}
-
-fn spawn_story_texts(
+fn spawn_end_card(
     mut commands: Commands,
     assets: Res<GameAssets>,
     mut ev_ending_triggered: MessageReader<EndingTriggered>,
 ) {
     for ev in ev_ending_triggered.read() {
-        let header_text = spawn_story_header_text(&mut commands, &assets, &ev.dialogue);
-        let body_text = spawn_story_body_text(&mut commands, &assets, &ev.dialogue);
+        let (header, thanks) = match ev.ending {
+            Ending::Demo => ("To be continued", "Thanks for Playing"),
+        };
+        let header_text = spawn_text(&mut commands, &assets, header, 0.12, 2.5);
+        let thanks_text = spawn_text(&mut commands, &assets, thanks, 0.1, 6.5);
 
         commands
-            .spawn(Node {
-                position_type: PositionType::Absolute,
-                top: Val::Percent(15.0),
-                width: Val::Percent(100.0),
-                flex_direction: FlexDirection::Column,
-                row_gap: Val::Vh(50.0),
-                align_items: AlignItems::Center,
-                ..default()
-            })
-            .add_children(&[header_text, body_text]);
+            .spawn((
+                Node {
+                    position_type: PositionType::Absolute,
+                    top: Val::Percent(40.0),
+                    width: Val::Percent(100.0),
+                    flex_direction: FlexDirection::Column,
+                    row_gap: Val::Vh(25.0),
+                    align_items: AlignItems::Center,
+                    ..default()
+                },
+                ZIndex(1001),
+            ))
+            .add_children(&[header_text, thanks_text]);
     }
-}
-
-fn spawn_fin_text(commands: &mut Commands, assets: &Res<GameAssets>) -> Entity {
-    commands
-        .spawn((
-            Text::new(String::new()),
-            text_style_standard(assets),
-            ZIndex(1),
-            WriteableText::new("- FIN -", 0.3, 14.0),
-        ))
-        .id()
-}
-
-fn spawn_thanks_text(commands: &mut Commands, assets: &Res<GameAssets>) -> Entity {
-    commands
-        .spawn((
-            Text::new(String::new()),
-            text_style_standard(assets),
-            ZIndex(1),
-            WriteableText::new("Thanks for Playing", 0.1, 17.0),
-        ))
-        .id()
-}
-
-fn spawn_final_texts(mut commands: Commands, assets: Res<GameAssets>) {
-    let header_text = spawn_fin_text(&mut commands, &assets);
-    let body_text = spawn_thanks_text(&mut commands, &assets);
-
-    commands
-        .spawn((
-            Node {
-                position_type: PositionType::Absolute,
-                top: Val::Percent(40.0),
-                width: Val::Percent(100.0),
-                flex_direction: FlexDirection::Column,
-                row_gap: Val::Vh(25.0),
-                align_items: AlignItems::Center,
-                ..default()
-            },
-            ZIndex(1001),
-        ))
-        .add_children(&[header_text, body_text]);
 }
 
 fn write_texts(time: Res<Time>, mut q_writable_texts: Query<(&mut Text, &mut WriteableText)>) {
@@ -172,9 +112,8 @@ impl Plugin for EndingTextPlugin {
         app.add_systems(
             Update,
             (
-                spawn_story_texts,
+                spawn_end_card,
                 write_texts,
-                spawn_final_texts.run_if(on_message::<EndingTriggered>),
             )
                 .run_if(not(in_state(GameState::AssetLoading))),
         );
