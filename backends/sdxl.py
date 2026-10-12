@@ -104,7 +104,7 @@ class Sdxl(Backend):
                 "cyberdelia/CyberRealisticPony V18.0 F16", "sd_xl_base_1.0 (local file)",
                 "nerijs/pixel-art-xl", "madebyollin/sdxl-vae-fp16-fix",
                 "ip-adapter-plus_sdxl_vit-h + CLIP-ViT-H-14 (local files)",
-                "thibaud/controlnet-openpose-sdxl-1.0"],
+                "xinsir/controlnet-openpose-sdxl-1.0"],
         licence="per model, see models.json (RAIL++-M / FAIPL; outputs are not restricted)",
         local=True,
         defaults={"model": "illustrious_v1", "rating": "safe", "ip_scale": 0.6,
@@ -274,6 +274,10 @@ class Sdxl(Backend):
                 raise RuntimeError(f"CLIP image encoder mismatch: {bad[:3]} {unexpected[:3]}")
             enc = enc.eval().to(self.device)
             self.pipe.register_modules(image_encoder=enc, feature_extractor=CLIPImageProcessor())
+        for other in (self._cn_pipe, self._inp_pipe):   # pipelines built earlier hold a stale None
+            if other is not None:
+                other.register_modules(image_encoder=self.pipe.image_encoder,
+                                       feature_extractor=self.pipe.feature_extractor)
         p = os.path.expanduser(cfg["path"])
         self.pipe.load_ip_adapter(os.path.dirname(p), subfolder="", weight_name=os.path.basename(p),
                                   image_encoder_folder=None)

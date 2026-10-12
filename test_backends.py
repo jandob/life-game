@@ -63,6 +63,8 @@ def test_pose() -> None:
     for name, kps in pose.PRESETS.items():
         img = pose.draw_pose(kps, (256, 384))
         assert img.size == (256, 384) and img.getbbox() is not None, name
+    assert pose.draw_poses(pose.MULTI["sit_pair"], (256, 192)).size == (256, 192)
+    assert len({tuple(map(tuple, [k for k in pose.PRESETS[f"walk_side_{i}"] if k])) for i in range(4)}) == 4
     try:
         pose.draw_pose([(0, 0)] * 5)
     except ValueError:
@@ -76,6 +78,9 @@ def test_pose() -> None:
         assert r.returncode == 0, r.stderr
         assert json.loads(r.stdout)["ok"] and Image.open(out).size == (128, 192)
         assert not list(Path(td).glob("*.tmp*"))
+        r = subprocess.run([PY, CLI, "pose", "--preset", "sit_pair", "--size", "128x96", "--out", str(out)],
+                           capture_output=True, text=True)
+        assert r.returncode == 0 and Image.open(out).size == (128, 96), r.stderr
         r = subprocess.run([PY, CLI, "pose", "--preset", "nope", "--out", str(out)], capture_output=True, text=True)
         assert r.returncode != 0
 

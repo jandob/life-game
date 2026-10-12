@@ -17,12 +17,12 @@ any sofa/furniture prompt, so give Pony props a human negative and check each im
 
 | Backend | Command |
 |---|---|
-| FLUX (reference) | `artgen.py generate --backend flux2_klein_pixel_lora --opt lora_scale=0.5 --opt background="plain flat dark navy background" --prompt "<SCENE>, detailed hi-res pixel art, realistic anatomy, sculpted form shading, crisp specular highlights, limited palette" --width 576 --height 1024 --seed 11 --n 4 --out out/s2` |
-| sdxl wai_v17 (recommended SDXL) | `artgen.py generate --backend sdxl --opt model=wai_v17 --opt loras=pixel_art_xl:0.5 --opt background="simple background, dark blue background" --prompt "<SCENE as tags>, detailed hi-res pixel art, sculpted form shading, crisp specular highlights, limited palette" --width 768 --height 1152 --seed 11 --n 4 --out out/s2` |
-| sdxl illustrious_v1 | same with `model=illustrious_v1` (cleaner licence, a bit flatter) |
-| sdxl cyberrealistic_pony_v18 | `... --opt model=cyberrealistic_pony_v18 --opt loras=pixel_art_xl:1.0 ...` Gives photographs with pixelated details, not pixel art. Use only for realistic reference or `--ref`/pose experiments. |
-| sdxl sdxl_base | `... --opt model=sdxl_base --opt loras=pixel_art_xl:0.5 --prompt "<SCENE in plain English>, detailed hi-res pixel art, ..."` (best pure pixel look, no rating/quality tags, anatomy is plain) |
-| z_image_turbo | `artgen.py generate --backend z_image_turbo --opt style="detailed hi-res pixel art with sculpted shading and a limited palette. " --opt background="plain flat dark navy background" --prompt "<SCENE in plain English>" --width 768 --height 1152 --seed 11 --out out/s2` Comes out as a 3D-render look, not pixels; quantise with `post --grid 4`. |
+| FLUX (reference) | ` .venv/bin/python artgen.py generate --backend flux2_klein_pixel_lora --opt lora_scale=0.5 --opt background="plain flat dark navy background" --prompt "<SCENE>, detailed hi-res pixel art, realistic anatomy, sculpted form shading, crisp specular highlights, limited palette" --width 576 --height 1024 --seed 11 --n 4 --out out/s2` |
+| sdxl wai_v17 (recommended SDXL) | ` .venv/bin/python artgen.py generate --backend sdxl --opt model=wai_v17 --opt loras=pixel_art_xl:0.5 --opt background="simple background, dark blue background" --prompt "<SCENE as tags>, detailed hi-res pixel art, sculpted form shading, crisp specular highlights, limited palette" --width 768 --height 1152 --seed 11 --n 4 --out out/s2` |
+| sdxl illustrious_v1 | same with ` .venv/bin/python artgen.py generate --backend sdxl --opt model=illustrious_v1` (cleaner licence, a bit flatter) |
+| sdxl cyberrealistic_pony_v18 | ` .venv/bin/python artgen.py generate ... --opt model=cyberrealistic_pony_v18 --opt loras=pixel_art_xl:1.0 ...` Gives photographs with pixelated details, not pixel art. Use only for realistic reference or `--ref`/pose experiments. |
+| sdxl sdxl_base | ` .venv/bin/python artgen.py generate ... --opt model=sdxl_base --opt loras=pixel_art_xl:0.5 --prompt "<SCENE in plain English>, detailed hi-res pixel art, ..."` (best pure pixel look, no rating/quality tags, anatomy is plain) |
+| z_image_turbo | ` .venv/bin/python artgen.py generate --backend z_image_turbo --opt style="detailed hi-res pixel art with sculpted shading and a limited palette. " --opt background="plain flat dark navy background" --prompt "<SCENE in plain English>" --width 768 --height 1152 --seed 11 --out out/s2` Comes out as a 3D-render look, not pixels; quantise with `post --grid 4`. |
 
 ## S3 anime-leaning pixel, thick outlines
 
@@ -69,3 +69,16 @@ and eat the figure; ask for `plain flat <colour> background` and check the `px` 
   most "anime", WAI the most detailed. Z-Image is not pixel art.
 - **S4**: Z-Image-Turbo is the cleanest flat vector; Illustrious/WAI/base are good line-art cel; Pony is a photo.
 - Props: Illustrious and WAI zoom in so far that the sofa is cropped; SDXL base and Z-Image give whole, isolated sofas.
+
+## Pose (OpenPose ControlNet, xinsir) and ref
+
+```sh
+artgen.py pose --preset walk_side_0 --size 768x1152 --out out/ctl_walk0.png   # walk_side_0..3, stand_front, stand_side, sit_front, sit_pair (two people, use 1024x768)
+artgen.py generate --backend sdxl --opt model=wai_v17 --opt loras=pixel_art_xl:0.8 --opt pose=out/ctl_walk0.png \
+    --opt background="simple background, white background" --width 768 --height 1152 --seed 11 --out out/walk \
+    --prompt "1boy, solo, male focus, mature male, adult, white t-shirt, jeans, white sneakers, walking, from side, full body, profile, anime style pixel art, thick dark outlines, flat cel shading"
+# add --ref out/front.png --opt ip_scale=0.3 to pull the look towards a reference. ip_scale 0.6 (default) breaks the image together with pose.
+```
+Measured (M5, wai_v17, 768x1152, 28 steps): pose only 55-60 s/image, peak 14.9 GB MPS; pose + ref 72-86 s, peak 17.4 GB.
+Legs follow the skeleton well, arms are weaker. Identity across walk frames stays loose even with ref 0.25-0.4 (hair, trousers colour drift).
+Two-person pose works (two figures seated side by side on a sofa; the skeletons' legs look standing because front-view sitting is foreshortened).

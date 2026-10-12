@@ -41,7 +41,7 @@
     "image_encoder_config": ["h94/IP-Adapter", "models/image_encoder/config.json"]
   },
   "controlnet": {
-    "openpose": {"hf_repo": "thibaud/controlnet-openpose-sdxl-1.0"}
+    "openpose": {"hf_repo": "xinsir/controlnet-openpose-sdxl-1.0"}
   },
   "z_image_turbo": {
     "transformer": "~/ComfyUI-Shared/models/diffusion_models/z_image_turbo_bf16.safetensors",

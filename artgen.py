@@ -155,12 +155,15 @@ def cmd_pose(a) -> None:
     import pose as posemod
     if a.keypoints:
         kps = json.loads(Path(a.keypoints).read_text())
+    elif a.preset in posemod.MULTI:
+        kps = posemod.MULTI[a.preset]
     else:
         if a.preset not in posemod.PRESETS:
-            raise SystemExit(f"unknown preset {a.preset!r}; known: {', '.join(posemod.PRESETS)}")
+            raise SystemExit(f"unknown preset {a.preset!r}; known: {', '.join([*posemod.PRESETS, *posemod.MULTI])}")
         kps = posemod.PRESETS[a.preset]
     size = tuple(int(v) for v in a.size.lower().split("x"))
-    img = posemod.draw_pose(kps, size)
+    multi = kps[0] is not None and len(kps[0]) == 18   # list of skeletons, not a single 18-point list
+    img = posemod.draw_poses(kps, size) if multi else posemod.draw_pose(kps, size)
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = out.with_name(out.name + ".tmp.png")
