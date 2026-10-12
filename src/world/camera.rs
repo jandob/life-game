@@ -1,8 +1,9 @@
 use bevy::camera::ScalingMode;
 #[cfg(not(target_arch = "wasm32"))]
 use bevy::render::view::window::screenshot::{save_to_disk, Screenshot};
+use bevy::window::PrimaryWindow;
 #[cfg(not(target_arch = "wasm32"))]
-use bevy::window::{MonitorSelection, PrimaryWindow, VideoModeSelection, WindowMode};
+use bevy::window::{MonitorSelection, VideoModeSelection, WindowMode};
 use bevy::{prelude::*, transform::TransformSystems};
 use bevy_rapier2d::plugin::PhysicsSet;
 
@@ -19,7 +20,17 @@ use crate::utils::DebugActive;
 // too large values will lead to overflow of the 1000 range
 // (in which case they won't get rendered on the camera anymore).
 const YSORT_SCALE: f32 = 0.0001;
-const PROJECTION_SCALE: f32 = 250.0;
+/// Art px visible vertically that the integer scale aims for.
+const TARGET_VISIBLE_HEIGHT: f32 = 540.0;
+
+/// The F3 zoom factor, on top of the integer pixel scale.
+#[derive(Resource)]
+struct DebugZoom(f32);
+
+/// Physical screen px per art px: a whole number, so every pixel is drawn equally big.
+fn pixel_scale(physical_height: u32) -> f32 {
+    (physical_height as f32 / TARGET_VISIBLE_HEIGHT).round().max(1.0)
+}
 
 #[derive(Component)]
 pub struct MainCamera;
@@ -86,10 +97,10 @@ fn spawn_camera(mut commands: Commands) {
     commands.spawn((
         MainCamera,
         Camera2d,
+        // `WindowSize` maps one world unit to one logical px at scale 1;
+        // `update_projection_scale` sets the scale for whole physical px per art px.
         Projection::Orthographic(OrthographicProjection {
-            scaling_mode: ScalingMode::FixedVertical {
-                viewport_height: PROJECTION_SCALE,
-            },
+            scaling_mode: ScalingMode::WindowSize,
             ..OrthographicProjection::default_2d()
         }),
     ));
@@ -106,21 +117,36 @@ fn update_camera_target(mut shake: ResMut<CameraShake>, q_player: Query<&Transfo
 fn zoom_camera(
     player_input: Res<PlayerInput>,
     debug_active: Res<DebugActive>,
-    mut q_projection: Query<&mut Projection, With<MainCamera>>,
+    mut zoom: ResMut<DebugZoom>,
 ) {
     if !**debug_active {
         return;
     }
+    zoom.0 = (zoom.0 + player_input.scroll).clamp(1.0, 10.0);
+}
 
-    let mut projection = match q_projection.single_mut() {
-        Ok(p) => p,
-        Err(_) => return,
-    };
-
-    let Projection::Orthographic(ortho) = &mut *projection else {
+/// Keeps `ortho.scale = scale_factor / t * debug_zoom`, which follows window size
+/// and scale factor changes.
+fn update_projection_scale(
+    zoom: Res<DebugZoom>,
+    q_window: Query<&Window, With<PrimaryWindow>>,
+    mut q_projection: Query<&mut Projection, With<MainCamera>>,
+) {
+    let Ok(window) = q_window.single() else {
         return;
     };
-    ortho.scale = (ortho.scale + player_input.scroll).clamp(1.0, 10.0);
+    let Ok(mut projection) = q_projection.single_mut() else {
+        return;
+    };
+    let Projection::Orthographic(ortho) = &*projection else {
+        return;
+    };
+    let scale = window.scale_factor() / pixel_scale(window.physical_height()) * zoom.0;
+    if ortho.scale != scale {
+        if let Projection::Orthographic(ortho) = &mut *projection {
+            ortho.scale = scale;
+        }
+    }
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -168,7 +194,8 @@ pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_camera)
+        app.insert_resource(DebugZoom(1.0))
+            .add_systems(Startup, spawn_camera)
             .add_systems(
                 Update,
                 (
@@ -182,7 +209,7 @@ impl Plugin for CameraPlugin {
                         .before(apply_y_sort_static),
                     apply_y_sort_static.after(apply_y_sort),
                     apply_y_sort_static_child.after(apply_y_sort_static),
-                    zoom_camera,
+                    (zoom_camera, update_projection_scale).chain(),
                 ),
             )
             .add_systems(
@@ -192,5 +219,20 @@ impl Plugin for CameraPlugin {
                     .before(TransformSystems::Propagate)
                     .before(update_camera),
             );
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn pixel_scale_is_a_whole_number_near_540_visible() {
+        assert_eq!(pixel_scale(360), 1.0);
+        assert_eq!(pixel_scale(720), 1.0);
+        assert_eq!(pixel_scale(900), 2.0);
+        assert_eq!(pixel_scale(1080), 2.0);
+        assert_eq!(pixel_scale(1440), 3.0);
+        assert_eq!(pixel_scale(2160), 4.0);
     }
 }

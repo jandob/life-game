@@ -6,7 +6,7 @@ use noisy_bevy::simplex_noise_2d_seeded;
 use super::MainCamera;
 
 const NOISE_STRENGTH: f32 = 10.0;
-const TRANSLATION_SHAKE_STRENGTH: f32 = 15.0;
+const TRANSLATION_SHAKE_STRENGTH: f32 = 45.0;
 const ROTATION_SHAKE_STRENGTH: f32 = 2.5;
 
 #[derive(Resource, Default, Reflect)]

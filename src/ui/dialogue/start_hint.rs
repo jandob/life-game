@@ -11,7 +11,7 @@ use crate::{
     GameAssets, GameState,
 };
 
-const SIZE: f32 = 0.65;
+const SIZE: f32 = 1.95;
 const SCALE_DURATION: f32 = 0.5;
 
 #[derive(Component)]
@@ -41,14 +41,14 @@ fn spawn_hint(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec3) {
                 }),
                 ..default()
             },
-            Transform::from_translation(Vec3::new(0.0, 40.0, 0.0)).with_scale(Vec3::ZERO),
+            Transform::from_translation(Vec3::new(0.0, 120.0, 0.0)).with_scale(Vec3::ZERO),
         ))
         .id();
 
     commands
         .spawn((
             StartHint,
-            YSort(100.0),
+            YSort(300.0),
             Transform::from_translation(pos),
         ))
         .add_children(&[sprite]);

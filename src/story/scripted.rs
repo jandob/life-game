@@ -14,13 +14,13 @@ use crate::world::map::tiled_map::TiledMap;
 use crate::GameState;
 
 /// Walking speed of every scripted actor, in px/s.
-pub const SCRIPT_WALK_SPEED: f32 = 70.0;
+pub const SCRIPT_WALK_SPEED: f32 = 210.0;
 /// An actor this close to its target point has arrived.
-const ARRIVE_DISTANCE: f32 = 2.0;
+const ARRIVE_DISTANCE: f32 = 6.0;
 /// Seconds without progress after which an actor is placed at its target point.
 const STUCK_SECONDS: f32 = 1.5;
 /// Progress (px) below which an actor counts as not moving.
-const STUCK_PROGRESS: f32 = 2.0;
+const STUCK_PROGRESS: f32 = 6.0;
 const NO_WAIT: &str = "no_wait";
 
 /// Names an entity that dialogue commands can address, e.g. `Player` or `Samantha`.
@@ -306,6 +306,7 @@ mod tests {
         app.add_plugins(MinimalPlugins)
             .insert_resource(TimeUpdateStrategy::ManualDuration(Duration::from_millis(50)))
             .insert_resource(TiledMap {
+                tile_size: 48.0,
                 width: 40,
                 height: 40,
                 layers: Vec::new(),

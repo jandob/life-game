@@ -4,11 +4,9 @@ use bevy_rapier2d::prelude::*;
 use super::{
     chunk_manager::{despawn_chunks, spawn_chunks, ChunkIndex},
     tiled_map::TiledMap,
-    CHUNK_SIZE, TILE_SIZE,
+    CHUNK_SIZE,
 };
 use crate::GameState;
-
-const BORDER_THICKNESS: f32 = TILE_SIZE;
 
 /// Spawn collision shapes for tiles that have collision defined in the tileset.
 /// Runs on entities with `Added<ChunkIndex>` (same pattern as before).
@@ -31,7 +29,7 @@ pub fn spawn_water_collisions(
                         continue;
                     }
                     if let Some(collider) = tiled_map.tile_collision_shape(layer_index, v.x, v.y) {
-                        let pos = Vec3::new(x as f32 * TILE_SIZE, y as f32 * TILE_SIZE, 0.0);
+                        let pos = Vec3::new(x as f32 * tiled_map.tile_size, y as f32 * tiled_map.tile_size, 0.0);
                         let collision = commands
                             .spawn((collider, Transform::from_translation(pos)))
                             .id();
@@ -48,14 +46,15 @@ fn spawn_map_border(mut commands: Commands, tiled_map: Res<TiledMap>) {
     let bounds = tiled_map.world_bounds();
     let half = bounds.half_size();
     let center = bounds.center();
-    let t = BORDER_THICKNESS / 2.0;
+    let border = tiled_map.tile_size;
+    let t = border / 2.0;
 
     // (offset from map center, half extents) for left, right, bottom, top
     let walls = [
-        (Vec2::new(-half.x - t, 0.0), Vec2::new(t, half.y + BORDER_THICKNESS)),
-        (Vec2::new(half.x + t, 0.0), Vec2::new(t, half.y + BORDER_THICKNESS)),
-        (Vec2::new(0.0, -half.y - t), Vec2::new(half.x + BORDER_THICKNESS, t)),
-        (Vec2::new(0.0, half.y + t), Vec2::new(half.x + BORDER_THICKNESS, t)),
+        (Vec2::new(-half.x - t, 0.0), Vec2::new(t, half.y + border)),
+        (Vec2::new(half.x + t, 0.0), Vec2::new(t, half.y + border)),
+        (Vec2::new(0.0, -half.y - t), Vec2::new(half.x + border, t)),
+        (Vec2::new(0.0, half.y + t), Vec2::new(half.x + border, t)),
     ];
 
     for (offset, half_extents) in walls {
