@@ -206,7 +206,7 @@ class Flux2KleinPixelLora(Backend):
         return out
 
     # --------------------------------------------------------------- inpaint
-    def apply_inpaint_template(self, subject: str) -> str:
+    def apply_inpaint_template(self, subject: str, **_fields) -> str:
         return self.inpaint_template.format(prompt=subject)
 
     def _inpaint_pipe(self):
