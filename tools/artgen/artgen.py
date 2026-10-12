@@ -7,6 +7,8 @@ reproduced.
     artgen.py generate --backend flux2_klein_pixel_lora --prompt "..." --seed 1 --n 4 --out DIR
     artgen.py inpaint --image canvas.png --mask mask.png --prompt "..." --strength 0.75 --n 4 --out DIR
     artgen.py refine --image scene.png --backend sdxl --strength 0.3 0.45 --opt model=wai_v17 --prompt "..." --out DIR
+    artgen.py refine --image scene.png --mask head.png --prompt "..." --opt loras=char:0.8 --out DIR
+    artgen.py cast recipe.json --out DIR
     artgen.py mask --size 1024x768 --heads 0.2,0.1,0.3,0.3 --units frac --out mask.png
     artgen.py pose --preset stand_front --size 832x1216 --out pose.png
     artgen.py snap DIR/*.png --factor 4 --palette p.hex --out DIR2
@@ -28,6 +30,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+import cast as castmod  # noqa: E402
 import postprocess as pp  # noqa: E402
 from backends import REGISTRY, get_backend  # noqa: E402
 
@@ -206,11 +209,8 @@ def cmd_refine(a) -> None:
     t_all = time.perf_counter()
     for st in a.strength:
         t0 = time.perf_counter()
-        if hasattr(b, "refine"):
-            imgs = b.refine(prompt, img, mask, seed=a.seed, n=a.n, strength=st, negative=a.negative, **gen)
-        else:   # inpaint-only backends: full-white mask = plain img2img
-            m = mask or Image.new("L", img.size, 255)
-            imgs = b.inpaint(prompt, img, m, seed=a.seed, n=a.n, strength=st, **gen)
+        imgs = castmod.refine_masked(b, prompt, img, mask, seed=a.seed, n=a.n, strength=st, negative=a.negative,
+                                     gen=gen)
         total = time.perf_counter() - t0
         stats = b.stats()
         for i, im in enumerate(imgs):
@@ -231,6 +231,28 @@ def cmd_refine(a) -> None:
                       "seeds": [a.seed + i for i in range(a.n)], "source_sha256": src_hash,
                       "masked": bool(a.mask), "gen_opts": gen, "stats": b.stats(),
                       "total_s": round(time.perf_counter() - t_all, 2)}))
+
+
+# ----------------------------------------------------------------- cast
+def cmd_cast(a) -> None:
+    """Apply a recipe of masked regions to one image. One JSON object on stdout; validation errors exit 2."""
+    rp = Path(a.recipe)
+    try:
+        recipe = json.loads(rp.read_text())
+    except (OSError, json.JSONDecodeError) as e:
+        print(json.dumps({"ok": False, "error": f"cannot read recipe: {e}"}))
+        raise SystemExit(2)
+    out = Path(a.out) if a.out else rp.resolve().parent / f"{rp.stem}_cast"
+    try:
+        log = castmod.run_cast(recipe, rp.resolve().parent, out, get_backend, parse_opts, save_atomic,
+                               backends=list(REGISTRY))
+    except castmod.RecipeError as e:
+        print(json.dumps({"ok": False, "error": str(e)}))
+        raise SystemExit(2)
+    print(json.dumps({"ok": True, "final": log["final"], "log": log["log"], "out": str(out),
+                      "regions": [{k: r[k] for k in ("name", "file", "seed", "strength", "seconds")}
+                                  for r in log["regions"]],
+                      "total_s": log["total_s"]}))
 
 
 # ----------------------------------------------------------------- mask
@@ -419,6 +441,10 @@ def main(argv=None) -> None:
     rf.add_argument("--name", help="output file stem (default <image stem>_refined)")
     rf.add_argument("--out", required=True)
 
+    ct = sub.add_parser("cast", help="apply a JSON recipe of masked regions to one image")
+    ct.add_argument("recipe", help="recipe JSON (see examples/cast_recipe.json); relative paths are relative to it")
+    ct.add_argument("--out", help="output dir (default <recipe dir>/<recipe stem>_cast)")
+
     mk = sub.add_parser("mask", help="build a repaint mask from boxes (white = repaint); no segmentation model")
     mk.add_argument("--size", help="WxH (or use --image)")
     mk.add_argument("--image", help="take the size from this image; needed for --preview")
@@ -477,6 +503,8 @@ def main(argv=None) -> None:
         cmd_inpaint(a)
     elif a.cmd == "refine":
         cmd_refine(a)
+    elif a.cmd == "cast":
+        cmd_cast(a)
     elif a.cmd == "mask":
         cmd_mask(a)
     elif a.cmd == "pose":

@@ -1,0 +1,24 @@
+{
+  "image": "scene.png",
+  "backend": "sdxl",
+  "opts": {"model": "wai_v17", "loras": "pixel_art_xl:0.5"},
+  "regions": [
+    {
+      "name": "woman_head",
+      "ellipse": "278,328,462,505",
+      "feather": 6,
+      "prompt": "1girl, auburn ponytail, brown eyes, face",
+      "opts": {"loras": "lgwoman1:0.8,pixel_art_xl:0.5"},
+      "strength": 0.5,
+      "seed": 7
+    },
+    {
+      "name": "man_head",
+      "mask": "man_head_mask.png",
+      "prompt": "1boy, short brown hair",
+      "opts": {"loras": "pixel_art_xl:0.7"},
+      "strength": 0.4,
+      "seed": 7
+    }
+  ]
+}

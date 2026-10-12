@@ -15,6 +15,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+from PIL import Image  # noqa: E402
 from backends import REGISTRY, get_backend  # noqa: E402
 from backends._common import load_registry  # noqa: E402
 from backends.sdxl import FAMILIES, RATINGS, parse_loras  # noqa: E402
@@ -177,6 +178,121 @@ def test_refine_cli_stubbed() -> None:
                 raise AssertionError("mask size")
     finally:
         artgen.get_backend = orig
+
+
+class _StubBackend:
+    """Records calls; paints the (working-size) image solid grey so changes are visible."""
+    info = type("I", (), {"defaults": {"model": "x"}, "to_dict": lambda self: {"name": "stub"}})()
+    load_keys = frozenset({"model"})
+    refine_keys = ("model", "loras", "feather")
+    inpaint_keys = refine_keys
+
+    def __init__(self): self.calls, self.loads = [], 0
+    def load(self, **kw): self.loads += 1
+    def apply_inpaint_template(self, s, **_): return "Q, " + s
+    def stats(self): return {}
+
+    def refine(self, prompt, image, mask=None, seed=0, n=1, strength=0.5, **kw):
+        self.calls.append({"prompt": prompt, "size": image.size, "mask_size": mask.size, "seed": seed, "kw": kw})
+        return [Image.new("RGB", image.size, (10, 200, 10)) for _ in range(n)]
+
+
+def test_refine_masked_dispatch() -> None:
+    import cast
+    from PIL import Image
+    b = _StubBackend()
+    src, mask = Image.new("RGB", (64, 96), "red"), Image.new("L", (64, 96), 255)
+    out = cast.refine_masked(b, "p", src, mask, seed=2, n=2, gen={"loras": "a:1"})
+    assert len(out) == 2 and b.calls[0]["size"] == (64, 96) and b.calls[0]["kw"]["loras"] == "a:1"
+
+    class InpOnly:
+        info, load_keys, inpaint_keys = _StubBackend.info, frozenset(), ()
+        calls: list = []
+
+        def inpaint(self, prompt, image, mask, seed=0, n=1, strength=0.5, **kw):
+            self.calls.append({"mask_white": mask.getextrema()})
+            return [image] * n
+    ib = InpOnly()
+    cast.refine_masked(ib, "p", src, None)
+    assert ib.calls[0]["mask_white"] == (255, 255)
+
+
+def _write_recipe(td: Path, **over) -> Path:
+    from PIL import Image
+    Image.new("RGB", (64, 96), "blue").save(td / "scene.png")
+    Image.new("L", (64, 96), 0).save(td / "empty.png")
+    m = Image.new("L", (64, 96), 0)
+    m.paste(255, (10, 10, 30, 40))
+    m.save(td / "m.png")
+    rec = {"image": "scene.png", "opts": {"model": "wai_v17"}, "regions": [
+        {"name": "head_a", "heads": None, "ellipse": "0.1,0.1,0.5,0.4", "units": "frac", "prompt": "auburn hair",
+         "opts": {"loras": "x:0.8"}, "strength": 0.5, "seed": 4},
+        {"name": "body_b", "mask": "m.png", "prompt": "red dress", "strength": 0.7}]}
+    rec["regions"][0].pop("heads")
+    rec.update(over)
+    p = td / "recipe.json"
+    p.write_text(json.dumps(rec))
+    return p
+
+
+def test_cast_recipe_validation_and_run() -> None:
+    import cast
+    from PIL import Image
+    import artgen
+    with tempfile.TemporaryDirectory() as td:
+        td = Path(td)
+        p = _write_recipe(td)
+        rec = json.loads(p.read_text())
+        v = cast.validate_recipe(rec, td, list(REGISTRY))
+        assert v["size"] == (64, 96) and len(v["masks"]) == 2
+
+        def bad(mut, needle):
+            r = json.loads(p.read_text())
+            mut(r)
+            try:
+                cast.validate_recipe(r, td, list(REGISTRY))
+            except cast.RecipeError as e:
+                assert needle in str(e), (needle, str(e))
+            else:
+                raise AssertionError(needle)
+        bad(lambda r: r.pop("image"), "'image'")
+        bad(lambda r: r.update(image="nope.png"), "image not found")
+        bad(lambda r: r.update(backend="zzz"), "unknown backend")
+        bad(lambda r: r.update(regions=[]), "non-empty")
+        bad(lambda r: r.update(bogus=1), "unknown top-level")
+        bad(lambda r: r["regions"][0].update(strength=0), "strength")
+        bad(lambda r: r["regions"][0].update(prompt=""), "prompt")
+        bad(lambda r: r["regions"][0].update(name="a b"), "name")
+        bad(lambda r: r["regions"][1].update(name="head_a"), "duplicate")
+        bad(lambda r: r["regions"][1].update(ellipse="0,0,1,1"), "not both")
+        bad(lambda r: r["regions"][0].pop("ellipse"), "not both/none")
+        bad(lambda r: r["regions"][0].update(ellipse="1,2,3"), "bad box")
+        bad(lambda r: r["regions"][1].update(mask="nope.png"), "mask not found")
+        bad(lambda r: r["regions"][1].update(mask="empty.png"), "empty")
+        bad(lambda r: r["regions"][1].update(crop=True), "unknown keys")
+        bad(lambda r: r["regions"][1].update(typo=1), "unknown keys")
+        # run with the stub: one load, order, files, log
+        stub = _StubBackend()
+        out = td / "o"
+        log = cast.run_cast(rec, td, out, lambda name: stub, None, artgen.save_atomic)
+        assert stub.loads == 1 and len(stub.calls) == 2
+        assert stub.calls[0]["prompt"] == "Q, auburn hair" and stub.calls[0]["kw"]["loras"] == "x:0.8"
+        assert stub.calls[0]["kw"]["model"] == "wai_v17" and stub.calls[0]["seed"] == 4
+        assert stub.calls[0]["size"] == (64, 96) and stub.calls[1]["size"] == (64, 96)   # full resolution
+        for f in ("01_head_a.png", "01_head_a_mask.png", "02_body_b.png", "02_body_b_mask.png", "final.png", "cast.json"):
+            assert (out / f).is_file(), f
+        assert not list(out.glob("*.tmp*"))
+        j = json.loads((out / "cast.json").read_text())
+        assert [r["name"] for r in j["regions"]] == ["head_a", "body_b"] and j["regions"][0]["seed"] == 4
+        # step 2 starts from step 1's output (green patch from the stub is already in the input)
+        assert Image.open(out / "final.png").size == (64, 96)
+        # CLI: validation errors give JSON and exit 2 before any model is touched
+        r2 = json.loads(p.read_text())
+        r2["regions"][0]["strength"] = 5
+        (td / "bad.json").write_text(json.dumps(r2))
+        r = subprocess.run([PY, CLI, "cast", str(td / "bad.json"), "--out", str(td / "o2")], capture_output=True, text=True)
+        assert r.returncode == 2 and json.loads(r.stdout)["ok"] is False and "strength" in json.loads(r.stdout)["error"]
+        assert not (td / "o2").exists()
 
 
 def test_compose_sheet() -> None:
