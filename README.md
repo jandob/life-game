@@ -8,7 +8,9 @@ seed, options, timings), so any image can be reproduced.
 
 ```
 tools/artgen/
-  artgen.py            CLI: backends | generate | inpaint | pose | snap | post | palette-from
+  artgen.py            CLI: backends | generate | inpaint | refine | mask | pose | snap | post | palette-from
+  compose.py           two-stage scenes: FLUX klein (refs) -> SDXL refine; scene | refine | sheet
+  maskkit.py           box/ellipse/head-protect repaint masks (artgen.py mask)
   bench.py             runs a backend over prompts/bench.yaml -> contact sheets + table
   compare.py           item x run grid to compare variants or backends side by side
   postprocess.py       grid detect, downscale, bg removal, palette, cleanup, outline, cell fit
@@ -87,6 +89,41 @@ artgen.py post out/floor/*.png --tile --cell 16x16 --colours 8 --out out/floor_p
 # lock to a fixed palette instead of adaptive colours
 artgen.py post IN.png --grid auto --palette palettes/player_ref.hex --out OUT
 artgen.py palette-from SOME.png --out palettes/new.hex
+```
+
+### refine, mask and the two-stage recipe
+
+`refine` runs an existing image through another model (img2img). `--strength` is the share of the image that gets
+repainted: 0.3 keeps layout, faces and colours, 0.75 repaints most of it. Several values run in one model load.
+
+```sh
+artgen.py refine --backend sdxl --image scene.png --prompt "<tags>" --strength 0.3 0.45 0.6 \
+    --opt model=wai_v17 --opt loras=pixel_art_xl:0.8 [--mask mask.png] [--pose pose.png] --seed 11 --n 1 \
+    --out out/refine --name scene
+# -> out/refine/scene_st30_s11.png (+ .json: source sha256, mask sha256, strength, seed, prompt, opts)
+```
+
+sdxl uses `StableDiffusionXLImg2ImgPipeline` (no mask) or the inpaint pipeline (mask; white = repaint). With a mask the
+original pixels are pasted back outside it (edge blur `--opt feather=6`), so protected areas stay unchanged. `--pose`
+switches to the ControlNet img2img/inpaint variants. Sides snap to a multiple of 8. Other backends: only the flux backend
+(through `inpaint` with a full mask). The prompt gets the backend's quality/rating tags like `inpaint`; `--raw-prompt` skips them.
+
+```sh
+# mask helper: white = repaint. Boxes are x0,y0,x1,y1 (px; --units frac for 0..1)
+artgen.py mask --image scene.png --heads 245,38,420,205 --heads 612,68,795,265 --feather 3 \
+    --preview mask_check.png --out mask.png       # everything except the heads; look at mask_check.png
+artgen.py mask --size 1024x768 --rect 0,300,1024,768 --keep-ellipse 100,300,200,400 --out m2.png
+```
+`--rect/--ellipse` paint white on black, `--keep-rect/--keep-ellipse` paint black, `--heads` (ellipse grown by `--head-pad`,
+default 15 %, includes hair) paints black on white. No segmentation model: read the boxes off the stage-1 image.
+
+`compose.py` wraps both stages (styles s2/s3/s4 carry the wording and LoRA of STYLES.md):
+
+```sh
+compose.py scene  --ref man.png woman.png --scene "The man and the woman from the reference images, ..." --out out/c
+compose.py refine --image out/c/scene_s11.png --heads 245,38,420,205 --heads 612,68,795,265 \
+    --prompt "<tags>" --strength 0.3 0.45 0.6 --model wai_v17 --out out/c      # also writes the mask and its preview
+compose.py sheet --row "full=0.30@a.png,0.45@b.png" --row "heads=0.30@c.png" --out sheet.png
 ```
 
 ### Post-processing stages (`postprocess.py`)
