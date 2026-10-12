@@ -70,6 +70,9 @@ pub struct TileRef {
     pub flip: TileFlags,
 }
 
+/// Height of a character's transform above its feet (collider centre), in px.
+const FEET_TO_TRANSFORM: f32 = 16.0;
+
 const FLIP_H: u32 = 0x8000_0000;
 const FLIP_V: u32 = 0x4000_0000;
 const FLIP_D: u32 = 0x2000_0000;
@@ -100,6 +103,75 @@ pub struct TiledObject {
     pub y: f32,
     pub width: f32,
     pub height: f32,
+    /// Custom properties
+    pub properties: HashMap<String, PropValue>,
+    /// Polyline points in absolute Tiled coordinates (empty for other shapes)
+    pub points: Vec<Vec2>,
+}
+
+/// A custom property value of a Tiled object.
+#[derive(Clone, Debug, PartialEq)]
+pub enum PropValue {
+    Str(String),
+    Bool(bool),
+    Int(i64),
+    Float(f64),
+}
+
+impl TiledObject {
+    pub fn prop_str(&self, name: &str) -> Option<&str> {
+        match self.properties.get(name)? {
+            PropValue::Str(s) => Some(s),
+            _ => None,
+        }
+    }
+
+    pub fn prop_bool(&self, name: &str) -> Option<bool> {
+        match self.properties.get(name)? {
+            PropValue::Bool(b) => Some(*b),
+            _ => None,
+        }
+    }
+}
+
+fn parse_properties(obj: &Value) -> HashMap<String, PropValue> {
+    let Some(props) = obj["properties"].as_array() else {
+        return HashMap::new();
+    };
+    props
+        .iter()
+        .filter_map(|p| {
+            let name = p["name"].as_str()?.to_string();
+            let value = &p["value"];
+            let value = match p["type"].as_str().unwrap_or("string") {
+                "bool" => PropValue::Bool(value.as_bool()?),
+                "int" => PropValue::Int(value.as_i64()?),
+                "float" => PropValue::Float(value.as_f64()?),
+                "string" => PropValue::Str(value.as_str()?.to_string()),
+                _ => return None,
+            };
+            Some((name, value))
+        })
+        .collect()
+}
+
+fn parse_polyline(obj: &Value) -> Vec<Vec2> {
+    let x = obj["x"].as_f64().unwrap_or(0.0) as f32;
+    let y = obj["y"].as_f64().unwrap_or(0.0) as f32;
+    obj["polyline"]
+        .as_array()
+        .map(|points| {
+            points
+                .iter()
+                .map(|p| {
+                    Vec2::new(
+                        x + p["x"].as_f64().unwrap_or(0.0) as f32,
+                        y + p["y"].as_f64().unwrap_or(0.0) as f32,
+                    )
+                })
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
 #[derive(Debug)]
@@ -220,6 +292,8 @@ fn parse_object_layer(layer: &Value) -> ObjectLayerData {
                     y: obj["y"].as_f64().unwrap_or(0.0) as f32,
                     width: obj["width"].as_f64().unwrap_or(0.0) as f32,
                     height: obj["height"].as_f64().unwrap_or(0.0) as f32,
+                    properties: parse_properties(obj),
+                    points: parse_polyline(obj),
                 })
                 .collect::<Vec<_>>()
         })
@@ -326,6 +400,29 @@ impl TiledMap {
             }
         }
         &[]
+    }
+
+    /// A named route from the `Paths` object layer as transform-space points.
+    ///
+    /// Path points are authored at the feet. Characters are drawn at scale 0.5 with
+    /// their collider 32 px below the transform, so every point is raised by 16 px.
+    /// A polyline gives all its points; a point or rectangle object gives its centre.
+    pub fn path(&self, name: &str) -> Option<Vec<Vec2>> {
+        let obj = self
+            .object_layer("Paths")
+            .iter()
+            .find(|obj| obj.name == name)?;
+        let tiled_points = if obj.points.is_empty() {
+            vec![Vec2::new(obj.x + obj.width / 2.0, obj.y + obj.height / 2.0)]
+        } else {
+            obj.points.clone()
+        };
+        Some(
+            tiled_points
+                .into_iter()
+                .map(|p| self.tiled_to_game(p.x, p.y) + Vec2::new(0.0, FEET_TO_TRANSFORM))
+                .collect(),
+        )
     }
 
     /// Convert a Tiled pixel position (top-left origin, y-down) to
@@ -501,5 +598,69 @@ impl Plugin for TiledMapPlugin {
         app.init_asset::<TiledMap>()
             .init_asset_loader::<TiledMapLoader>()
             .add_systems(OnExit(GameState::AssetLoading), insert_tiled_map_resource);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn map_with_objects(layer_json: &str) -> TiledMap {
+        let layer: Value = serde_json::from_str(layer_json).unwrap();
+        TiledMap {
+            width: 30,
+            height: 20,
+            layers: Vec::new(),
+            tilesets: Vec::new(),
+            object_layers: vec![parse_object_layer(&layer)],
+        }
+    }
+
+    #[test]
+    fn polyline_path_in_game_space_at_feet() {
+        let map = map_with_objects(
+            r#"{"name":"Paths","type":"objectgroup","objects":[
+                {"name":"Walk","x":100,"y":50,"polyline":[
+                    {"x":0,"y":0},{"x":32,"y":0},{"x":32,"y":-16}]}]}"#,
+        );
+        let path = map.path("Walk").unwrap();
+        let expected = |x: f32, y: f32| map.tiled_to_game(x, y) + Vec2::new(0.0, 16.0);
+        assert_eq!(
+            path,
+            vec![expected(100.0, 50.0), expected(132.0, 50.0), expected(132.0, 34.0)]
+        );
+        assert!(map.path("Missing").is_none());
+    }
+
+    #[test]
+    fn point_and_rectangle_paths_use_their_centre() {
+        let map = map_with_objects(
+            r#"{"name":"Paths","type":"objectgroup","objects":[
+                {"name":"P","x":10,"y":20,"point":true},
+                {"name":"R","x":0,"y":0,"width":32,"height":16}]}"#,
+        );
+        let at = |x: f32, y: f32| vec![map.tiled_to_game(x, y) + Vec2::new(0.0, 16.0)];
+        assert_eq!(map.path("P").unwrap(), at(10.0, 20.0));
+        assert_eq!(map.path("R").unwrap(), at(16.0, 8.0));
+    }
+
+    #[test]
+    fn object_properties_are_read() {
+        let map = map_with_objects(
+            r#"{"name":"Interact","type":"objectgroup","objects":[
+                {"name":"Door3B","x":0,"y":0,"width":16,"height":16,"properties":[
+                    {"name":"node","type":"string","value":"Route1Viewing"},
+                    {"name":"hidden","type":"bool","value":true},
+                    {"name":"count","type":"int","value":3},
+                    {"name":"speed","type":"float","value":1.5}]}]}"#,
+        );
+        let obj = &map.object_layer("Interact")[0];
+        assert_eq!(obj.prop_str("node"), Some("Route1Viewing"));
+        assert_eq!(obj.prop_bool("hidden"), Some(true));
+        assert_eq!(obj.properties["count"], PropValue::Int(3));
+        assert_eq!(obj.properties["speed"], PropValue::Float(1.5));
+        // Wrong type or missing
+        assert_eq!(obj.prop_bool("node"), None);
+        assert_eq!(obj.prop_str("missing"), None);
     }
 }

@@ -60,16 +60,14 @@ fn random_pause() -> Timer {
 }
 
 fn spawn_wanderer(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<TiledMap>) {
-    let find = |layer: &str, name: &str| {
-        tiled_map
-            .object_layer(layer)
-            .iter()
-            .find(|obj| obj.name == name)
-            .map(|obj| tiled_map.tiled_to_game(obj.x, obj.y))
+    let Some(pos) = tiled_map
+        .object_layer("NPCs")
+        .iter()
+        .find(|obj| obj.name == "Wanderer")
+        .map(|obj| tiled_map.tiled_to_game(obj.x, obj.y))
+    else {
+        return;
     };
-    let pos = find("NPCs", "Wanderer")
-        .or_else(|| find("Spawn", "SpawnPoint").map(|p| p + Vec2::new(48.0, 0.0)))
-        .unwrap_or(Vec2::ZERO);
 
     let collider = commands
         .spawn((

@@ -15,34 +15,11 @@ pub struct GameAssets {
     #[asset(texture_atlas(tile_size_x = 64, tile_size_y = 128, columns = 10, rows = 12))]
     pub wanderer_layout: Handle<TextureAtlasLayout>,
 
-    #[asset(path = "library/characters/forest-npcs/eleonore.png")]
-    pub eleonore_texture: Handle<Image>,
-    #[asset(texture_atlas(tile_size_x = 64, tile_size_y = 64, columns = 9, rows = 1))]
-    pub eleonore_layout: Handle<TextureAtlasLayout>,
-    #[asset(path = "library/characters/forest-npcs/eleonore_shadow.png")]
-    pub eleonore_shadow_texture: Handle<Image>,
-    #[asset(texture_atlas(tile_size_x = 32, tile_size_y = 32, columns = 9, rows = 1))]
-    pub eleonore_shadow_layout: Handle<TextureAtlasLayout>,
-
-    #[asset(path = "library/characters/forest-npcs/jotem.png")]
-    pub jotem_texture: Handle<Image>,
-    #[asset(texture_atlas(tile_size_x = 64, tile_size_y = 64, columns = 6, rows = 1))]
-    pub jotem_layout: Handle<TextureAtlasLayout>,
-
-    #[asset(path = "library/characters/forest-npcs/isabelle.png")]
-    pub isabelle_texture: Handle<Image>,
-    #[asset(texture_atlas(tile_size_x = 48, tile_size_y = 64, columns = 7, rows = 1))]
-    pub isabelle_layout: Handle<TextureAtlasLayout>,
-
-    #[asset(path = "library/characters/forest-npcs/antonius.png")]
-    pub antonius_texture: Handle<Image>,
-    #[asset(texture_atlas(tile_size_x = 80, tile_size_y = 80, columns = 5, rows = 1))]
-    pub antonius_layout: Handle<TextureAtlasLayout>,
-
-    #[asset(path = "library/characters/forest-npcs/ionas.png")]
-    pub ionas_texture: Handle<Image>,
-    #[asset(texture_atlas(tile_size_x = 80, tile_size_y = 80, columns = 5, rows = 1))]
-    pub ionas_layout: Handle<TextureAtlasLayout>,
+    // Placeholder until library/characters/samantha/samantha.png exists (opening-viewing 3.1).
+    #[asset(path = "library/characters/wanderer/wanderer.png")]
+    pub samantha_texture: Handle<Image>,
+    #[asset(texture_atlas(tile_size_x = 64, tile_size_y = 128, columns = 10, rows = 12))]
+    pub samantha_layout: Handle<TextureAtlasLayout>,
 
     // --- MAP ---
     // Start map: `world_map` in assets/start.assets.ron
@@ -87,18 +64,11 @@ pub struct GameAssets {
     #[asset(texture_atlas(tile_size_x = 32, tile_size_y = 32, columns = 2, rows = 1))]
     pub dialogue_start_hint_layout: Handle<TextureAtlasLayout>,
 
+    // Placeholders until library/portraits/{samantha,player}.png exist (opening-viewing 3.2, 3.3).
     #[asset(path = "library/portraits/pai.png")]
-    pub pai_icon: Handle<Image>,
-    #[asset(path = "library/portraits/eleonore.png")]
-    pub eleonore_icon: Handle<Image>,
-    #[asset(path = "library/portraits/jotem.png")]
-    pub jotem_icon: Handle<Image>,
-    #[asset(path = "library/portraits/isabelle.png")]
-    pub isabelle_icon: Handle<Image>,
-    #[asset(path = "library/portraits/antonius.png")]
-    pub antonius_icon: Handle<Image>,
-    #[asset(path = "library/portraits/ionas.png")]
-    pub ionas_icon: Handle<Image>,
+    pub samantha_icon: Handle<Image>,
+    #[asset(path = "library/portraits/pai.png")]
+    pub player_icon: Handle<Image>,
 
     #[asset(path = "library/ui/keys/arrows.png")]
     pub ui_arrows_key: Handle<Image>,
@@ -126,11 +96,6 @@ pub struct GameAssets {
     // --- AUDIO ---
     #[asset(path = "audio/player_footstep.ogg")]
     pub player_footstep: Handle<AudioSource>,
-
-    #[asset(path = "audio/birds.ogg")]
-    pub bird_sounds: Handle<AudioSource>,
-    #[asset(path = "audio/crickets.ogg")]
-    pub cricket_sounds: Handle<AudioSource>,
 
     #[asset(path = "audio/ui/button_hover.ogg")]
     pub ui_button_hover_sound: Handle<AudioSource>,

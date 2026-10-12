@@ -2,25 +2,33 @@ use bevy::prelude::*;
 use bevy_yarnspinner::{events::DialogueCompleted, prelude::*};
 
 use crate::{
-    npc::{Npc, NpcDialogue},
     player::chat::{PlayerStartedChat, PlayerStoppedChat},
-    world::ending::EndingTriggered,
+    story::{
+        build_story_runner,
+        scripted::{
+            await_walks_command, face_command, hide_command, show_command, walk_command,
+        },
+        StoryVars,
+    },
+    world::{
+        ending::EndingTriggered,
+        map::doors::{close_door_command, open_door_command},
+    },
     GameState,
 };
 
 use super::{
-    command::{stop_chat_command, target_npc_mentioned_command, trigger_ending_command},
+    command::{end_demo_command, stop_chat_command},
     option_selection::{CreateOptions, OptionSelection},
     spawn::{DialogueContent, DialogueRoot},
     typewriter::{Typewriter, WriteDialogueText},
 };
 
-const DELAY_FRAMES_UPDATE_TARGET_NPCS: usize = 3;
-
 #[derive(Component)]
 pub struct RunnerFlags {
     pub active: bool,
-    pub dialogue: NpcDialogue,
+    /// The start node, which also keys the runner.
+    pub node: String,
     pub line: Option<LocalizedLine>,
     pub options: Option<OptionSelection>,
 }
@@ -28,52 +36,63 @@ pub struct RunnerFlags {
 /// This is only fired when the dialogue runner isn't cached yet and was thus never spawned.
 #[derive(Message)]
 struct SpawnDialogueRunner {
-    dialogue: NpcDialogue,
+    node: String,
 }
 
-#[derive(Message)]
-pub struct UpdateTargetNpcs;
-
 impl RunnerFlags {
-    fn new(dialogue: NpcDialogue) -> Self {
+    fn new(node: String) -> Self {
         Self {
             active: true,
-            dialogue,
+            node,
             line: None,
             options: None,
         }
     }
 }
 
+/// Registers the custom Yarn commands on a runner.
+fn add_story_commands(commands: &mut Commands, runner: &mut DialogueRunner) {
+    let stop_chat = commands.register_system(stop_chat_command);
+    let end_demo = commands.register_system(end_demo_command);
+    let walk = commands.register_system(walk_command);
+    let await_walks = commands.register_system(await_walks_command);
+    let face = commands.register_system(face_command);
+    let show = commands.register_system(show_command);
+    let hide = commands.register_system(hide_command);
+    let open_door = commands.register_system(open_door_command);
+    let close_door = commands.register_system(close_door_command);
+    runner
+        .commands_mut()
+        .add_command("stop_chat", stop_chat)
+        .add_command("end_demo", end_demo)
+        .add_command("walk", walk)
+        .add_command("await_walks", await_walks)
+        .add_command("face", face)
+        .add_command("show", show)
+        .add_command("hide", hide)
+        .add_command("open_door", open_door)
+        .add_command("close_door", close_door);
+}
+
 fn spawn_dialogue_runner(
     mut commands: Commands,
     mut typewriter: ResMut<Typewriter>,
     project: Res<YarnProject>,
-    mut q_npcs: Query<&mut Npc>,
+    story_vars: Res<StoryVars>,
     mut ev_spawn_dialogue_runner: MessageReader<SpawnDialogueRunner>,
-    mut ev_update_target_npcs: MessageWriter<UpdateTargetNpcs>,
+    mut ev_player_stopped_chat: MessageWriter<PlayerStoppedChat>,
 ) {
     for ev in ev_spawn_dialogue_runner.read() {
-        for mut npc in &mut q_npcs {
-            if npc.dialogue == ev.dialogue {
-                npc.was_talked_to = true;
-            }
-        }
-
         typewriter.reset();
-        let stop_chat = commands.register_system(stop_chat_command);
-        let target_npc = commands.register_system(target_npc_mentioned_command);
-        let trigger_ending = commands.register_system(trigger_ending_command);
-        let mut dialogue_runner = project.create_dialogue_runner(&mut commands);
-        dialogue_runner
-            .commands_mut()
-            .add_command("stop_chat", stop_chat)
-            .add_command("target_npc_mentioned", target_npc)
-            .add_command("trigger_ending", trigger_ending);
+        let mut dialogue_runner = build_story_runner(&project, &mut commands, &story_vars);
+        add_story_commands(&mut commands, &mut dialogue_runner);
 
-        dialogue_runner.start_node(ev.dialogue.to_string());
-        commands.spawn((dialogue_runner, RunnerFlags::new(ev.dialogue)));
-        ev_update_target_npcs.write(UpdateTargetNpcs);
+        if let Err(err) = dialogue_runner.try_start_node(&ev.node) {
+            error!("Cannot start dialogue node '{}': {err}", ev.node);
+            ev_player_stopped_chat.write(PlayerStoppedChat);
+            continue;
+        }
+        commands.spawn((dialogue_runner, RunnerFlags::new(ev.node.clone())));
     }
 }
 
@@ -98,7 +117,7 @@ fn activate_dialogue_runner(
 
         let mut cached = false;
         for mut flags in &mut q_runner_flags {
-            if flags.dialogue == ev.dialogue {
+            if flags.node == ev.node {
                 cached = true;
                 flags.active = true;
                 if let Some(option_selection) = &flags.options {
@@ -116,81 +135,8 @@ fn activate_dialogue_runner(
                 *dialogue_content = Text::default();
             }
             ev_spawn_dialogue_runner.write(SpawnDialogueRunner {
-                dialogue: ev.dialogue,
+                node: ev.node.clone(),
             });
-        }
-    }
-}
-
-fn update_target_npc(flags: &RunnerFlags, runner: &mut DialogueRunner, dialogue: NpcDialogue) {
-    let variable_storage = runner.variable_storage_mut();
-    let target_npc: String = match variable_storage.get("$target_npc") {
-        Ok(r) => r.to_string(),
-        Err(err) => {
-            error!(
-                "Dialogue without the variable $target_npc! In dialogue {}, {}",
-                flags.dialogue, err
-            );
-            String::new()
-        }
-    };
-    if target_npc == dialogue.to_string() {
-        if let Err(err) = variable_storage.set("$talked_with_target_npc".to_string(), (true).into())
-        {
-            error!("{}, {}", flags.dialogue, err);
-        }
-    }
-}
-
-fn update_mentioned_by(
-    flags: &RunnerFlags,
-    runner: &mut DialogueRunner,
-    mentioned_by: &NpcDialogue,
-) {
-    let variable_storage = runner.variable_storage_mut();
-    let variable = format!("$mentioned_by_{mentioned_by}");
-    if !variable_storage.contains(&variable) {
-        error!("Npc {}, does not contain var {}", flags.dialogue, variable);
-        return;
-    };
-    if let Err(err) = variable_storage.set(variable, (true).into()) {
-        error!("{}, {}", flags.dialogue, err);
-    }
-}
-
-fn update_target_npcs(
-    q_npcs: Query<&Npc>,
-    mut q_dialogue_runners: Query<(&mut DialogueRunner, &RunnerFlags)>,
-    mut ev_update_target_npcs: MessageReader<UpdateTargetNpcs>,
-    mut started: Local<bool>,
-    mut frames: Local<usize>,
-) {
-    for _ev in ev_update_target_npcs.read() {
-        *started = true;
-    }
-
-    if !*started {
-        return;
-    }
-
-    if *frames < DELAY_FRAMES_UPDATE_TARGET_NPCS {
-        *frames += 1;
-        return;
-    }
-
-    *started = false;
-    *frames = 0;
-    for (mut runner, flags) in &mut q_dialogue_runners {
-        for npc in &q_npcs {
-            if npc.was_talked_to {
-                update_target_npc(flags, &mut runner, npc.dialogue);
-            }
-
-            if flags.dialogue == npc.dialogue {
-                for mentioned_by in &npc.was_mentioned_by {
-                    update_mentioned_by(flags, &mut runner, mentioned_by);
-                }
-            }
         }
     }
 }
@@ -243,7 +189,6 @@ pub struct DialogueRunnerPlugin;
 impl Plugin for DialogueRunnerPlugin {
     fn build(&self, app: &mut App) {
         app.add_message::<SpawnDialogueRunner>()
-            .add_message::<UpdateTargetNpcs>()
             .add_observer(despawn_dialogue_runner)
             .add_observer(hide_dialogue_on_completed)
             .add_systems(
@@ -257,7 +202,6 @@ impl Plugin for DialogueRunnerPlugin {
                 (
                     deactivate_dialogue_runner.run_if(on_message::<PlayerStoppedChat>),
                     monitor_active_runners,
-                    update_target_npcs,
                 ),
             )
             .add_systems(

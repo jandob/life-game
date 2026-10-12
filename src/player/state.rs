@@ -3,6 +3,7 @@ use bevy_rapier2d::{dynamics::Velocity, plugin::PhysicsSet};
 use bevy_yarnspinner::events::DialogueCompleted;
 
 use crate::animation::{character_clip, play_character_clip, CharacterAnim, SpriteAnimator};
+use crate::story::scripted::ScriptedWalk;
 use crate::GameState;
 
 use super::{chat::PlayerStoppedChat, input::PlayerInput, Player};
@@ -35,7 +36,7 @@ fn switch_to_idling_from_talking_on_completed(
 
 fn switch_player_move_state(
     player_input: Res<PlayerInput>,
-    mut q_player: Query<(&Velocity, &mut Player)>,
+    mut q_player: Query<(&Velocity, &mut Player), Without<ScriptedWalk>>,
 ) {
     let (velocity, mut player) = match q_player.single_mut() {
         Ok(p) => p,
@@ -56,13 +57,16 @@ fn switch_player_move_state(
     player.state = state;
 }
 
-fn update_animation(mut q_player: Query<(&mut SpriteAnimator, &mut Sprite, &Player)>) {
-    let (mut animator, mut sprite, player) = match q_player.single_mut() {
+fn update_animation(
+    mut q_player: Query<(&mut SpriteAnimator, &mut Sprite, &Player, Has<ScriptedWalk>)>,
+) {
+    let (mut animator, mut sprite, player, walking_scripted) = match q_player.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
 
     let anim = match player.state {
+        PlayerState::Talking if walking_scripted => CharacterAnim::Walk,
         PlayerState::Idling | PlayerState::Talking => CharacterAnim::Idle,
         PlayerState::Walking => CharacterAnim::Walk,
         PlayerState::Running => CharacterAnim::Run,

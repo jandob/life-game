@@ -1,103 +1,141 @@
-use std::{
-    collections::HashSet,
-    fs::{self, DirEntry},
-    io::Error,
-    str::FromStr,
-};
+//! Checks of the Yarn conventions in `assets/dialogue/*.yarn`.
+//! Subdirectories such as `assets/dialogue/forest/` (the retired story) are not checked.
+
+use std::{collections::HashSet, fs};
 
 use strsim::levenshtein;
-
-use crate::npc::NpcDialogue;
 
 const PATH_TO_DIR: &str = "assets/dialogue";
 
 const MAX_SIMILARITY_DISTANCE: usize = 4;
 
-const REQUIRED_VARIABLES: [&str; 3] = ["name", "target_npc", "talked_with_target_npc"];
+/// Custom commands with their allowed number of arguments.
+const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 9] = [
+    ("stop_chat", 0..=0),
+    ("end_demo", 0..=0),
+    ("walk", 2..=3),
+    ("await_walks", 0..=0),
+    ("face", 2..=2),
+    ("show", 1..=1),
+    ("hide", 1..=1),
+    ("open_door", 1..=1),
+    ("close_door", 1..=1),
+];
 
-fn try_read_yarn_contents(entry: Result<DirEntry, Error>) -> Option<(String, String)> {
-    let entry = entry.expect("Can't get entry in current dir");
-    let npc_file_name = entry
-        .file_name()
-        .into_string()
-        .expect("Can't convert OsString to String")
-        .split('.')
-        .collect::<Vec<&str>>()[0]
-        .to_string();
-    let path = entry.path();
+/// Commands that Yarn Spinner itself provides.
+const BUILTIN_COMMANDS: [&str; 14] = [
+    "jump", "set", "declare", "if", "elseif", "else", "endif", "wait", "detour", "enum",
+    "endenum", "once", "endonce", "return",
+];
 
-    if !path.is_file() {
-        return None;
-    }
-
-    if let Some(ext) = path.extension() {
-        if ext == "yarn" {
-            return Some((
-                (fs::read_to_string(path).expect("Should have been able to read the file")),
-                npc_file_name,
-            ));
+/// All yarn files directly in `PATH_TO_DIR` as (file name without extension, contents).
+fn yarn_files() -> Vec<(String, String)> {
+    let mut files = Vec::new();
+    for entry in fs::read_dir(PATH_TO_DIR).expect("Can't read entries in current dir") {
+        let path = entry.expect("Can't get entry in current dir").path();
+        if !path.is_file() || path.extension().is_none_or(|ext| ext != "yarn") {
+            continue;
         }
+        let name = path.file_stem().unwrap().to_string_lossy().to_string();
+        let contents = fs::read_to_string(&path).expect("Should have been able to read the file");
+        files.push((name, contents));
     }
-    None
+    files
 }
 
-/// Loop over all yarn files in `PATH_TO_DIR` and apply the predicate on each line.
+/// Loop over all yarn files and apply the predicate on each trimmed line.
 fn validate_lines<F>(mut predicate: F)
 where
     F: FnMut(&str, &str),
 {
-    for entry in fs::read_dir(PATH_TO_DIR).expect("Can't read entries in current dir") {
-        let (contents, npc_file_name) = match try_read_yarn_contents(entry) {
-            Some(r) => r,
-            None => continue,
-        };
-
+    for (file_name, contents) in yarn_files() {
         for line in contents.lines().map(str::trim) {
-            predicate(line.trim(), &npc_file_name)
+            predicate(line, &file_name)
         }
     }
+}
+
+/// Command name and arguments of a `<<name arg arg>>` line.
+fn parse_command(line: &str) -> Option<(&str, Vec<&str>)> {
+    let inner = line.strip_prefix("<<")?.strip_suffix(">>")?;
+    let mut words = inner.split_whitespace();
+    let name = words.next()?;
+    Some((name, words.collect()))
+}
+
+/// The nodes of a file as (title, body lines after `---`).
+fn nodes(contents: &str) -> Vec<(String, Vec<&str>)> {
+    let mut nodes = Vec::new();
+    let mut title = None;
+    let mut body: Option<Vec<&str>> = None;
+    for line in contents.lines().map(str::trim) {
+        match &mut body {
+            None => {
+                if let Some(t) = line.strip_prefix("title:") {
+                    title = Some(t.trim().to_string());
+                } else if line == "---" {
+                    body = Some(Vec::new());
+                }
+            }
+            Some(lines) => {
+                if line == "===" {
+                    nodes.push((title.take().unwrap_or_default(), body.take().unwrap()));
+                } else {
+                    lines.push(line);
+                }
+            }
+        }
+    }
+    nodes
 }
 
 /// This essentially tests for typos in the commands of the yarn files.
 #[test]
 fn validate_custom_commands() {
-    let custom_commands = ["stop_chat", "target_npc_mentioned", "trigger_ending"];
-
-    validate_lines(|line, _| {
-        if !line.starts_with("<<") {
+    validate_lines(|line, file| {
+        let Some((command, _)) = parse_command(line) else {
+            return;
+        };
+        if BUILTIN_COMMANDS.contains(&command) {
             return;
         }
 
-        let mut closest_command: &str = custom_commands[0];
-        let mut closest_distance = usize::MAX;
-
-        let command = line.split(' ').collect::<Vec<&str>>()[0]
-            .trim_start_matches("<<")
-            .trim_end_matches(">>");
-        for custom_command in custom_commands {
-            let distance = levenshtein(command, custom_command);
-            if distance < closest_distance {
-                closest_command = custom_command;
-                closest_distance = distance;
-            }
-        }
+        let (closest_command, closest_distance) = CUSTOM_COMMANDS
+            .iter()
+            .map(|(name, _)| (*name, levenshtein(command, name)))
+            .min_by_key(|(_, distance)| *distance)
+            .unwrap();
 
         if closest_distance < MAX_SIMILARITY_DISTANCE {
             assert!(
                 command == closest_command,
-                "{command} and {closest_command} are {closest_distance} levenshtein close but don't match!"
+                "{command} and {closest_command} are {closest_distance} levenshtein close but don't match! (in {file})"
             );
         }
     });
 }
 
 #[test]
-fn validate_target_npc_mentioned_command() {
-    validate_lines(|line, _| {
-        if line.starts_with("<<target_npc_mentioned ") {
-            assert!(line == "<<target_npc_mentioned {$name} {$target_npc}>>");
+fn validate_scripted_command_arity() {
+    validate_lines(|line, file| {
+        let Some((command, args)) = parse_command(line) else {
+            return;
+        };
+        let Some((_, allowed)) = CUSTOM_COMMANDS.iter().find(|(name, _)| *name == command) else {
+            return;
+        };
+        assert!(
+            allowed.contains(&args.len()),
+            "<<{command}>> takes {allowed:?} arguments but has {} in {file}: '{line}'",
+            args.len()
+        );
+        if command == "walk" && args.len() == 3 {
+            assert!(
+                args[2] == "no_wait",
+                "Third argument of <<walk>> must be 'no_wait' in {file}: '{line}'"
+            );
         }
-    })
+    });
 }
 
 #[test]
@@ -110,46 +148,14 @@ fn validate_stop_chat_command() {
 }
 
 #[test]
-fn validate_trigger_ending() {
-    validate_lines(|line, _| {
-        if line.starts_with("<<trigger_ending") {
-            assert!(line == "<<trigger_ending {$name}>>", "{}", line);
-        }
-    })
-}
-
-#[test]
-fn validate_npc_names_existence() {
-    validate_lines(|line, _| {
-        if line.starts_with("<<set $name") || line.starts_with("<<set $target_npc") {
-            let parts: Vec<&str> = line.split('"').collect();
-            assert!(
-                parts.len() == 3,
-                "Length of parts is not 3, instead it's {}, {:?}",
-                parts.len(),
-                parts
-            );
-
-            let npc_name = parts[1].trim_start_matches('_');
-            match NpcDialogue::from_str(npc_name) {
-                Ok(_) => {}
-                Err(err) => {
-                    panic!("The npc name doesn't match any NpcDialogue names, {npc_name}\n{err}")
-                }
-            };
-        }
-    })
-}
-
-#[test]
 fn validate_node_title_uniqueness() {
     let mut titles = HashSet::new();
 
-    validate_lines(|line, npc_file_name| {
+    validate_lines(|line, file| {
         if let Some(title) = line.strip_prefix("title: ") {
             assert!(
                 titles.insert(title.to_string()),
-                "Title already exists! title: {title}, in file: {npc_file_name}",
+                "Title already exists! title: {title}, in file: {file}",
             );
         }
     });
@@ -161,88 +167,63 @@ fn validate_node_title_uniqueness() {
 /// It seems like it will just lead to bugs.
 #[test]
 fn validate_node_exists() {
-    fn format_title_with_file(title: &str, file: &str) -> String {
-        format!("{title}-{file}")
-    }
-
-    let mut titles_with_file = HashSet::new();
-
-    validate_lines(|line, npc_file_name| {
-        if let Some(title) = line.strip_prefix("title: ") {
-            titles_with_file.insert(format_title_with_file(title, npc_file_name));
-        }
-    });
-
-    validate_lines(|line, npc_file_name| {
-        if let Some(command) = line.strip_prefix("<<jump ") {
-            let title = command.trim_end_matches(">>");
-            let title_with_file = format_title_with_file(title, npc_file_name);
-            assert!(
-                titles_with_file.contains(&title_with_file),
-                "Referenced title: '{title}' in file: '{npc_file_name}' doesn't exist! (jump command)"
-            );
-        }
-    });
-}
-
-/// Ensures that the name is the same as the yarn file.
-/// This will only work for single NPC dialogues.
-#[test]
-fn match_names_with_files() {
-    validate_lines(|line, npc_file_name| {
-        if line.starts_with("<<set $name") {
-            let parts: Vec<&str> = line.split('"').collect();
-            assert!(
-                parts.len() == 3,
-                "Length of parts is not 3, instead it's {}, {:?}",
-                parts.len(),
-                parts
-            );
-
-            let npc_name = parts[1].trim_start_matches('_');
-            if npc_name.to_lowercase() != npc_file_name.replace("-", "") {
-                panic!(
-                    "Name of npc is {npc_name} in yarn file, but yarn file is named {npc_file_name}"
+    for (file, contents) in yarn_files() {
+        let titles: HashSet<String> = nodes(&contents).into_iter().map(|(t, _)| t).collect();
+        for line in contents.lines().map(str::trim) {
+            if let Some(command) = line.strip_prefix("<<jump ") {
+                let title = command.trim_end_matches(">>");
+                assert!(
+                    titles.contains(title),
+                    "Referenced title: '{title}' in file: '{file}' doesn't exist! (jump command)"
                 );
             }
         }
-    });
+    }
 }
 
-/// Make sure all required variables are set in each yarn file.
+/// Every `{$variable}: line` speaker needs a `<<declare $variable ...>>` in its file.
 #[test]
-fn check_all_required_variables() {
-    for entry in fs::read_dir(PATH_TO_DIR).expect("Can't read entries in current dir") {
-        let file_name = entry
-            .as_ref()
-            .expect("Can't get entry in current dir")
-            .file_name();
-        let (contents, _) = match try_read_yarn_contents(entry) {
-            Some(r) => r,
-            None => continue,
-        };
-
-        let mut contains_variables = [false; REQUIRED_VARIABLES.len()];
+fn validate_speaker_variables_declared() {
+    for (file, contents) in yarn_files() {
+        let declared: HashSet<&str> = contents
+            .lines()
+            .map(str::trim)
+            .filter_map(|line| line.strip_prefix("<<declare "))
+            .filter_map(|rest| rest.split_whitespace().next())
+            .collect();
 
         for line in contents.lines().map(str::trim) {
-            if line.starts_with("<<set ") {
-                let command = line.split(' ').collect::<Vec<&str>>()[1].trim_start_matches('$');
-                if let Some(index) = REQUIRED_VARIABLES.iter().position(|cmd| *cmd == command) {
-                    contains_variables[index] = true;
-                }
-            }
+            let Some(rest) = line.strip_prefix("{$") else {
+                continue;
+            };
+            let Some((name, _)) = rest.split_once("}:") else {
+                continue;
+            };
+            let variable = format!("${name}");
+            assert!(
+                declared.contains(variable.as_str()),
+                "Speaker variable {variable} is not declared in {file}"
+            );
         }
+    }
+}
 
-        assert!(
-            !contains_variables.contains(&false),
-            "Not all required variables present in {:?}. Missing variables:\n {:?}",
-            file_name,
-            REQUIRED_VARIABLES
+/// The first line of every node is spoken by a non-player character.
+#[test]
+fn validate_first_line_is_npc_line() {
+    for (file, contents) in yarn_files() {
+        for (title, body) in nodes(&contents) {
+            let first = body
                 .iter()
-                .enumerate()
-                .filter(|(i, _)| !contains_variables[*i])
-                .collect::<Vec<(usize, &&str)>>()
-        );
+                .find(|line| {
+                    !(line.is_empty() || line.starts_with("<<") || line.starts_with("//"))
+                })
+                .unwrap_or_else(|| panic!("Node {title} in {file} has no dialogue line"));
+            assert!(
+                !first.starts_with("You:") && !first.starts_with("->"),
+                "The first line of node {title} in {file} must be spoken by an NPC, found '{first}'"
+            );
+        }
     }
 }
 
@@ -251,16 +232,7 @@ fn check_all_required_variables() {
 /// would look really strange.
 #[test]
 fn assert_no_narrator_lines() {
-    for entry in fs::read_dir(PATH_TO_DIR).expect("Can't read entries in current dir") {
-        let file_name = entry
-            .as_ref()
-            .expect("Can't get entry in current dir")
-            .file_name();
-        let (contents, _) = match try_read_yarn_contents(entry) {
-            Some(r) => r,
-            None => continue,
-        };
-
+    for (file, contents) in yarn_files() {
         for line in contents.lines().map(str::trim) {
             if !(line.starts_with("{$")
                 || line.starts_with("You:")
@@ -268,16 +240,23 @@ fn assert_no_narrator_lines() {
                 || line.starts_with("===")
                 || line.starts_with("---")
                 || line.starts_with("title:")
+                || line.starts_with("tags:")
                 || line.starts_with("->")
                 || line.starts_with("//")
                 || line.is_empty())
             {
                 panic!(
-                    "There should be no narrator lines, i.e. dialogue lines that don't start with a '<name>: <dialogue content>'\nIn line: '{}'\nIn file: '{}'",
-                    line,
-                    file_name.to_str().unwrap_or_default()
+                    "There should be no narrator lines, i.e. dialogue lines that don't start with a '<name>: <dialogue content>'\nIn line: '{line}'\nIn file: '{file}'"
                 );
             }
         }
     }
+}
+
+#[test]
+fn nodes_are_split_at_markers() {
+    let nodes = nodes("title: A\ntags: x\n---\nline\n===\ntitle: B\n---\nother\n===\n");
+    assert_eq!(nodes.len(), 2);
+    assert_eq!(nodes[0], ("A".to_string(), vec!["line"]));
+    assert_eq!(nodes[1], ("B".to_string(), vec!["other"]));
 }

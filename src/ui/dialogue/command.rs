@@ -1,12 +1,9 @@
-use std::str::FromStr;
-
 use bevy::prelude::*;
 use bevy_yarnspinner::prelude::*;
 
 use crate::{
-    npc::{Npc, NpcDialogue},
     player::{chat::PlayerStoppedChat, Player, PlayerState},
-    world::ending::EndingTriggered,
+    world::ending::{Ending, EndingTriggered},
 };
 
 use super::runner::RunnerFlags;
@@ -48,43 +45,10 @@ pub fn stop_chat_command(
     ev_player_stopped_chat.write(PlayerStoppedChat);
 }
 
-pub fn target_npc_mentioned_command(
-    In((source_npc, target_npc)): In<(String, String)>,
-    mut q_npcs: Query<&mut Npc>,
-) {
-    let source_npc = match NpcDialogue::from_str(source_npc.trim_start_matches('_')) {
-        Ok(r) => r,
-        Err(err) => {
-            error!("Not a valid npc name! {}", err);
-            return;
-        }
-    };
-
-    let target_npc = match NpcDialogue::from_str(target_npc.trim_start_matches('_')) {
-        Ok(r) => r,
-        Err(err) => {
-            error!("Not a valid npc name! {}", err);
-            return;
-        }
-    };
-
-    for mut npc in &mut q_npcs {
-        if npc.dialogue == target_npc {
-            npc.was_mentioned_by.push(source_npc);
-        }
-    }
-}
-
-pub fn trigger_ending_command(
-    In(npc_name): In<String>,
-    mut ev_ending_triggered: MessageWriter<EndingTriggered>,
-) {
-    let dialogue = match NpcDialogue::from_str(npc_name.trim_start_matches('_')) {
-        Ok(r) => r,
-        Err(err) => {
-            error!("Not a valid npc name! {}", err);
-            return;
-        }
-    };
-    ev_ending_triggered.write(EndingTriggered { dialogue });
+/// `<<end_demo>>`: ends the slice with the end card.
+pub fn end_demo_command(In(_): In<()>, mut ev_ending_triggered: MessageWriter<EndingTriggered>) {
+    ev_ending_triggered.write(EndingTriggered {
+        ending: Ending::Demo,
+        npc: None,
+    });
 }

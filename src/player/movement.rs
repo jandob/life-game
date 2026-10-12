@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+use crate::story::scripted::ScriptedWalk;
 use crate::utils::DebugActive;
 use crate::GameState;
 
@@ -11,7 +12,7 @@ use super::{Player, PlayerState, RUN_SPEED, WALK_SPEED};
 fn player_movement(
     player_input: Res<PlayerInput>,
     debug_active: Res<DebugActive>,
-    mut q_player: Query<(&mut Velocity, &mut Player)>,
+    mut q_player: Query<(&mut Velocity, &mut Player), Without<ScriptedWalk>>,
 ) {
     let (mut velocity, mut player) = match q_player.single_mut() {
         Ok(p) => p,

@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use crate::animation::{SpriteAnimator, CHARACTER_CLIPS};
+use crate::story::scripted::Actor;
 use crate::world::camera::YSort;
 use crate::world::map::tiled_map::TiledMap;
 use crate::{GameAssets, GameState};
@@ -34,6 +35,7 @@ fn spawn_player(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<
     commands
         .spawn((
             Player::default(),
+            Actor("Player".to_string()),
             RigidBody::Dynamic,
             LockedAxes::ROTATION_LOCKED,
             Velocity::zero(),
