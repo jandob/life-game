@@ -127,7 +127,7 @@ def cmd_inpaint(a) -> None:
     opts.update(parse_opts(a.opt))
     b.load(**{k: v for k, v in opts.items() if k in b.load_keys})
     img, mask = Image.open(a.image).convert("RGB"), Image.open(a.mask).convert("L")
-    prompt = a.prompt if a.raw_prompt else b.apply_inpaint_template(a.prompt)
+    prompt = a.prompt if a.raw_prompt else b.apply_inpaint_template(a.prompt, **opts)
     gen = {k: opts[k] for k in b.inpaint_keys if k in opts}
     t0 = time.perf_counter()
     imgs = b.inpaint(prompt, img, mask, seed=a.seed, n=a.n, strength=a.strength, ref=a.ref, **gen)
@@ -193,7 +193,7 @@ def cmd_refine(a) -> None:
     mask = Image.open(a.mask).convert("L") if a.mask else None
     if mask is not None and mask.size != img.size:
         raise SystemExit(f"mask {mask.size} does not match image {img.size}")
-    prompt = a.prompt if a.raw_prompt else b.apply_inpaint_template(a.prompt)
+    prompt = a.prompt if a.raw_prompt else b.apply_inpaint_template(a.prompt, **opts)
     keys = getattr(b, "refine_keys", None) or b.inpaint_keys
     gen = {k: opts[k] for k in keys if k in opts}
     if a.pose:

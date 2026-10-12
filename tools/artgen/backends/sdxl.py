@@ -217,8 +217,10 @@ class Sdxl(Backend):
     def default_negative(self, model: str | None = None) -> str:
         return FAMILIES[self._family_of(model)]["negative"]
 
-    def apply_inpaint_template(self, subject: str) -> str:
-        return self.apply_template(subject, background="")
+    def apply_inpaint_template(self, subject: str, **fields) -> str:
+        """Like ``apply_template`` (model, rating and LoRA triggers from ``fields``) without a background."""
+        fields = {k: v for k, v in fields.items() if k in ("model", "rating", "loras", "quality")}
+        return self.apply_template(subject, **fields, background="")
 
     def _negative(self, negative: str | None, extra: str | None, rating: str | None) -> str:
         """``negative`` replaces the family default; the safe-rating terms are always added for rating=safe

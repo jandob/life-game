@@ -133,7 +133,7 @@ def test_refine_cli_stubbed() -> None:
         refine_keys = ("model", "loras")
 
         def load(self, **kw): pass
-        def apply_inpaint_template(self, s): return "Q, " + s
+        def apply_inpaint_template(self, s, **_): return "Q, " + s
         def stats(self): return {"last_image_s": [0.1] * 2}
 
         def refine(self, prompt, image, mask=None, seed=0, n=1, strength=0.5, **kw):
