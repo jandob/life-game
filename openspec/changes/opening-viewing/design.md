@@ -163,6 +163,8 @@ Mark L1 as a deliberate exception to "one location per map".
 
 ### D10: Art deliverables and placeholders
 
+> **Amended 2026-10-12:** the user moved the characters to realistic proportions with bigger sprites, and decided that the rooms adapt to the characters. Two follow-up changes cover it: `world-texel-scale` (one world px = one art px, 48 px tiles, integer camera scaling, world constants x3, `route1_flat.tmj` rebuilt at 48 px with the same layer, object and path names) and `realistic-character-sprites` (96x192 cells at scale 1.0, feet on row 157). The 64x128 format below and the D7 pixel values (+16 path offset, 8 px clearance, 24 px apart) stay valid for this change, which is verified (section 9) on the current 16 px map and sheets.
+
 | File | Format | Code handle |
 |---|---|---|
 | `assets/library/characters/samantha/samantha.png` | 640x1536 RGBA PNG, 64x128 cells, 10 columns x 12 rows | `samantha_texture`, `samantha_layout = texture_atlas(64, 128, 10, 12)` |

@@ -84,16 +84,16 @@ Decided by the user, 2026-10-12: all defaults (forest code removed, L1 one map, 
 
 ## 9. Verification (lead; manual runs with F3 off)
 
-- [ ] 9.1 `cargo check`, `cargo check --target wasm32-unknown-unknown`, `cargo test`
-- [ ] 9.2 Native run: Play → landing; no forest NPCs, ambience or wanderer; the closed 3B door blocks the player; the start hint shows at 3B
-- [ ] 9.3 Knock: 3A opens, Samantha appears and walks out, her first line shows "???" and her (placeholder) portrait
-- [ ] 9.4 The full tour: every walk finishes before the next line; both walk together where scripted; she faces the player when talking; no walking through walls on screen
+- [x] 9.1 `cargo check`, `cargo check --target wasm32-unknown-unknown`, `cargo test`
+- [x] 9.2 Native run: Play → landing; no forest NPCs, ambience or wanderer; the closed 3B door blocks the player; the start hint shows at 3B
+- [x] 9.3 Knock: 3A opens, Samantha appears and walks out, her first line shows "???" and her (placeholder) portrait
+- [x] 9.4 The full tour: every walk finishes before the next line; both walk together where scripted; she faces the player when talking; no walking through walls on screen
 - [ ] 9.5 Escape mid-tour does nothing; stand in her path → pushed aside, the scene continues
 - [ ] 9.6 Each of the three choice points × 3 options plays through (9 runs or spot checks plus logged `StoryVars` values)
-- [ ] 9.7 End: she walks home and disappears, 3A closes, the end card shows "To be continued" and the thanks line, no "- FIN -"
+- [x] 9.7 End: she walks home and disappears, 3A closes, the end card shows "To be continued" and the thanks line, no "- FIN -"
 - [ ] 9.8 Chunk respawn: zoom out in debug (F3 on only for this), move the camera away and back → open doors stay open and closed doors closed
-- [ ] 9.9 Wasm: build via the `push_to_itch.sh` steps without publishing, run in a WebGPU browser, play the scene start to end, and check the console for errors
-- [ ] 9.10 After the art lands (3.x): swap the placeholder paths in `src/assets.rs`, re-run 9.3–9.7 natively, and check the feet anchor against the collider
+- [x] 9.9 Wasm: build via the `push_to_itch.sh` steps without publishing, run in a WebGPU browser, play the scene start to end, and check the console for errors
+- [ ] 9.10 After the art lands (3.x): swap the placeholder paths in `src/assets.rs`, re-run 9.3–9.7 natively, and check the feet anchor against the collider. The world rescale and the realistic 96x192 sheets are separate changes (`world-texel-scale`, `realistic-character-sprites`; design D10 note) and are verified there, not here
 
 ## 10. Docs and agents (lead)
 
