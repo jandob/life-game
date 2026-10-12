@@ -8,7 +8,7 @@ seed, options, timings), so any image can be reproduced.
 
 ```
 tools/artgen/
-  artgen.py            CLI: backends | generate | inpaint | refine | mask | pose | snap | post | palette-from
+  artgen.py            CLI: backends | generate | inpaint | refine | cast | mask | pose | snap | post | palette-from
   compose.py           two-stage scenes: FLUX klein (refs) -> SDXL refine; scene | refine | sheet
   maskkit.py           box/ellipse/head-protect repaint masks (artgen.py mask)
   bench.py             runs a backend over prompts/bench.yaml -> contact sheets + table
@@ -125,6 +125,33 @@ compose.py refine --image out/c/scene_s11.png --heads 245,38,420,205 --heads 612
     --prompt "<tags>" --strength 0.3 0.45 0.6 --model wai_v17 --out out/c      # also writes the mask and its preview
 compose.py sheet --row "full=0.30@a.png,0.45@b.png" --row "heads=0.30@c.png" --out sheet.png
 ```
+
+### cast: several masked regions in one command
+
+`cast RECIPE.json` applies a list of regions to one image, in order (each step's output is the next step's input).
+Every region is a full-resolution masked refine (whole image as context, same as `refine --mask`); one model load for all.
+The recipe is validated before any model loads: errors print `{"ok": false, "error": ...}` and exit 2.
+
+```sh
+artgen.py cast examples/cast_recipe.json --out out/cast      # default out: <recipe dir>/<recipe stem>_cast
+# -> out/cast/01_woman_head.png, 01_woman_head_mask.png (mask tinted red), 02_..., final.png, cast.json
+```
+
+Recipe (`examples/cast_recipe.json`; relative paths are relative to the recipe file):
+
+| field | meaning |
+|---|---|
+| `image` | source PNG (required). Optional top level: `backend` (default `sdxl`), `opts` (like `--opt`, e.g. `model`), `negative` |
+| `regions[].name` | required, unique, `[A-Za-z0-9_-]`; used in file names |
+| `regions[].mask` **or** boxes | `mask`: PNG, white = repaint, same size as the image. Boxes: `rect`, `ellipse` (white), `keep_rect`, `keep_ellipse` (black), `heads` (everything except heads, like `artgen.py mask`); each a `"x0,y0,x1,y1"` string or list of them; `units` `px`/`frac`, `head_pad`, `head_shape`, `base` as in `mask` |
+| `regions[].feather` | edge blur in px (default 6), applied by the backend when it pastes the original back outside the mask |
+| `regions[].prompt` | required subject; backend tags and LoRA triggers are added (`raw_prompt: true` sends it verbatim); optional `negative` |
+| `regions[].opts` | per-region `--opt` values (`loras`, `model`, `rating`, `steps`, ...), merged over the top-level `opts` |
+| `regions[].strength` | (0, 1], default 0.5 |
+| `regions[].seed` | integer, default 0; same recipe + same seeds reproduce the result |
+
+`cast.json` logs the resolved prompt, generation options, seed, strength, mask coverage and seconds of every region.
+There is no crop mode: the model always sees the whole image, so the pixel grid stays consistent across it.
 
 ### Post-processing stages (`postprocess.py`)
 

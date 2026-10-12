@@ -111,3 +111,44 @@ Results (WAI v17, S3, man + woman, sofa, one seed; sheet in the session scratchp
   outfit colours hold up to 0.60 (at 0.75 the jacket gets darker). Cost: the heads stay smooth FLUX art while bodies and room are
   chunky pixels, plus a faint halo around the head ellipse at 0.75. Best compromise: 0.45 with heads protected,
   or 0.30 full image for a lighter touch; for a uniform pixel look run `post --grid auto` on the result.
+
+## Character refine: put a character's LoRA back into a multi-person scene
+
+Generating with a character LoRA directly fights multi-person scenes (it was trained on one person alone and drags poses toward
+its dataset). Instead: generate the scene without it, then repaint each character's head and/or body with that character's LoRA
+through a mask. Masks are made by the agent (`artgen.py mask`, boxes/ellipses read off the image); there is no detector.
+
+```sh
+# 1. scene (clothed, adults), about 40 s at 768x1152
+artgen.py generate --backend sdxl --opt model=wai_v17 --opt loras=pixel_art_xl:0.7 --width 768 --height 1152 --seed 7 --out out/s \
+    --prompt "2people, 1boy, 1girl, adult, sitting on sofa, talking, living room, <hair/outfit colours of both>"
+# 2. look at it, place an ellipse on the head incl. hair, check the preview
+artgen.py mask --image out/s/scene_s7.png --ellipse 278,328,462,505 --preview out/s/mask_check.png --out out/s/head_woman.png
+# 3a. one region ...
+artgen.py refine --image out/s/scene_s7.png --mask out/s/head_woman.png --opt model=wai_v17 \
+    --opt loras=lgwoman1:0.8,pixel_art_xl:0.5 --strength 0.5 --seed 7 --prompt "1girl, auburn ponytail, blue eyes, face" --out out/s/r
+# 3b. ... or all characters in one command (recipe: tools/artgen/examples/cast_recipe.json)
+artgen.py cast recipe.json --out out/s/cast
+```
+
+Recommended settings (full image resolution, whole image as context):
+
+| region | strength | character LoRA | `pixel_art_xl` |
+|---|---|---|---|
+| head (hair + face, ellipse slightly larger than the head) | 0.40-0.55 | 0.7-0.9 | 0.4-0.6 |
+| full body (box/ellipse around the figure, keep the other person out) | 0.60-0.75 | 0.7-0.9 | 0.5-0.7 |
+
+Put the character's hair colour and distinguishing features in the region prompt (the LoRA trigger is added automatically).
+Repaint a second character with a second region (own LoRA, own mask), or paint the body before the head so the head is last.
+Keep `feather` at 4-8 px; outside the feathered mask the pixels are unchanged (checked: 0 differing pixels).
+
+Result (WAI v17, 768x1152, man + woman on a sofa, head ellipse 184x177 px, `lgwoman1:0.8,pixel_art_xl:0.5`, strength 0.5, seed 7):
+head repainted in about 25 s; hair turns auburn, the face becomes the LoRA's, the man, sofa and room are untouched. `refine` and a one-region
+`cast` give identical pixels. The LoRA head is smoother and finer than the chunky scene pixels (the LoRA's own style), so run `post --grid auto`
+on the final image if a uniform pixel grid matters.
+
+
+# Examples
+```
+.venv/bin/python artgen.py generate --backend sdxl --opt model=wai_v17 --opt loras=lgwoman1:0.6,pixel_art_xl:0.7 --opt rating=explicit --prompt "1boy, 1girl, sex, couch, penis, realistic, detailed, hi-res, shading, crisp specular highlights, limited palette" --width 768 --height 1152 --seed 11 --n 4 --out out/s2
+```
