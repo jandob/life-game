@@ -210,7 +210,7 @@ to add a checkpoint.
 | `background` | Text appended to the prompt (default `simple background`). `quality=` replaces the family's quality prefix (empty = none). |
 | `steps`, `guidance`, `sampler` | Defaults per model in `models.json` (28 / 6.0 / `euler_a` for Illustrious and WAI, 30 / 5.0 / `dpmpp_sde_karras` for Pony, 30 / 7.0 for base). Samplers: `euler_a`, `dpmpp_2m_karras`, `dpmpp_sde_karras`. |
 | `--negative` / `negative_extra` | `--negative` replaces the family default negative, `--opt negative_extra=...` appends to it. |
-| `--ref FILE` + `ip_scale` | Reference image through IP-Adapter Plus (ViT-H), default scale 0.6. It carries colours and look more than exact identity. |
+| `--ref FILE` + `ip_scale` | Reference image through IP-Adapter Plus (ViT-H), default scale 0.6 (use 0.25-0.4 together with `pose`, 0.6 corrupts the image). It carries colours and look more than exact identity. |
 | `pose` + `pose_scale`, `pose_end` | Skeleton PNG (below) through the OpenPose ControlNet (scale 0.8, released at 80 % of the steps). |
 
 - **Prompts follow each family's convention** (`--raw-prompt` turns that off). Pony: `score_9, score_8_up, score_7_up, rating_safe, ...`.
@@ -228,9 +228,8 @@ to add a checkpoint.
   family's quality prefix is added).
 - **Pose (OpenPose ControlNet)**: `artgen.py pose --preset stand_front --size 768x1152 --out pose.png` draws the skeleton ourselves
   (presets `stand_front`, `stand_front_arms_out`, `stand_side`, `sit_front`, or `--keypoints my.json` with 18 `[x, y]` pairs in 0..1).
-  No annotator model is used. The ControlNet weights (`thibaud/controlnet-openpose-sdxl-1.0`) are **not** in the cache yet: that
-  repo only ships a 5 GB fp32 file, which was not approved. The code path is tested with an untrained ControlNet copied from the
-  UNet, so it proves the wiring, not the pose quality. See "Not done" in the change notes.
+  No annotator model is used. The ControlNet is `xinsir/controlnet-openpose-sdxl-1.0` (Apache-2.0, single fp16-loaded safetensors, 2.5 GB, in the HF cache).
+  Multi-person skeletons: pass a JSON list of 18-point lists to `--keypoints`, or use the `sit_pair` preset.
 
 ### `z_image_turbo`
 
