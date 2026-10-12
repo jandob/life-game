@@ -90,6 +90,105 @@ def test_cli_lists_backends() -> None:
     assert r.returncode == 0 and "sdxl:" in r.stdout and "z_image_turbo:" in r.stdout, r.stdout + r.stderr
 
 
+def test_maskkit_and_mask_cli() -> None:
+    from PIL import Image
+    import maskkit
+    m = maskkit.build_mask((100, 80), heads=["10,5,30,25"], head_pad=0.0, head_shape="rect")
+    assert m.getpixel((20, 15)) == 0 and m.getpixel((60, 60)) == 255
+    m = maskkit.build_mask((100, 80), rects=["0,0,50,40"], keep_ellipses=["10,10,20,20"])
+    assert m.getpixel((5, 5)) == 255 and m.getpixel((15, 15)) == 0 and m.getpixel((90, 70)) == 0
+    m = maskkit.build_mask((100, 80), ellipses=["0.5,0,1,1"], units="frac")
+    assert m.getpixel((75, 40)) == 255 and m.getpixel((10, 40)) == 0
+    for bad in ("1,2,3", "a,b,c,d", "200,200,300,300"):
+        try:
+            maskkit.parse_box(bad, (100, 80))
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(bad)
+    with tempfile.TemporaryDirectory() as td:
+        img, out, pv = Path(td) / "i.png", Path(td) / "m.png", Path(td) / "pv.png"
+        Image.new("RGB", (64, 48), "blue").save(img)
+        r = subprocess.run([PY, CLI, "mask", "--image", str(img), "--heads", "10,5,30,25", "--preview", str(pv),
+                            "--out", str(out)], capture_output=True, text=True)
+        res = json.loads(r.stdout)
+        assert r.returncode == 0 and res["ok"] and Image.open(out).size == (64, 48) and pv.exists()
+        assert 0.8 < res["white_frac"] < 1.0 and not list(Path(td).glob("*.tmp*"))
+        r = subprocess.run([PY, CLI, "mask", "--out", str(out)], capture_output=True, text=True)
+        assert r.returncode != 0
+
+
+def test_refine_cli_stubbed() -> None:
+    """cmd_refine with a fake backend: files, sidecar hash, strength validation, mask size check."""
+    import argparse
+    import hashlib
+    from PIL import Image
+    import artgen
+
+    calls = []
+
+    class Fake:
+        info = type("I", (), {"defaults": {"model": "x"}, "to_dict": lambda self: {"name": "fake"}})()
+        load_keys = frozenset({"model"})
+        refine_keys = ("model", "loras")
+
+        def load(self, **kw): pass
+        def apply_inpaint_template(self, s): return "Q, " + s
+        def stats(self): return {"last_image_s": [0.1] * 2}
+
+        def refine(self, prompt, image, mask=None, seed=0, n=1, strength=0.5, **kw):
+            calls.append((prompt, mask is not None, strength, seed, kw))
+            return [image.copy() for _ in range(n)]
+
+    orig = artgen.get_backend
+    artgen.get_backend = lambda name: Fake()
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            td = Path(td)
+            Image.new("RGB", (64, 48), "red").save(td / "a.png")
+            Image.new("L", (64, 48), 255).save(td / "m.png")
+            ns = dict(backend="sdxl", image=str(td / "a.png"), mask=str(td / "m.png"), prompt="p", raw_prompt=False,
+                      negative=None, strength=[0.3, 0.6], seed=5, n=2, pose=None, opt=["model=wai_v17"],
+                      name=None, out=str(td / "o"))
+            import io, contextlib
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                artgen.cmd_refine(argparse.Namespace(**ns))
+            res = json.loads(buf.getvalue())
+            assert len(res["files"]) == 4 and res["masked"] and len(calls) == 2
+            assert calls[0][0] == "Q, p" and calls[1][2] == 0.6 and calls[0][4]["model"] == "wai_v17"
+            sc = json.loads(Path(res["files"][0]).with_suffix(".json").read_text())
+            assert sc["kind"] == "refine" and sc["source"]["sha256"] == hashlib.sha256((td / "a.png").read_bytes()).hexdigest()
+            assert sc["mask"]["sha256"] and Path(res["files"][0]).name == "a_refined_st30_s5.png"
+            assert not list((td / "o").glob("*.tmp*"))
+            for bad in ({"strength": [0.0]}, {"strength": [1.5]}, {"image": str(td / "none.png")}):
+                try:
+                    artgen.cmd_refine(argparse.Namespace(**{**ns, **bad}))
+                except SystemExit:
+                    pass
+                else:
+                    raise AssertionError(bad)
+            Image.new("L", (32, 32), 255).save(td / "m2.png")
+            try:
+                artgen.cmd_refine(argparse.Namespace(**{**ns, "mask": str(td / "m2.png")}))
+            except SystemExit:
+                pass
+            else:
+                raise AssertionError("mask size")
+    finally:
+        artgen.get_backend = orig
+
+
+def test_compose_sheet() -> None:
+    from PIL import Image
+    import compose
+    with tempfile.TemporaryDirectory() as td:
+        a = Path(td) / "a.png"
+        Image.new("RGB", (40, 20), "green").save(a)
+        sh = compose.build_sheet([("r1", [("a", str(a)), ("b", str(a))]), ("r2", [("c", str(a))])], cell_h=40)
+        assert sh.height > 80 and sh.width > 2 * 80
+
+
 def test_models_smoke() -> None:
     """Needs the weights (WAI file in ~/Downloads, Comfy files in ~/ComfyUI-Shared)."""
     import torch
@@ -118,6 +217,10 @@ def test_models_smoke() -> None:
     import numpy as np
     a, c = np.asarray(im1[0]).astype(int), np.asarray(out).astype(int)
     assert np.abs(a[:60, :60] - c[:60, :60]).mean() < 12
+    full = b.refine(prompt, im1[0], None, seed=1, steps=8, strength=0.4)[0]
+    assert full.size == (512, 512)
+    prot = b.refine(prompt, im1[0], mask, seed=1, steps=8, strength=0.5, feather=0)[0]
+    assert np.abs(np.asarray(im1[0]).astype(int)[:60, :60] - np.asarray(prot).astype(int)[:60, :60]).max() == 0
     b.unload()
     z = get_backend("z_image_turbo")
     z.load()

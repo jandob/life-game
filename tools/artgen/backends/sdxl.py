@@ -19,6 +19,7 @@ Options (``--opt k=v``)
   ref          reference image(s) via IP-Adapter Plus (``--ref FILE``); ``ip_scale`` (0.6).
   pose         skeleton PNG (see ``artgen.py pose``) via the OpenPose ControlNet;
                ``pose_scale`` (0.8), ``pose_end`` (0.8 = release the control at 80 % of the steps).
+  feather      refine only: blur radius (px, default 6) of the mask edge when the original is pasted back.
   negative_extra  appended to the family's default negative (``--negative`` replaces it; the
                rating=safe terms are still added to it).
 
@@ -114,6 +115,7 @@ class Sdxl(Backend):
     load_keys = frozenset({"model"})
     passthrough_opts = frozenset({"ref", "loras", "sampler", "pose", "negative_extra", "model", "rating"})
     inpaint_keys = ("steps", "guidance", "sampler", "loras", "negative_extra", "model", "rating")
+    refine_keys = inpaint_keys + ("pose_scale", "pose_end", "feather")
 
     def __init__(self) -> None:
         self.pipe = None
@@ -127,6 +129,7 @@ class Sdxl(Backend):
         self._cn = None
         self._cn_pipe = None
         self._inp_pipe = None
+        self._refine_pipes: dict[str, Any] = {}   # img2img / controlnet variants used by refine()
         self._sampler = None
 
     # ------------------------------------------------------------------ load
@@ -221,10 +224,12 @@ class Sdxl(Backend):
         else:
             raise ValueError(f"unknown sampler {name!r}")
         self.pipe.scheduler = s
-        for p in (self._cn_pipe, self._inp_pipe):
-            if p is not None:
-                p.scheduler = s
+        for p in self._other_pipes():
+            p.scheduler = s
         self._sampler = name
+
+    def _other_pipes(self) -> list:
+        return [p for p in (self._cn_pipe, self._inp_pipe, *self._refine_pipes.values()) if p is not None]
 
     # ----------------------------------------------------------------- loras
     def _apply_loras(self, spec) -> None:
@@ -274,7 +279,7 @@ class Sdxl(Backend):
                 raise RuntimeError(f"CLIP image encoder mismatch: {bad[:3]} {unexpected[:3]}")
             enc = enc.eval().to(self.device)
             self.pipe.register_modules(image_encoder=enc, feature_extractor=CLIPImageProcessor())
-        for other in (self._cn_pipe, self._inp_pipe):   # pipelines built earlier hold a stale None
+        for other in self._other_pipes():   # pipelines built earlier hold a stale None
             if other is not None:
                 other.register_modules(image_encoder=self.pipe.image_encoder,
                                        feature_extractor=self.pipe.feature_extractor)
@@ -440,11 +445,97 @@ class Sdxl(Backend):
         self._stats["last_image_s"] = [round(x, 2) for x in times]
         return out
 
+    # ---------------------------------------------------------------- refine
+    def _refine_pipe(self, masked: bool, posed: bool):
+        """Img2Img / Inpaint pipeline (optionally with the OpenPose ControlNet) sharing the loaded weights."""
+        import diffusers
+        key = ("inpaint" if masked else "img2img") + ("_cn" if posed else "")
+        if key not in self._refine_pipes:
+            name = {"img2img": "StableDiffusionXLImg2ImgPipeline",
+                    "inpaint": "StableDiffusionXLInpaintPipeline",
+                    "img2img_cn": "StableDiffusionXLControlNetImg2ImgPipeline",
+                    "inpaint_cn": "StableDiffusionXLControlNetInpaintPipeline"}[key]
+            extra = {}
+            if posed:
+                self._ensure_controlnet()
+                extra["controlnet"] = self._cn
+            p = getattr(diffusers, name)(**self.pipe.components, **extra)
+            p.set_progress_bar_config(disable=True)
+            self._refine_pipes[key] = p
+        return self._refine_pipes[key]
+
+    def refine(self, prompt: str, image: Image.Image, mask: Image.Image | None = None, seed: int = 0,
+               n: int = 1, strength: float = 0.5, steps: int | None = None, guidance: float | None = None,
+               sampler: str | None = None, loras=None, negative: str | None = None,
+               negative_extra: str | None = None, model: str | None = None, rating: str = "safe",
+               pose=None, pose_scale: float = 0.8, pose_end: float = 0.8, feather: float = 6.0,
+               **_ignored) -> list[Image.Image]:
+        """Repaint ``image`` with this model: img2img at ``strength`` (0 keeps it, 1 ignores it).
+
+        Without ``mask`` the whole image goes through ``StableDiffusionXLImg2ImgPipeline``. With a mask
+        (white = repaint) it goes through the inpaint pipeline, and the original pixels are pasted back
+        outside the mask (edge softened by ``feather`` px) so protected faces stay byte-identical apart from
+        that edge. ``pose`` adds the OpenPose ControlNet. Sides not divisible by 8 are resized to the
+        nearest multiple of 8 (the result has that size).
+        """
+        if self.pipe is None or (model and model != self.model_name):
+            self.load(model=model or self.info.defaults["model"])
+        torch = self.torch
+        w, h = (max(8, round(v / 8) * 8) for v in image.size)
+        image = image.convert("RGB")
+        if (w, h) != image.size:
+            image = image.resize((w, h), Image.LANCZOS)
+        if mask is not None:
+            mask = mask.convert("L")
+            if mask.size != (w, h):
+                mask = mask.resize((w, h), Image.LANCZOS)
+        d = self.entry["defaults"]
+        steps = int(steps if steps is not None else d["steps"])
+        guidance = float(guidance if guidance is not None else d["guidance"])
+        self._drop_ip()
+        self._apply_loras(loras)
+        pipe = self._refine_pipe(mask is not None, bool(pose))
+        self._set_sampler(sampler or d["sampler"])
+        negative = self._negative(negative, negative_extra, rating)
+        pe, ne, pp, np_ = self.encode_pair(prompt, negative)
+        kw: dict[str, Any] = dict(prompt_embeds=pe, negative_prompt_embeds=ne, pooled_prompt_embeds=pp,
+                                  negative_pooled_prompt_embeds=np_, strength=float(strength),
+                                  num_inference_steps=steps, guidance_scale=guidance)
+        if mask is not None:
+            kw.update(image=image, mask_image=mask, width=w, height=h)
+        else:
+            kw.update(image=image)
+        if pose:
+            ctl = Image.open(pose).convert("RGB").resize((w, h))
+            kw.update(controlnet_conditioning_scale=float(pose_scale), control_guidance_end=float(pose_end))
+            kw["control_image"] = ctl
+        paste = None
+        if mask is not None and feather > 0:
+            from PIL import ImageFilter
+            paste = mask.filter(ImageFilter.GaussianBlur(float(feather)))
+        out, times = [], []
+        for i in range(n):
+            g = torch.Generator("cpu").manual_seed(int(seed) + i)
+            t1 = time.perf_counter()
+            with torch.no_grad():
+                img = pipe(generator=g, **kw).images[0]
+            if self.device == "mps":
+                torch.mps.synchronize()
+            times.append(time.perf_counter() - t1)
+            self.mem()
+            if mask is not None:
+                img = Image.composite(img, image, paste or mask)
+            out.append(img)
+        self._stats["last_image_s"] = [round(x, 2) for x in times]
+        self._stats["steps"] = steps
+        return out
+
     def stats(self) -> dict[str, Any]:
         return dict(self._stats)
 
     def unload(self) -> None:
         self.pipe = self._cn_pipe = self._inp_pipe = self._cn = None
+        self._refine_pipes = {}
         self._loaded_loras, self._ip_loaded, self._sampler = {}, False, None
         gc.collect()
         try:

@@ -82,3 +82,32 @@ artgen.py generate --backend sdxl --opt model=wai_v17 --opt loras=pixel_art_xl:0
 Measured (M5, wai_v17, 768x1152, 28 steps): pose only 55-60 s/image, peak 14.9 GB MPS; pose + ref 72-86 s, peak 17.4 GB.
 Legs follow the skeleton well, arms are weaker. Identity across walk frames stays loose even with ref 0.25-0.4 (hair, trousers colour drift).
 Two-person pose works (two figures seated side by side on a sofa; the skeletons' legs look standing because front-view sitting is foreshortened).
+
+## Two-stage: consistent characters in a scene (FLUX refs -> SDXL refine)
+
+IP-Adapter `ref` on WAI/Illustrious drifts, so identity comes from FLUX klein's multi-reference and SDXL only restyles.
+Use clothed, front-view character images (the style swatches) as refs; replace `<SCENE>`, `<TAGS>`, `<HEAD boxes>`.
+
+```sh
+# 1. compose (about 40 s per 1024x768 image); the prompt must say "from the reference images" and "same clothes"
+artgen.py generate --backend flux2_klein_pixel_lora --opt lora_scale=1.0 --raw-prompt \
+    --ref out/man_front.png out/woman_front.png --width 1024 --height 768 --seed 11 --n 3 --out out/c --name scene \
+    --prompt "anime style pixel art, thick dark outlines, flat cel shading with two tones. The man and the woman from the reference images, both adults, both fully clothed in the same clothes as in the references, <SCENE>"
+# 2. look at out/c/scene_s11.png, read the head boxes (incl. hair) off it, check them
+artgen.py mask --image out/c/scene_s11.png --heads <HEAD1> --heads <HEAD2> --head-pad 0.06 --feather 3 --preview out/c/mask_check.png --out out/c/mask.png
+# 3. refine: full image, then with heads protected (about 30 s per strength at 1024x768)
+artgen.py refine --image out/c/scene_s11.png --opt model=wai_v17 --opt loras=pixel_art_xl:0.8 --strength 0.3 0.45 0.6 --seed 11 \
+    --prompt "<TAGS: 2people, 1boy, 1girl, adult, <scene>, hair colours, each outfit with colours>, anime style pixel art, thick dark outlines, flat cel shading with two tones" --out out/c --name full
+artgen.py refine ... --mask out/c/mask.png --name heads
+```
+Same with `compose.py scene|refine|sheet` (see README). Repeat the outfit and hair colours of both characters in `<TAGS>`.
+
+Results (WAI v17, S3, man + woman, sofa, one seed; sheet in the session scratchpad `refine/sheet.png`):
+- FLUX stage: faces, hair, outfit colours of both characters carried over from the refs in 3 of 3 seeds.
+- Full-image refine: 0.30 already changes the faces (man's face redrawn, woman gets green eyes), outfit colours hold; 0.45-0.60 hair
+  turns blocky and the faces are new people; at 0.75 hair colour drifts (woman towards purple), props change. SDXL pixel style and
+  proportions are clearly in by 0.45.
+- Heads protected: faces and hair stay the FLUX originals at every strength, clothes and room take the SDXL pixel look,
+  outfit colours hold up to 0.60 (at 0.75 the jacket gets darker). Cost: the heads stay smooth FLUX art while bodies and room are
+  chunky pixels, plus a faint halo around the head ellipse at 0.75. Best compromise: 0.45 with heads protected,
+  or 0.30 full image for a lighter touch; for a uniform pixel look run `post --grid auto` on the result.

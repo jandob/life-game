@@ -6,6 +6,8 @@ reproduced.
     artgen.py backends
     artgen.py generate --backend flux2_klein_pixel_lora --prompt "..." --seed 1 --n 4 --out DIR
     artgen.py inpaint --image canvas.png --mask mask.png --prompt "..." --strength 0.75 --n 4 --out DIR
+    artgen.py refine --image scene.png --backend sdxl --strength 0.3 0.45 --opt model=wai_v17 --prompt "..." --out DIR
+    artgen.py mask --size 1024x768 --heads 0.2,0.1,0.3,0.3 --units frac --out mask.png
     artgen.py pose --preset stand_front --size 832x1216 --out pose.png
     artgen.py snap DIR/*.png --factor 4 --palette p.hex --out DIR2
     artgen.py post DIR/*.png --grid fit --cell 64x128 --feet-row 105 --shadow --out DIR2
@@ -149,6 +151,123 @@ def cmd_inpaint(a) -> None:
                       "gen_opts": gen, "stats": stats, "total_s": round(total, 2)}))
 
 
+# --------------------------------------------------------------- refine
+def file_sha256(path) -> str:
+    import hashlib
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def save_atomic(im, dst: Path) -> None:
+    tmp = dst.with_name(dst.name + ".tmp.png")
+    im.save(tmp)
+    tmp.replace(dst)
+
+
+def write_sidecar_atomic(png: Path, data: dict) -> None:
+    sc = png.with_suffix(".json")
+    tmp = sc.with_name(sc.name + ".tmp")
+    tmp.write_text(json.dumps(data, indent=2, default=str))
+    tmp.replace(sc)
+
+
+def cmd_refine(a) -> None:
+    """img2img of an existing image with the chosen backend/model, optional mask and pose.
+    One PNG + sidecar (with the source image hash) per strength x n. One JSON object on stdout."""
+    from PIL import Image
+    b = get_backend(a.backend)
+    if not hasattr(b, "refine") and not hasattr(b, "inpaint"):
+        raise SystemExit(f"backend {a.backend} has neither refine() nor inpaint()")
+    if not Path(a.image).is_file():
+        raise SystemExit(f"image not found: {a.image}")
+    if a.mask and not Path(a.mask).is_file():
+        raise SystemExit(f"mask not found: {a.mask}")
+    if a.pose and not hasattr(b, "refine"):
+        raise SystemExit(f"backend {a.backend} does not support --pose in refine")
+    for s_ in a.strength:
+        if not 0.0 < s_ <= 1.0:
+            raise SystemExit(f"--strength must be in (0, 1], got {s_}")
+    opts = {k: v for k, v in b.info.defaults.items() if v is not None}
+    opts.update(parse_opts(a.opt))
+    b.load(**{k: v for k, v in opts.items() if k in b.load_keys})
+    img = Image.open(a.image).convert("RGB")
+    mask = Image.open(a.mask).convert("L") if a.mask else None
+    if mask is not None and mask.size != img.size:
+        raise SystemExit(f"mask {mask.size} does not match image {img.size}")
+    prompt = a.prompt if a.raw_prompt else b.apply_inpaint_template(a.prompt)
+    keys = getattr(b, "refine_keys", None) or b.inpaint_keys
+    gen = {k: opts[k] for k in keys if k in opts}
+    if a.pose:
+        gen["pose"] = a.pose
+    out = Path(a.out)
+    out.mkdir(parents=True, exist_ok=True)
+    name = a.name or f"{Path(a.image).stem}_refined"
+    src_hash = file_sha256(a.image)
+    files = []
+    t_all = time.perf_counter()
+    for st in a.strength:
+        t0 = time.perf_counter()
+        if hasattr(b, "refine"):
+            imgs = b.refine(prompt, img, mask, seed=a.seed, n=a.n, strength=st, negative=a.negative, **gen)
+        else:   # inpaint-only backends: full-white mask = plain img2img
+            m = mask or Image.new("L", img.size, 255)
+            imgs = b.inpaint(prompt, img, m, seed=a.seed, n=a.n, strength=st, **gen)
+        total = time.perf_counter() - t0
+        stats = b.stats()
+        for i, im in enumerate(imgs):
+            p = out / f"{name}_st{round(st * 100):02d}_s{a.seed + i}.png"
+            save_atomic(im, p)
+            write_sidecar_atomic(p, {
+                "kind": "refine", "backend": b.info.to_dict(), "subject": a.prompt, "prompt": prompt,
+                "negative": a.negative, "seed": a.seed + i, "strength": st,
+                "source": {"path": str(Path(a.image).resolve()), "sha256": src_hash, "size": list(img.size)},
+                "mask": ({"path": str(Path(a.mask).resolve()), "sha256": file_sha256(a.mask)} if a.mask else None),
+                "size": list(im.size), "opts": gen,
+                "timings": {"call_total_s": round(total, 2),
+                            "image_s": (stats.get("last_image_s") or [None] * a.n)[i],
+                            "load_s": stats.get("load_s")},
+                "stats": stats, "created": datetime.now(timezone.utc).isoformat()})
+            files.append(str(p))
+    print(json.dumps({"ok": True, "files": files, "prompt": prompt, "strengths": a.strength,
+                      "seeds": [a.seed + i for i in range(a.n)], "source_sha256": src_hash,
+                      "masked": bool(a.mask), "gen_opts": gen, "stats": b.stats(),
+                      "total_s": round(time.perf_counter() - t_all, 2)}))
+
+
+# ----------------------------------------------------------------- mask
+def cmd_mask(a) -> None:
+    """Build a repaint mask (white = repaint) from boxes. One JSON object on stdout."""
+    from PIL import Image
+    import maskkit
+    if a.image:
+        src = Image.open(a.image)
+        size = src.size
+    elif a.size:
+        size = tuple(int(v) for v in a.size.lower().split("x"))
+    else:
+        raise SystemExit("give --size WxH or --image")
+    try:
+        m = maskkit.build_mask(size, rects=a.rect or [], ellipses=a.ellipse or [], keep_rects=a.keep_rect or [],
+                               keep_ellipses=a.keep_ellipse or [], heads=a.heads or [], head_pad=a.head_pad,
+                               head_shape=a.head_shape, units=a.units, base=a.base, feather=a.feather)
+    except ValueError as e:
+        raise SystemExit(str(e))
+    if a.invert:
+        from PIL import ImageOps
+        m = ImageOps.invert(m)
+    out = Path(a.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    save_atomic(m, out)
+    res = {"ok": True, "file": str(out), **maskkit.mask_stats(m)}
+    if a.preview:
+        if not a.image:
+            raise SystemExit("--preview needs --image")
+        pv = Path(a.preview)
+        pv.parent.mkdir(parents=True, exist_ok=True)
+        save_atomic(maskkit.overlay(src, m), pv)
+        res["preview"] = str(pv)
+    print(json.dumps(res))
+
+
 # ----------------------------------------------------------------- pose
 def cmd_pose(a) -> None:
     """Draw an OpenPose skeleton PNG (control image for the sdxl backend's pose option)."""
@@ -284,6 +403,40 @@ def main(argv=None) -> None:
     ip.add_argument("--name", default="inpaint")
     ip.add_argument("--out", required=True)
 
+    rf = sub.add_parser("refine", help="img2img an existing image with a chosen backend/model (optional mask, pose)")
+    rf.add_argument("--backend", default="sdxl", choices=list(REGISTRY))
+    rf.add_argument("--image", required=True, help="source PNG (SDXL sizes snap to a multiple of 8)")
+    rf.add_argument("--mask", help="mask PNG, white = repaint, black = keep (same size as the image)")
+    rf.add_argument("--prompt", required=True, help="subject; the backend adds its quality/rating tags")
+    rf.add_argument("--raw-prompt", action="store_true", help="send --prompt verbatim")
+    rf.add_argument("--negative")
+    rf.add_argument("--strength", type=float, nargs="+", default=[0.5],
+                    help="one or more values in (0, 1]; 0.3 keeps most of the source, 0.75 repaints most of it")
+    rf.add_argument("--seed", type=int, default=0)
+    rf.add_argument("--n", type=int, default=1)
+    rf.add_argument("--pose", help="OpenPose skeleton PNG (sdxl)")
+    rf.add_argument("--opt", action="append", help="backend option k=v (model, loras, rating, steps, feather, ...)")
+    rf.add_argument("--name", help="output file stem (default <image stem>_refined)")
+    rf.add_argument("--out", required=True)
+
+    mk = sub.add_parser("mask", help="build a repaint mask from boxes (white = repaint); no segmentation model")
+    mk.add_argument("--size", help="WxH (or use --image)")
+    mk.add_argument("--image", help="take the size from this image; needed for --preview")
+    mk.add_argument("--rect", action="append", help="x0,y0,x1,y1 painted white (repeatable)")
+    mk.add_argument("--ellipse", action="append", help="x0,y0,x1,y1 ellipse painted white (repeatable)")
+    mk.add_argument("--keep-rect", action="append", help="x0,y0,x1,y1 painted black (repeatable)")
+    mk.add_argument("--keep-ellipse", action="append", help="x0,y0,x1,y1 ellipse painted black (repeatable)")
+    mk.add_argument("--heads", action="append",
+                    help="head box incl. hair, x0,y0,x1,y1 (repeatable): everything EXCEPT the heads is repainted")
+    mk.add_argument("--head-pad", type=float, default=0.15, help="grow each head box by this share of its size")
+    mk.add_argument("--head-shape", default="ellipse", choices=["ellipse", "rect"])
+    mk.add_argument("--units", default="px", choices=["px", "frac"], help="box units: pixels or 0..1 fractions")
+    mk.add_argument("--base", choices=["white", "black"], help="start colour (default: black if --rect/--ellipse, else white)")
+    mk.add_argument("--feather", type=float, default=0.0, help="Gaussian blur radius in px")
+    mk.add_argument("--invert", action="store_true")
+    mk.add_argument("--preview", help="write the image with the repaint area tinted red (needs --image)")
+    mk.add_argument("--out", required=True)
+
     sn = sub.add_parser("snap", help="downscale model output by a fixed integer factor, palette, cleanup")
     sn.add_argument("inputs", nargs="+")
     sn.add_argument("--factor", type=int, required=True)
@@ -322,6 +475,10 @@ def main(argv=None) -> None:
         cmd_generate(a)
     elif a.cmd == "inpaint":
         cmd_inpaint(a)
+    elif a.cmd == "refine":
+        cmd_refine(a)
+    elif a.cmd == "mask":
+        cmd_mask(a)
     elif a.cmd == "pose":
         cmd_pose(a)
     elif a.cmd == "snap":
