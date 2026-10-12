@@ -1,5 +1,4 @@
 // Start map. Point "world_map" at another .tmj (e.g. "maps/enginetest.tmj") to start there.
-// TODO: switch to "maps/route1_flat.tmj" once that map exists (opening-viewing 2.x).
 ({
-    "world_map": File(path: "maps/apartment_v2.tmj"),
+    "world_map": File(path: "maps/route1_flat.tmj"),
 })

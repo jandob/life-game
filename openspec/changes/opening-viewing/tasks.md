@@ -36,7 +36,7 @@ Decided by the user, 2026-10-12: all defaults (forest code removed, L1 one map, 
 ## 4. Code: forest out of the boot path (gameplay-engineer; assumes D1-A)
 
 - [x] 4.1 `git mv assets/dialogue/{eleonore,jotem,isabelle,ionas-and-antonius}.yarn assets/dialogue/forest/`
-- [x] 4.2 `assets/start.assets.ron`: `world_map` → `maps/route1_flat.tmj` (use `apartment_v2.tmj` temporarily until 2.x lands) *(done with `apartment_v2.tmj` for now; switch to `route1_flat.tmj` when 2.x lands)*
+- [x] 4.2 `assets/start.assets.ron`: `world_map` → `maps/route1_flat.tmj` (use `apartment_v2.tmj` temporarily until 2.x lands)
 - [x] 4.3 `src/main.rs`: the only Yarn source is `dialogue/route1_viewing.yarn` (a stub file with a `Route1Viewing` node until section 7 lands)
 - [x] 4.4 Remove the forest NPC code: forest `NpcDialogue` variants, `spawn_eleonore/jotem/isabelle/antonius/ionas`, `Npc::was_talked_to/was_mentioned_by`, `face_player`, `target_npc_mentioned_command`, `trigger_ending_command`, `update_target_npc(s)`/`update_mentioned_by`, the forest idle clips in `animation.rs`, and the forest arms in `typewriter.rs`, `updating.rs` and `ending_text.rs`
 - [x] 4.5 `src/assets.rs`: drop the forest NPC sheets and portraits and `bird_sounds`/`cricket_sounds`; `src/player/audio.rs`: drop the bird and cricket spawn and `update_bird_sound` (files stay)
@@ -67,13 +67,13 @@ Decided by the user, 2026-10-12: all defaults (forest code removed, L1 one map, 
 
 ## 7. Dialogue (game-designer)
 
-- [ ] 7.1 Turn `openspec/ideas/drafts/viewing-scene.md` into `assets/dialogue/route1_viewing.yarn`, node `Route1Viewing`, header `tags: cutscene`
+- [x] 7.1 Turn `openspec/ideas/drafts/viewing-scene.md` into `assets/dialogue/route1_viewing.yarn`, node `Route1Viewing`, header `tags: cutscene`
 - [x] 7.2 Rename `$name` to `$samantha_name` (declared `"_Samantha"`); declare `$r1_viewing_opening`, `$r1_viewing_why` and `$r1_viewing_question`
 - [x] 7.3 Replace every `//` stage direction with commands (design D6 sketch) using the path names from 2.9, or drop it; no narrator lines
 - [x] 7.4 End with Samantha going home (`walk`, `hide`, `close_door Door3A`) and `<<end_demo>>` instead of `<<stop_chat>>`; adjust "across the hall" if 2.3 puts 3A on the north wall
 - [x] 7.5 Check the project rules: first line of each node is hers, two of her lines before the first option, titles unique, jumps in-file; his age stays unstated
 
-7.2–7.5 are done in the final text, section 4 of `openspec/ideas/drafts/viewing-scene.md`. 7.1 stays open until that text is copied into `assets/dialogue/route1_viewing.yarn`: the game-designer role may not write under `assets/`, so the lead does the copy.
+7.2–7.5 are done in the final text, section 4 of `openspec/ideas/drafts/viewing-scene.md`. The lead copied it into `assets/dialogue/route1_viewing.yarn` (3d13bd7).
 
 ## 8. Tests and tools (gameplay-engineer)
 
