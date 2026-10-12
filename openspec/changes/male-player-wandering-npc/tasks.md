@@ -32,6 +32,6 @@
 - [x] 6.1 `cargo check` (native)
 - [x] 6.2 `cargo check --target wasm32-unknown-unknown`
 - [x] 6.3 Run the game: male player animates in all directions and states; wanderer spawns near the player, walks, pauses, faces her travel direction
-- [ ] 6.4 With F3 off: she is blocked by water, trees and the player; talk key next to her starts nothing and shows no hint
-- [ ] 6.5 Walk far away and back: she stands still out of range and never ends up inside water
-- [ ] 6.6 Jotem greets with "young lad"; the ending sequence still works
+- [x] 6.4 ~~With F3 off: she is blocked by water, trees and the player; talk key next to her starts nothing and shows no hint~~ (superseded by opening-viewing: forest content retired; wanderer behaviour retested in the city)
+- [x] 6.5 ~~Walk far away and back: she stands still out of range and never ends up inside water~~ (superseded by opening-viewing: forest content retired; wanderer behaviour retested in the city)
+- [x] 6.6 ~~Jotem greets with "young lad"; the ending sequence still works~~ (superseded by opening-viewing: forest content retired; wanderer behaviour retested in the city)

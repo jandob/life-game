@@ -60,7 +60,7 @@
 - [x] 9.2 Review the bitmask tile mapping from `bitmask.rs` and identify which tiles need collision shapes (manual)
 - [x] 9.3 Draw collision rectangles/triangles on water-edge, water-corner, and water-bank tiles (manual)
 - [x] 9.6 Implement `tile_collision_shape()`: parse per-tile `objectgroup` from the `.tsj` (rectangles → cuboids, polygons → convex decomposition) into one compound collider per tile
-- [ ] 9.4 Set up water sparkle animation as tile animation frames in the `.tsj` (or keep code-based if preferred) (manual)
+- [x] 9.4 ~~Set up water sparkle animation as tile animation frames in the `.tsj` (or keep code-based if preferred) (manual)~~ (superseded by opening-viewing: forest retired)
 - [x] 9.5 Save the updated `.tsj` (manual)
 
 ## 10. Asset & Dependency Cleanup
