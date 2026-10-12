@@ -476,8 +476,33 @@ def add_outline(img: Image.Image, colour=OUTLINE, mode: str = "outer") -> Image.
 
 
 # -------------------------------------------------------------- 7. cell
-def shadow_layer(cell=CHAR_CELL, centre=SHADOW_CENTRE, radii=SHADOW_RADII) -> np.ndarray:
+def cell_scale(cell) -> float:
+    """Size factor of a character cell relative to the 64x128 reference (96x192 -> 1.5)."""
+    return cell[0] / CHAR_CELL[0]
+
+
+def char_top_row(cell=CHAR_CELL) -> int:
+    """Top of the head in a cell, scaled from the 64x128 reference (17 -> 26 at 96x192)."""
+    return int(round(CHAR_TOP_ROW * cell_scale(cell)))
+
+
+def shadow_geometry(cell=CHAR_CELL, feet_row: int | None = None):
+    """(centre, radii) of the drop shadow for ``cell``. The centre sits ``3 * k`` rows above
+    ``feet_row``. A 64x128 cell always gets exactly SHADOW_CENTRE / SHADOW_RADII;
+    for any other cell it scales with the width; for 96x192 and feet row 157 it is (47.5, 152.5) with radii (33.75, 17.25)."""
+    if tuple(cell) == CHAR_CELL:
+        return SHADOW_CENTRE, SHADOW_RADII
+    k = cell_scale(cell)
+    if feet_row is None:
+        feet_row = int(round(CHAR_FEET_ROW * k))
+    return ((cell[0] - 1) / 2, feet_row - 3 * k), (SHADOW_RADII[0] * k, SHADOW_RADII[1] * k)
+
+
+def shadow_layer(cell=CHAR_CELL, centre=None, radii=None, feet_row: int | None = None) -> np.ndarray:
     w, h = cell
+    c0, r0 = shadow_geometry(cell, feet_row)
+    centre = centre or c0
+    radii = radii or r0
     yy, xx = np.mgrid[0:h, 0:w]
     m = ((xx - centre[0]) / radii[0]) ** 2 + ((yy - centre[1]) / radii[1]) ** 2 <= 1.0
     inner = m & _shift(m, 1, 0) & _shift(m, -1, 0) & _shift(m, 0, 1) & _shift(m, 0, -1)
@@ -510,7 +535,7 @@ def fit_cell(img: Image.Image, cell=CHAR_CELL, feet_row: int | None = CHAR_FEET_
     if ys0 or xs0 or ys1 < sh or xs1 < sw:
         info["clipped"] = True
     if shadow:
-        out[:] = shadow_layer(cell)
+        out[:] = shadow_layer(cell, feet_row=feet_row)
     part = sub[ys0:ys1, xs0:xs1]
     dst = out[dy + ys0:dy + ys1, dx + xs0:dx + xs1]
     m = part[..., 3] == 255
@@ -564,7 +589,7 @@ def run_pipeline(img: Image.Image, *, grid: str = "auto", bg: str = "auto",
         elif grid == "fit":
             if cell is None:
                 raise ValueError("grid=fit needs a cell")
-            target_h = (feet_row - CHAR_TOP_ROW + 1) if feet_row is not None else cell[1]
+            target_h = (feet_row - char_top_row(cell) + 1) if feet_row is not None else cell[1]
             target_h -= 2 if outline == "outer" else 0
             s = scale_for_height(work, target_h)
             bb = opaque_bbox(to_rgba_array(work))
