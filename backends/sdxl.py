@@ -47,6 +47,27 @@ from PIL import Image
 from .base import Backend, BackendInfo
 from ._common import MemTracker, hf_file, hf_snapshot, load_registry, resolve
 
+# Known-harmless library noise (single-file loading, UNet-only LoRAs, stacking two adapters).
+# Filtered by message so any other warning still shows.
+_NOISE = ("local_dir_use_symlinks", "should be kept in float32", "No LoRA keys associated to CLIPTextModel",
+          "Already found a `peft_config`")
+
+
+def _silence_noise() -> None:
+    import logging
+    import warnings
+    for msg in _NOISE:
+        warnings.filterwarnings("ignore", message=f".*{msg}")
+
+    class _Drop(logging.Filter):
+        def filter(self, rec: logging.LogRecord) -> bool:
+            return not any(m in rec.getMessage() for m in _NOISE)
+    from diffusers.utils import logging as dlog
+    dlog.get_logger("diffusers")  # makes sure the library handler exists
+    for h in logging.getLogger("diffusers").handlers:  # logger filters miss records from child loggers
+        if not any(isinstance(f, _Drop) for f in h.filters):
+            h.addFilter(_Drop())
+
 RATINGS = {
     "pony": {"safe": "rating_safe", "questionable": "rating_questionable", "explicit": "rating_explicit"},
     "illustrious": {"safe": "general", "questionable": "sensitive", "explicit": "nsfw, explicit"},
@@ -146,6 +167,7 @@ class Sdxl(Backend):
         if model not in self.reg["models"]:
             raise SystemExit(f"unknown sdxl model {model!r}; known: {', '.join(self.reg['models'])}")
         entry = self.reg["models"][model]
+        _silence_noise()
         t0 = time.perf_counter()
         ckpt = resolve(entry)
         vae = AutoencoderKL.from_pretrained(self.reg["vae"]["hf_repo"], torch_dtype=torch.float16,
