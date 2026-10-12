@@ -14,24 +14,24 @@ Decided by the user, 2026-10-12: all defaults (forest code removed, L1 one map, 
 
 ## 2. Map (scene-designer, scenekit only)
 
-- [ ] 2.1 Copy `assets/maps/apartment_v2.tmj` to `assets/maps/route1_flat.tmj` (both demo maps stay unchanged)
-- [ ] 2.2 Make 3B a vacant rental: remove the moving boxes, bedding, laptop and personal items; no bed or a bare frame ("the bed's not included"); keep the kitchen; a reachable window with free floor in front
-- [ ] 2.3 Add the third-floor landing south of the flat (map about 30–36 x 20): 3B's door at the existing south doorway, a stairs end, and Samantha's door 3A with a niche at least 2 tiles deep behind it. Prefer 3A across the landing (south wall) if it reads in a 3/4 render; otherwise put it on the north wall beside 3B and tell the game designer
-- [ ] 2.4 Door leaves on their own tile layers `Door3B` and `Door3A` (property `collides = false`), with the open doorway on the layers below
-- [ ] 2.5 `Doors` object layer: rectangles `Door3B` and `Door3A` covering the doorways, bool property `open = false`
-- [ ] 2.6 `Interact` object layer: object `Door3B` in front of 3B's door with string property `node = "Route1Viewing"`
-- [ ] 2.7 `NPCs`: point `Samantha` in her niche with bool property `hidden = true`; delete the `Wanderer` object
-- [ ] 2.8 `Spawn`: `SpawnPoint` on the landing near the stairs, 3–5 tiles from 3B (a sprite-centre position)
-- [ ] 2.9 `Paths` object layer: polylines at **feet** positions for every move in design D6 (`SamanthaOut`, `SamanthaTo3B`, `SamanthaToKitchen`, `PlayerToKitchen`, `SamanthaToBedroom`, `PlayerToBedroom`, `SamanthaToWindow`, `PlayerToWindow`, `SamanthaToLanding`, `PlayerToLanding`, `SamanthaHome`; agree the final list with the game designer). Straight segments at least 8 px clear of colliders, and the two actors' end points in a room at least 24 px apart
-- [ ] 2.10 `validate`, `render --check-tmx` and `library check` pass; the map opens in Tiled 1.12; deliver a render with the collision overlay and the object layers marked
+- [x] 2.1 Copy `assets/maps/apartment_v2.tmj` to `assets/maps/route1_flat.tmj` (both demo maps stay unchanged)
+- [x] 2.2 Make 3B a vacant rental: remove the moving boxes, bedding, laptop and personal items; no bed or a bare frame ("the bed's not included"); keep the kitchen; a reachable window with free floor in front
+- [x] 2.3 Add the third-floor landing south of the flat (map about 30–36 x 20): 3B's door at the existing south doorway, a stairs end, and Samantha's door 3A with a niche at least 2 tiles deep behind it. Prefer 3A across the landing (south wall) if it reads in a 3/4 render; otherwise put it on the north wall beside 3B and tell the game designer
+- [x] 2.4 Door leaves on their own tile layers `Door3B` and `Door3A` (property `collides = false`), with the open doorway on the layers below
+- [x] 2.5 `Doors` object layer: rectangles `Door3B` and `Door3A` covering the doorways, bool property `open = false`
+- [x] 2.6 `Interact` object layer: object `Door3B` in front of 3B's door with string property `node = "Route1Viewing"`
+- [x] 2.7 `NPCs`: point `Samantha` in her niche with bool property `hidden = true`; delete the `Wanderer` object
+- [x] 2.8 `Spawn`: `SpawnPoint` on the landing near the stairs, 3–5 tiles from 3B (a sprite-centre position)
+- [x] 2.9 `Paths` object layer: polylines at **feet** positions for every move in design D6 (`SamanthaOut`, `SamanthaTo3B`, `SamanthaToKitchen`, `PlayerToKitchen`, `SamanthaToBedroom`, `PlayerToBedroom`, `SamanthaToWindow`, `PlayerToWindow`, `SamanthaToLanding`, `PlayerToLanding`, `SamanthaHome`; agree the final list with the game designer). Straight segments at least 8 px clear of colliders, and the two actors' end points in a room at least 24 px apart
+- [x] 2.10 `validate`, `render --check-tmx` and `library check` pass; the map opens in Tiled 1.12; deliver a render with the collision overlay and the object layers marked
 
 ## 3. Art (artgen or pixel-artist, in parallel with sections 4–6)
 
-- [ ] 3.1 `assets/library/characters/samantha/samantha.png`: 640x1536, 64x128 cells, 10x12, rows as in design D10 (idle 0–3 using columns 0–7, walk 4–7 using columns 0–9; run rows 8–11 may repeat walk frames). Anchor and scale like `player.png` (feet at y ≈ 114, centred on x = 32). Clearly adult (25), everyday clothes
-- [ ] 3.2 `assets/library/portraits/samantha.png`: 64x64, transparent, a bust in the style of the existing portraits
-- [ ] 3.3 `assets/library/portraits/player.png`: 64x64, transparent, matches the male player sheet, no apparent age
-- [ ] 3.4 Contact sheet (3–4x) of every row of 3.1 next to `player.png`; the feet anchor matches
-- [ ] 3.5 `LIBRARY.md` rows for 3.1–3.3 (source, tool and recipe, licence)
+- [x] 3.1 `assets/library/characters/samantha/samantha.png`: 640x1536, 64x128 cells, 10x12, rows as in design D10 (idle 0–3 using columns 0–7, walk 4–7 using columns 0–9; run rows 8–11 may repeat walk frames). Anchor and scale like `player.png` (feet at y ≈ 114, centred on x = 32). Clearly adult (25), everyday clothes
+- [x] 3.2 `assets/library/portraits/samantha.png`: 64x64, transparent, a bust in the style of the existing portraits
+- [x] 3.3 `assets/library/portraits/player.png`: 64x64, transparent, matches the male player sheet, no apparent age
+- [x] 3.4 Contact sheet (3–4x) of every row of 3.1 next to `player.png`; the feet anchor matches
+- [x] 3.5 `LIBRARY.md` rows for 3.1–3.3 (source, tool and recipe, licence)
 
 ## 4. Code: forest out of the boot path (gameplay-engineer; assumes D1-A)
 
@@ -68,10 +68,12 @@ Decided by the user, 2026-10-12: all defaults (forest code removed, L1 one map, 
 ## 7. Dialogue (game-designer)
 
 - [ ] 7.1 Turn `openspec/ideas/drafts/viewing-scene.md` into `assets/dialogue/route1_viewing.yarn`, node `Route1Viewing`, header `tags: cutscene`
-- [ ] 7.2 Rename `$name` to `$samantha_name` (declared `"_Samantha"`); declare `$r1_viewing_opening`, `$r1_viewing_why` and `$r1_viewing_question`
-- [ ] 7.3 Replace every `//` stage direction with commands (design D6 sketch) using the path names from 2.9, or drop it; no narrator lines
-- [ ] 7.4 End with Samantha going home (`walk`, `hide`, `close_door Door3A`) and `<<end_demo>>` instead of `<<stop_chat>>`; adjust "across the hall" if 2.3 puts 3A on the north wall
-- [ ] 7.5 Check the project rules: first line of each node is hers, two of her lines before the first option, titles unique, jumps in-file; his age stays unstated
+- [x] 7.2 Rename `$name` to `$samantha_name` (declared `"_Samantha"`); declare `$r1_viewing_opening`, `$r1_viewing_why` and `$r1_viewing_question`
+- [x] 7.3 Replace every `//` stage direction with commands (design D6 sketch) using the path names from 2.9, or drop it; no narrator lines
+- [x] 7.4 End with Samantha going home (`walk`, `hide`, `close_door Door3A`) and `<<end_demo>>` instead of `<<stop_chat>>`; adjust "across the hall" if 2.3 puts 3A on the north wall
+- [x] 7.5 Check the project rules: first line of each node is hers, two of her lines before the first option, titles unique, jumps in-file; his age stays unstated
+
+7.2–7.5 are done in the final text, section 4 of `openspec/ideas/drafts/viewing-scene.md`. 7.1 stays open until that text is copied into `assets/dialogue/route1_viewing.yarn`: the game-designer role may not write under `assets/`, so the lead does the copy.
 
 ## 8. Tests and tools (gameplay-engineer)
 

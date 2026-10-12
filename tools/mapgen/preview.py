@@ -157,6 +157,11 @@ def render(m, out, scale=2, grid=None, debug=False, region=None):
                 if not (margin <= px <= canvas.width and margin <= py <= margin + rh * th):
                     continue
                 ow, oh = o.get("width", 0) * scale, o.get("height", 0) * scale
+                if o.get("polyline"):
+                    pl = [(px + q["x"] * scale, py + q["y"] * scale) for q in o["polyline"]]
+                    d.line(pl, fill=c + (255,), width=2)
+                    for vx, vy in pl[1:]:
+                        d.ellipse([vx - 3, vy - 3, vx + 3, vy + 3], outline=c + (255,), width=1)
                 if ow and oh and not o.get("point"):
                     d.rectangle([px, py, px + ow, py + oh], outline=c + (255,), width=2)
                 r = max(3, scale * 2)

@@ -603,5 +603,46 @@ class TestFeedbackFixes(Base):
         self.assertEqual(t["counts"]["tiles_updated"], 1)
 
 
+class TestMapgenPolyline(Base):
+    """tmj.py object add --polyline: stored the Tiled way, listed in absolute pixels, bounds-checked by validate."""
+
+    def tmj(self, *args, ok=True):
+        r = subprocess.run([sys.executable, os.path.join(HERE, "..", "mapgen", "tmj.py"), *map(str, args)],
+                           capture_output=True, text=True)
+        out = json.loads(r.stdout.strip().splitlines()[-1])
+        self.assertEqual(r.returncode == 0, ok, out)
+        self.assertEqual(bool(out.get("ok")), ok, out)
+        return out
+
+    def test_add_polyline(self):
+        self.tmj("layer", self.map, "add", "Paths", "--type", "object")
+        out = self.tmj("object", self.map, "--layer", "Paths", "add", "--name", "Walk",
+                       "--polyline", "40,56 40,24 72.5,24")
+        self.assertEqual(out["object"]["polyline"], [[40, 56], [40, 24], [72.5, 24]])
+        with open(self.map) as f:
+            o = [l for l in json.load(f)["layers"] if l["name"] == "Paths"][0]["objects"][0]
+        self.assertEqual((o["x"], o["y"], o["width"], o["height"]), (40, 56, 0, 0))
+        self.assertEqual(o["polyline"], [{"x": 0, "y": 0}, {"x": 0, "y": -32}, {"x": 32.5, "y": -32}])
+        self.assertNotIn("point", o)
+        listed = self.tmj("object", self.map, "--layer", "Paths", "list")["objects"][0]
+        self.assertEqual(listed["polyline"], [[40, 56], [40, 24], [72.5, 24]])
+        self.tmj("validate", self.map, "--no-tiled")
+
+    def test_bad_polyline_writes_nothing(self):
+        self.tmj("layer", self.map, "add", "Paths", "--type", "object")
+        before = sha(self.map)
+        self.tmj("object", self.map, "--layer", "Paths", "add", "--name", "A", "--polyline", "1,2", ok=False)
+        self.tmj("object", self.map, "--layer", "Paths", "add", "--name", "A", "--polyline", "1,2 x", ok=False)
+        self.tmj("object", self.map, "--layer", "Paths", "add", "--name", "A", "--polyline", "1,2 3,4",
+                 "--px", "1", "2", ok=False)
+        self.assertEqual(sha(self.map), before)
+
+    def test_validate_flags_vertex_outside_map(self):
+        self.tmj("layer", self.map, "add", "Paths", "--type", "object")
+        self.tmj("object", self.map, "--layer", "Paths", "add", "--name", "Out", "--polyline", "8,8 99999,8")
+        out = self.tmj("validate", self.map, "--no-tiled", ok=False)
+        self.assertTrue(any("polyline vertex" in e for e in out["errors"]), out)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

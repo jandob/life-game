@@ -147,6 +147,22 @@ palette is not part of the scope.
 
 Always LOOK at `contact.png` and `preview-K.png` before `apply`.
 
+## Objects and paths (mapgen)
+
+Object layers are written with `tools/mapgen/tmj.py object` (scenekit edits pixels only). Scene paths are polylines:
+
+```
+t="mise exec -- python3 tools/mapgen/tmj.py"
+$t layer MAP add Paths --type object
+$t object MAP --layer Paths add --name SamanthaToKitchen --polyline "188,292 160,260 160,144 312,144 392,104"
+$t object MAP --layer Paths list            # vertices printed in absolute map pixels
+```
+
+Vertices are absolute **map pixels** (not tiles, not game coordinates), at least two. They are stored the Tiled way: the
+object's `x`/`y` is the first vertex and `polyline` holds every vertex relative to it (the first is `0,0`). `validate`
+reports a vertex outside the map; `tmj.py render --debug` draws the lines. To change a path, `remove` it and `add` it again.
+Game convention (opening-viewing D7): path vertices are feet positions, each segment at least 8 px clear of colliders.
+
 ## Worked example
 
 ```

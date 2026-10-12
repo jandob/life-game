@@ -3,7 +3,7 @@
  "library": "gen",
  "tile_size": 16,
  "page_tiles": 256,
- "next_id": 285,
+ "next_id": 403,
  "tiles": {
   "0": {
    "hash": "sha256:a51f3a1522f10c5d55b52e74bc47b8b3d7ec2860fe1099b4495a745b247fbc15",
@@ -6290,6 +6290,3646 @@
     "y": 9
    },
    "material": "furniture"
+  },
+  "285": {
+   "hash": "sha256:544f7e98e1c5507b29288ec46a8023a4e9e77497937e60fc63aec5690d00f2ed",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 1,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "286": {
+   "hash": "sha256:57a12067138b2b9c57a0d4c81d84cd6b618dd87fddd475714b285a256bf1fb2a",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 2,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "287": {
+   "hash": "sha256:dbf931dbba986cc1ca77611db1d58d593689d4396acfb659cf4d59661a285dfc",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 3,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "288": {
+   "hash": "sha256:9ef8f29a0866c86ad72f27898f42989e69b4550123d602eb002323f585c47c46",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 4,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "289": {
+   "hash": "sha256:e99c9997b11eb8a63d12c0b3ed552677fc649888392a3b55486d10eaf862365d",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 5,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "290": {
+   "hash": "sha256:3d0e85d20e6472eb94afc836e36fa952e6c74596054a275d3d316b4b37344732",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 6,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "291": {
+   "hash": "sha256:00b55c2c4da9f46b3c80cb8afb0ec92fc103226315146731718d4f900023f448",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 7,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "292": {
+   "hash": "sha256:b793bb7041d6474b91d3176fd5bbe9ec1e16e27fd163dc394d9461acef1f1c43",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 8,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "293": {
+   "hash": "sha256:b9389457800b444fe8a0ee96e63e3e1feb5a72b5c878c4701ef7afcb4d655242",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 9,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "294": {
+   "hash": "sha256:a37c52c862ce432568af76765f31f11991b1b187f8ea7cc4f2533b1ba3d4f61a",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 10,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "295": {
+   "hash": "sha256:b42cbb96bc5e3e7e723eb2060331ecc94d9976fb668c23b0bee676b8ef337472",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 11,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "296": {
+   "hash": "sha256:f4cb47155cf3a265448e0ca3d24eff874eb3a6804b4533027230e05470004048",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 12,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "297": {
+   "hash": "sha256:6feb2eb4441a2209be2f146b095698c2a93514d8596070c85121eb08fd6f9cce",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 13,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "298": {
+   "hash": "sha256:da0f2f8a5a587ca3dc4c66ea010f60e98f5babf4740a5007442058aa973c88b5",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 14,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "299": {
+   "hash": "sha256:6762e9edbbd1e8f7aa2ec45cd2abc6935fee4e68dc48ef6761f6c55f141bc0e8",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 15,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "300": {
+   "hash": "sha256:21ae5e9240796b4148cfefe4ed640b6f497b69ff678281d2d3ce546f3dedcdbe",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 16,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "301": {
+   "hash": "sha256:01aaa6a59d7caaed8415fe38e0c791110792b82aefce7ee841fb58fc267af7dd",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 18,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "302": {
+   "hash": "sha256:5f06fa4cdc71d1e17e9d4c2bafdabb3e204978a732481d2f53542f6dea9e5d87",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 19,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "303": {
+   "hash": "sha256:2e0e2e35c1bd61622dcacdc03014ed5ee6177dac7678c46c9145d3962a5c8f07",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 20,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "304": {
+   "hash": "sha256:423f695166ff1d2d9aa65e7f026f1d513d2b998f40b164e187936b6e37954e3b",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 1,
+    "y": 15
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "305": {
+   "hash": "sha256:3b90c608053dc8cd47cc02f2f11f7f05cdcafbca491580142f4d17a62954a3c3",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 2,
+    "y": 15
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "306": {
+   "hash": "sha256:4e6a67296935c8423db69440fd1f8c9b6939ae95c589a4cd9a45bb8ba1930cf5",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 3,
+    "y": 15
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "307": {
+   "hash": "sha256:b0bac47beda65c7ed97e809b245c274296003551df96f6a67fb451e4c5804291",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 7,
+    "y": 15
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "308": {
+   "hash": "sha256:78f5e2de6f42d59518355e7cac5269f517157467cc16d8f42b8ccd35fbbd9cf4",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 8,
+    "y": 15
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "309": {
+   "hash": "sha256:91b428383fd206c5c243ba60e0ad5f34d05a256c49b5a06d82aadef541db6494",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 9,
+    "y": 15
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "310": {
+   "hash": "sha256:ebefe4e7b4d438c8adde6e4dd1c129a49fc4337fac67ca5a81eb21a210662cbb",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 10,
+    "y": 15
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "311": {
+   "hash": "sha256:09a5d5595153a032a5e32768d95247f16170f23fd93352071f4812cbefebfed9",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 11,
+    "y": 15
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "312": {
+   "hash": "sha256:e399a3a204009f9430acc3c8a57a15c3851236f889e0ab015d0790f7e0b5486b",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 20,
+    "y": 15
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "313": {
+   "hash": "sha256:13fb083e46346ff9380a5ac4e3dfaf7b1117cfe3b5c1a4ca3899a7be9ec11667",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 1,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "314": {
+   "hash": "sha256:d3c3911f73fe1ed7a246fffd53636339237c98b717dd8f12d23f545c2837315f",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 2,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "315": {
+   "hash": "sha256:c9d75f36d7e14f881ca5a7c6832cc9ac7e6e8584a85b66f4e1c0f713d2986e75",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 3,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "316": {
+   "hash": "sha256:ac15fe534aa45b7c59f93f29da44dcfb60a37a836f787348565301f4fd777c61",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 4,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "317": {
+   "hash": "sha256:19f01701e0339bf856b11fd9abd4bbc10521697b25656fd5b6a832cd211ea314",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 5,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "318": {
+   "hash": "sha256:e1cdfa6a3b03cd0d446f461e81b92ca84c87d1d286e9b3726f3b5b97c33aebb2",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 6,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "319": {
+   "hash": "sha256:59a14a8a89d172b18d9765a1a92452f6c3dd41d7a799ff5b268cd67458e47f54",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 7,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "320": {
+   "hash": "sha256:8930093561931a2ceb761d08af8501a43870d68b1f357a88c96854580bdf64eb",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 8,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "321": {
+   "hash": "sha256:8b4b23de02eadfd16ede49fb17c01792a25f5321f101ca932ceb57954a7aecdc",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 9,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "322": {
+   "hash": "sha256:765bd4be725070f4f1b50512e98bab8692967b96d4e1565d6d3ed712692ececb",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 10,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "323": {
+   "hash": "sha256:787fa3a350dd70c18eb9523a634021ff7b466642dc2a33852c08d7ce759b9345",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 11,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "324": {
+   "hash": "sha256:44ee8105eab30c9734d897e027170ae7bf75d0a98c26f438a456b17546139f46",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 12,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "325": {
+   "hash": "sha256:14fb4a87dc991d5558800d5c060c02d81f991cb2eefc5c3fbb53b491e8c49401",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 13,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "326": {
+   "hash": "sha256:2db1ef0c0791262c66b762802e1254afc6f6c7a45e90891f1250465edee0c09a",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 14,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "327": {
+   "hash": "sha256:143d7b6c30f2fbad8c4f1c91874b1ce6f9003645b1e0055448144b80399c9fd9",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 15,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "328": {
+   "hash": "sha256:54af5fb72d4ed75c1decc058bff284a2166ee4060e7964b347be67a8945c6c05",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 16,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "329": {
+   "hash": "sha256:674c500fdc6c6a839576ec99639742fe58f56dd3f41709b918354ee3607ffb9b",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 17,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "330": {
+   "hash": "sha256:9bd23629e38a393efa960dc883fb2013d7b3d85a9f5c5efdce7f9c773da4d9ae",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 18,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "331": {
+   "hash": "sha256:cf06639248f5d3338b7370fe8da7d5c7a7ba76f541370364355fafc8de9fd169",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 19,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "332": {
+   "hash": "sha256:5d0d484ab6237c25fba84edd75437516ec8d801d6625e9dd2b31cc586edbf5f2",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 20,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "wall"
+  },
+  "333": {
+   "hash": "sha256:6f7a8d2b54a61f7090229e47a2039fdc9300ed021385e67bb84a4ec4e924eb9a",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 1,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "furniture"
+  },
+  "334": {
+   "hash": "sha256:64cc512d06b9ab9087e0416d4bb12c9e4419145d1b35db9e8418b8902a935867",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 2,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "furniture"
+  },
+  "335": {
+   "hash": "sha256:4a7bba97d5cf66dcc81885e4f8aaf25813e9b2ded5bd68d129015f46e955d0a8",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 3,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "furniture"
+  },
+  "336": {
+   "hash": "sha256:5290cd5fd4ca52069192cf720e522aeda06de48d97a447002cc6ca693db0c92b",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 4,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "337": {
+   "hash": "sha256:45dfde5365da39bf09e4b0211dbbb05034c20059146393d9655efb27248238d1",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 5,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "338": {
+   "hash": "sha256:2bf56f7b2635bba2e562f017e376c7cd8da7c90905d3c9e0fccdeaa1b6dc98f4",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 6,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "339": {
+   "hash": "sha256:18109a1004848995d6b0e75fede3d2122402eddfc30dc4b3d48b25b47be245ad",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 7,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "340": {
+   "hash": "sha256:bd375b4b57e55157b22d92249d0973d7dbce664dcd4195c377fdf47737778f80",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 8,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "341": {
+   "hash": "sha256:45e0370a96d28bf964ec2ba9b85aba4513a6defd2190217817abe1a124e40221",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 9,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "342": {
+   "hash": "sha256:a5823cb3c522364e20730b6f339c6e9f45909d7b0f392e84eb8760f4d35501b4",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 10,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "343": {
+   "hash": "sha256:cd26c41e3c6880f9ede2c6cd692256c35c38005c11c70c8f5e8245d8b0aa7fdd",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 11,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "344": {
+   "hash": "sha256:4661789d172d0f88661c767e4c18a548d54644c6487893148214cb0833dbd138",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 13,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "345": {
+   "hash": "sha256:7a3fc703d4170822829866b6a5a6d186f3d53fe150f6b109635935efe5518c92",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 14,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "346": {
+   "hash": "sha256:0048b4b9ecc4d10d84dcf770c03b9fc851c3ad008ba19e14ba0c6ef824c56dc5",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 15,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "347": {
+   "hash": "sha256:21f3252302316ddf316523575af061b963ee0079a287e858f5743921b8333779",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 16,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "348": {
+   "hash": "sha256:0bf4a57a7c900e296306696d757dbd742094639ceab3f93e99a7ecdaab8c9519",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 17,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "349": {
+   "hash": "sha256:05aa665d6c2a70a2e9df5bec0c6b6550532d9791096791ad6020e9e7809087d5",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 18,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "350": {
+   "hash": "sha256:bcd292c0cedaea1e17cd4a14ee5ba052f43162f1eb15d0ed7aeb471a1845cf8d",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 19,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "351": {
+   "hash": "sha256:7816a3831bad535675c7a5e730573adcd52891e54802112f2f9a34cd417bc825",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 20,
+    "y": 17
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "352": {
+   "hash": "sha256:b772320a0a23ffde6270c35d555234c7b6bd12e93dc2f8b98279986403d24f24",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 1,
+    "y": 18
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "furniture"
+  },
+  "353": {
+   "hash": "sha256:022698cdeb5d025c1ef42312bd3bf29bee32bc3d65990de0956b79c09e266868",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 2,
+    "y": 18
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "furniture"
+  },
+  "354": {
+   "hash": "sha256:ce188b8b99048dd799498e6ffbae0e860758edd7a74b8db6821759661ebd8f71",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 3,
+    "y": 18
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "furniture"
+  },
+  "355": {
+   "hash": "sha256:941e242ce8139ccef9566dc640ea1222cd322bea0d4b1ea0a4102c0ad442ef9c",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 4,
+    "y": 18
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "356": {
+   "hash": "sha256:c0a742aa4ece0b5e2834a0efc6a355f87f1f8c2a1f3ff9dbd0c90b733a75c602",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 5,
+    "y": 18
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "357": {
+   "hash": "sha256:2ecb4ebd00091304edecbe2ed43c244430c3508c14f4c5d339a5a6c4d5704a1a",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 6,
+    "y": 18
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "358": {
+   "hash": "sha256:34dd3d8866df3aa3b0c7ae5c479caff7ca3edda01878916c63fe39f5c71a82a7",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 8,
+    "y": 18
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "359": {
+   "hash": "sha256:ae65aa98318a147409af7432eec11675a165e967c69382d5909d8feededee87c",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 18,
+    "y": 18
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "360": {
+   "hash": "sha256:4f4aa86ca1a7e03a9d85b8106c3f943fbbae78b67e4ab45a68d55e7d3982817d",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 19,
+    "y": 18
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "361": {
+   "hash": "sha256:3316749f18f9ad3e65e28cdb90b3a7280209bc4dfb9a08d9bd8409cd1a7dac5f",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 20,
+    "y": 18
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "362": {
+   "hash": "sha256:5b30f88a881d21de47262f2f2fc8a17d48297cf73aacc13d4d7d5492bff6a84d",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 1,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "furniture"
+  },
+  "363": {
+   "hash": "sha256:c197a8543d4a0b9c7d40c2113af380237aa505ce8b4d7b019e2a18c120c159f6",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 2,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "furniture"
+  },
+  "364": {
+   "hash": "sha256:e0c7755ac037b244a36d56e5bd9fbb2812b7f80553454c65c1324a9fc7e4c843",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 3,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "furniture"
+  },
+  "365": {
+   "hash": "sha256:39616865702b0f64694e4923f26dd21f2a6e16c84db607bc918a941e2ef8bac4",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 4,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "366": {
+   "hash": "sha256:9a01e5dea36a522d5a6d93771ee1dca99c9497e0e0d57a54d3f175b294c9219e",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 5,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "367": {
+   "hash": "sha256:8f821458b6b50699b257a1c5cb94316ce791c66ef45215e75b21c0dbf2ccfeff",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 6,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "368": {
+   "hash": "sha256:d833b1cd0785a436e31239bfe9742174f1822b46de106d075e36bac514537df4",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 7,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "369": {
+   "hash": "sha256:c161b280ea67f3b0bd585c8d43fe0284628d12fc45d9c7c3516e5883e0c225e1",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 9,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "370": {
+   "hash": "sha256:47a8574b5ab50627b3828d750531d5a51b523e85945e5f6a17ab383d77bcacd0",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 11,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "371": {
+   "hash": "sha256:19797729468e22b5c4fb775d67583e4ce08cdf70a3875a98be2fdb960c2b35d8",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 12,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "372": {
+   "hash": "sha256:964ed8912c022740b02e84160d2ed09d94250b214cb23b55a10176aad08cc1e4",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 13,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "373": {
+   "hash": "sha256:e6b478d358074b6d7d840ec984d92e474738cd1d94bd8332421c02fc14abcd7b",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 14,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "374": {
+   "hash": "sha256:1a8f1ba7d08fe25046b868ed312f36e9e5f89b06b6924f74f6999d0f500f285c",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 15,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "375": {
+   "hash": "sha256:01524c2c6ee0d5a08d383a576cc6bc33e0b3cced6cede90ebb2f308473b54d14",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 16,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "376": {
+   "hash": "sha256:017d30ac29fb74cf6737810046b4562cb80bae5073153ed08bac9df2fa5b720c",
+   "created": "2026-10-12T14:49:57Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-143915-b325",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Floor",
+    "x": 19,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an apartment building stairwell landing: back wall of pale beige painted plaster with a brown wooden baseboard, an open doorway in the wall with wooden floorboards, light grey terrazzo landing floor, at the left end the top steps of a grey stone staircase going down with a metal handrail, flat clean colours, no people, no text, wall face, wooden floor planks, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 24,
+    "strength": 0.6,
+    "steps": 4,
+    "scale": 2,
+    "refs": [],
+    "layout": "sha256:7b0585e8d2621333b1fa7ae6e314090bbd413728c4ec25cafb7c336226a86876",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": false
+   },
+   "material": "floor"
+  },
+  "377": {
+   "hash": "sha256:e3ead21083e36b690b49c86e9a85b3090acdcd6c2b06ecb38cc2f6798058c7e9",
+   "created": "2026-10-12T15:05:21Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-145033-6837",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Door3B",
+    "x": 9,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, a closed wooden apartment front door seen from the front in 3/4 top-down view, dark wooden frame, two recessed panels, brass handle and a small brass number plate, flat clean colours, door, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 31,
+    "strength": 0.5,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": "sha256:9df8d69d01b8d75296fc80a7714cf629d51ea06e81ffa4347be62f31c160ca7b",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "door"
+  },
+  "378": {
+   "hash": "sha256:70902370f88778a8720abd3a2d4ce6cabbb8b1b3f6c83dee5a8a38ef905cbe4e",
+   "created": "2026-10-12T15:05:21Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-145033-6837",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Door3B",
+    "x": 10,
+    "y": 14
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, a closed wooden apartment front door seen from the front in 3/4 top-down view, dark wooden frame, two recessed panels, brass handle and a small brass number plate, flat clean colours, door, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 31,
+    "strength": 0.5,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": "sha256:9df8d69d01b8d75296fc80a7714cf629d51ea06e81ffa4347be62f31c160ca7b",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "door"
+  },
+  "379": {
+   "hash": "sha256:86d1f0a80c3ca4cfb63a03c4c8a9ddbcc2ea48b22daf7a01e3090ada7e5e13dd",
+   "created": "2026-10-12T15:05:21Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-145033-6837",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Door3B",
+    "x": 9,
+    "y": 15
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, a closed wooden apartment front door seen from the front in 3/4 top-down view, dark wooden frame, two recessed panels, brass handle and a small brass number plate, flat clean colours, door, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 31,
+    "strength": 0.5,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": "sha256:9df8d69d01b8d75296fc80a7714cf629d51ea06e81ffa4347be62f31c160ca7b",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "door"
+  },
+  "380": {
+   "hash": "sha256:1bf9dd778b4ee4b0ae92fc074ff094bea44cf409b5606c3106d7054a43870767",
+   "created": "2026-10-12T15:05:21Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-145033-6837",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Door3B",
+    "x": 10,
+    "y": 15
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, a closed wooden apartment front door seen from the front in 3/4 top-down view, dark wooden frame, two recessed panels, brass handle and a small brass number plate, flat clean colours, door, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 31,
+    "strength": 0.5,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": "sha256:9df8d69d01b8d75296fc80a7714cf629d51ea06e81ffa4347be62f31c160ca7b",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "door"
+  },
+  "381": {
+   "hash": "sha256:6ec1de9aeb61cffb3e2bbfbaabf06c88ba6f2cc29e610336524b3a67080bec9e",
+   "created": "2026-10-12T15:05:21Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-145033-6837",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Door3B",
+    "x": 9,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, a closed wooden apartment front door seen from the front in 3/4 top-down view, dark wooden frame, two recessed panels, brass handle and a small brass number plate, flat clean colours, door, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 31,
+    "strength": 0.5,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": "sha256:9df8d69d01b8d75296fc80a7714cf629d51ea06e81ffa4347be62f31c160ca7b",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "door"
+  },
+  "382": {
+   "hash": "sha256:61312a8603df899744eae3112d0703a9218023c0f622835cb1e858aa6e85e9b3",
+   "created": "2026-10-12T15:05:21Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-145033-6837",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Door3B",
+    "x": 10,
+    "y": 16
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, a closed wooden apartment front door seen from the front in 3/4 top-down view, dark wooden frame, two recessed panels, brass handle and a small brass number plate, flat clean colours, door, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 31,
+    "strength": 0.5,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": "sha256:9df8d69d01b8d75296fc80a7714cf629d51ea06e81ffa4347be62f31c160ca7b",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "door"
+  },
+  "383": {
+   "hash": "sha256:30bb9886059f20672f09cc627ab30d8444350aa108a69a55bfd0c8e9b529db3e",
+   "created": "2026-10-12T15:05:21Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150228-2482",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Door3A",
+    "x": 13,
+    "y": 20
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, top-down view of the top edge of a closed wooden door set in a dark wall, wooden frame posts, flat clean colours, door, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 42,
+    "strength": 0.4,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": "sha256:6a61337f1253d2aada67f427c892cdb609832d49a5bf2a91c2ca4ec4d64db7af",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "door"
+  },
+  "384": {
+   "hash": "sha256:58d087b92d205f6623644083c3f1e3bb4df8d51a2a63e9f038b09bf1409e2714",
+   "created": "2026-10-12T15:05:21Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150228-2482",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Door3A",
+    "x": 14,
+    "y": 20
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, top-down view of the top edge of a closed wooden door set in a dark wall, wooden frame posts, flat clean colours, door, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 42,
+    "strength": 0.4,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": "sha256:6a61337f1253d2aada67f427c892cdb609832d49a5bf2a91c2ca4ec4d64db7af",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "door"
+  },
+  "385": {
+   "hash": "sha256:33bce39760b83311678d94393795585761e06e9d249958dda31174165412bc56",
+   "created": "2026-10-12T15:05:37Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Door3B",
+    "x": 9,
+    "y": 13
+   }
+  },
+  "386": {
+   "hash": "sha256:00f54bf8e585038326e956efeba0227ea00b4e93cb3f202ed9ef816fa2c9fbbc",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "387": {
+   "hash": "sha256:87822cac3e8780edf2c2f4894f867aedfd89ba8fa6c07216c779fbf95fcb9b0f",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "388": {
+   "hash": "sha256:b3077fc9e0ee709857a611ec793da4922ccca9b7a9908d12da8db334a009798f",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 3
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "389": {
+   "hash": "sha256:02cd6daea099378393706c44a963b917a3fc42de6db016a7cf523e142a86850c",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "390": {
+   "hash": "sha256:1f4ec16365ce4d1174fa6ce297aa9b635a5b640214c70576869b0b038439230c",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "391": {
+   "hash": "sha256:e787573263fb4263b3c75d76e04a2d0cbdb5228277bf562c4ae8c3fcb19d09ec",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 4
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "392": {
+   "hash": "sha256:7234ece5f662517de40b84e6c02a81656bc2e020e4b6c83eb8cf87f4154aadf0",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "393": {
+   "hash": "sha256:5da80ea6a908445a2cda60946e4a43aceade23f09f8562b6e6b782c05183ebf4",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "394": {
+   "hash": "sha256:0a75b870c0a83b8c313979042ebe8226748a565f82d037ef92f15c9ed84ceeb4",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 5
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "395": {
+   "hash": "sha256:f5949c27807bf7d766e24d6d0d2c0dccb668c64abcde34b415d3f0e96c67835b",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "396": {
+   "hash": "sha256:79ba77c4a5377d477283e1d7f5fb1a32af005832012c90cbfe9aa708cb730d70",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "397": {
+   "hash": "sha256:3defafa67628540ee9d4a146987cbffb0e37ec3adb3f620c00057e819f0f44c8",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 6
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "398": {
+   "hash": "sha256:37cffab6514d80fc3f66060369f96202bd741b85a2ea2f7adb0319bdd096bd03",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 1,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "399": {
+   "hash": "sha256:853d0536ae15691b1549268f56734c003e47e2f4ae67668e5ccd3158f9b189ec",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 2,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "400": {
+   "hash": "sha256:0aa9dbd815f8a5653fb27c3a4d654a439ea90c054dcc24655d89bc727e893659",
+   "created": "2026-10-12T15:10:17Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-150514-a507",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 3,
+    "y": 7
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, 3/4 top-down view of an empty single bed frame made of light wood, headboard at the top, side rails and bare wooden slats, no mattress, no bedding, flat clean colours, furniture, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 53,
+    "strength": 0.55,
+    "steps": 4,
+    "scale": 7,
+    "refs": [],
+    "layout": "sha256:bc8fddaaf2a4c90050e9ca64a6b5e3427d9f230df3fcf7b7a4d606137c7b2b13",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "furniture"
+  },
+  "401": {
+   "hash": "sha256:32cdde342dc465ff1aa6c573cc83257ecff233438d21bf486f694f598195c873",
+   "created": "2026-10-12T15:11:49Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-151010-e440",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 13,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, top-down view of a small brown coir doormat, flat clean colours, wooden floor planks, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 61,
+    "strength": 0.45,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": "sha256:72f236a489b93919b94f3ffb340c3a287c2211624f6539f15b6985c77dc24ea2",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "floor"
+  },
+  "402": {
+   "hash": "sha256:be8995dfd84eeaa8dbf5fe5b7b299e85f104a9e1ada5506a16a128ef1ce8dd33",
+   "created": "2026-10-12T15:11:49Z",
+   "origin": "generate",
+   "parent": null,
+   "job": "20261012-151010-e440",
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 14,
+    "y": 19
+   },
+   "gen": {
+    "backend": "flux2_klein_pixel_lora",
+    "models": {
+     "base": "black-forest-labs/FLUX.2-klein-4B",
+     "lora": "Limbicnation/pixel-art-lora"
+    },
+    "lora_scale": 1.0,
+    "prompt": "pixel art, pixel art, top-down view of a small brown coir doormat, flat clean colours, wooden floor planks, top-down 3/4 view video game map, 16-bit tiles, flat colours, crisp pixels",
+    "seed": 61,
+    "strength": 0.45,
+    "steps": 4,
+    "scale": 8,
+    "refs": [],
+    "layout": "sha256:72f236a489b93919b94f3ffb340c3a287c2211624f6539f15b6985c77dc24ea2",
+    "palette": "scene (18 colours of the map outside the region)",
+    "alpha": true
+   },
+   "material": "floor"
   }
  }
 }

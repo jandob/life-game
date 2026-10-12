@@ -135,6 +135,10 @@ def validate(m, run_tiled=True):
             seen_ids.add(o["id"])
             if not (0 <= o["x"] <= w * m.tilew and 0 <= o["y"] <= h * m.tileh):
                 errors.append(f"object '{o['name']}' (id {o['id']}) at ({o['x']},{o['y']}) is outside the map")
+            for q in o.get("polyline") or []:
+                vx, vy = o["x"] + q["x"], o["y"] + q["y"]
+                if not (0 <= vx <= w * m.tilew and 0 <= vy <= h * m.tileh):
+                    errors.append(f"object '{o['name']}' (id {o['id']}): polyline vertex ({vx},{vy}) is outside the map")
             if o["name"] == "SpawnPoint":
                 spawns.append((l, o))
     if len(spawns) != 1:

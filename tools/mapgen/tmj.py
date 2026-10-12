@@ -112,7 +112,9 @@ def obj_pos(m, a, size_default_point):
 def object_json(m, layer, o):
     d = {"id": o["id"], "name": o["name"], "type": o.get("type", ""), "x": o["x"], "y": o["y"],
          "tile": list(T.object_tile(m, o))}
-    if o.get("width") or o.get("height"):
+    if "polyline" in o:
+        d["polyline"] = [[o["x"] + q["x"], o["y"] + q["y"]] for q in o["polyline"]]
+    elif o.get("width") or o.get("height"):
         d["size_px"] = [o["width"], o["height"]]
     else:
         d["point"] = True
@@ -122,6 +124,20 @@ def object_json(m, layer, o):
     return d
 
 
+def parse_polyline(text):
+    """'x1,y1 x2,y2 ...' (absolute map pixels) -> [(x, y), ...]; at least two vertices."""
+    pts = []
+    for tok in text.replace(";", " ").split():
+        try:
+            xs, ys = tok.split(",")
+            pts.append((float(xs), float(ys)))
+        except ValueError:
+            raise T.MapError(f"--polyline: bad vertex {tok!r}, expected X,Y in map pixels")
+    if len(pts) < 2:
+        raise T.MapError("--polyline needs at least two vertices ('x1,y1 x2,y2 ...')")
+    return pts
+
+
 def cmd_object(a):
     m = T.TiledMap.load(a.map)
     layer = m.layer(a.layer, "objectgroup")
@@ -129,7 +145,18 @@ def cmd_object(a):
     if act == "list":
         out({"ok": True, "layer": a.layer, "objects": [object_json(m, layer, o) for o in layer["objects"]]})
         return
-    if act == "add":
+    if act == "add" and a.polyline is not None:
+        if a.tile or a.px or a.size_tiles or a.size_px:
+            raise T.MapError("--polyline gives the position itself; do not combine it with --tile/--px/--size-*")
+        pts = parse_polyline(a.polyline)
+        x0, y0 = pts[0]
+        o = {"height": 0, "id": m.next_object_id(), "name": a.name, "rotation": 0, "type": a.type or "",
+             "visible": True, "width": 0, "x": x0, "y": y0,
+             "polyline": [{"x": px - x0, "y": py - y0} for px, py in pts]}
+        if a.prop:
+            T.set_props(o, T.parse_kv(a.prop))
+        layer["objects"].append(o)
+    elif act == "add":
         x, y, w, h = obj_pos(m, a, True)
         if x is None:
             raise T.MapError("give a position with --tile X Y or --px X Y")
@@ -328,6 +355,8 @@ def build():
     q.add_argument("--name", required=True)
     q.add_argument("--type")
     q.add_argument("--prop", action="append", metavar="K=V")
+    q.add_argument("--polyline", metavar="'X1,Y1 X2,Y2 ...'",
+                   help="polyline in absolute map pixels; stored the Tiled way (x/y = first vertex, points relative)")
     pos_args(q)
     for act in ("move", "remove", "set-prop"):
         q = os_.add_parser(act)

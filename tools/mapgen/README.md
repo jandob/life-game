@@ -60,10 +60,13 @@ bounds), nothing is written. Ops are a JSON list, one key per op, applied in ord
 ### object
 `object MAP --layer L list`
 `object MAP --layer L add --name N [--type T] (--tile X Y | --px X Y) [--size-tiles W H | --size-px W H] [--prop k=v ...]`
+`object MAP --layer L add --name N [--type T] --polyline "X1,Y1 X2,Y2 ..." [--prop k=v ...]`
 `object MAP --layer L move (--id N | --name N) (--tile X Y | --px X Y)`
 `object MAP --layer L remove (--id N | --name N)`
 `object MAP --layer L set-prop (--id N | --name N) [--prop k=v] [--unset k] [--rename NEW] [--type T]`
-Without a size, an object is a Tiled point, and `--tile` puts it at the tile centre. With a size it is a rectangle and
+`--polyline` takes two or more vertices in absolute map pixels and stores them the Tiled way: the object's x/y is the
+first vertex and `polyline` holds the points relative to it (`list` prints them absolute again; `validate` checks every
+vertex is inside the map; `render --debug` draws the line). Without a size, an object is a Tiled point, and `--tile` puts it at the tile centre. With a size it is a rectangle and
 `--tile` is its top-left corner.
 
 ### show
@@ -119,5 +122,5 @@ see it, `validate` before finishing.
 ## Limitations
 
 - Orthogonal, finite, tile layers + object layers only (no image/group layers, no infinite maps, no Wang auto-tiling).
-- Object shapes: points and rectangles only. Embedded tilesets are read but `new` only creates external refs.
+- Object shapes: points, rectangles and polylines (no polygons, ellipses or tile objects). Embedded tilesets are read but `new` only creates external refs.
 - Flipped/rotated collision shapes are not flipped by the game loader; the debug overlay does not draw them rotated.
