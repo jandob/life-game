@@ -126,7 +126,7 @@ artgen.py generate --backend sdxl --opt model=wai_v17 --opt loras=pixel_art_xl:0
 artgen.py mask --image out/s/scene_s7.png --ellipse 278,328,462,505 --preview out/s/mask_check.png --out out/s/head_woman.png
 # 3a. one region ...
 artgen.py refine --image out/s/scene_s7.png --mask out/s/head_woman.png --opt model=wai_v17 \
-    --opt loras=lgwoman1:0.8,pixel_art_xl:0.5 --strength 0.5 --seed 7 --prompt "1girl, auburn ponytail, blue eyes, face" --out out/s/r
+    --opt loras=lgwoman1:0.8,pixel_art_xl:0.5 --strength 0.5 --seed 7 --prompt "1girl, auburn ponytail, brown eyes, face" --out out/s/r
 # 3b. ... or all characters in one command (recipe: tools/artgen/examples/cast_recipe.json)
 artgen.py cast recipe.json --out out/s/cast
 ```
