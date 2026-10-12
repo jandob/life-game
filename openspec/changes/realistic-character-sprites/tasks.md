@@ -1,6 +1,6 @@
 ## 0. Decisions (user)
 
-- [ ] 0.1 Confirm the format (design D1): 96x192 cells at scale 1.0 in the texel-unit world, the man 132 rows and Samantha about 126, about 74 art px per metre. The world side (tiles, camera) is decided in `world-texel-scale` section 0
+- [x] 0.1 Confirm the format (design D1): 96x192 cells at scale 1.0 in the texel-unit world, the man 132 rows and Samantha about 126, about 74 art px per metre. The world side (tiles, camera) is decided in `world-texel-scale` section 0
 
 ## 1. Tooling (artgen owner; before section 2)
 

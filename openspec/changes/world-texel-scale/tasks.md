@@ -1,8 +1,10 @@
 ## 0. Decisions (user)
 
-- [ ] 0.1 Tile size (design D2): 48 px (default), or 32 px
-- [ ] 0.2 Camera (design D3): C1 integer scaling with about 540 px visible (default; 19 px faces in a DPR 1 1280x720 window, 38 in 1080p fullscreen), or C2 a fixed 480 px view (same framing everywhere, uneven pixels at 720p and 1080p). See `renders/framing_options_720p.png`
-- [ ] 0.3 Confirm that `route1_flat.tmj` is rebuilt in place at 48 px (the 16 px version stays in git history)
+- [x] 0.1 Tile size (design D2): 48 px (default), or 32 px
+- [x] 0.2 Camera (design D3): C1 integer scaling with about 540 px visible (default; 19 px faces in a DPR 1 1280x720 window, 38 in 1080p fullscreen), or C2 a fixed 480 px view (same framing everywhere, uneven pixels at 720p and 1080p). See `renders/framing_options_720p.png`
+- [x] 0.3 Confirm that `route1_flat.tmj` is rebuilt in place at 48 px (the 16 px version stays in git history)
+
+Decided by the user, 2026-10-12: 48 px tiles, C1 integer scaling, route1_flat rebuilt in place.
 
 ## 1. Tooling (scene-designer or tooling engineer; design D6)
 
