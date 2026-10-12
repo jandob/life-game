@@ -518,8 +518,12 @@ def cmd_library(a):
 
 def library_check(sc, lib):
     problems = list(lib.problems)
+    if lib.manifest.get("tile_size") != TILE:
+        problems.append(f"manifest tile_size is {lib.manifest.get('tile_size')!r}, expected {TILE}")
     for n, p in sorted(lib.pages.items()):
         t = p["tsj"]
+        if (t.get("tilewidth"), t.get("tileheight")) != (TILE, TILE):
+            problems.append(f"page {n}: .tsj tile size is {t.get('tilewidth')}x{t.get('tileheight')}, expected {TILE}x{TILE}")
         if t.get("tilecount") != PAGE_TILES or t.get("columns") != PAGE_COLS:
             problems.append(f"page {n}: .tsj has tilecount {t.get('tilecount')} / columns {t.get('columns')}, expected {PAGE_TILES} / {PAGE_COLS}")
         if t.get("image") != f"page-{n:03d}.png":

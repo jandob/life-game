@@ -138,13 +138,13 @@ def load_layout(path, rw, rh, materials):
 
 
 def load_init(path, rw, rh):
-    """--init PNG: the block-out canvas of the region, exactly (rw*16) x (rh*16) pixels, RGBA (transparent = keep)."""
+    """--init PNG: the block-out canvas of the region, exactly (rw*TILE) x (rh*TILE) pixels, RGBA (transparent = keep)."""
     if not os.path.isfile(path):
         raise SceneError(f"--init image not found: {path}", "not_found")
     im = Image.open(path).convert("RGBA")
     if im.size != (rw * TILE, rh * TILE):
         raise SceneError(f"--init image is {im.size[0]}x{im.size[1]}, the region is {rw * TILE}x{rh * TILE} px "
-                         f"({rw}x{rh} cells at 16 px)", "bad_input")
+                         f"({rw}x{rh} cells at {TILE} px)", "bad_input")
     return im
 
 
@@ -164,11 +164,12 @@ def blockout_region(layout, region, materials):
 
     Each material is a flat colour; an optional "texture" in materials.json adds structure the model can refine
     instead of inventing it (it keeps the layout and perspective better at strength < 1):
-    - "planks": horizontal boards 4 px tall with staggered end joints (drawn from absolute map pixels, so they run
+    - "planks": horizontal boards TILE/4 px tall with staggered end joints (drawn from absolute map pixels, so they run
       on across cells and regions),
     - "wall": a 3/4 front face: lit top lip where the wall starts, a dark baseboard where it ends,
     - "none" / missing: flat."""
     rx, ry, rw, rh = region
+    u = TILE // 16  # texture detail scales with the tile size (board 4u px, lip 2u, baseboard 4u)
     img = Image.new("RGBA", (rw * TILE, rh * TILE), (0, 0, 0, 0))
     px = img.load()
     for j in range(rh):
@@ -186,18 +187,18 @@ def blockout_region(layout, region, materials):
                     ax, ay = (rx + i) * TILE + x, (ry + j) * TILE + y
                     c = base
                     if tex == "planks":
-                        band = ay // 4
-                        if ay % 4 == 3:
+                        band = ay // (4 * u)
+                        if ay % (4 * u) == 4 * u - 1:
                             c = shade(base, 0.74)
-                        elif ay % 4 == 0:
+                        elif ay % (4 * u) == 0:
                             c = shade(base, 1.07)
-                        elif (ax + band * 11) % 32 == 0:
+                        elif (ax + band * 11 * u) % (32 * u) == 0:
                             c = shade(base, 0.74)
                     elif tex == "wall":
-                        if above != mat and y < 2:
+                        if above != mat and y < 2 * u:
                             c = shade(base, 1.28 if y == 0 else 1.12)
-                        elif below != mat and y >= TILE - 4:
-                            c = shade(base, 0.58 if y == TILE - 4 else 0.75)
+                        elif below != mat and y >= TILE - 4 * u:
+                            c = shade(base, 0.58 if y == TILE - 4 * u else 0.75)
                     px[x + i * TILE, y + j * TILE] = c
     return img
 
@@ -228,7 +229,7 @@ def bbox_of(cells):
 def pick_scale(rw_px, rh_px, requested="auto"):
     """Integer upscale S for a canvas of rw_px x rh_px game pixels. auto = largest S in 2..8 with the long side <= 1024.
 
-    Every canvas side is a multiple of 16 (whole cells), so S*side is a multiple of 16 for any integer S."""
+    Every canvas side is a multiple of TILE (whole cells), so S*side is a multiple of TILE for any integer S."""
     long_side = max(rw_px, rh_px)
     if requested in (None, "auto"):
         s = min(MAX_SCALE, MAX_SIDE // long_side)
@@ -448,8 +449,8 @@ def outline_cells(img, box, cells, zoom, colour=(255, 220, 0, 255)):
 
 
 def preview_image(base, box, region_cells_img, cells, zoom=4, label=None):
-    """Before | after at `zoom`x with a 16-px cell grid and the generated cells outlined in yellow.
-    `base`: 1x composite of the box before; `region_cells_img`: {(x, y): 16x16} the new cells."""
+    """Before | after at `zoom`x with a cell grid and the generated cells outlined in yellow.
+    `base`: 1x composite of the box before; `region_cells_img`: {(x, y): TILExTILE} the new cells."""
     after = base.copy()
     bx, by = box[0], box[1]
     for (x, y), tile in region_cells_img.items():

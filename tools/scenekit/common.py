@@ -17,13 +17,58 @@ from PIL import Image  # noqa: E402
 import tmjlib as T  # noqa: E402
 
 ROOT = os.path.abspath(os.environ.get("SCENEKIT_ROOT") or os.path.join(HERE, "..", ".."))
-LIB_DIR = os.path.abspath(os.environ.get("SCENEKIT_LIB") or os.path.join(ROOT, "assets", "library", "tilesets", "gen"))
+LIB_ROOT = os.path.join(ROOT, "assets", "library", "tilesets")
 OUT_DIR = os.path.abspath(os.environ.get("SCENEKIT_OUT") or os.path.join(HERE, "out"))
 MAPS_GLOB = "assets/maps/**/*.tmj"
-TILE = 16
+# Libraries by tile size. The active library (LIB_DIR) decides TILE, PAGE_PX and the collision shapes; it is chosen once
+# per process: SCENEKIT_LIB (a directory), else `--lib NAME|PATH` on the command line, else the library that fits the
+# tile size of the first existing .tmj on the command line, else `gen` (16 px).
+TILE_LIBS = {16: "gen", 48: "gen48"}
 PAGE_TILES = 256
 PAGE_COLS = 16
-PAGE_PX = 256
+
+
+def _lib_arg(v):
+    return os.path.abspath(v if os.sep in v or os.path.isabs(v) else os.path.join(LIB_ROOT, v))
+
+
+def _pick_lib_dir(argv):
+    if os.environ.get("SCENEKIT_LIB"):
+        return os.path.abspath(os.environ["SCENEKIT_LIB"])
+    for i, a in enumerate(argv):
+        if a == "--lib" and i + 1 < len(argv):
+            return _lib_arg(argv[i + 1])
+        if a.startswith("--lib="):
+            return _lib_arg(a[6:])
+    for a in argv:
+        if a.endswith(".tmj") and os.path.isfile(a):
+            try:
+                with open(a) as f:
+                    tw = int(json.load(f).get("tilewidth", 16))
+            except (OSError, ValueError, TypeError):
+                break
+            if tw in TILE_LIBS:
+                return os.path.join(LIB_ROOT, TILE_LIBS[tw])
+            break
+    return os.path.join(LIB_ROOT, "gen")
+
+
+def _lib_tile_size(lib_dir):
+    """tile_size from the library manifest (tiles.json); SCENEKIT_TILE, else the TILE_LIBS name, else 16 for a new library."""
+    try:
+        with open(os.path.join(lib_dir, "tiles.json")) as f:
+            return int(json.load(f)["tile_size"])
+    except (OSError, ValueError, KeyError, TypeError):
+        pass
+    if os.environ.get("SCENEKIT_TILE"):
+        return int(os.environ["SCENEKIT_TILE"])
+    inv = {v: k for k, v in TILE_LIBS.items()}
+    return inv.get(os.path.basename(lib_dir), 16)
+
+
+LIB_DIR = _pick_lib_dir(sys.argv[1:])
+TILE = _lib_tile_size(LIB_DIR)
+PAGE_PX = PAGE_COLS * TILE
 
 FLIP_H, FLIP_V, FLIP_D, FLIP_MASK = T.FLIP_H, T.FLIP_V, T.FLIP_D, T.FLIP_MASK
 
@@ -320,16 +365,21 @@ def apply_meta_to_entry(entry, meta):
     return len(entry) > 1
 
 
-SHAPES = {
-    "none": [],
-    "full": [{"x": 0, "y": 0, "width": 16, "height": 16}],
-    "top": [{"x": 0, "y": 0, "width": 16, "height": 8}],
-    "bottom": [{"x": 0, "y": 8, "width": 16, "height": 8}],
-    "left": [{"x": 0, "y": 0, "width": 8, "height": 16}],
-    "right": [{"x": 8, "y": 0, "width": 8, "height": 16}],
-    "top-quarter": [{"x": 0, "y": 0, "width": 16, "height": 4}],
-    "bottom-quarter": [{"x": 0, "y": 12, "width": 16, "height": 4}],
-}
+def _shapes(t):
+    h, q = t // 2, t // 4
+    return {
+        "none": [],
+        "full": [{"x": 0, "y": 0, "width": t, "height": t}],
+        "top": [{"x": 0, "y": 0, "width": t, "height": h}],
+        "bottom": [{"x": 0, "y": h, "width": t, "height": h}],
+        "left": [{"x": 0, "y": 0, "width": h, "height": t}],
+        "right": [{"x": h, "y": 0, "width": h, "height": t}],
+        "top-quarter": [{"x": 0, "y": 0, "width": t, "height": q}],
+        "bottom-quarter": [{"x": 0, "y": t - q, "width": t, "height": q}],
+    }
+
+
+SHAPES = _shapes(TILE)
 
 
 def parse_shape(spec):
@@ -437,9 +487,14 @@ class Scene:
                 raise SceneError(f"{rel(path)} changed since you looked (hash is {self.reads[path]}, you passed {want})",
                                  "stale", map_hash=self.reads[path])
         try:
-            return T.TiledMap(path, json.loads(data))
+            m = T.TiledMap(path, json.loads(data))
         except ValueError as e:
             raise SceneError(f"{path} is not valid JSON: {e}", "bad_input")
+        if (m.tilew, m.tileh) != (TILE, TILE):
+            raise SceneError(f"{rel(path)} has {m.tilew}x{m.tileh} px tiles but the active library {rel(LIB_DIR)} has "
+                             f"{TILE} px tiles; pass --lib {TILE_LIBS.get(m.tilew, '<library>')} (or set SCENEKIT_LIB)",
+                             "mismatch")
+        return m
 
     def map_hash(self, m):
         return self.reads.get(m.path) or sha(open(m.path, "rb").read())
@@ -461,7 +516,7 @@ class Scene:
         return self._sheets[p]
 
     def tile_image(self, ts, local):
-        """16x16 RGBA of one tile, unflipped. Library pages come from the library (including uncommitted changes)."""
+        """TILE x TILE RGBA of one tile, unflipped. Library pages come from the library (including uncommitted changes)."""
         if is_gen_tileset(ts):
             return self.library.tile_image(page_of(ts) * PAGE_TILES + local)
         d = ts.data

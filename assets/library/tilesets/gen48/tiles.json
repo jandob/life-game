@@ -1,0 +1,8 @@
+{
+ "version": 1,
+ "library": "gen48",
+ "tile_size": 48,
+ "page_tiles": 256,
+ "next_id": 0,
+ "tiles": {}
+}

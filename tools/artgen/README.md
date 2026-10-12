@@ -80,6 +80,13 @@ artgen.py generate --backend flux2_klein_pixel_lora --ref out/man/man_front_s11.
 artgen.py post out/man/*.png --grid fit --cell 64x128 --feet-row 105 --shadow \
     --outline inner --colours 24 --keep-largest --out out/man_px
 
+# realistic characters (96x192 cell, feet on row 157, shadow centre (47.5, 152.5), radii 33.75x17.25):
+# fix N (the generator's pixel size in raw px) ONCE per character and backend from a standing front
+# view (man 132 rows, Samantha 126) and reuse it for every pose, so all frames share one pixel size.
+# --grid N samples at phase (0, 0); `--grid fit` is only for a first look, it re-scales every image.
+artgen.py post out/man/*.png --grid N --cell 96x192 --feet-row 157 --shadow \
+    --outline inner --colours 24 --keep-largest --out out/man_px96
+
 # props / portraits: native grid detection, no cell
 artgen.py post out/sofa/*.png --grid auto --colours 16 --outline inner --out out/sofa_px
 
@@ -160,11 +167,11 @@ There is no crop mode: the model always sees the whole image, so the pixel grid 
 | `remove_background` | Uses real alpha if present. Otherwise it flood-fills from the image border through pixels within `tol` of up to 4 dominant border colours. This handles the fake grey checkerboard models paint for "transparent background". |
 | `detect_grid` | Autocorrelates the colour-edge profile per axis at 1/4 px resolution and takes the smallest strong peak as the pseudo-pixel size. A comb search then refines the scale and finds the phase. Generated art does not keep one exact grid, so expect about ±0.3 px error. |
 | `downscale` | One output pixel per cell, using the mode colour of the cell centre and a majority-vote alpha. `keep_dark` keeps thin dark lines (outlines, eyes) that fall between cell centres. |
-| `grid="fit"` | Instead of the native grid, picks the cell size that maps the subject's height to the character height of the 64×128 cell (rows 17–105, like `player.png`). |
+| `grid="fit"` | Instead of the native grid, picks the cell size that maps the subject's height to the character height of the cell (64×128: rows 17–105 like `player.png`; the top row scales with the cell width, 96×192: rows 26–157). |
 | `quantize` | Adaptive N colours (median cut, no dither) or snapping to a `.hex`/`.gpl`/`.png` palette. |
 | `cleanup` | Removes opaque islands smaller than N pixels, fills 1–2 px holes, and recolours orphan pixels whose 8 neighbours mostly agree. |
 | `add_outline` | `outer` grows a 1 px outline in the project navy `#222034`. `inner` recolours the silhouette boundary instead (keeps the size, and works best on model output that already has a broken outline). |
-| `fit_cell` | Crops to content, centres it horizontally and puts the lowest opaque row on `feet_row`. It can add the project drop shadow (ellipse at (31.5, 102), radii 22.5×11.5, `#3f3f74` and a `#5c5ca9` rim, alpha 125). Content is never resampled here, only clipped (and the clip is reported). |
+| `fit_cell` | Crops to content, centres it horizontally and puts the lowest opaque row on `feet_row`. It can add the project drop shadow (64×128: ellipse at (31.5, 102), radii 22.5×11.5; other cells scale by width/64 and put the centre 3×k rows above the feet row, 96×192 with feet 157: (47.5, 152.5), radii 33.75×17.25; `#3f3f74` and a `#5c5ca9` rim, alpha 125). Content is never resampled here, only clipped (and the clip is reported). |
 
 Outputs use alpha 0 or 255 only, except the drop shadow (alpha 125, like the
 reference).

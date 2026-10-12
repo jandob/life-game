@@ -90,7 +90,8 @@ layer data is a JSON array of length w*h, exactly one `SpawnPoint` inside the ma
 in bounds, and that `tiled --export-map` can load the file. Exit 1 on errors. Warnings (do not fail):
 SpawnPoint outside layer `Spawn`, duplicate object ids.
 
-`validate` also errors on tilesets above 256 tiles, library pages (`page-NNN.tsj`) that are not 256x256, `gen` gids missing
+`validate` also errors on tilesets above 256 tiles, library pages (`page-NNN.tsj`) whose image is not 16 tiles square (256x256 at 16 px tiles, 768x768 at 48 px),
+maps that mix tile sizes (a tileset whose tile size differs from the map's), `gen` gids missing
 from the neighbouring `tiles.json`, and a non-bool `above` layer property. See `tools/scenekit/` for the library tools.
 
 ## Worked example

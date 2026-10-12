@@ -8,10 +8,10 @@ Decided by the user, 2026-10-12: 48 px tiles, C1 integer scaling, route1_flat re
 
 ## 1. Tooling (scene-designer or tooling engineer; design D6)
 
-- [ ] 1.1 `tools/scenekit/common.py`: tile size from the library manifest (`tile_size`) instead of `TILE = 16`; compose, render, slicing and collision checks use it; the existing 16 px library keeps working (its tests stay green)
-- [ ] 1.2 New library `assets/library/tilesets/gen48/` (768x768 pages, `.tsj` with 48 px tiles); `validate` rejects maps that mix tile sizes
-- [ ] 1.3 Generation recipes: tileable 48/96 px floor and wall textures and per-prop generation at the D6 sizes with a fixed `--grid`, the characters' style suffix and a shared palette; at most about 128x128 art px per generation
-- [ ] 1.4 `tools/scenekit/README.md` and `.claude/agents/scene-designer.md`: 48 px tiles, 74 art px per metre, the size table, the new path and clearance numbers (D7)
+- [x] 1.1 `tools/scenekit/common.py`: tile size from the library manifest (`tile_size`) instead of `TILE = 16`; compose, render, slicing and collision checks use it; the existing 16 px library keeps working (its tests stay green)
+- [x] 1.2 New library `assets/library/tilesets/gen48/` (768x768 pages, `.tsj` with 48 px tiles); `validate` rejects maps that mix tile sizes
+- [x] 1.3 Generation recipes: tileable 48/96 px floor and wall textures and per-prop generation at the D6 sizes with a fixed `--grid`, the characters' style suffix and a shared palette; at most about 128x128 art px per generation
+- [x] 1.4 `tools/scenekit/README.md` and `.claude/agents/scene-designer.md`: 48 px tiles, 74 art px per metre, the size table, the new path and clearance numbers (D7)
 
 ## 2. Map (scene-designer; design D6 and D7)
 

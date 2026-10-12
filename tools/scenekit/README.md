@@ -12,15 +12,15 @@ mise exec -- python3 tools/scenekit/scene.py <command> ...
 
 Every command prints ONE JSON object (`{"ok": true, ...}` or `{"ok": false, "error", "code", ...}`) and exits non-zero
 on error. Codes: `bad_input`, `not_found`, `stale`, `conflict`, `impact`, `refused`, `locked`, `mismatch`,
-`check_failed`, `unsupported`, `too_large`. Tests: `mise exec -- python3 tools/scenekit/test_scenekit.py` and `test_generate.py` (stub model).
+`check_failed`, `unsupported`, `too_large`. Tests (`TestTile48`, `TestRecipes` cover the 48 px library and the recipes): `mise exec -- python3 tools/scenekit/test_scenekit.py` and `test_generate.py` (stub model).
 
 ## Concepts
 
 - Cells are Tiled tile coordinates (origin top-left, y down). Regions are `x,y,w,h` in tiles. Pixel coordinates in
-  `edit` ops are **map pixels** (`tile*16`), never game coordinates.
+  `edit` ops are **map pixels** (`tile*TILE`, `TILE` = 16 or 48, see Libraries), never game coordinates.
 - Tile refs: `gen:N` (library; page `N/256`, slot `N%256`), `tileset:local` (tileset name from the .tsj, e.g.
   `tileset:16` for the forest), `gen-003:7`, or a raw gid with `--map`. Flip suffixes `|h|v|d` are accepted and ignored for identity.
-- Library = pages `page-NNN.png` (256x256, 16x16 tiles) + `page-NNN.tsj` (+ `tiles.json` manifest with hash, parent,
+- Library = pages `page-NNN.png` (16x16 tiles: 256x256 at 16 px, 768x768 at 48 px) + `page-NNN.tsj` (+ `tiles.json` manifest with hash, parent,
   origin, source cell, revisions; `materials.json` with materials). Append-only: ids are never reused or renumbered.
   A page is added to a map's `tilesets` the first time the map uses it; existing gids never shift.
 - **Copy-on-write is the default.** Changing a cell makes a new (or deduplicated) tile whose `parent` is the old tile and
@@ -40,6 +40,47 @@ on error. Codes: `bad_input`, `not_found`, `stale`, `conflict`, `impact`, `refus
   write is journaled in `tools/scenekit/out/journal/`. The tools never run git commands that change anything.
 - If a human has the map open in Tiled with unsaved changes and saves, that overwrites the tool's write. Tell them to
   reload first (Tiled offers it); the tool cannot prevent it.
+
+## Libraries and tile sizes (16 px `gen`, 48 px `gen48`)
+
+The tile size is a property of the **library**, read from `tile_size` in its `tiles.json`. There are two libraries:
+`assets/library/tilesets/gen/` (16 px, pages 256x256; the engine fixtures and `sandbox`) and `assets/library/tilesets/gen48/`
+(48 px, pages 768x768 with 16x16 tiles, `.tsj` with `tilewidth = tileheight = 48`; the world of `route1_flat`, 74 art px
+per metre). One command works on one library:
+
+- `--lib gen|gen48|PATH` (anywhere on the command line) or `SCENEKIT_LIB=DIR` picks it explicitly;
+- otherwise it follows the **map**: the first `.tmj` argument with `tilewidth` 48 selects `gen48`, 16 or none selects `gen`.
+- A map whose tile size differs from the active library gives `mismatch` and names the `--lib` to use.
+
+Everything scales with `TILE`: `edit` pixels, `export`/`import`, `--init` canvases, collision shapes (`full` is 48x48,
+`bottom` 48x24, `bottom-quarter` 48x12), the block-out textures (plank boards TILE/4 px), `render` and `--check-tmx`.
+`tmj.py new --tile 48 --tileset assets/library/tilesets/gen48/page-000.tsj` scaffolds a 48 px map. `tmj.py validate` refuses
+maps that mix tile sizes. Pages are added on demand, `library check --lib gen48` verifies sizes and manifest.
+
+Model canvases: a region is upscaled by an integer S (<= 8) with the long side <= 1024 raw px, so one `generate` covers at
+most about 128 art px per side at S = 8, i.e. **2 cells of 48 px**. Use `generate` for small patches and touch-ups at 48 px.
+Props and textures at the world's density are made one by one with `recipe` below, never as whole rooms.
+
+### recipe: textures and props at 48 px (design D6)
+
+`recipe texture --name N --kind floor|wall --size 48|96 --prompt "oak planks" [--grid 8] [--palette FILE.hex] [--seed S] [--n 4]`
+`recipe prop --name N --size W,H --prompt "white fridge" [--grid G] [--palette FILE.hex] [--seed S] [--n 4]`
+
+Print a plan (`steps[]` with the exact command lines; nothing is run or written) with these fixed choices:
+- **Style suffix** of the characters: `anime style pixel art, thick dark outlines, flat cel shading with two tones`; **shared
+  palette** `tools/artgen/palettes/interior.hex` (override with `--palette`), snapped in the same step as the grid.
+- **Fixed grid**: `--grid` is the raw px per art px (default 8, the generator's own pixel). A texture is `size x grid` px
+  square (384 or 768). A prop canvas is `(W+4) x (H+4)` art px times the grid, rounded to 16. If the long side would exceed
+  1024 raw px the grid drops to 7 or 6 and a warning says so; beyond that `too_large` (split the prop). Never `--grid auto|fit`:
+  every prop of a scene keeps one pixel size.
+- **Textures** are made seamless by shifting the generated image by half in x and y (`texture roll`), repainting the centre
+  cross where the old wrap-around seams now meet (`artgen mask` + `inpaint`), then `snap`. `texture seam IMG` checks the
+  wrap-around edge against the 95th percentile of the interior edges (`ratio <= 1.5` or `check_failed`).
+  `texture size IMG` prints the opaque box (props: crop to the table size before stamping).
+- **Stamping**: an `edit` with a `paste` op (textures with `copy` ops across the area; props `mode: over` on `Decor`, bottom edge
+  on a cell boundary), then `collide region` / `material`. Size table (art px): door leaf 63x148, wall face 192 high, bed 104x148,
+  fridge 44x133, window 89x104, counter 67+44 per 0.65 m; room floors 333x370 (main), 185x222 (kitchen).
+  Props above about 120 art px per side run at grid 6 or 7: check the render, or generate them in two parts.
 
 ## Inspect
 
@@ -112,7 +153,7 @@ Needs `tools/artgen/.venv` and the cached FLUX.2 klein weights (no downloads). E
   `@ O = wall #ddd5c4` or `@ O = wall #ddd5c4 texture=none` (textures `planks`, `wall`, `none`). The variant keeps the base
   material's shape, hint and layer, is written to the map as the base material (`wall`), and `materials.json` is never
   touched. The job lists them as `layout_variants`.
-- `--init PNG`: a block-out image of the region (exactly `w*16` x `h*16` px, RGBA) used as the canvas inside the region
+- `--init PNG`: a block-out image of the region (exactly `w*TILE` x `h*TILE` px, RGBA) used as the canvas inside the region
   (opaque pixels win over `--layout`/the current pixels; transparent keeps them). It exists only in the job directory, so no
   block-out tiles are written to the map or the library and none are left as orphans. The job records its hash as `init`.
 - Output is snapped by an exact S x S block mode (no grid detection; `--grid detect` is only a fallback), locked to a palette

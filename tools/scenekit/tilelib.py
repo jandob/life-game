@@ -7,7 +7,7 @@ import time
 
 from PIL import Image
 
-from common import (PAGE_COLS, PAGE_PX, PAGE_TILES, TILE, SceneError, apply_meta_to_entry, is_blank, json_bytes,
+from common import (LIB_DIR, PAGE_COLS, PAGE_PX, PAGE_TILES, TILE, SceneError, apply_meta_to_entry, is_blank, json_bytes,
                     make_meta, meta_from_tsj_entry, meta_sig, norm_bytes, normalised, png_bytes, tile_hash)
 
 PAGE_RE = re.compile(r"^page-(\d+)\.png$")
@@ -18,7 +18,7 @@ def now():
 
 
 def new_manifest():
-    return {"version": 1, "library": "gen", "tile_size": TILE, "page_tiles": PAGE_TILES, "next_id": 0, "tiles": {}}
+    return {"version": 1, "library": os.path.basename(LIB_DIR), "tile_size": TILE, "page_tiles": PAGE_TILES, "next_id": 0, "tiles": {}}
 
 
 def new_tsj(page):

@@ -200,6 +200,26 @@ def build():
     quiet_flag(p)
     p.set_defaults(fn="gen.cmd_apply")
 
+    p = sp.add_parser("recipe", help="print the generation recipe (artgen/scenekit command lines) for a 48/96 px texture or a prop")
+    p.add_argument("what", choices=["texture", "prop"])
+    p.add_argument("--name", required=True)
+    p.add_argument("--prompt", required=True, help="subject, without style words (the style suffix is added)")
+    p.add_argument("--kind", choices=["floor", "wall"], default="floor", help="texture only")
+    p.add_argument("--size", help="texture: 48 or 96 (art px); prop: W,H art px")
+    p.add_argument("--grid", type=int, help="raw px per art px (default 8; a prop that does not fit drops to 6..7)")
+    p.add_argument("--palette", default="tools/artgen/palettes/interior.hex")
+    p.add_argument("--seed", type=int, default=1)
+    p.add_argument("--n", type=int, default=4)
+    p.add_argument("--out-dir")
+    p.set_defaults(fn="rec.cmd_recipe")
+
+    p = sp.add_parser("texture", help="texture helpers: roll (half shift), seam (wrap-around check), size (opaque box)")
+    p.add_argument("action", choices=["roll", "seam", "size"])
+    p.add_argument("image")
+    p.add_argument("--out")
+    p.add_argument("--max-ratio", type=float, default=1.5)
+    p.set_defaults(fn="rec.cmd_texture")
+
     p = sp.add_parser("undo", help="restore the latest journal entry if nothing changed since")
     p.add_argument("--steps", type=int, default=1)
     p.add_argument("--dry-run", action="store_true")
@@ -208,6 +228,16 @@ def build():
     p = sp.add_parser("journal", help="list journal entries")
     p.set_defaults(fn="journal")
     return ap
+
+
+def _recipe_size(a):
+    try:
+        if a.what == "texture":
+            return int(a.size or 48)
+        w, h = [int(v) for v in str(a.size).split(",")]
+        return w, h
+    except (ValueError, TypeError):
+        raise SceneError("--size is 48|96 for a texture and W,H for a prop", "bad_input")
 
 
 def dispatch(a):
@@ -233,6 +263,12 @@ def dispatch(a):
     if mod == "gen":
         import gencmds
         return getattr(gencmds, name)(a)
+    if mod == "rec":
+        import recipes
+        if fn == "rec.cmd_recipe":
+            a.size = _recipe_size(a)
+            a.grid = a.grid or (8 if a.what == "texture" else None)
+        return getattr(recipes, name)(a)
     if mod == "view":
         import viewcmds
         return getattr(viewcmds, name)(a)
@@ -248,6 +284,15 @@ def dispatch(a):
 
 def main(argv=None):
     ap = build()
+    argv = list(sys.argv[1:] if argv is None else argv)
+    # --lib NAME|PATH is read by common.py at import (it fixes TILE and the library); drop it before argparse
+    for i, tok in enumerate(argv):
+        if tok == "--lib" and i + 1 < len(argv):
+            del argv[i:i + 2]
+            break
+        if tok.startswith("--lib="):
+            del argv[i]
+            break
     a = ap.parse_args(argv)
     try:
         res = dispatch(a)

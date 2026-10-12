@@ -46,6 +46,10 @@ def validate(m, run_tiled=True):
         errors.append("map references no tileset (loader requires one)")
 
     # tilesets
+    sizes = {(ts.tilew, ts.tileh) for ts in m.tilesets if not getattr(ts, "missing", False)} | {(m.tilew, m.tileh)}
+    if len(sizes) > 1:
+        errors.append("map mixes tile sizes: " + ", ".join(f"{a}x{b}" for a, b in sorted(sizes))
+                      + f" (map {m.tilew}x{m.tileh}); one map uses one tile size")
     ranges = []
     for ts in m.tilesets:
         label = ts.source or ts.name
@@ -68,8 +72,9 @@ def validate(m, run_tiled=True):
         if _page_no(ts) is not None:
             if ts.tilecount != PAGE_TILES:
                 errors.append(f"library page '{ts.name}' has tilecount {ts.tilecount}, expected {PAGE_TILES}")
-            if img and os.path.isfile(img) and Image.open(img).size != (256, 256):
-                errors.append(f"library page '{ts.name}' image must be exactly 256x256, is {Image.open(img).size}")
+            side = 16 * ts.tilew  # pages are 16x16 tiles: 256 px at 16 px tiles, 768 px at 48 px tiles
+            if img and os.path.isfile(img) and Image.open(img).size != (side, side):
+                errors.append(f"library page '{ts.name}' image must be exactly {side}x{side}, is {Image.open(img).size}")
         ranges.append((ts.firstgid, ts.firstgid + ts.tilecount, ts.name))
     ranges.sort()
     for a, b in zip(ranges, ranges[1:]):

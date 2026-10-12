@@ -603,6 +603,149 @@ class TestFeedbackFixes(Base):
         self.assertEqual(t["counts"]["tiles_updated"], 1)
 
 
+class TestTile48(Base):
+    """48 px library `gen48`: tile size from the library manifest, library chosen by the map, validate refuses mixed sizes."""
+
+    def setUp(self):
+        super().setUp()
+        self.lib48 = os.path.join(self.root, "assets", "library", "tilesets", "gen48")
+        shutil.copytree(os.path.join(REPO, "assets", "library", "tilesets", "gen48"), self.lib48)
+        self.map48 = os.path.join(self.root, "assets", "maps", "work48.tmj")
+        self.tmj("new", self.map48, "--width", 6, "--height", 5, "--tile", 48, "--tileset", os.path.join(self.lib48, "page-000.tsj"))
+
+    def tmj(self, *args, ok=True):
+        r = subprocess.run([sys.executable, os.path.join(HERE, "..", "mapgen", "tmj.py"), *map(str, args)],
+                           capture_output=True, text=True, env=self.env)
+        out = json.loads(r.stdout.strip().splitlines()[-1])
+        self.assertEqual(r.returncode == 0, ok, out)
+        return out
+
+    def ops(self, cell, colours, dy=5):
+        cx, cy = cell
+        return [{"px": [cx * 48 + 5 + i, cy * 48 + dy, c]} for i, c in enumerate(colours)]
+
+    def test_shipped_library_is_48(self):
+        out = self.run_cli("library", "check", "--lib", "gen48")
+        self.assertEqual(out["problems"], [])
+        man = json.load(open(os.path.join(REPO, "assets", "library", "tilesets", "gen48", "tiles.json")))
+        self.assertEqual(man["tile_size"], 48)
+        ts = json.load(open(os.path.join(REPO, "assets", "library", "tilesets", "gen48", "page-000.tsj")))
+        self.assertEqual((ts["tilewidth"], ts["tileheight"], ts["imagewidth"], ts["imageheight"]), (48, 48, 768, 768))
+        self.assertEqual(Image.open(os.path.join(REPO, "assets", "library", "tilesets", "gen48", "page-000.png")).size, (768, 768))
+
+    def test_edit_collide_render_check_tmx(self):
+        # the library is picked from the map's tile size (no --lib)
+        ops = self.ops((1, 1), ["#ff0000", "#00ff00"]) + [{"rect": [96, 48, 48, 48, "#3355aa"]}]
+        res = self.run_cli("edit", self.map48, "--layer", "Ground", "--ops", json.dumps(ops))
+        self.assertEqual(sorted((c["x"], c["y"]) for c in res["cells_changed"]), [(1, 1), (2, 1)])
+        man = json.load(open(os.path.join(self.lib48, "tiles.json")))
+        self.assertEqual(man["next_id"], 2)
+        page = Image.open(os.path.join(self.lib48, "page-000.png"))
+        self.assertEqual(page.size, (768, 768))
+        self.assertEqual(page.getpixel((5, 5))[:3], (255, 0, 0))
+        self.run_cli("collide", "region", self.map48, "--layer", "Ground", "--region", "2,1,1,1", "--shape", "bottom")
+        tsj = json.load(open(os.path.join(self.lib48, "page-000.tsj")))
+        o = [e for e in tsj["tiles"] if "objectgroup" in e][0]["objectgroup"]["objects"][0]
+        self.assertEqual((o["x"], o["y"], o["width"], o["height"]), (0, 24, 48, 24))
+        self.run_cli("collide", "region", self.map48, "--layer", "Ground", "--region", "2,1,1,1", "--shape", "full")
+        tsj = json.load(open(os.path.join(self.lib48, "page-000.tsj")))
+        o = [e for e in tsj["tiles"] if "objectgroup" in e][0]["objectgroup"]["objects"][0]
+        self.assertEqual((o["x"], o["y"], o["width"], o["height"]), (0, 0, 48, 48))
+        out = os.path.join(self.tmp, "r48.png")
+        res = self.run_cli("render", self.map48, "--check-tmx", "--collision", "--out", out)
+        self.assertEqual(res["check_tmx"]["differing_pixels"], 0, res)
+        res = self.run_cli("render", self.map48, "--scale", 2, "--out", out)
+        self.assertEqual(Image.open(out).size, (6 * 48 * 2, 5 * 48 * 2))
+        self.run_cli("library", "check", "--lib", "gen48")
+        self.tmj("layer", self.map48, "add", "Spawn", "--type", "object")
+        self.tmj("object", self.map48, "--layer", "Spawn", "add", "--name", "SpawnPoint", "--tile", 0, 0)
+        v = self.tmj("validate", self.map48, "--no-tiled")
+        self.assertTrue(v["ok"], v)
+
+    def test_tile_size_mismatch_is_refused(self):
+        out = self.run_cli("render", self.map48, "--lib", "gen", "--out", os.path.join(self.tmp, "x.png"), ok=False)
+        self.assertEqual(out["code"], "mismatch", out)
+        out = self.run_cli("render", self.map, "--lib", "gen48", "--out", os.path.join(self.tmp, "x.png"), ok=False)
+        self.assertEqual(out["code"], "mismatch", out)
+        self.run_cli("render", self.map, "--out", os.path.join(self.tmp, "x.png"))  # 16 px map still picks the 16 px library
+
+    def test_generate_dry_run_canvas_is_48_per_cell(self):
+        lay = os.path.join(self.tmp, "lay.txt")
+        with open(lay, "w") as f:
+            f.write("..\n.#\n")
+        res = self.run_cli("generate", self.map48, "--layer", "Ground", "--region", "1,1,2,2", "--layout", lay,
+                           "--prompt", "wood floor", "--dry-run", "--context", 0)
+        self.assertEqual(res["scale"], 8)                       # 96 art px x 8 = 768 raw px
+        with Image.open(res["canvas"]) as im:
+            self.assertEqual(im.size, (96 * 8, 96 * 8))
+
+    def test_export_is_48_px_per_cell(self):
+        self.run_cli("edit", self.map48, "--layer", "Ground", "--ops", json.dumps(self.ops((0, 0), ["#ff0000"])))
+        png = os.path.join(self.tmp, "e.png")
+        self.run_cli("export", self.map48, "--region", "0,0,1,1", "--layer", "Ground", "--out", png)
+        self.assertEqual(Image.open(png).size, (48, 48))
+
+    def test_validate_rejects_mixed_tile_sizes(self):
+        forest = os.path.join(self.root, "assets", "library", "tilesets", "forest")
+        tsj = [f for f in os.listdir(forest) if f.endswith(".tsj")][0]
+        d = json.load(open(self.map48))
+        d["tilesets"].append({"firstgid": 257, "source": os.path.relpath(os.path.join(forest, tsj), os.path.dirname(self.map48))})
+        with open(self.map48, "w") as f:
+            json.dump(d, f)
+        v = self.tmj("validate", self.map48, "--no-tiled", ok=False)
+        self.assertTrue(any("mixes tile sizes" in e for e in v["errors"]), v)
+
+
+class TestRecipes(Base):
+    """`recipe` prints plans (nothing runs); `texture roll|seam|size` are local image helpers."""
+
+    def test_texture_recipe(self):
+        for size, raw in ((48, 384), (96, 768)):
+            out = self.run_cli("recipe", "texture", "--name", "oak", "--kind", "floor", "--size", size, "--prompt", "oak planks")
+            self.assertEqual((out["canvas_px"], out["grid"]), ([raw, raw], 8))
+            steps = {st["step"]: st for st in out["steps"]}
+            self.assertIn(f"--width {raw} --height {raw}", steps["generate"]["cmd"])
+            self.assertIn("anime style pixel art, thick dark outlines, flat cel shading with two tones", steps["generate"]["cmd"])
+            self.assertIn("--factor 8", steps["snap"]["cmd"])
+            self.assertIn("interior.hex", steps["snap"]["cmd"])
+        self.run_cli("recipe", "texture", "--name", "x", "--size", 64, "--prompt", "p", ok=False)
+
+    def test_prop_recipe_sizes_and_grid(self):
+        out = self.run_cli("recipe", "prop", "--name", "sofa", "--size", "100,60", "--prompt", "sofa")
+        self.assertEqual(out["grid"], 8)
+        self.assertEqual(out["canvas_px"], [832, 512])     # (100+4)*8 and (60+4)*8, multiples of 16
+        self.assertEqual(out["warnings"], [])
+        self.assertIn("--grid 8", [st for st in out["steps"] if st["step"] == "post"][0]["cmd"])
+        out = self.run_cli("recipe", "prop", "--name", "bed", "--size", "104,148", "--prompt", "bed")
+        self.assertLess(out["grid"], 8)
+        self.assertTrue(out["warnings"])
+        self.assertLessEqual(max(out["canvas_px"]), 1024)
+        out = self.run_cli("recipe", "prop", "--name", "bed", "--size", "104,148", "--grid", 8, "--prompt", "bed", ok=False)
+        self.assertEqual(out["code"], "too_large")
+
+    def test_texture_helpers(self):
+        img = Image.new("RGB", (48, 48))
+        for y in range(48):
+            for x in range(48):
+                img.putpixel((x, y), (100 + (x % 8) * 10, 80 + (y % 8) * 10, 60))   # period 8 divides 48: repeats cleanly
+        a, b, c = (os.path.join(self.tmp, n) for n in ("t.png", "r.png", "bad.png"))
+        img.save(a)
+        res = self.run_cli("texture", "seam", a)
+        self.assertLessEqual(max(res["seam_ratio"].values()), 1.5, res)
+        self.run_cli("texture", "roll", a, "--out", b)
+        self.assertEqual(Image.open(b).convert("RGB").getpixel((24, 24)), img.getpixel((0, 0)))
+        ramp = Image.new("RGB", (48, 48))
+        for y in range(48):
+            for x in range(48):
+                ramp.putpixel((x, y), (x * 5, y * 5, 0))                                  # a ramp does not wrap
+        ramp.save(c)
+        self.assertEqual(self.run_cli("texture", "seam", c, ok=False)["code"], "check_failed")
+        sp = Image.new("RGBA", (30, 30), (0, 0, 0, 0))
+        sp.paste((255, 0, 0, 255), (5, 4, 25, 20))
+        sp.save(a)
+        self.assertEqual(self.run_cli("texture", "size", a)["opaque_wh"], [20, 16])
+
+
 class TestMapgenPolyline(Base):
     """tmj.py object add --polyline: stored the Tiled way, listed in absolute pixels, bounds-checked by validate."""
 

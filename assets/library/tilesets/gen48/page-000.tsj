@@ -1,0 +1,15 @@
+{
+ "columns": 16,
+ "image": "page-000.png",
+ "imageheight": 768,
+ "imagewidth": 768,
+ "margin": 0,
+ "name": "gen-000",
+ "spacing": 0,
+ "tilecount": 256,
+ "tiledversion": "1.12.2",
+ "tileheight": 48,
+ "tilewidth": 48,
+ "type": "tileset",
+ "version": "1.10"
+}

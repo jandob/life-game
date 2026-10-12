@@ -4,9 +4,9 @@
 
 ## 1. Tooling (artgen owner; before section 2)
 
-- [ ] 1.1 `tools/artgen/postprocess.py`: scale `SHADOW_CENTRE`, `SHADOW_RADII` and `CHAR_TOP_ROW` by `cell width / 64` and put the shadow centre `3 × k` rows above `feet_row` (96x192, feet 157 → centre (47.5, 152.5), radii 33.75x17.25); 64x128 output stays byte-identical
+- [x] 1.1 `tools/artgen/postprocess.py`: scale `SHADOW_CENTRE`, `SHADOW_RADII` and `CHAR_TOP_ROW` by `cell width / 64` and put the shadow centre `3 × k` rows above `feet_row` (96x192, feet 157 → centre (47.5, 152.5), radii 33.75x17.25); 64x128 output stays byte-identical
 - [ ] 1.2 Optional: `--grid N` with the detected phase instead of (0, 0)
-- [ ] 1.3 `tools/artgen/README.md`: the character example uses `--grid N --cell 96x192 --feet-row 157 --shadow` and explains choosing `N` once per character and backend (design D4)
+- [x] 1.3 `tools/artgen/README.md`: the character example uses `--grid N --cell 96x192 --feet-row 157 --shadow` and explains choosing `N` once per character and backend (design D4)
 
 ## 2. Art (artgen; design D2 and D4)
 
