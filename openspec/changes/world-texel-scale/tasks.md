@@ -15,10 +15,10 @@ Decided by the user, 2026-10-12: 48 px tiles, C1 integer scaling, route1_flat re
 
 ## 2. Map (scene-designer; design D6 and D7)
 
-- [ ] 2.1 Generate the `gen48` tiles and props for the landing, 3B (main room, kitchen, window) and both doors; door leaves on their own tile layers as before
-- [ ] 2.2 Rebuild `assets/maps/route1_flat.tmj` at 48 px with realistic sizes and the same layer, object and path names
-- [ ] 2.3 Re-author every `Paths` polyline at the feet: segments at least 24 px clear of colliders, end points of two actors in one room at least 72 px apart; `Doors` and `Interact` rectangles at the new doorways; `SpawnPoint` and `Samantha` at sprite centres
-- [ ] 2.4 `validate`, `render --check-tmx` and `library check` pass; opens in Tiled 1.12; deliver a render with the collision overlay and object layers, plus a 1x frame at 540 px visible with both characters composited (`renders/mock_framing.py`)
+- [x] 2.1 Generate the `gen48` tiles and props for the landing, 3B (main room, kitchen, window) and both doors; door leaves on their own tile layers as before
+- [x] 2.2 Rebuild `assets/maps/route1_flat.tmj` at 48 px with realistic sizes and the same layer, object and path names
+- [x] 2.3 Re-author every `Paths` polyline at the feet: segments at least 24 px clear of colliders, end points of two actors in one room at least 72 px apart; `Doors` and `Interact` rectangles at the new doorways; `SpawnPoint` and `Samantha` at sprite centres
+- [x] 2.4 `validate`, `render --check-tmx` and `library check` pass; opens in Tiled 1.12; deliver a render with the collision overlay and object layers, plus a 1x frame at 540 px visible with both characters composited (`renders/mock_framing.py`)
 
 ## 3. Code (gameplay-engineer; lands with section 2)
 

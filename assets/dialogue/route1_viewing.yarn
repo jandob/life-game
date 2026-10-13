@@ -6,6 +6,8 @@ tags: cutscene
 <<declare $r1_viewing_why = "">>
 <<declare $r1_viewing_question = "">>
 // Landing. He knocked on 3B; the door across the hall opens instead.
+<<walk Player PlayerKnock>>
+<<face Player up>>
 <<open_door Door3A>>
 <<show Samantha>>
 <<walk Samantha SamanthaOut>>

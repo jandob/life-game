@@ -9,6 +9,1551 @@
  "tilecount": 256,
  "tiledversion": "1.12.2",
  "tileheight": 48,
+ "tiles": [
+  {
+   "id": 0,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "floor"
+    }
+   ]
+  },
+  {
+   "id": 1,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "floor"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "floor"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "floor"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "floor"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "floor"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "floor"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "floor"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "floor"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "floor"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "floor"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "floor"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 21,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 22,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 23,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 24,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 25,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 26,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 27,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 28,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 29,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 30,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 31,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 32,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 33,
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "wall"
+    }
+   ]
+  },
+  {
+   "id": 37,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 38,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 39,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 40,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 41,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 42,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 43,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 44,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 45,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 46,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 47,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 48,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 49,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 50,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 51,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 52,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 53,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 54,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 55,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 56,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 57,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 58,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 59,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 60,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 61,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  },
+  {
+   "id": 62,
+   "objectgroup": {
+    "draworder": "index",
+    "id": 2,
+    "name": "",
+    "objects": [
+     {
+      "height": 48,
+      "id": 1,
+      "name": "",
+      "rotation": 0,
+      "type": "",
+      "visible": true,
+      "width": 48,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "opacity": 1,
+    "type": "objectgroup",
+    "visible": true,
+    "x": 0,
+    "y": 0
+   },
+   "properties": [
+    {
+     "name": "material",
+     "type": "string",
+     "value": "furniture"
+    }
+   ]
+  }
+ ],
  "tilewidth": 48,
  "type": "tileset",
  "version": "1.10"
