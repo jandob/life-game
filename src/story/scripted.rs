@@ -60,6 +60,11 @@ impl ScriptedWalk {
         }
     }
 
+    /// Releases anything waiting on this walk, e.g. when the actor is placed elsewhere.
+    pub fn finish(&self) {
+        self.done.store(true, Ordering::Relaxed);
+    }
+
     /// Starts the clocks for a point that is `dist` px away.
     fn start_point(&mut self, dist: f32) {
         self.best_dist = dist;

@@ -119,5 +119,7 @@ You: Old enough to sign a lease.
 <<walk Samantha SamanthaHome>>
 <<hide Samantha>>
 <<close_door Door3A>>
-<<end_demo>>
+// Time skip to moving day (route1_movein.yarn).
+<<fade_out>>
+<<next_scene Route1MoveIn>>
 ===
