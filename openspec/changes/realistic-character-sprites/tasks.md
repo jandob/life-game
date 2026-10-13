@@ -29,5 +29,5 @@
 
 - [ ] 4.1 Native run at the default window: character pixels the same size as tile pixels; faces readable; no uneven pixels while walking
 - [ ] 4.2 F3 overlay (looking only): the collider ball sits under the feet for both characters in all four directions; then F3 off: the player is blocked by the closed 3B door and walls
-- [ ] 4.3 The full viewing scene: walks end on their path points, nobody walks visibly into walls, YSort against furniture correct
-- [ ] 4.4 Wasm build via the `push_to_itch.sh` steps without publishing; the scene in a WebGPU browser; no console errors
+- [x] 4.3 The full viewing scene: walks end on their path points, nobody walks visibly into walls, YSort against furniture correct
+- [x] 4.4 Wasm build via the `push_to_itch.sh` steps without publishing; the scene in a WebGPU browser; no console errors

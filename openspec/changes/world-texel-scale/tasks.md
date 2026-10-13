@@ -33,6 +33,6 @@ Decided by the user, 2026-10-12: 48 px tiles, C1 integer scaling, route1_flat re
 - [ ] 4.1 Native, 1280x720 window: tile and character pixels the same size and even; the room framed with little scrolling; fullscreen (1080p) → 2x2 screen px per art px
 - [ ] 4.2 Movement feels as before relative to the characters (walk, run, scripted walks); start hint above Samantha's head; camera shake magnitude
 - [ ] 4.3 F3 overlay (looking only): feet colliders under the (legacy, scale 1.5) sprites, tile colliders on the new art; then F3 off: walls and the closed 3B door block the player
-- [ ] 4.4 The full viewing scene (opening-viewing 9.3–9.7) on the rebuilt map
+- [x] 4.4 The full viewing scene (opening-viewing 9.3–9.7) on the rebuilt map
 - [ ] 4.5 A 16 px fixture map (`enginetest.tmj`) still loads without errors
 - [ ] 4.6 Wasm build via the `push_to_itch.sh` steps without publishing; in a WebGPU browser at DPR 1 and 2 the pixels are whole multiples; no console errors
