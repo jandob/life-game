@@ -145,7 +145,10 @@ fn validate_scripted_command_arity() {
         let Some((command, args)) = parse_command(line) else {
             return;
         };
-        let Some((_, allowed)) = CUSTOM_COMMANDS.iter().find(|(name, _)| *name == command.as_str()) else {
+        let Some((_, allowed)) = CUSTOM_COMMANDS
+            .iter()
+            .find(|(name, _)| *name == command.as_str())
+        else {
             return;
         };
         assert!(

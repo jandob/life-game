@@ -210,7 +210,11 @@ impl Plugin for DialogueRunnerPlugin {
             .add_observer(hide_dialogue_on_completed)
             .add_systems(
                 Update,
-                (start_queued_scene, activate_dialogue_runner, spawn_dialogue_runner)
+                (
+                    start_queued_scene,
+                    activate_dialogue_runner,
+                    spawn_dialogue_runner,
+                )
                     .chain()
                     .run_if(in_state(GameState::Gaming).and_then(resource_exists::<YarnProject>)),
             )

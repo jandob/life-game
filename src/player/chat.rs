@@ -108,10 +108,7 @@ impl Plugin for PlayerChatPlugin {
             .add_message::<PlayerStoppedChat>()
             .add_systems(
                 Update,
-                (
-                    start_chat.run_if(not(scene_queued)),
-                    stop_chat,
-                )
+                (start_chat.run_if(not(scene_queued)), stop_chat)
                     .run_if(in_state(GameState::Gaming)),
             );
     }
