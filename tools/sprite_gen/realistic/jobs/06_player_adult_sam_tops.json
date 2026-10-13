@@ -1,0 +1,13 @@
+{"defaults": {"opts": {"lora_scale": 1.0, "background": "plain flat white background"},
+  "suffix": ", anime style pixel art, thick dark outlines, flat cel shading with two tones",
+  "out": "out/sam_art/player_age", "width": 576, "height": 1024},
+ "jobs": [
+  {"name": "player_front_flux", "seed": 31, "n": 4,
+   "prompt": "a slender young adult man in his mid twenties, clearly an adult, grown-up face with a defined jawline and a straight nose, short messy brown hair, green eyes, calm neutral expression, olive green hoodie, dark blue jeans, brown sneakers, fully clothed, standing straight, arms relaxed at his sides, front view facing the viewer, full body, no floor shadow"},
+  {"name": "sam_front_greytop", "seed": 11, "n": 2, "out": "out/sam_art/sam_top",
+   "ref": ["out/sam_art/front/sam_front_s13.png"],
+   "prompt": "the same young woman from the reference image, clearly an adult woman of 25, same long blonde hair, same teal zip-up track jacket with white stripes, but the top under the jacket is a fitted light grey top instead of white, same black leggings, same white sneakers, fully clothed, confident smirk, standing straight, arms relaxed at her sides, front view facing the viewer, full body, no floor shadow"},
+  {"name": "sam_front_tealtop", "seed": 11, "n": 2, "out": "out/sam_art/sam_top",
+   "ref": ["out/sam_art/front/sam_front_s13.png"],
+   "prompt": "the same young woman from the reference image, clearly an adult woman of 25, same long blonde hair, same teal zip-up track jacket with white stripes, but the top under the jacket is a fitted dark teal athletic top instead of white, same black leggings, same white sneakers, fully clothed, confident smirk, standing straight, arms relaxed at her sides, front view facing the viewer, full body, no floor shadow"}
+ ]}

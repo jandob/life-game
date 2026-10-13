@@ -10,12 +10,12 @@
 
 ## 2. Art (artgen; design D2 and D4)
 
-- [ ] 2.1 Fix `N` per character and backend + size from a standing front (man 132 rows, Samantha 126); record it in the recipe
-- [ ] 2.2 `assets/library/characters/player/player.png`: 960x2304, all 12 rows filled as in design D2 (run rows from walk poses until run art exists)
-- [ ] 2.3 `assets/library/characters/samantha/samantha.png`: 960x2304, all 12 rows (rows 0–7 needed by the scene)
-- [ ] 2.4 Check every frame: feet on row 157, standing height within ±2 rows, nothing clipped, eyes at least 2 rows on front frames, left and right mirror-consistent
-- [ ] 2.5 Contact sheet: every row of both sheets at 3x, plus both characters at 1x in front of the rebuilt 3B door at 1280x720 (`world-texel-scale/renders/mock_framing.py` composites)
-- [ ] 2.6 `LIBRARY.md` rows for 2.2 and 2.3 (tool, recipe with `N`, model and LoRA licence)
+- [x] 2.1 Fix `N` per character and backend + size from a standing front (man 132 rows, Samantha 126); record it in the recipe
+- [x] 2.2 `assets/library/characters/player/player.png`: 960x2304, all 12 rows filled as in design D2 (run rows from walk poses until run art exists)
+- [x] 2.3 `assets/library/characters/samantha/samantha.png`: 960x2304, all 12 rows (rows 0–7 needed by the scene)
+- [x] 2.4 Check every frame: feet on row 157, standing height within ±2 rows, nothing clipped, eyes at least 2 rows on front frames, left and right mirror-consistent
+- [x] 2.5 Contact sheet: every row of both sheets at 3x, plus both characters at 1x in front of the rebuilt 3B door at 1280x720 (`world-texel-scale/renders/mock_framing.py` composites)
+- [x] 2.6 `LIBRARY.md` rows for 2.2 and 2.3 (tool, recipe with `N`, model and LoRA licence)
 
 ## 3. Code (gameplay-engineer; after `world-texel-scale` section 3, with the art from section 2)
 

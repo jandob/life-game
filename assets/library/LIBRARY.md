@@ -5,7 +5,8 @@ Sources and licences are taken from `CREDITS.md`. Status: `in use` is loaded by 
 
 | Path | What it is | Source / author | Licence | Status |
 |---|---|---|---|---|
-| characters/player/player.png | Male player spritesheet (64x128 frames) | Generated in-house (`tools/sprite_gen/male_player.py`) | in-house | in use |
+| characters/player/player.png | Male player spritesheet, realistic proportions: 960x2304, 96x192 cells, 10x12 (idle/walk/run x down/left/right/up), feet on row 157, 132 rows tall, scale 1.0 (realistic-character-sprites D1/D2). Slender adult, brown hair, olive hoodie, dark jeans | Generated in-house: raw key frames by `tools/artgen` FLUX klein (jobs in `tools/sprite_gen/realistic/jobs/`), sheet by `python tools/sprite_gen/realistic/build_sheets.py player OUT.png` (post at fixed grid N = 7.36, front/back walk = scripted warps, left = mirrored right). The old 64x128 procedural sheet is in git history | in-house; FLUX.2 klein 4B + Limbicnation/pixel-art-lora (both Apache-2.0) | in use (after the REALISTIC code switch) |
+| characters/samantha/samantha.png | Samantha (route 1) spritesheet, realistic proportions: 960x2304, 96x192 cells, 10x12, feet on row 157, 126 rows tall, scale 1.0. Adult (25), long blonde hair, teal track jacket, grey top, black leggings, white trainers | Generated in-house: look seeded by an SDXL WAI v17 + pixel_art_xl front (`jobs/01_fronts_sdxl.sh`, seed 13), all used frames FLUX klein with references; sheet by `python tools/sprite_gen/realistic/build_sheets.py samantha OUT.png` (per-view N: front 7.48, side 7.29, back 7.33) | in-house; FLUX.2 klein 4B + Limbicnation/pixel-art-lora (both Apache-2.0); look reference from WAI v17 (FAIPL-1.0-SD) + pixel-art-xl (CreativeML Open RAIL-M) | in use (after the REALISTIC code switch) |
 | characters/wanderer/wanderer.png | Former female protagonist, now wandering NPC | https://angeler1234.itch.io/basic-character-female-pack-for-free-64 | see source page | in use |
 | characters/forest-npcs/eleonore.png | Eleonore NPC | https://otsoga.itch.io/free-medieval-npcs-witch-and-swordswoman | see source page | in use |
 | characters/forest-npcs/eleonore_shadow.png | Eleonore shadow | https://otsoga.itch.io/free-medieval-npcs-witch-and-swordswoman | see source page | in use |
@@ -15,6 +16,8 @@ Sources and licences are taken from `CREDITS.md`. Status: `in use` is loaded by 
 | characters/forest-npcs/ionas.png | Ionas NPC | https://gandalfhardcore.itch.io/free-pixel-art | see source page | in use |
 | characters/forest-npcs/antonius.png | Antonius NPC | https://gandalfhardcore.itch.io/free-pixel-art | see source page | in use |
 | portraits/pai.png | Dialogue portrait, Pai | unknown - check | unknown - check | in use |
+| portraits/samantha.png | Dialogue portrait, Samantha (64x64 bust, white sticker border) | Generated in-house: `python tools/sprite_gen/realistic/portraits.py samantha OUT.png` (crop of the raw FLUX front, artgen postprocess) | in-house; as characters/samantha/samantha.png | in use |
+| portraits/player.png | Dialogue portrait, male player / "You" (64x64 bust, white sticker border) | Generated in-house: `python tools/sprite_gen/realistic/portraits.py player OUT.png` (crop of the raw FLUX front, artgen postprocess) | in-house; FLUX.2 klein 4B + Limbicnation/pixel-art-lora (both Apache-2.0) | in use |
 | portraits/eleonore.png | Dialogue portrait | unknown - check | unknown - check | in use |
 | portraits/jotem.png | Dialogue portrait | unknown - check | unknown - check | in use |
 | portraits/isabelle.png | Dialogue portrait | unknown - check | unknown - check | in use |
