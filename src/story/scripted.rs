@@ -4,8 +4,10 @@
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::time::Duration;
 
 use bevy::prelude::*;
+use bevy::time::Real;
 use bevy_rapier2d::prelude::*;
 
 use crate::npc::FourWayFacing;
@@ -19,6 +21,11 @@ pub const SCRIPT_WALK_SPEED: f32 = 210.0;
 const ARRIVE_DISTANCE: f32 = 6.0;
 /// Seconds without progress after which an actor is placed at its target point.
 const STUCK_SECONDS: f32 = 1.5;
+/// Seconds an actor may take for one point on top of the time the walk itself needs,
+/// whatever progress it makes. Bounds crawling that the progress check lets through.
+const POINT_GRACE_SECONDS: f32 = 3.0;
+/// A point may take this many times the free walking time before it is forced.
+const POINT_SLOWDOWN: f32 = 3.0;
 /// Progress (px) below which an actor counts as not moving.
 const STUCK_PROGRESS: f32 = 6.0;
 const NO_WAIT: &str = "no_wait";
@@ -36,6 +43,8 @@ pub struct ScriptedWalk {
     done: Arc<AtomicBool>,
     best_dist: f32,
     stuck: Timer,
+    /// Upper bound for the current point, set once its distance is known.
+    deadline: Timer,
 }
 
 impl ScriptedWalk {
@@ -47,7 +56,37 @@ impl ScriptedWalk {
             done,
             best_dist: f32::MAX,
             stuck: Timer::from_seconds(STUCK_SECONDS, TimerMode::Once),
+            deadline: Timer::from_seconds(STUCK_SECONDS, TimerMode::Once),
         }
+    }
+
+    /// Starts the clocks for a point that is `dist` px away.
+    fn start_point(&mut self, dist: f32) {
+        self.best_dist = dist;
+        self.stuck.reset();
+        let free_walk = dist / SCRIPT_WALK_SPEED;
+        self.deadline = Timer::from_seconds(
+            POINT_GRACE_SECONDS + POINT_SLOWDOWN * free_walk,
+            TimerMode::Once,
+        );
+    }
+
+    /// Ticks the fail-safes by `delta` and returns whether the actor has to be placed at
+    /// its point: it made no progress for `STUCK_SECONDS`, or took far too long overall.
+    fn is_stuck(&mut self, dist: f32, delta: Duration) -> bool {
+        if !dist.is_finite() {
+            return true;
+        }
+        if self.best_dist == f32::MAX {
+            self.start_point(dist);
+        } else if dist < self.best_dist - STUCK_PROGRESS {
+            self.best_dist = dist;
+            self.stuck.reset();
+        } else {
+            self.stuck.tick(delta);
+        }
+        self.deadline.tick(delta);
+        self.stuck.is_finished() || self.deadline.is_finished()
     }
 }
 
@@ -197,9 +236,12 @@ pub fn hide_command(
 
 /// Moves every actor with a `ScriptedWalk`. Kinematic actors step their transform,
 /// dynamic ones (the player) get a velocity so that colliders still apply.
+///
+/// The fail-safes run on real time, so they fire even when virtual time stands still.
 pub(crate) fn scripted_walk(
     mut commands: Commands,
     time: Res<Time>,
+    real_time: Res<Time<Real>>,
     mut q_walkers: Query<(
         Entity,
         Option<&Actor>,
@@ -211,9 +253,6 @@ pub(crate) fn scripted_walk(
     )>,
 ) {
     let dt = time.delta_secs();
-    if dt <= 0.0 {
-        return;
-    }
 
     for (entity, actor, mut walk, mut transform, mut velocity, mut facing, mut player) in &mut q_walkers {
         let pos = transform.translation.truncate();
@@ -222,19 +261,14 @@ pub(crate) fn scripted_walk(
         let dist = to_target.length();
 
         let mut arrived = dist <= ARRIVE_DISTANCE;
-        if !arrived {
-            if dist < walk.best_dist - STUCK_PROGRESS {
-                walk.best_dist = dist;
-                walk.stuck.reset();
-            } else if walk.stuck.tick(time.delta()).is_finished() {
-                warn!(
-                    "Scripted walk of '{}' on path '{}' is stuck {dist:.0}px from point {} {target:?} (actor at {pos:?}), placing the actor there",
-                    actor.map_or("?", |a| a.0.as_str()),
-                    walk.path,
-                    walk.next,
-                );
-                arrived = true;
-            }
+        if !arrived && walk.is_stuck(dist, real_time.delta()) {
+            warn!(
+                "Scripted walk of '{}' on path '{}' is stuck {dist:.0}px from point {} {target:?} (actor at {pos:?}), placing the actor there",
+                actor.map_or("?", |a| a.0.as_str()),
+                walk.path,
+                walk.next,
+            );
+            arrived = true;
         }
 
         if arrived {
@@ -259,6 +293,9 @@ pub(crate) fn scripted_walk(
         }
         if let Some(player) = player.as_mut() {
             player.current_direction = dir;
+        }
+        if dt <= 0.0 {
+            continue;
         }
         match velocity.as_mut() {
             Some(velocity) => velocity.linear = dir * SCRIPT_WALK_SPEED.min(dist / dt),
@@ -302,9 +339,23 @@ mod tests {
     }
 
     fn test_app() -> App {
+        test_app_with(false)
+    }
+
+    /// With `physics`, frames last 16 ms: rapier steps at most 1/60 s per frame.
+    fn test_app_with(physics: bool) -> App {
         let mut app = App::new();
-        app.add_plugins(MinimalPlugins)
-            .insert_resource(TimeUpdateStrategy::ManualDuration(Duration::from_millis(50)))
+        app.add_plugins(MinimalPlugins);
+        if physics {
+            app.add_plugins((
+                TransformPlugin,
+                AssetPlugin::default(),
+                RapierPhysicsPlugin::<NoUserData>::default(),
+            ));
+            app.init_asset::<Mesh>();
+        }
+        let frame = Duration::from_millis(if physics { 16 } else { 50 });
+        app.insert_resource(TimeUpdateStrategy::ManualDuration(frame))
             .insert_resource(TiledMap {
                 tile_size: 48.0,
                 width: 40,
@@ -313,10 +364,10 @@ mod tests {
                 tilesets: Vec::new(),
                 object_layers: vec![ObjectLayerData {
                     name: "Paths".to_string(),
-                    objects: vec![path_object(
-                        "There",
-                        &[Vec2::new(100.0, 100.0), Vec2::new(160.0, 100.0)],
-                    )],
+                    objects: vec![
+                        path_object("There", &[Vec2::new(100.0, 100.0), Vec2::new(160.0, 100.0)]),
+                        path_object("Single", &[Vec2::new(100.0, 100.0)]),
+                    ],
                 }],
             })
             .add_systems(Update, scripted_walk);
@@ -426,5 +477,130 @@ mod tests {
             .run_system_with(walk, ("Walker".to_string(), "Nowhere".to_string(), None))
             .unwrap();
         assert!(unknown_path.is_finished());
+    }
+
+    /// A player like the real one: dynamic body, 96x192 sheet, feet collider.
+    fn spawn_player(app: &mut App, pos: Vec2) -> Entity {
+        let (collider, local) = crate::character::REALISTIC.feet_collider();
+        let feet = app.world_mut().spawn((collider, local)).id();
+        app.world_mut()
+            .spawn((
+                Actor("Player".to_string()),
+                Player::default(),
+                RigidBody::Dynamic,
+                LockedAxes::ROTATION_LOCKED,
+                Velocity::zero(),
+                Ccd::enabled(),
+                crate::character::REALISTIC.transform(pos),
+            ))
+            .add_child(feet)
+            .id()
+    }
+
+    fn start_walk(app: &mut App, actor: &str, path: &str) -> Arc<AtomicBool> {
+        let walk = app.world_mut().register_system(walk_command);
+        app.world_mut()
+            .run_system_with(walk, (actor.to_string(), path.to_string(), None))
+            .unwrap()
+    }
+
+    /// Updates until the walk is done and returns the seconds it took.
+    fn run_until_done(app: &mut App, done: &AtomicBool, max_seconds: f32) -> f32 {
+        let start = app.world().resource::<Time<Real>>().elapsed_secs();
+        loop {
+            app.update();
+            let elapsed = app.world().resource::<Time<Real>>().elapsed_secs() - start;
+            if done.load(Ordering::Relaxed) || elapsed > max_seconds {
+                return elapsed;
+            }
+        }
+    }
+
+    fn position(app: &App, entity: Entity) -> Vec2 {
+        app.world().get::<Transform>(entity).unwrap().translation.truncate()
+    }
+
+    #[test]
+    fn dynamic_player_walks_at_full_speed_to_its_points() {
+        let mut app = test_app_with(true);
+        let points = app.world().resource::<TiledMap>().path("Single").unwrap();
+        let start = points[0] - Vec2::new(300.0, 0.0);
+        let player = spawn_player(&mut app, start);
+        app.update();
+
+        let done = start_walk(&mut app, "Player", "Single");
+        for _ in 0..60 {
+            app.update();
+        }
+        // About a second in (60 frames of 16 ms), at 210 px/s
+        let travelled = position(&app, player).x - start.x;
+        assert!(
+            (150.0..=230.0).contains(&travelled),
+            "player travelled {travelled}px in a second, expected about {SCRIPT_WALK_SPEED}"
+        );
+        assert!(!done.load(Ordering::Relaxed));
+
+        let seconds = run_until_done(&mut app, &done, 3.0);
+        assert!(done.load(Ordering::Relaxed), "the walk never finished");
+        assert!(seconds < 1.5, "took {seconds}s more");
+        assert!(position(&app, player).distance(points[0]) < 0.01);
+    }
+
+    #[test]
+    fn blocked_walk_places_the_actor_within_the_stuck_time() {
+        let mut app = test_app_with(true);
+        let points = app.world().resource::<TiledMap>().path("Single").unwrap();
+        let start = points[0] - Vec2::new(300.0, 0.0);
+        let player = spawn_player(&mut app, start);
+        // A wall between the player and the first point
+        app.world_mut().spawn((
+            RigidBody::Fixed,
+            Collider::cuboid(10.0, 400.0),
+            Transform::from_translation((start + Vec2::new(150.0, 0.0)).extend(0.0)),
+        ));
+        app.update();
+
+        let done = start_walk(&mut app, "Player", "Single");
+        // 100 px to the wall at 210 px/s, then the stuck time
+        let seconds = run_until_done(&mut app, &done, 5.0);
+        assert!(done.load(Ordering::Relaxed), "the walk never finished");
+        assert!(seconds < 0.5 + STUCK_SECONDS + 0.5, "took {seconds}s");
+        assert!(position(&app, player).distance(points[0]) < 0.01);
+    }
+
+    #[test]
+    fn fail_safe_does_not_depend_on_virtual_time() {
+        let mut app = test_app();
+        app.world_mut().resource_mut::<Time<Virtual>>().pause();
+        let done = start_walk(&mut app, "Walker", "Single");
+        let seconds = run_until_done(&mut app, &done, 5.0);
+        assert!(done.load(Ordering::Relaxed), "the walk never finished");
+        assert!(seconds < STUCK_SECONDS + 0.2, "took {seconds}s");
+    }
+
+    #[test]
+    fn crawling_actor_is_forced_after_the_point_deadline() {
+        let mut walk = ScriptedWalk::new(
+            "There",
+            vec![Vec2::new(1000.0, 0.0)],
+            Arc::new(AtomicBool::new(false)),
+        );
+        let frame = Duration::from_millis(100);
+        let mut dist = 1000.0;
+        let mut seconds = 0.0;
+        // 8 px/s: more progress than STUCK_PROGRESS per stuck time, but far too slow
+        while !walk.is_stuck(dist, frame) {
+            dist -= 0.8;
+            seconds += 0.1;
+            assert!(seconds < 30.0, "never forced");
+        }
+        let limit = POINT_GRACE_SECONDS + POINT_SLOWDOWN * 1000.0 / SCRIPT_WALK_SPEED;
+        assert!((seconds - limit).abs() < 0.3, "forced after {seconds}s, limit {limit}s");
+    }
+
+    #[test]
+    fn nan_distance_is_stuck_at_once() {
+        let mut walk = ScriptedWalk::new("There", vec![Vec2::ZERO], Arc::new(AtomicBool::new(false)));
+        assert!(walk.is_stuck(f32::NAN, Duration::from_millis(16)));
     }
 }
