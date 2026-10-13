@@ -17,6 +17,9 @@ pub struct SheetFormat {
 /// 64x128 cells drawn at 1.5, which gives 96x192 world px.
 pub const LEGACY: SheetFormat = SheetFormat { scale: 1.5 };
 
+/// 96x192 cells drawn at 1.0, which gives 96x192 world px.
+pub const REALISTIC: SheetFormat = SheetFormat { scale: 1.0 };
+
 impl SheetFormat {
     /// The feet collider and its local transform, for a child of the (scaled) sprite entity.
     pub fn feet_collider(self) -> (Collider, Transform) {
@@ -42,5 +45,12 @@ mod tests {
         assert_eq!(collider.as_ball().unwrap().radius(), 16.0);
         assert_eq!(transform.translation, Vec3::new(0.0, -32.0, 0.0));
         assert_eq!(LEGACY.transform(Vec2::new(1.0, 2.0)).scale, Vec3::splat(1.5));
+    }
+
+    #[test]
+    fn realistic_collider_is_in_world_px() {
+        let (collider, transform) = REALISTIC.feet_collider();
+        assert_eq!(collider.as_ball().unwrap().radius(), 24.0);
+        assert_eq!(transform.translation, Vec3::new(0.0, -48.0, 0.0));
     }
 }

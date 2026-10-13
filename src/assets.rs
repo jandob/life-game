@@ -6,19 +6,21 @@ use bevy_asset_loader::prelude::*;
 pub struct GameAssets {
     #[asset(path = "library/characters/player/player.png")]
     pub player_texture: Handle<Image>,
-    #[asset(texture_atlas(tile_size_x = 64, tile_size_y = 128, columns = 10, rows = 12))]
+    // Sheet format: character::REALISTIC (96x192 cells).
+    #[asset(texture_atlas(tile_size_x = 96, tile_size_y = 192, columns = 10, rows = 12))]
     pub player_layout: Handle<TextureAtlasLayout>,
 
     // --- NPC ---
     #[asset(path = "library/characters/wanderer/wanderer.png")]
     pub wanderer_texture: Handle<Image>,
+    // Sheet format: character::LEGACY (64x128 cells).
     #[asset(texture_atlas(tile_size_x = 64, tile_size_y = 128, columns = 10, rows = 12))]
     pub wanderer_layout: Handle<TextureAtlasLayout>,
 
-    // Placeholder until library/characters/samantha/samantha.png exists (opening-viewing 3.1).
-    #[asset(path = "library/characters/wanderer/wanderer.png")]
+    #[asset(path = "library/characters/samantha/samantha.png")]
     pub samantha_texture: Handle<Image>,
-    #[asset(texture_atlas(tile_size_x = 64, tile_size_y = 128, columns = 10, rows = 12))]
+    // Sheet format: character::REALISTIC (96x192 cells).
+    #[asset(texture_atlas(tile_size_x = 96, tile_size_y = 192, columns = 10, rows = 12))]
     pub samantha_layout: Handle<TextureAtlasLayout>,
 
     // --- MAP ---
@@ -64,10 +66,9 @@ pub struct GameAssets {
     #[asset(texture_atlas(tile_size_x = 32, tile_size_y = 32, columns = 2, rows = 1))]
     pub dialogue_start_hint_layout: Handle<TextureAtlasLayout>,
 
-    // Placeholders until library/portraits/{samantha,player}.png exist (opening-viewing 3.2, 3.3).
-    #[asset(path = "library/portraits/pai.png")]
+    #[asset(path = "library/portraits/samantha.png")]
     pub samantha_icon: Handle<Image>,
-    #[asset(path = "library/portraits/pai.png")]
+    #[asset(path = "library/portraits/player.png")]
     pub player_icon: Handle<Image>,
 
     #[asset(path = "library/ui/keys/arrows.png")]
