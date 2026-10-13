@@ -19,11 +19,11 @@
 
 ## 3. Code (gameplay-engineer; after `world-texel-scale` section 3, with the art from section 2)
 
-- [ ] 3.1 `src/character.rs`: add `REALISTIC = SheetFormat { scale: 1.0 }` (96x192 cells)
-- [ ] 3.2 Player (with 2.2): `src/assets.rs` `player_layout` → `texture_atlas(tile_size_x = 96, tile_size_y = 192, columns = 10, rows = 12)`; `src/player/spawn.rs` uses `REALISTIC.transform` and `REALISTIC.feet_collider()`
-- [ ] 3.3 Samantha (with 2.3): `samantha_layout` → 96x192, 10x12; `src/npc/spawn.rs` uses `REALISTIC`
-- [ ] 3.4 `src/assets.rs`: a comment on each character atlas naming its format (`REALISTIC` 96x192 or `LEGACY` 64x128)
-- [ ] 3.5 `cargo check`, `cargo check --target wasm32-unknown-unknown`, `cargo test`, `cargo clippy` clean for the touched files
+- [x] 3.1 `src/character.rs`: add `REALISTIC = SheetFormat { scale: 1.0 }` (96x192 cells)
+- [x] 3.2 Player (with 2.2): `src/assets.rs` `player_layout` → `texture_atlas(tile_size_x = 96, tile_size_y = 192, columns = 10, rows = 12)`; `src/player/spawn.rs` uses `REALISTIC.transform` and `REALISTIC.feet_collider()`
+- [x] 3.3 Samantha (with 2.3): `samantha_layout` → 96x192, 10x12; `src/npc/spawn.rs` uses `REALISTIC`
+- [x] 3.4 `src/assets.rs`: a comment on each character atlas naming its format (`REALISTIC` 96x192 or `LEGACY` 64x128)
+- [x] 3.5 `cargo check`, `cargo check --target wasm32-unknown-unknown`, `cargo test`, `cargo clippy` clean for the touched files
 
 ## 4. Verification (lead)
 

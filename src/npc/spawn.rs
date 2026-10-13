@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use crate::animation::{SpriteAnimator, CHARACTER_CLIPS};
-use crate::character::LEGACY;
+use crate::character::REALISTIC;
 use crate::story::scripted::Actor;
 use crate::utils::COLLISION_GROUPS_NONE;
 use crate::world::map::tiled_map::TiledMap;
@@ -14,7 +14,7 @@ use super::{FourWayFacing, Npc, NpcDialogue};
 /// pushed, and she pushes the player aside.
 fn spawn_samantha(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec2, hidden: bool) {
     let mut collider = commands.spawn((
-        LEGACY.feet_collider(),
+        REALISTIC.feet_collider(),
         // Scripted scenes walk her and the player side by side through doorways;
         // a solid kinematic body there would shove him into the walls.
         COLLISION_GROUPS_NONE,
@@ -44,7 +44,7 @@ fn spawn_samantha(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec2, 
             }),
             ..default()
         },
-        LEGACY.transform(pos),
+        REALISTIC.transform(pos),
     ));
     if hidden {
         samantha.insert(Visibility::Hidden);

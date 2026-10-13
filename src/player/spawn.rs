@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::character::LEGACY;
+use crate::character::REALISTIC;
 use crate::animation::{SpriteAnimator, CHARACTER_CLIPS};
 use crate::story::scripted::Actor;
 use crate::world::camera::YSort;
@@ -23,7 +23,7 @@ fn spawn_player(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<
 
     let collider = commands
         .spawn((
-            LEGACY.feet_collider(),
+            REALISTIC.feet_collider(),
             ActiveEvents::COLLISION_EVENTS,
             PLAYER_COLLISION_GROUPS,
         ))
@@ -49,7 +49,7 @@ fn spawn_player(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<
                 }),
                 ..default()
             },
-            LEGACY.transform(spawn_pos),
+            REALISTIC.transform(spawn_pos),
         ))
         .add_child(collider);
 }
