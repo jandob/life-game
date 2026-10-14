@@ -47,8 +47,14 @@ mod tests {
     #[test]
     fn speakers_are_found_by_yarn_name() {
         assert_eq!(speaker("You"), Some(Speaker::Player));
-        assert_eq!(speaker("Samantha"), Some(Speaker::Npc(NpcDialogue::Samantha)));
-        assert_eq!(speaker("_Samantha"), Some(Speaker::Npc(NpcDialogue::Samantha)));
+        assert_eq!(
+            speaker("Samantha"),
+            Some(Speaker::Npc(NpcDialogue::Samantha))
+        );
+        assert_eq!(
+            speaker("_Samantha"),
+            Some(Speaker::Npc(NpcDialogue::Samantha))
+        );
     }
 
     #[test]

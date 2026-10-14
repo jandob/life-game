@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::character::REALISTIC;
 use crate::animation::{SpriteAnimator, CHARACTER_CLIPS};
+use crate::character::REALISTIC;
 use crate::story::scripted::Actor;
 use crate::world::camera::YSort;
 use crate::world::map::tiled_map::TiledMap;
@@ -16,9 +16,7 @@ fn spawn_player(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<
     let spawn_pos: Vec2 = spawn_objects
         .iter()
         .find(|obj| obj.name == "SpawnPoint")
-        .map(|obj| {
-            tiled_map.tiled_to_game(obj.x, obj.y)
-        })
+        .map(|obj| tiled_map.tiled_to_game(obj.x, obj.y))
         .unwrap_or(Vec2::ZERO); // Fallback: origin
 
     let collider = commands

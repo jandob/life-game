@@ -29,8 +29,8 @@ const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 14] = [
 
 /// Commands that Yarn Spinner itself provides.
 const BUILTIN_COMMANDS: [&str; 14] = [
-    "jump", "set", "declare", "if", "elseif", "else", "endif", "wait", "detour", "enum",
-    "endenum", "once", "endonce", "return",
+    "jump", "set", "declare", "if", "elseif", "else", "endif", "wait", "detour", "enum", "endenum",
+    "once", "endonce", "return",
 ];
 
 /// All yarn files directly in `PATH_TO_DIR` as (file name without extension, contents).
@@ -268,9 +268,7 @@ fn validate_first_line_is_npc_line() {
         for (title, body) in nodes(&contents) {
             let first = body
                 .iter()
-                .find(|line| {
-                    !(line.is_empty() || line.starts_with("<<") || line.starts_with("//"))
-                })
+                .find(|line| !(line.is_empty() || line.starts_with("<<") || line.starts_with("//")))
                 .unwrap_or_else(|| panic!("Node {title} in {file} has no dialogue line"));
             assert!(
                 !first.starts_with("You:") && !first.starts_with("->"),

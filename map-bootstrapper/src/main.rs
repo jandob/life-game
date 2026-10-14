@@ -8,8 +8,8 @@ use std::collections::HashSet;
 use std::f32::consts::PI;
 use std::path::Path;
 
-use glam::{IVec2, Vec2, Vec3};
 use chrono::Timelike;
+use glam::{IVec2, Vec2, Vec3};
 use noisy_bevy::simplex_noise_2d_seeded;
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256PlusPlus;
@@ -280,7 +280,9 @@ impl BitMap {
     }
 
     fn get_tile_raw(&self, v: IVec2) -> (u8, u16) {
-        self.idx(v).map(|i| self.tiles[i]).unwrap_or((EMPTY_TYPE_MASK, INVALID_TILE))
+        self.idx(v)
+            .map(|i| self.tiles[i])
+            .unwrap_or((EMPTY_TYPE_MASK, INVALID_TILE))
     }
 
     fn get_tile_mut(&mut self, v: IVec2) -> Option<&mut (u8, u16)> {
@@ -371,8 +373,7 @@ impl BitMap {
     fn get_flower_tile(&self, v: IVec2) -> u16 {
         let w = Vec2::new(v.x as f32, v.y as f32);
         let noise = simplex_noise_2d_seeded(w * FLOWER_NOISE_ZOOM, self.seed + 2.0);
-        let secondary_noise =
-            simplex_noise_2d_seeded(w * FLOWER_NOISE_ZOOM, self.seed + 3.0) * 1.0;
+        let secondary_noise = simplex_noise_2d_seeded(w * FLOWER_NOISE_ZOOM, self.seed + 3.0) * 1.0;
         let h = noise + secondary_noise;
         if h < FLOWER_HEIGHT_LEVEL {
             self.flower_mask.get_index(1)
@@ -428,11 +429,13 @@ fn generate_edges(vertices: &[Vec2]) -> Vec<(usize, usize)> {
 fn kruskals_edges(vertices: &[Vec2]) -> HashSet<(usize, usize)> {
     let sorted_edges = generate_edges(vertices);
     let mut result = HashSet::new();
-    let mut sets: Vec<HashSet<usize>> = (0..vertices.len()).map(|i| {
-        let mut s = HashSet::new();
-        s.insert(i);
-        s
-    }).collect();
+    let mut sets: Vec<HashSet<usize>> = (0..vertices.len())
+        .map(|i| {
+            let mut s = HashSet::new();
+            s.insert(i);
+            s
+        })
+        .collect();
 
     for (u, v) in sorted_edges {
         let mut u_set_index = None;
@@ -469,7 +472,10 @@ fn connect_outer_vertices(vertices: &[Vec2], edges: &mut HashSet<(usize, usize)>
     }
 
     fn number_of_edges(vertex_index: usize, edges: &HashSet<(usize, usize)>) -> usize {
-        edges.iter().filter(|&&(a, b)| a == vertex_index || b == vertex_index).count()
+        edges
+            .iter()
+            .filter(|&&(a, b)| a == vertex_index || b == vertex_index)
+            .count()
     }
 
     for i in 0..vertices.len() {
@@ -501,7 +507,12 @@ fn connect_outer_vertices(vertices: &[Vec2], edges: &mut HashSet<(usize, usize)>
 // Path generation (mirrored from path.rs)
 // ──────────────────────────────────────────────────────────────────────
 
-fn generate_poisson_points(radius: f32, region_size: Vec2, rejection_iter: usize, seed: u64) -> Vec<Vec2> {
+fn generate_poisson_points(
+    radius: f32,
+    region_size: Vec2,
+    rejection_iter: usize,
+    seed: u64,
+) -> Vec<Vec2> {
     let cell_size = radius / f32::sqrt(2.0);
     let grid_size_x = (region_size.x / cell_size).floor() as usize + 1;
     let grid_size_y = (region_size.y / cell_size).floor() as usize + 1;
@@ -550,7 +561,11 @@ fn is_valid(
     points: &[Vec2],
     grid: &[Vec<i32>],
 ) -> bool {
-    if candidate.x < 0.0 || candidate.x >= region_size.x || candidate.y < 0.0 || candidate.y >= region_size.y {
+    if candidate.x < 0.0
+        || candidate.x >= region_size.x
+        || candidate.y < 0.0
+        || candidate.y >= region_size.y
+    {
         return false;
     }
 
@@ -596,8 +611,14 @@ fn compute_path_points(p1: Vec2, p2: Vec2, c1: Vec2, c2: Vec2, sample_size: usiz
 fn generate_bezier_points(rng: &mut Xoshiro256PlusPlus, p1: Vec2, p2: Vec2) -> (Vec2, Vec2) {
     let min_p = Vec2::new(p1.x.min(p2.x), p1.y.min(p2.y));
     let max_p = Vec2::new(p1.x.max(p2.x), p1.y.max(p2.y));
-    let c1 = Vec2::new(rng.gen_range(min_p.x..max_p.x), rng.gen_range(min_p.y..max_p.y));
-    let c2 = Vec2::new(rng.gen_range(min_p.x..max_p.x), rng.gen_range(min_p.y..max_p.y));
+    let c1 = Vec2::new(
+        rng.gen_range(min_p.x..max_p.x),
+        rng.gen_range(min_p.y..max_p.y),
+    );
+    let c2 = Vec2::new(
+        rng.gen_range(min_p.x..max_p.x),
+        rng.gen_range(min_p.y..max_p.y),
+    );
     (c1, c2)
 }
 
@@ -740,7 +761,10 @@ struct TiledTileset {
 // ──────────────────────────────────────────────────────────────────────
 
 fn main() {
-    println!("map-bootstrapper: generating {}x{} tile map centered on origin", MAP_WIDTH, MAP_HEIGHT);
+    println!(
+        "map-bootstrapper: generating {}x{} tile map centered on origin",
+        MAP_WIDTH, MAP_HEIGHT
+    );
 
     let origin_x = -(MAP_WIDTH as i32 / 2);
     let origin_y = -(MAP_HEIGHT as i32 / 2);
@@ -896,7 +920,12 @@ fn main() {
     std::fs::write(&tsj_path, &tsj_json).expect("Failed to write TSJ");
     println!("  -> wrote {}", tsj_path.display());
 
-    println!("Done! Map generated at {} ({}x{} tiles)", tmj_path.display(), MAP_WIDTH, MAP_HEIGHT);
+    println!(
+        "Done! Map generated at {} ({}x{} tiles)",
+        tmj_path.display(),
+        MAP_WIDTH,
+        MAP_HEIGHT
+    );
 }
 
 // ──────────────────────────────────────────────────────────────────────
@@ -918,13 +947,20 @@ fn generate_flora_objects(bitmap: &BitMap) -> Vec<serde_json::Value> {
 
     // Place trees (large, spaced out) across the full map
     let map_center = (MAP_WIDTH * 16 / 2) as f32;
-    let tree_positions = generate_poisson_points(64.0, Vec2::new(MAP_WIDTH as f32 * 16.0, MAP_HEIGHT as f32 * 16.0), 20, bitmap.seed as u64 + 200);
+    let tree_positions = generate_poisson_points(
+        64.0,
+        Vec2::new(MAP_WIDTH as f32 * 16.0, MAP_HEIGHT as f32 * 16.0),
+        20,
+        bitmap.seed as u64 + 200,
+    );
     for (i, pos) in tree_positions.iter().enumerate().take(25) {
         // Shift from centered (0,0) to Tiled coordinates (0, 1600)
         let world_x = pos.x + map_center;
         let world_y = pos.y + map_center;
-        if world_x >= 0.0 && world_x < (MAP_WIDTH * 16) as f32
-            && world_y >= 0.0 && world_y < (MAP_HEIGHT * 16) as f32
+        if world_x >= 0.0
+            && world_x < (MAP_WIDTH * 16) as f32
+            && world_y >= 0.0
+            && world_y < (MAP_HEIGHT * 16) as f32
         {
             objects.push(serde_json::json!({
                 "id": i as u32 + 1,
@@ -939,12 +975,19 @@ fn generate_flora_objects(bitmap: &BitMap) -> Vec<serde_json::Value> {
     }
 
     // Place bushes (smaller, more dense) across the full map
-    let bush_positions = generate_poisson_points(32.0, Vec2::new(MAP_WIDTH as f32 * 16.0, MAP_HEIGHT as f32 * 16.0), 20, bitmap.seed as u64 + 300);
+    let bush_positions = generate_poisson_points(
+        32.0,
+        Vec2::new(MAP_WIDTH as f32 * 16.0, MAP_HEIGHT as f32 * 16.0),
+        20,
+        bitmap.seed as u64 + 300,
+    );
     for (i, pos) in bush_positions.iter().enumerate().take(60) {
         let world_x = pos.x + map_center;
         let world_y = pos.y + map_center;
-        if world_x >= 0.0 && world_x < (MAP_WIDTH * 16) as f32
-            && world_y >= 0.0 && world_y < (MAP_HEIGHT * 16) as f32
+        if world_x >= 0.0
+            && world_x < (MAP_WIDTH * 16) as f32
+            && world_y >= 0.0
+            && world_y < (MAP_HEIGHT * 16) as f32
         {
             let bush_type = if i % 2 == 0 { "bush1" } else { "bush2" };
             objects.push(serde_json::json!({
@@ -1028,15 +1071,13 @@ fn generate_spawn_objects() -> Vec<serde_json::Value> {
     // Spawn point at the center of the map
     // Tiled coordinates: center of 100x100 tile map (each tile 16px)
     let center = (MAP_WIDTH * 16 / 2) as f64;
-    vec![
-        serde_json::json!({
-            "id": 1,
-            "name": "SpawnPoint",
-            "type": "",
-            "x": center,
-            "y": center,
-            "width": 16.0,
-            "height": 16.0
-        }),
-    ]
+    vec![serde_json::json!({
+        "id": 1,
+        "name": "SpawnPoint",
+        "type": "",
+        "x": center,
+        "y": center,
+        "width": 16.0,
+        "height": 16.0
+    })]
 }

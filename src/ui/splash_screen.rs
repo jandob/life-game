@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
-use bevy_tweening::{lens::UiTransformScaleLens, Tween, TweenAnim, CycleCompletedEvent};
+use bevy_tweening::{lens::UiTransformScaleLens, CycleCompletedEvent, Tween, TweenAnim};
 
 use crate::GameState;
 

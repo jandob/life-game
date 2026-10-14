@@ -30,8 +30,7 @@ fn spawn_doors(mut commands: Commands, tiled_map: Res<TiledMap>) {
         let open = obj.prop_bool("open").unwrap_or(false);
         states.insert(obj.name.clone(), open);
 
-        let center =
-            tiled_map.tiled_to_game(obj.x + obj.width / 2.0, obj.y + obj.height / 2.0);
+        let center = tiled_map.tiled_to_game(obj.x + obj.width / 2.0, obj.y + obj.height / 2.0);
         let mut door = commands.spawn((
             Name::new(format!("Door {}", obj.name)),
             Door(obj.name.clone()),
@@ -48,11 +47,13 @@ fn spawn_doors(mut commands: Commands, tiled_map: Res<TiledMap>) {
 fn spawn_interactables(mut commands: Commands, tiled_map: Res<TiledMap>) {
     for obj in tiled_map.object_layer("Interact") {
         let Some(node) = obj.prop_str("node") else {
-            warn!("Interactable '{}' has no 'node' property, skipping", obj.name);
+            warn!(
+                "Interactable '{}' has no 'node' property, skipping",
+                obj.name
+            );
             continue;
         };
-        let center =
-            tiled_map.tiled_to_game(obj.x + obj.width / 2.0, obj.y + obj.height / 2.0);
+        let center = tiled_map.tiled_to_game(obj.x + obj.width / 2.0, obj.y + obj.height / 2.0);
         commands.spawn((
             Name::new(format!("Interact {}", obj.name)),
             Talkable {
@@ -164,22 +165,34 @@ mod tests {
         let open = app.world_mut().register_system(open_door_command);
         let close = app.world_mut().register_system(close_door_command);
 
-        app.world_mut().run_system_with(open, "Door3B".to_string()).unwrap();
+        app.world_mut()
+            .run_system_with(open, "Door3B".to_string())
+            .unwrap();
         app.update();
         assert!(app.world().get::<ColliderDisabled>(door).is_some());
-        assert_eq!(app.world().get::<Visibility>(layer), Some(&Visibility::Hidden));
+        assert_eq!(
+            app.world().get::<Visibility>(layer),
+            Some(&Visibility::Hidden)
+        );
         assert_eq!(
             app.world().get::<Visibility>(other_layer),
             Some(&Visibility::Inherited)
         );
 
-        app.world_mut().run_system_with(close, "Door3B".to_string()).unwrap();
+        app.world_mut()
+            .run_system_with(close, "Door3B".to_string())
+            .unwrap();
         app.update();
         assert!(app.world().get::<ColliderDisabled>(door).is_none());
-        assert_eq!(app.world().get::<Visibility>(layer), Some(&Visibility::Inherited));
+        assert_eq!(
+            app.world().get::<Visibility>(layer),
+            Some(&Visibility::Inherited)
+        );
 
         // Unknown doors only log
-        app.world_mut().run_system_with(open, "Nowhere".to_string()).unwrap();
+        app.world_mut()
+            .run_system_with(open, "Nowhere".to_string())
+            .unwrap();
     }
 
     #[test]
@@ -195,6 +208,9 @@ mod tests {
             .spawn((TileLayerName("Door3B".to_string()), Visibility::Inherited))
             .id();
         app.update();
-        assert_eq!(app.world().get::<Visibility>(layer), Some(&Visibility::Hidden));
+        assert_eq!(
+            app.world().get::<Visibility>(layer),
+            Some(&Visibility::Hidden)
+        );
     }
 }

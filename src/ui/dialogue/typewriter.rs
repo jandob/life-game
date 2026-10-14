@@ -14,7 +14,6 @@ use super::spawn::{set_dialogue_text, DialogueContent};
 use super::speaker::{speaker, writer_speed, AVERAGE_SPEED};
 use super::DialogueViewSystemSet;
 
-
 #[derive(Message)]
 pub struct TypewriterFinished;
 /// This event triggers the typewriter to write a full line instantly.

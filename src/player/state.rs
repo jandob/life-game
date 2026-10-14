@@ -90,8 +90,7 @@ impl Plugin for PlayerStatePlugin {
             .add_systems(
                 PostUpdate,
                 (
-                    switch_to_idling_from_talking
-                        .run_if(on_message::<PlayerStoppedChat>),
+                    switch_to_idling_from_talking.run_if(on_message::<PlayerStoppedChat>),
                     switch_player_move_state,
                     update_animation,
                 )

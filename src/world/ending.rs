@@ -136,10 +136,12 @@ impl Plugin for EndingPlugin {
             Update,
             (
                 increase_ysorts.run_if(not(in_state(GameState::AssetLoading))),
-                fade_in_black_sprite
-                    .run_if(on_message::<EndingTriggered>.and_then(not(in_state(GameState::AssetLoading)))),
-                change_game_state
-                    .run_if(on_message::<EndingTriggered>.and_then(not(in_state(GameState::AssetLoading)))),
+                fade_in_black_sprite.run_if(
+                    on_message::<EndingTriggered>.and_then(not(in_state(GameState::AssetLoading))),
+                ),
+                change_game_state.run_if(
+                    on_message::<EndingTriggered>.and_then(not(in_state(GameState::AssetLoading))),
+                ),
             ),
         )
         .add_message::<EndingTriggered>()

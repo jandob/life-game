@@ -28,11 +28,7 @@ struct PetalSpawner(#[allow(dead_code)] Entity);
 #[derive(Component)]
 struct Flora;
 
-fn spawn_rock(
-    commands: &mut Commands,
-    assets: &Res<GameAssets>,
-    pos: Vec3,
-) {
+fn spawn_rock(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec3) {
     let collider = commands
         .spawn((
             Collider::cuboid(8.0, 8.0),
@@ -59,12 +55,7 @@ fn spawn_rock(
         .add_children(&[collider]);
 }
 
-fn spawn_bush(
-    commands: &mut Commands,
-    assets: &Res<GameAssets>,
-    pos: Vec3,
-    index: usize,
-) {
+fn spawn_bush(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec3, index: usize) {
     let texture = if index == 0 {
         assets.bush1.clone()
     } else {
@@ -77,10 +68,7 @@ fn spawn_bush(
     };
 
     let collider = commands
-        .spawn((
-            c,
-            Transform::from_translation(Vec3::new(0.0, -8.0, 0.0)),
-        ))
+        .spawn((c, Transform::from_translation(Vec3::new(0.0, -8.0, 0.0))))
         .id();
 
     commands
@@ -106,21 +94,22 @@ fn build_petal_effect() -> EffectAsset {
     let init_age = SetAttributeModifier::new(Attribute::AGE, writer.rand(ScalarType::Float).expr());
 
     // Lifetime roughly in [0.5, 2.5]s.
-    let lifetime = (writer.lit(1.0) + (writer.rand(ScalarType::Float) - writer.lit(0.5)) * writer.lit(2.0)).expr();
+    let lifetime = (writer.lit(1.0)
+        + (writer.rand(ScalarType::Float) - writer.lit(0.5)) * writer.lit(2.0))
+    .expr();
     let init_lifetime = SetAttributeModifier::new(Attribute::LIFETIME, lifetime);
 
     // Random outward direction with gentle downward drift.
-    let velocity = (
-        writer.rand(VectorType::VEC3F) * writer.lit(Vec3::new(120.0, 40.0, 0.0))
-        + writer.lit(Vec3::new(-60.0, -50.0, 0.0))
-    ).expr();
+    let velocity = (writer.rand(VectorType::VEC3F) * writer.lit(Vec3::new(120.0, 40.0, 0.0))
+        + writer.lit(Vec3::new(-60.0, -50.0, 0.0)))
+    .expr();
     let init_velocity = SetAttributeModifier::new(Attribute::VELOCITY, velocity);
 
     let init_position = SetAttributeModifier::new(
         Attribute::POSITION,
         (writer.rand(VectorType::VEC3F) * writer.lit(Vec3::splat(32.0))
             - writer.lit(Vec3::splat(16.0)))
-            .expr(),
+        .expr(),
     );
 
     let texture_slot = writer.lit(0u32).expr();
@@ -137,26 +126,22 @@ fn build_petal_effect() -> EffectAsset {
     color_gradient.add_key(0.95, Vec4::new(1.0, 1.0, 1.0, 0.0));
     color_gradient.add_key(1.0, Vec4::new(1.0, 1.0, 1.0, 0.0));
 
-    EffectAsset::new(
-        32768,
-        SpawnerSettings::rate(4.0.into()),
-        module,
-    )
-    .with_name("sakura_petal")
-    .init(init_age)
-    .init(init_lifetime)
-    .init(init_velocity)
-    .init(init_position)
-    .render(ParticleTextureModifier {
-        texture_slot,
-        sample_mapping: ImageSampleMapping::Modulate,
-    })
-    .render(ColorOverLifetimeModifier::new(color_gradient))
-    .render(SizeOverLifetimeModifier {
-        gradient: bevy_hanabi::Gradient::constant(Vec3::splat(16.0)),
-        screen_space_size: true,
-    })
-    .update(LinearDragModifier { drag })
+    EffectAsset::new(32768, SpawnerSettings::rate(4.0.into()), module)
+        .with_name("sakura_petal")
+        .init(init_age)
+        .init(init_lifetime)
+        .init(init_velocity)
+        .init(init_position)
+        .render(ParticleTextureModifier {
+            texture_slot,
+            sample_mapping: ImageSampleMapping::Modulate,
+        })
+        .render(ColorOverLifetimeModifier::new(color_gradient))
+        .render(SizeOverLifetimeModifier {
+            gradient: bevy_hanabi::Gradient::constant(Vec3::splat(16.0)),
+            screen_space_size: true,
+        })
+        .update(LinearDragModifier { drag })
 }
 
 fn spawn_tree(
@@ -266,10 +251,7 @@ pub struct FloraPlugin;
 
 impl Plugin for FloraPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            OnEnter(GameState::Gaming),
-            (spawn_flora_from_tiled,),
-        );
+        app.add_systems(OnEnter(GameState::Gaming), (spawn_flora_from_tiled,));
         // Flora despawn/cleanup systems from the original codebase
         // are not needed since flora is now authored in Tiled.
         // The map author intentionally places flora without overlap.
