@@ -44,7 +44,10 @@ mod tests {
         let (collider, transform) = LEGACY.feet_collider();
         assert_eq!(collider.as_ball().unwrap().radius(), 16.0);
         assert_eq!(transform.translation, Vec3::new(0.0, -32.0, 0.0));
-        assert_eq!(LEGACY.transform(Vec2::new(1.0, 2.0)).scale, Vec3::splat(1.5));
+        assert_eq!(
+            LEGACY.transform(Vec2::new(1.0, 2.0)).scale,
+            Vec3::splat(1.5)
+        );
     }
 
     #[test]

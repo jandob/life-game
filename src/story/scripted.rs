@@ -254,7 +254,9 @@ pub(crate) fn scripted_walk(
 ) {
     let dt = time.delta_secs();
 
-    for (entity, actor, mut walk, mut transform, mut velocity, mut facing, mut player) in &mut q_walkers {
+    for (entity, actor, mut walk, mut transform, mut velocity, mut facing, mut player) in
+        &mut q_walkers
+    {
         let pos = transform.translation.truncate();
         let target = walk.points[walk.next];
         let to_target = target - pos;
@@ -373,7 +375,9 @@ mod tests {
             .add_systems(Update, scripted_walk);
         app.world_mut().spawn((
             Actor("Walker".to_string()),
-            FourWayFacing { facing: Vec2::NEG_Y },
+            FourWayFacing {
+                facing: Vec2::NEG_Y,
+            },
             Transform::from_xyz(0.0, 0.0, 0.0),
         ));
         app.update();
@@ -402,7 +406,10 @@ mod tests {
         let mut q = app.world_mut().query::<(&Transform, &FourWayFacing)>();
         let (transform, facing) = q.single(app.world()).unwrap();
         assert!(transform.translation.truncate().distance(end) < 0.01);
-        assert!(facing.facing.x > 0.0, "faces the direction of the last segment");
+        assert!(
+            facing.facing.x > 0.0,
+            "faces the direction of the last segment"
+        );
         let mut walks = app.world_mut().query::<&ScriptedWalk>();
         assert_eq!(walks.iter(app.world()).count(), 0);
     }
@@ -429,23 +436,39 @@ mod tests {
                 .unwrap()
         };
         run_face(&mut app, "Walker", "up");
-        assert_eq!(app.world().get::<FourWayFacing>(walker).unwrap().facing, Vec2::Y);
+        assert_eq!(
+            app.world().get::<FourWayFacing>(walker).unwrap().facing,
+            Vec2::Y
+        );
         run_face(&mut app, "Walker", "Other");
         assert!(app.world().get::<FourWayFacing>(walker).unwrap().facing.x > 0.0);
         run_face(&mut app, "Other", "left");
         let mut q = app.world_mut().query::<&Player>();
-        assert_eq!(q.single(app.world()).unwrap().current_direction, Vec2::NEG_X);
+        assert_eq!(
+            q.single(app.world()).unwrap().current_direction,
+            Vec2::NEG_X
+        );
         // Unknown names only log
         run_face(&mut app, "Nobody", "up");
         run_face(&mut app, "Walker", "sideways");
 
         let hide = app.world_mut().register_system(hide_command);
         let show = app.world_mut().register_system(show_command);
-        app.world_mut().run_system_with(hide, "Walker".to_string()).unwrap();
-        assert_eq!(app.world().get::<Visibility>(walker), Some(&Visibility::Hidden));
+        app.world_mut()
+            .run_system_with(hide, "Walker".to_string())
+            .unwrap();
+        assert_eq!(
+            app.world().get::<Visibility>(walker),
+            Some(&Visibility::Hidden)
+        );
         assert!(app.world().get::<ColliderDisabled>(collider).is_some());
-        app.world_mut().run_system_with(show, "Walker".to_string()).unwrap();
-        assert_eq!(app.world().get::<Visibility>(walker), Some(&Visibility::Inherited));
+        app.world_mut()
+            .run_system_with(show, "Walker".to_string())
+            .unwrap();
+        assert_eq!(
+            app.world().get::<Visibility>(walker),
+            Some(&Visibility::Inherited)
+        );
         assert!(app.world().get::<ColliderDisabled>(collider).is_none());
     }
 
@@ -458,14 +481,21 @@ mod tests {
             .world_mut()
             .run_system_with(
                 walk,
-                ("Walker".to_string(), "There".to_string(), Some("no_wait".to_string())),
+                (
+                    "Walker".to_string(),
+                    "There".to_string(),
+                    Some("no_wait".to_string()),
+                ),
             )
             .unwrap();
         assert!(no_wait.is_finished());
 
         let await_walks = app.world_mut().register_system(await_walks_command);
         let pending = app.world_mut().run_system(await_walks).unwrap();
-        assert!(!pending.is_finished(), "await_walks waits for the running walk");
+        assert!(
+            !pending.is_finished(),
+            "await_walks waits for the running walk"
+        );
 
         let unknown_actor = app
             .world_mut()
@@ -517,7 +547,11 @@ mod tests {
     }
 
     fn position(app: &App, entity: Entity) -> Vec2 {
-        app.world().get::<Transform>(entity).unwrap().translation.truncate()
+        app.world()
+            .get::<Transform>(entity)
+            .unwrap()
+            .translation
+            .truncate()
     }
 
     #[test]
@@ -595,12 +629,16 @@ mod tests {
             assert!(seconds < 30.0, "never forced");
         }
         let limit = POINT_GRACE_SECONDS + POINT_SLOWDOWN * 1000.0 / SCRIPT_WALK_SPEED;
-        assert!((seconds - limit).abs() < 0.3, "forced after {seconds}s, limit {limit}s");
+        assert!(
+            (seconds - limit).abs() < 0.3,
+            "forced after {seconds}s, limit {limit}s"
+        );
     }
 
     #[test]
     fn nan_distance_is_stuck_at_once() {
-        let mut walk = ScriptedWalk::new("There", vec![Vec2::ZERO], Arc::new(AtomicBool::new(false)));
+        let mut walk =
+            ScriptedWalk::new("There", vec![Vec2::ZERO], Arc::new(AtomicBool::new(false)));
         assert!(walk.is_stuck(f32::NAN, Duration::from_millis(16)));
     }
 }

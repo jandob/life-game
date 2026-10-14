@@ -29,7 +29,11 @@ pub fn spawn_water_collisions(
                         continue;
                     }
                     if let Some(collider) = tiled_map.tile_collision_shape(layer_index, v.x, v.y) {
-                        let pos = Vec3::new(x as f32 * tiled_map.tile_size, y as f32 * tiled_map.tile_size, 0.0);
+                        let pos = Vec3::new(
+                            x as f32 * tiled_map.tile_size,
+                            y as f32 * tiled_map.tile_size,
+                            0.0,
+                        );
                         let collision = commands
                             .spawn((collider, Transform::from_translation(pos)))
                             .id();

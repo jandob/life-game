@@ -38,7 +38,7 @@ pub enum GameState {
 
 fn main() {
     const DEFAULT_WINDOW_WIDTH_PX: u32 = 1280;
-    const DEFAULT_WINDOW_HEIGHT_PX: u32 = (DEFAULT_WINDOW_WIDTH as f32 * 9.0 / 16.0) as u32;
+    const DEFAULT_WINDOW_HEIGHT_PX: u32 = (DEFAULT_WINDOW_WIDTH * 9.0 / 16.0) as u32;
 
     App::new()
         .add_plugins((
@@ -76,7 +76,8 @@ fn main() {
                     "dialogue/route1_viewing.yarn",
                 )]);
                 #[cfg(not(target_arch = "wasm32"))]
-                let plugin = plugin.with_development_file_generation(DevelopmentFileGeneration::None);
+                let plugin =
+                    plugin.with_development_file_generation(DevelopmentFileGeneration::None);
                 plugin
             },
             TweeningPlugin,

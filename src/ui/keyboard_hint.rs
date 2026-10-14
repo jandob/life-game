@@ -1,13 +1,10 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+use crate::animation::{SpriteAnimator, KEY_ICON, SHIFT_ICON};
 use crate::player::{Player, PlayerState};
 use crate::story::scripted::ScriptedWalk;
-use crate::animation::{SpriteAnimator, KEY_ICON, SHIFT_ICON};
-use crate::{
-    world::camera::YSort,
-    GameAssets, GameState,
-};
+use crate::{world::camera::YSort, GameAssets, GameState};
 
 const ANCHOR_DIS: f32 = 90.0;
 const BUTTON_DIS: f32 = 35.0;
@@ -92,9 +89,10 @@ fn spawn_key_buttons(
 ) {
     let entity = spawn_icon(commands, assets, root, icon, offset);
 
-    commands
-        .entity(entity)
-        .insert((Collider::cuboid(48.0, 48.0), SpriteAnimator::looping(KEY_ICON)));
+    commands.entity(entity).insert((
+        Collider::cuboid(48.0, 48.0),
+        SpriteAnimator::looping(KEY_ICON),
+    ));
 }
 
 fn spawn_arrows_icon(commands: &mut Commands, assets: &Res<GameAssets>, root: Entity) {
@@ -121,9 +119,10 @@ fn spawn_shift_icon(
 ) {
     let entity = spawn_icon(commands, assets, root, icon, offset);
 
-    commands
-        .entity(entity)
-        .insert((Collider::cuboid(48.0, 48.0), SpriteAnimator::looping(SHIFT_ICON)));
+    commands.entity(entity).insert((
+        Collider::cuboid(48.0, 48.0),
+        SpriteAnimator::looping(SHIFT_ICON),
+    ));
 }
 
 /// Determine the direction for the keyboard hint UI.
@@ -135,12 +134,15 @@ fn calculate_hint_direction() -> Vec2 {
 
 fn spawn_keyboard_ui(mut commands: Commands, assets: Res<GameAssets>) {
     let dir = calculate_hint_direction();
-    let transform = Transform::from_translation(
-        dir.normalize_or_zero().extend(0.0) * ANCHOR_DIS,
-    )
-    .with_scale(Vec3::splat(ICON_SIZE));
+    let transform = Transform::from_translation(dir.normalize_or_zero().extend(0.0) * ANCHOR_DIS)
+        .with_scale(Vec3::splat(ICON_SIZE));
     let root = commands
-        .spawn((KeyboardHint, YSort(-600.0), transform, Visibility::Inherited))
+        .spawn((
+            KeyboardHint,
+            YSort(-600.0),
+            transform,
+            Visibility::Inherited,
+        ))
         .id();
 
     spawn_key_buttons(
@@ -210,6 +212,9 @@ pub struct KeyboardUiPlugin;
 impl Plugin for KeyboardUiPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::Gaming), spawn_keyboard_ui)
-            .add_systems(Update, update_keyboard_hint.run_if(in_state(GameState::Gaming)));
+            .add_systems(
+                Update,
+                update_keyboard_hint.run_if(in_state(GameState::Gaming)),
+            );
     }
 }

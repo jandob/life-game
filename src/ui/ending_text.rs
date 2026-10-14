@@ -111,11 +111,7 @@ impl Plugin for EndingTextPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            (
-                spawn_end_card,
-                write_texts,
-            )
-                .run_if(not(in_state(GameState::AssetLoading))),
+            (spawn_end_card, write_texts).run_if(not(in_state(GameState::AssetLoading))),
         );
     }
 }

@@ -46,11 +46,7 @@ fn spawn_hint(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec3) {
         .id();
 
     commands
-        .spawn((
-            StartHint,
-            YSort(300.0),
-            Transform::from_translation(pos),
-        ))
+        .spawn((StartHint, YSort(300.0), Transform::from_translation(pos)))
         .add_children(&[sprite]);
 }
 

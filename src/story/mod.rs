@@ -147,11 +147,16 @@ mod tests {
             }],
         })
         .init_resource::<Presented>()
-        .add_observer(|trigger: On<PresentLine>, mut presented: ResMut<Presented>| {
-            presented.0.push(trigger.event().line.text_without_character_name());
-        })
+        .add_observer(
+            |trigger: On<PresentLine>, mut presented: ResMut<Presented>| {
+                presented
+                    .0
+                    .push(trigger.event().line.text_without_character_name());
+            },
+        )
         .add_systems(Update, scripted::scripted_walk);
-        app.world_mut().spawn((Actor("Walker".to_string()), Transform::default()));
+        app.world_mut()
+            .spawn((Actor("Walker".to_string()), Transform::default()));
 
         let mut state: SystemState<(Commands, Res<YarnProject>)> =
             SystemState::new(app.world_mut());
