@@ -7,8 +7,8 @@
 
 ## 2. Checks
 
-- [ ] 2.1 `cargo test --workspace`, `cargo clippy`, `cargo fmt --check`; `cargo check --target wasm32-unknown-unknown`
-- [ ] 2.2 Play moving day into the croissant scene end to end; screenshots in `screenshots/`
+- [x] 2.1 `cargo test --workspace`, `cargo clippy`, `cargo fmt --check`; `cargo check --target wasm32-unknown-unknown`
+- [x] 2.2 Play moving day into the croissant scene end to end; screenshots in `screenshots/` (wasm build in Chromium on SwiftShader under Xvfb, first option at every choice; the player's scripted walks hit the stuck fail-safe on old and new paths alike in that software-rendered run, so walking smoothness is still to be checked on real hardware)
 
 ## 3. Review (user)
 
