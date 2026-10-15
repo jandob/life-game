@@ -31,7 +31,7 @@ from artgen import generate_images, parse_opts, write_sidecar  # noqa: E402
 from backends import REGISTRY, get_backend  # noqa: E402
 
 REPO = HERE.parent.parent
-REF_SHEET = REPO / "assets/library/characters/player/player.png"
+REF_SHEET = REPO / pp.PROFILE["bench_ref_sheet"]
 BG = (200, 200, 210, 255)
 ROW_H = 512
 LABEL_W = 220
@@ -117,6 +117,15 @@ def parse_variant(s: str) -> tuple[str, dict]:
     return name, parse_opts([kv for kv in rest.split(",") if kv])
 
 
+def bench_size(bench: dict, backend_name: str) -> tuple[int, int]:
+    """Generation size: the yaml's ``sizes[<backend>]`` if present, else its ``width``/``height``
+    (512 by default). Same for every backend that has no entry, so existing runs are unchanged."""
+    if backend_name in (bench.get("sizes") or {}):
+        w, h = bench["sizes"][backend_name]
+        return int(w), int(h)
+    return int(bench.get("width", 512)), int(bench.get("height", 512))
+
+
 def item_post_kwargs(item: dict) -> dict:
     kw = dict(item.get("post", {}))
     if "cell" in kw and kw["cell"] is not None:
@@ -132,6 +141,7 @@ def run(args) -> None:
         items = [i for i in items if i["id"] in keep]
     seeds = [int(s) for s in args.seeds.split(",")] if args.seeds else bench["seeds"]
     variants = [parse_variant(v) for v in (args.variant or ["default:"])]
+    size = bench_size(bench, args.backend)
 
     b = get_backend(args.backend)
     base_opts = {k: v for k, v in b.info.defaults.items() if v is not None}
@@ -182,8 +192,8 @@ def run(args) -> None:
                     post_only_stats.update(side.get("stats") or {})
                 else:
                     [raw_p] = generate_images(b, item["subject"].strip(), raw_prompt=False, seed=seed,
-                                              n=1, width=bench.get("width", 512),
-                                              height=bench.get("height", 512), negative=None,
+                                              n=1, width=size[0],
+                                              height=size[1], negative=None,
                                               opts=gen_opts, out_dir=vdir / "raw",
                                               stem=item["id"])
                     gen_s = time.perf_counter() - t

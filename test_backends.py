@@ -1,4 +1,4 @@
-"""Tests for the sdxl and z_image_turbo backends, models.json and pose.py.
+"""Tests for the backend registry, models.json, pose.py, maskkit and the refine command.
 
     .venv/bin/python test_backends.py            # fast, no model weights
     ARTGEN_TEST_MODELS=1 .venv/bin/python test_backends.py   # also loads WAI v17 and Z-Image (about 3 min)
@@ -18,7 +18,6 @@ sys.path.insert(0, str(HERE))
 from PIL import Image  # noqa: E402
 from backends import REGISTRY, get_backend  # noqa: E402
 from backends._common import load_registry  # noqa: E402
-from backends.sdxl import FAMILIES, RATINGS, parse_loras  # noqa: E402
 import pose  # noqa: E402
 
 PY = sys.executable
@@ -27,36 +26,8 @@ CLI = str(HERE / "artgen.py")
 
 def test_registry_and_models_json() -> None:
     reg = load_registry()
-    assert set(reg["models"]) == {"illustrious_v1", "wai_v17", "cyberrealistic_pony_v18", "sdxl_base"}
-    for m in reg["models"].values():
-        assert m["family"] in FAMILIES and ("path" in m or "hf" in m)
-        assert {"steps", "guidance", "sampler"} <= set(m["defaults"])
-    assert "sdxl" in REGISTRY and "z_image_turbo" in REGISTRY
-    assert "pixel_art_xl" in reg["loras"]
-
-
-def test_parse_loras() -> None:
-    assert parse_loras(None) == []
-    assert parse_loras("pixel_art_xl") == [("pixel_art_xl", None)]
-    assert parse_loras("a:0.8,b:1,/x/y.safetensors") == [("a", 0.8), ("b", 1.0), ("/x/y.safetensors", None)]
-    assert parse_loras(["a:-0.5"]) == [("a", -0.5)]
-
-
-def test_templates() -> None:
-    b = get_backend("sdxl")
-    p = b.apply_template("1boy, standing", model="cyberrealistic_pony_v18", background="simple background")
-    assert p.startswith("score_9, score_8_up, score_7_up, rating_safe, 1boy"), p
-    p = b.apply_template("1boy", model="cyberrealistic_pony_v18", rating="explicit", background="")
-    assert "rating_explicit" in p
-    p = b.apply_template("1boy", model="wai_v17", loras="pixel_art_xl:0.7", background="white background")
-    assert p == ("masterpiece, best quality, amazing quality, very aesthetic, absurdres, newest, general, "
-                 "pixel art, 1boy, white background"), p
-    p = b.apply_template("1boy", model="wai_v17", rating="explicit", quality="")
-    assert p.startswith("nsfw, explicit") or p.startswith("nsfw, explicit,"), p
-    p = b.apply_template("a red apple", model="sdxl_base", background="")
-    assert p == "a red apple", p
-    assert "child" in b.default_negative("wai_v17") and b.default_negative("cyberrealistic_pony_v18").startswith("score_6")
-    assert set(RATINGS["pony"]) == set(RATINGS["illustrious"]) == {"safe", "questionable", "explicit"}
+    assert set(k for k in reg if not k.startswith("_")) == {"z_image_turbo", "qwen_image21"}
+    assert set(REGISTRY) == {"flux2_klein_pixel_lora", "qwen_image21", "z_image_turbo", "example_stub"}
 
 
 def test_pose() -> None:
@@ -88,7 +59,7 @@ def test_pose() -> None:
 
 def test_cli_lists_backends() -> None:
     r = subprocess.run([PY, CLI, "backends"], capture_output=True, text=True)
-    assert r.returncode == 0 and "sdxl:" in r.stdout and "z_image_turbo:" in r.stdout, r.stdout + r.stderr
+    assert r.returncode == 0 and "qwen_image21:" in r.stdout and "z_image_turbo:" in r.stdout and "sdxl" not in r.stdout, r.stdout + r.stderr
 
 
 def test_maskkit_and_mask_cli() -> None:
@@ -129,15 +100,16 @@ def test_refine_cli_stubbed() -> None:
     calls = []
 
     class Fake:
-        info = type("I", (), {"defaults": {"model": "x"}, "to_dict": lambda self: {"name": "fake"}})()
+        info = type("I", (), {"defaults": {"model": "x"}, "to_dict": lambda self: {"name": "fake"},
+                              "caps": frozenset({"refine", "inpaint"})})()
         load_keys = frozenset({"model"})
-        refine_keys = ("model", "loras")
+        inpaint_keys = ("model", "loras")
 
         def load(self, **kw): pass
         def apply_inpaint_template(self, s, **_): return "Q, " + s
         def stats(self): return {"last_image_s": [0.1] * 2}
 
-        def refine(self, prompt, image, mask=None, seed=0, n=1, strength=0.5, **kw):
+        def inpaint(self, prompt, image, mask, seed=0, n=1, strength=0.5, **kw):
             calls.append((prompt, mask is not None, strength, seed, kw))
             return [image.copy() for _ in range(n)]
 
@@ -148,8 +120,8 @@ def test_refine_cli_stubbed() -> None:
             td = Path(td)
             Image.new("RGB", (64, 48), "red").save(td / "a.png")
             Image.new("L", (64, 48), 255).save(td / "m.png")
-            ns = dict(backend="sdxl", image=str(td / "a.png"), mask=str(td / "m.png"), prompt="p", raw_prompt=False,
-                      negative=None, strength=[0.3, 0.6], seed=5, n=2, pose=None, opt=["model=wai_v17"],
+            ns = dict(backend="flux2_klein_pixel_lora", image=str(td / "a.png"), mask=str(td / "m.png"), prompt="p", raw_prompt=False,
+                      negative=None, strength=[0.3, 0.6], seed=5, n=2, opt=["model=wai_v17"],
                       name=None, out=str(td / "o"))
             import io, contextlib
             buf = io.StringIO()
@@ -169,6 +141,13 @@ def test_refine_cli_stubbed() -> None:
                     pass
                 else:
                     raise AssertionError(bad)
+            # no mask: the backend's inpaint() gets a full white mask
+            seen = []
+            Fake.inpaint = lambda self, prompt, image, mask, **kw: (seen.append(set(mask.getdata())),
+                                                                   [image.copy()])[1]
+            with contextlib.redirect_stdout(io.StringIO()):
+                artgen.cmd_refine(argparse.Namespace(**{**ns, "mask": None, "n": 1, "strength": [0.5]}))
+            assert seen == [{255}]
             Image.new("L", (32, 32), 255).save(td / "m2.png")
             try:
                 artgen.cmd_refine(argparse.Namespace(**{**ns, "mask": str(td / "m2.png")}))
@@ -180,164 +159,9 @@ def test_refine_cli_stubbed() -> None:
         artgen.get_backend = orig
 
 
-class _StubBackend:
-    """Records calls; paints the (working-size) image solid grey so changes are visible."""
-    info = type("I", (), {"defaults": {"model": "x"}, "to_dict": lambda self: {"name": "stub"}})()
-    load_keys = frozenset({"model"})
-    refine_keys = ("model", "loras", "feather")
-    inpaint_keys = refine_keys
-
-    def __init__(self): self.calls, self.loads = [], 0
-    def load(self, **kw): self.loads += 1
-    def apply_inpaint_template(self, s, **_): return "Q, " + s
-    def stats(self): return {}
-
-    def refine(self, prompt, image, mask=None, seed=0, n=1, strength=0.5, **kw):
-        self.calls.append({"prompt": prompt, "size": image.size, "mask_size": mask.size, "seed": seed, "kw": kw})
-        return [Image.new("RGB", image.size, (10, 200, 10)) for _ in range(n)]
-
-
-def test_refine_masked_dispatch() -> None:
-    import cast
-    from PIL import Image
-    b = _StubBackend()
-    src, mask = Image.new("RGB", (64, 96), "red"), Image.new("L", (64, 96), 255)
-    out = cast.refine_masked(b, "p", src, mask, seed=2, n=2, gen={"loras": "a:1"})
-    assert len(out) == 2 and b.calls[0]["size"] == (64, 96) and b.calls[0]["kw"]["loras"] == "a:1"
-
-    class InpOnly:
-        info, load_keys, inpaint_keys = _StubBackend.info, frozenset(), ()
-        calls: list = []
-
-        def inpaint(self, prompt, image, mask, seed=0, n=1, strength=0.5, **kw):
-            self.calls.append({"mask_white": mask.getextrema()})
-            return [image] * n
-    ib = InpOnly()
-    cast.refine_masked(ib, "p", src, None)
-    assert ib.calls[0]["mask_white"] == (255, 255)
-
-
-def _write_recipe(td: Path, **over) -> Path:
-    from PIL import Image
-    Image.new("RGB", (64, 96), "blue").save(td / "scene.png")
-    Image.new("L", (64, 96), 0).save(td / "empty.png")
-    m = Image.new("L", (64, 96), 0)
-    m.paste(255, (10, 10, 30, 40))
-    m.save(td / "m.png")
-    rec = {"image": "scene.png", "opts": {"model": "wai_v17"}, "regions": [
-        {"name": "head_a", "heads": None, "ellipse": "0.1,0.1,0.5,0.4", "units": "frac", "prompt": "auburn hair",
-         "opts": {"loras": "x:0.8"}, "strength": 0.5, "seed": 4},
-        {"name": "body_b", "mask": "m.png", "prompt": "red dress", "strength": 0.7}]}
-    rec["regions"][0].pop("heads")
-    rec.update(over)
-    p = td / "recipe.json"
-    p.write_text(json.dumps(rec))
-    return p
-
-
-def test_cast_recipe_validation_and_run() -> None:
-    import cast
-    from PIL import Image
-    import artgen
-    with tempfile.TemporaryDirectory() as td:
-        td = Path(td)
-        p = _write_recipe(td)
-        rec = json.loads(p.read_text())
-        v = cast.validate_recipe(rec, td, list(REGISTRY))
-        assert v["size"] == (64, 96) and len(v["masks"]) == 2
-
-        def bad(mut, needle):
-            r = json.loads(p.read_text())
-            mut(r)
-            try:
-                cast.validate_recipe(r, td, list(REGISTRY))
-            except cast.RecipeError as e:
-                assert needle in str(e), (needle, str(e))
-            else:
-                raise AssertionError(needle)
-        bad(lambda r: r.pop("image"), "'image'")
-        bad(lambda r: r.update(image="nope.png"), "image not found")
-        bad(lambda r: r.update(backend="zzz"), "unknown backend")
-        bad(lambda r: r.update(regions=[]), "non-empty")
-        bad(lambda r: r.update(bogus=1), "unknown top-level")
-        bad(lambda r: r["regions"][0].update(strength=0), "strength")
-        bad(lambda r: r["regions"][0].update(prompt=""), "prompt")
-        bad(lambda r: r["regions"][0].update(name="a b"), "name")
-        bad(lambda r: r["regions"][1].update(name="head_a"), "duplicate")
-        bad(lambda r: r["regions"][1].update(ellipse="0,0,1,1"), "not both")
-        bad(lambda r: r["regions"][0].pop("ellipse"), "not both/none")
-        bad(lambda r: r["regions"][0].update(ellipse="1,2,3"), "bad box")
-        bad(lambda r: r["regions"][1].update(mask="nope.png"), "mask not found")
-        bad(lambda r: r["regions"][1].update(mask="empty.png"), "empty")
-        bad(lambda r: r["regions"][1].update(crop=True), "unknown keys")
-        bad(lambda r: r["regions"][1].update(typo=1), "unknown keys")
-        # run with the stub: one load, order, files, log
-        stub = _StubBackend()
-        out = td / "o"
-        log = cast.run_cast(rec, td, out, lambda name: stub, None, artgen.save_atomic)
-        assert stub.loads == 1 and len(stub.calls) == 2
-        assert stub.calls[0]["prompt"] == "Q, auburn hair" and stub.calls[0]["kw"]["loras"] == "x:0.8"
-        assert stub.calls[0]["kw"]["model"] == "wai_v17" and stub.calls[0]["seed"] == 4
-        assert stub.calls[0]["size"] == (64, 96) and stub.calls[1]["size"] == (64, 96)   # full resolution
-        for f in ("01_head_a.png", "01_head_a_mask.png", "02_body_b.png", "02_body_b_mask.png", "final.png", "cast.json"):
-            assert (out / f).is_file(), f
-        assert not list(out.glob("*.tmp*"))
-        j = json.loads((out / "cast.json").read_text())
-        assert [r["name"] for r in j["regions"]] == ["head_a", "body_b"] and j["regions"][0]["seed"] == 4
-        # step 2 starts from step 1's output (green patch from the stub is already in the input)
-        assert Image.open(out / "final.png").size == (64, 96)
-        # CLI: validation errors give JSON and exit 2 before any model is touched
-        r2 = json.loads(p.read_text())
-        r2["regions"][0]["strength"] = 5
-        (td / "bad.json").write_text(json.dumps(r2))
-        r = subprocess.run([PY, CLI, "cast", str(td / "bad.json"), "--out", str(td / "o2")], capture_output=True, text=True)
-        assert r.returncode == 2 and json.loads(r.stdout)["ok"] is False and "strength" in json.loads(r.stdout)["error"]
-        assert not (td / "o2").exists()
-
-
-def test_compose_sheet() -> None:
-    from PIL import Image
-    import compose
-    with tempfile.TemporaryDirectory() as td:
-        a = Path(td) / "a.png"
-        Image.new("RGB", (40, 20), "green").save(a)
-        sh = compose.build_sheet([("r1", [("a", str(a)), ("b", str(a))]), ("r2", [("c", str(a))])], cell_h=40)
-        assert sh.height > 80 and sh.width > 2 * 80
-
-
 def test_models_smoke() -> None:
-    """Needs the weights (WAI file in ~/Downloads, Comfy files in ~/ComfyUI-Shared)."""
-    import torch
-    from PIL import Image, ImageDraw
-    b = get_backend("sdxl")
-    b.load(model="wai_v17")
-    # chunked encoder equals diffusers' encode_prompt up to fp16 noise
-    t = "1girl, solo, white background"
-    pe, ne, pp, _ = b.encode_pair(t, "lowres")
-    ref = b.pipe.encode_prompt(t, device=b.device, num_images_per_prompt=1, do_classifier_free_guidance=True,
-                               negative_prompt="lowres")
-    assert (pe - ref[0]).abs().mean().item() < 0.01 and (pp - ref[2]).abs().max().item() < 0.05
-    long = ", ".join(f"tag{i}" for i in range(80))
-    e = b.encode_pair(long, "x")
-    assert e[0].shape[1] == e[1].shape[1] and e[0].shape[1] % 77 == 0 and e[0].shape[1] > 77
-    prompt = b.apply_template("1boy, hoodie, standing", background="white background")
-    im1 = b.generate(prompt, width=512, height=512, seed=3, n=2, steps=4)
-    im2 = b.generate(prompt, width=512, height=512, seed=4, n=1, steps=4)
-    assert im1[1].tobytes() == im2[0].tobytes(), "image i must be reproducible from seed + i"
-    assert im1[0].getextrema() != ((0, 0),) * 3
-    mask = Image.new("L", (512, 512), 0)
-    ImageDraw.Draw(mask).rectangle((100, 100, 300, 300), fill=255)
-    out = b.inpaint(prompt, im1[0], mask, seed=1, steps=6, strength=0.8)[0]
-    assert out.size == (512, 512)
-    # outside the mask the inpaint result stays close to the input
+    """Needs the weights (Comfy files in ~/ComfyUI-Shared)."""
     import numpy as np
-    a, c = np.asarray(im1[0]).astype(int), np.asarray(out).astype(int)
-    assert np.abs(a[:60, :60] - c[:60, :60]).mean() < 12
-    full = b.refine(prompt, im1[0], None, seed=1, steps=8, strength=0.4)[0]
-    assert full.size == (512, 512)
-    prot = b.refine(prompt, im1[0], mask, seed=1, steps=8, strength=0.5, feather=0)[0]
-    assert np.abs(np.asarray(im1[0]).astype(int)[:60, :60] - np.asarray(prot).astype(int)[:60, :60]).max() == 0
-    b.unload()
     z = get_backend("z_image_turbo")
     z.load()
     zi = z.generate("a red apple on a wooden table", width=512, height=512, seed=1, n=1, steps=4)[0]

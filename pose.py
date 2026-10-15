@@ -1,4 +1,4 @@
-"""Draw OpenPose-style skeleton images (the control input of the OpenPose ControlNet).
+"""Draw OpenPose-style skeleton images (the pose strip that the `sheet` command feeds to qwen_image21 as a reference).
 
 No annotator model is needed: poses are defined as 18 COCO/OpenPose keypoints in
 unit coordinates (x, y in 0..1 of the canvas, y down) and drawn the way the
@@ -126,3 +126,27 @@ def draw_pose(keypoints: list, size: tuple[int, int] = (832, 1216), stickwidth: 
         if p is not None:
             d.ellipse((p[0] - sw, p[1] - sw, p[0] + sw, p[1] + sw), fill=col)
     return img
+
+
+def walk_side_frames(n: int, cell: tuple[int, int] = (384, 768)) -> list:
+    """``n`` evenly spaced ``walk_side`` phases over one cycle, x corrected for the cell aspect.
+
+    ``walk_side`` is drawn for an 832x1216 canvas; on another cell shape x is rescaled about the
+    centre by ``k = (832/1216)/(cw/ch)`` so the figure keeps its proportions.
+    """
+    cw, ch = cell
+    k = (832 / 1216) / (cw / ch)
+    frames = []
+    for i in range(n):
+        kps = walk_side(4 * i / n)
+        frames.append([None if p is None else (0.5 + (p[0] - 0.5) * k, p[1]) for p in kps])
+    return frames
+
+
+def strip(poses: list[list], cell: tuple[int, int] = (384, 768)) -> Image.Image:
+    """N skeletons side by side (each in its own ``cell``) on black: an image of size (N*cw, ch)."""
+    cw, ch = cell
+    out = Image.new("RGB", (cw * len(poses), ch), (0, 0, 0))
+    for i, kps in enumerate(poses):
+        out.paste(draw_pose(kps, (cw, ch)), (i * cw, 0))
+    return out

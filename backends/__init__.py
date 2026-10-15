@@ -12,7 +12,7 @@ from .base import Backend, BackendInfo
 
 REGISTRY: dict[str, str] = {
     "flux2_klein_pixel_lora": "flux2_klein_pixel_lora:Flux2KleinPixelLora",
-    "sdxl": "sdxl:Sdxl",
+    "qwen_image21": "qwen_image21:QwenImage21",
     "z_image_turbo": "z_image_turbo:ZImageTurbo",
     # Template only: raises NotImplementedError until someone fills it in.
     "example_stub": "example_stub:ExampleStub",
