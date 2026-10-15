@@ -32,7 +32,7 @@
     "lora_scale": 1.0,
     "background": "plain flat white background",
     "ref": [
-      "out/sam_art/keys/sam/sam_front_idle_s11.png"
+      "../../art/characters/samantha/keys/sam_front_idle_s11.png"
     ]
   },
   "timings": {

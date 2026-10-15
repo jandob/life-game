@@ -32,7 +32,7 @@
     "lora_scale": 1.0,
     "background": "plain flat white background",
     "ref": [
-      "out/sam_art/keys/player/player_front_idle_s11.png"
+      "../../art/characters/player/keys/player_front_idle_s11.png"
     ]
   },
   "timings": {
