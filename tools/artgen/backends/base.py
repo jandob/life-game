@@ -22,9 +22,13 @@ class BackendInfo:
     local: bool = True             # runs on this machine (False = remote API)
     defaults: dict[str, Any] = field(default_factory=dict)  # default opts
     prompt_template: str = "{prompt}"  # how the bench wraps a subject prompt
+    caps: frozenset = frozenset()      # what the CLI may ask of it: refs edit sheet rgba inpaint refine remote
+    default_size: tuple = (512, 512)   # (width, height) used by `generate` when --width/--height are omitted
 
     def to_dict(self) -> dict:
-        return asdict(self)
+        d = asdict(self)
+        d["caps"] = sorted(self.caps)
+        return d
 
 
 class Backend:

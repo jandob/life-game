@@ -13,6 +13,9 @@ name: life-game-bench-v1
 seeds: [11, 42]
 width: 512
 height: 512
+# per-backend size override (qwen_image21 is built for 1024 px)
+sizes:
+  qwen_image21: [1024, 1024]
 
 items:
   - id: man_front

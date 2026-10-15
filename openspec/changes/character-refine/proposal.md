@@ -1,3 +1,5 @@
+> **Note (2026-10-16):** `artgen cast`, `cast.py`, `compose.py` and the SDXL backend were removed by change `artgen-qwen-image`. Identity now comes from reference images (`generate --ref`, `edit`, `sheet` with `qwen_image21`). This proposal is kept as a record.
+
 ## Why
 
 The user's experiments (2026-10-12) settled the character pipeline: generate scenes (clothed or explicit) with SDXL/WAI + `pixel_art_xl`, then bring each character's identity back by repainting their head and/or body with that character's LoRA (e.g. `lgwoman1`) through agent-made masks. Generating with the character LoRA directly fights multi-person scenes (it was trained on one woman alone) and drifts poses toward the dataset.

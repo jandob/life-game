@@ -1,7 +1,7 @@
 """Repaint masks from boxes (no segmentation model): white = repaint, black = keep.
 
 Boxes are ``x0,y0,x1,y1``. ``units="px"`` takes pixels, ``units="frac"`` takes 0..1 of the canvas.
-Used by ``artgen.py mask`` and ``compose.py``.
+Used by ``artgen.py mask`` and ``artgen.py edit``.
 """
 from __future__ import annotations
 
@@ -83,3 +83,40 @@ def mask_stats(mask: Image.Image) -> dict:
     hist = mask.convert("L").histogram()
     total = sum(hist)
     return {"white_frac": round(sum(hist[128:]) / total, 4), "size": list(mask.size)}
+
+
+def paste_back(orig: Image.Image, edited: Image.Image, mask: Image.Image, feather: float = 0.0) -> Image.Image:
+    """Composite ``edited`` over ``orig`` through ``mask`` (white = take the edit). Returns RGB at ``orig`` size.
+
+    ``edited`` is resized (LANCZOS) to ``orig`` size if needed; ``mask`` likewise (only if its size differs). ``feather`` is a Gaussian radius in px. Pixels where the mask is 0 and
+    farther than the blur reach from any white pixel equal ``orig`` exactly.
+    """
+    orig = orig.convert("RGB")
+    edited = edited.convert("RGB")
+    if edited.size != orig.size:
+        edited = edited.resize(orig.size, Image.LANCZOS)
+    m = mask.convert("L")
+    if m.size != orig.size:
+        m = m.resize(orig.size, Image.LANCZOS)
+    if feather > 0:
+        m = m.filter(ImageFilter.GaussianBlur(feather))
+    return Image.composite(edited, orig, m)
+
+
+def draw_mark(img: Image.Image, x: float, y: float, r: float, width: int = 5, color=(255, 0, 0)) -> Image.Image:
+    """Return a copy of ``img`` (RGB) with a circle outline of radius ``r`` centred on (x, y)."""
+    out = img.convert("RGB").copy()
+    ImageDraw.Draw(out).ellipse((x - r, y - r, x + r, y + r), outline=tuple(color), width=width)
+    return out
+
+
+def drift_outside(orig: Image.Image, out: Image.Image, mask: Image.Image) -> float:
+    """Mean absolute difference (0..255, over RGB) between ``orig`` and ``out`` where ``mask`` is 0."""
+    import numpy as np
+    a = np.asarray(orig.convert("RGB"), dtype=np.int16)
+    b = np.asarray(out.convert("RGB").resize(orig.size) if out.size != orig.size else out.convert("RGB"),
+                   dtype=np.int16)
+    m = np.asarray(mask.convert("L").resize(orig.size) if mask.size != orig.size else mask.convert("L")) == 0
+    if not m.any():
+        return 0.0
+    return float(np.abs(a - b)[m].mean())

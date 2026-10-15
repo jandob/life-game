@@ -1,4 +1,6 @@
 #!/bin/bash
+# HISTORICAL RECORD: this is how Samantha's first front was made. It no longer runs: the sdxl backend
+# (and its LoRAs/cast) was removed by the OpenSpec change artgen-qwen-image (2026-10-16).
 cd /Users/janosch/repos/life-game/tools/artgen
 P=.venv/bin/python
 SUF="anime style pixel art, thick dark outlines, flat cel shading with two tones"

@@ -3,16 +3,6 @@ in ``backends/__init__.py`` and fill in ``load``/``generate``.
 
 Sketches for likely candidates:
 
-* SDXL + pixel LoRA (local, diffusers)::
-
-      from diffusers import StableDiffusionXLPipeline
-      pipe = StableDiffusionXLPipeline.from_pretrained(
-          "stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16)
-      pipe.load_lora_weights("nerijs/pixel-art-xl")      # needs approval first
-      pipe.to("mps")
-      pipe(prompt, negative_prompt=negative, num_inference_steps=8,
-           guidance_scale=1.5, generator=torch.Generator("cpu").manual_seed(s))
-
 * Replicate (remote)::
 
       import replicate                        # pip install replicate

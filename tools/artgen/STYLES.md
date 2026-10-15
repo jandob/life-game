@@ -1,154 +1,137 @@
-# Style recipes per backend
+# Pipeline stage by stage
 
-Ready-to-run `artgen.py generate` templates for the three styles. Replace `<SCENE>` with the subject
-(keep it fully described: who, clothes, pose, view). Run from `tools/artgen` with `.venv/bin/python`.
-Measured on the M5 (24 GB): SDXL 768x1152 about 45-60 s per image (28 steps, peak 13 GB MPS);
-Z-Image-Turbo about 100 s per image including the text-encoder reload (peak 18-22 GB); FLUX 5-11 s.
+Copy-paste commands for the artgen pipeline. Run from `tools/artgen` with `.venv/bin/python artgen.py ...`
+(shortened to `artgen.py` below). Outputs go to the git-ignored `out/`. **One model process at a time** (24 GB Mac).
+Setup, memory and timings: [README.md](README.md). Cell sizes, feet row and style words below are the active profile's
+(`profiles/life-game.json`, env `ARTGEN_PROFILE`); the project conventions are in the `life-game-art` skill.
 
-Assessment from `scratchpad/backends` (one man + one sofa, clothed): see the end of this file.
-`--n 4` gives 4 seeds. Post-process with the `post` lines at the bottom.
+Who can do what (also printed by `artgen.py backends`):
 
-Notes valid for all SDXL lines: tag models (Illustrious, WAI, Pony) like Danbooru tags
-(`1boy, solo, adult, ...`); put `adult` / `mature male` in character prompts, because they skew young. `rating=safe` (default)
-adds nudity terms to the negative; for explicit tests use `--opt rating=explicit`. Pony adds a person to almost
-any sofa/furniture prompt, so give Pony props a human negative and check each image.
-
-## S2 realistic hi-res pixel
-
-| Backend | Command |
-|---|---|
-| FLUX (reference) | ` .venv/bin/python artgen.py generate --backend flux2_klein_pixel_lora --opt lora_scale=0.5 --opt background="plain flat dark navy background" --prompt "<SCENE>, detailed hi-res pixel art, realistic anatomy, sculpted form shading, crisp specular highlights, limited palette" --width 576 --height 1024 --seed 11 --n 4 --out out/s2` |
-| sdxl wai_v17 (recommended SDXL) | ` .venv/bin/python artgen.py generate --backend sdxl --opt model=wai_v17 --opt loras=pixel_art_xl:0.5 --opt background="simple background, dark blue background" --prompt "<SCENE as tags>, detailed hi-res pixel art, sculpted form shading, crisp specular highlights, limited palette" --width 768 --height 1152 --seed 11 --n 4 --out out/s2` |
-| sdxl illustrious_v1 | same with ` .venv/bin/python artgen.py generate --backend sdxl --opt model=illustrious_v1` (cleaner licence, a bit flatter) |
-| sdxl cyberrealistic_pony_v18 | ` .venv/bin/python artgen.py generate ... --opt model=cyberrealistic_pony_v18 --opt loras=pixel_art_xl:1.0 ...` Gives photographs with pixelated details, not pixel art. Use only for realistic reference or `--ref`/pose experiments. |
-| sdxl sdxl_base | ` .venv/bin/python artgen.py generate ... --opt model=sdxl_base --opt loras=pixel_art_xl:0.5 --prompt "<SCENE in plain English>, detailed hi-res pixel art, ..."` (best pure pixel look, no rating/quality tags, anatomy is plain) |
-| z_image_turbo | ` .venv/bin/python artgen.py generate --backend z_image_turbo --opt style="detailed hi-res pixel art with sculpted shading and a limited palette. " --opt background="plain flat dark navy background" --prompt "<SCENE in plain English>" --width 768 --height 1152 --seed 11 --out out/s2` Comes out as a 3D-render look, not pixels; quantise with `post --grid 4`. |
-
-## S3 anime-leaning pixel, thick outlines
-
-| Backend | Command |
-|---|---|
-| FLUX (reference) | `artgen.py generate --backend flux2_klein_pixel_lora --opt lora_scale=1.0 --opt background="plain flat white background" --prompt "<SCENE>, anime style pixel art, thick dark outlines, flat cel shading with two tones" --width 576 --height 1024 --seed 11 --n 4 --out out/s3` |
-| sdxl illustrious_v1 (recommended) | `artgen.py generate --backend sdxl --opt model=illustrious_v1 --opt loras=pixel_art_xl:0.8 --opt background="simple background, white background" --prompt "<SCENE as tags>, anime style pixel art, thick dark outlines, flat cel shading with two tones" --width 768 --height 1152 --seed 11 --n 4 --out out/s3` (LoRA 0.5-1.0 all work; lower keeps more detail) |
-| sdxl wai_v17 | same with `model=wai_v17` (more detailed and realistic proportions) |
-| sdxl sdxl_base | `--opt model=sdxl_base --opt loras=pixel_art_xl:0.8`, plain-English prompt. Closest to a classic sprite. |
-| sdxl cyberrealistic_pony_v18 | not recommended (LoRA barely changes the photoreal look) |
-| z_image_turbo | `--backend z_image_turbo --opt style="anime style pixel art with thick dark outlines and flat two-tone cel shading. " --prompt "<SCENE>"`. Clean anime illustration, not pixel art. |
-
-## S4 flat vector / cel
-
-No pixel LoRA (omit `loras`).
-
-| Backend | Command |
-|---|---|
-| FLUX | `artgen.py generate --backend flux2_klein_pixel_lora --opt lora_scale=0 --opt background="plain flat white background" --prompt "<SCENE>, flat vector illustration, clean dark line art, two-tone cel shading, flat colours, modern character design" --width 576 --height 1024 --seed 11 --n 4 --out out/s4` |
-| sdxl illustrious_v1 / wai_v17 | `artgen.py generate --backend sdxl --opt model=wai_v17 --opt background="simple background, white background" --prompt "<SCENE as tags>, flat vector illustration, clean dark line art, two-tone cel shading, flat colours" --width 768 --height 1152 --seed 11 --n 4 --out out/s4` (add `--opt negative_extra="3d, realistic, gradient"` if shading gets soft) |
-| sdxl sdxl_base | same with `model=sdxl_base`, plain English. Good, with a cast shadow. |
-| sdxl cyberrealistic_pony_v18 | not suitable (photo) |
-| z_image_turbo (recommended) | `artgen.py generate --backend z_image_turbo --opt style="flat vector illustration with clean dark line art, two-tone cel shading and flat colours. " --prompt "<SCENE>" --width 768 --height 1152 --seed 11 --out out/s4` Cleanest flat-colour result; props are isolated on white. |
-
-## Post-processing
-
-```sh
-# S2 / S3 character (flat background): detect the pixel grid, fit the 64x128 cell
-artgen.py post out/s3/*.png --grid auto --colours 22 --outline inner --keep-largest --out out/s3_px
-artgen.py post out/s3/*.png --grid fit --cell 64x128 --feet-row 105 --shadow --outline inner --colours 22 --keep-largest --out out/s3_cell
-# S2: --colours 40
-# S4 (not pixel art): fixed 4 px downscale
-artgen.py post out/s4/*.png --grid 4 --colours 32 --outline none --keep-largest --out out/s4_px
-# Props that fill the frame or keep a scene background: --bg none
-```
-Background removal needs a flat background. Gradients, vignettes and photographic backdrops (Pony, Z-Image S2) make it fail
-and eat the figure; ask for `plain flat <colour> background` and check the `px` output.
-
-## Assessment (one seed, so indicative only)
-
-- **S2**: no SDXL option gives true "realistic hi-res pixel". WAI v17 and Illustrious are closest (detailed, shaded, pixel
-  look); SDXL base + LoRA 0.5 is cleaner but cartoonish; Pony is photographic; Z-Image is a 3D render. FLUX was the most polished here.
-- **S3**: SDXL base, Illustrious and WAI with pixel-art-xl are all good, better than FLUX on pixel crispness; Illustrious is the
-  most "anime", WAI the most detailed. Z-Image is not pixel art.
-- **S4**: Z-Image-Turbo is the cleanest flat vector; Illustrious/WAI/base are good line-art cel; Pony is a photo.
-- Props: Illustrious and WAI zoom in so far that the sofa is cropped; SDXL base and Z-Image give whole, isolated sofas.
-
-## Pose (OpenPose ControlNet, xinsir) and ref
-
-```sh
-artgen.py pose --preset walk_side_0 --size 768x1152 --out out/ctl_walk0.png   # walk_side_0..3, stand_front, stand_side, sit_front, sit_pair (two people, use 1024x768)
-artgen.py generate --backend sdxl --opt model=wai_v17 --opt loras=pixel_art_xl:0.8 --opt pose=out/ctl_walk0.png \
-    --opt background="simple background, white background" --width 768 --height 1152 --seed 11 --out out/walk \
-    --prompt "1boy, solo, male focus, mature male, adult, white t-shirt, jeans, white sneakers, walking, from side, full body, profile, anime style pixel art, thick dark outlines, flat cel shading"
-# add --ref out/front.png --opt ip_scale=0.3 to pull the look towards a reference. ip_scale 0.6 (default) breaks the image together with pose.
-```
-Measured (M5, wai_v17, 768x1152, 28 steps): pose only 55-60 s/image, peak 14.9 GB MPS; pose + ref 72-86 s, peak 17.4 GB.
-Legs follow the skeleton well, arms are weaker. Identity across walk frames stays loose even with ref 0.25-0.4 (hair, trousers colour drift).
-Two-person pose works (two figures seated side by side on a sofa; the skeletons' legs look standing because front-view sitting is foreshortened).
-
-## Two-stage: consistent characters in a scene (FLUX refs -> SDXL refine)
-
-IP-Adapter `ref` on WAI/Illustrious drifts, so identity comes from FLUX klein's multi-reference and SDXL only restyles.
-Use clothed, front-view character images (the style swatches) as refs; replace `<SCENE>`, `<TAGS>`, `<HEAD boxes>`.
-
-```sh
-# 1. compose (about 40 s per 1024x768 image); the prompt must say "from the reference images" and "same clothes"
-artgen.py generate --backend flux2_klein_pixel_lora --opt lora_scale=1.0 --raw-prompt \
-    --ref out/man_front.png out/woman_front.png --width 1024 --height 768 --seed 11 --n 3 --out out/c --name scene \
-    --prompt "anime style pixel art, thick dark outlines, flat cel shading with two tones. The man and the woman from the reference images, both adults, both fully clothed in the same clothes as in the references, <SCENE>"
-# 2. look at out/c/scene_s11.png, read the head boxes (incl. hair) off it, check them
-artgen.py mask --image out/c/scene_s11.png --heads <HEAD1> --heads <HEAD2> --head-pad 0.06 --feather 3 --preview out/c/mask_check.png --out out/c/mask.png
-# 3. refine: full image, then with heads protected (about 30 s per strength at 1024x768)
-artgen.py refine --image out/c/scene_s11.png --opt model=wai_v17 --opt loras=pixel_art_xl:0.8 --strength 0.3 0.45 0.6 --seed 11 \
-    --prompt "<TAGS: 2people, 1boy, 1girl, adult, <scene>, hair colours, each outfit with colours>, anime style pixel art, thick dark outlines, flat cel shading with two tones" --out out/c --name full
-artgen.py refine ... --mask out/c/mask.png --name heads
-```
-Same with `compose.py scene|refine|sheet` (see README). Repeat the outfit and hair colours of both characters in `<TAGS>`.
-
-Results (WAI v17, S3, man + woman, sofa, one seed; sheet in the session scratchpad `refine/sheet.png`):
-- FLUX stage: faces, hair, outfit colours of both characters carried over from the refs in 3 of 3 seeds.
-- Full-image refine: 0.30 already changes the faces (man's face redrawn, woman gets green eyes), outfit colours hold; 0.45-0.60 hair
-  turns blocky and the faces are new people; at 0.75 hair colour drifts (woman towards purple), props change. SDXL pixel style and
-  proportions are clearly in by 0.45.
-- Heads protected: faces and hair stay the FLUX originals at every strength, clothes and room take the SDXL pixel look,
-  outfit colours hold up to 0.60 (at 0.75 the jacket gets darker). Cost: the heads stay smooth FLUX art while bodies and room are
-  chunky pixels, plus a faint halo around the head ellipse at 0.75. Best compromise: 0.45 with heads protected,
-  or 0.30 full image for a lighter touch; for a uniform pixel look run `post --grid auto` on the result.
-
-## Character refine: put a character's LoRA back into a multi-person scene
-
-Generating with a character LoRA directly fights multi-person scenes (it was trained on one person alone and drags poses toward
-its dataset). Instead: generate the scene without it, then repaint each character's head and/or body with that character's LoRA
-through a mask. Masks are made by the agent (`artgen.py mask`, boxes/ellipses read off the image); there is no detector.
-
-```sh
-# 1. scene (clothed, adults), about 40 s at 768x1152
-artgen.py generate --backend sdxl --opt model=wai_v17 --opt loras=pixel_art_xl:0.7 --width 768 --height 1152 --seed 7 --out out/s \
-    --prompt "2people, 1boy, 1girl, adult, sitting on sofa, talking, living room, <hair/outfit colours of both>"
-# 2. look at it, place an ellipse on the head incl. hair, check the preview
-artgen.py mask --image out/s/scene_s7.png --ellipse 278,328,462,505 --preview out/s/mask_check.png --out out/s/head_woman.png
-# 3a. one region ...
-artgen.py refine --image out/s/scene_s7.png --mask out/s/head_woman.png --opt model=wai_v17 \
-    --opt loras=lgwoman1:0.8,pixel_art_xl:0.5 --strength 0.5 --seed 7 --prompt "1girl, auburn ponytail, brown eyes, face" --out out/s/r
-# 3b. ... or all characters in one command (recipe: tools/artgen/examples/cast_recipe.json)
-artgen.py cast recipe.json --out out/s/cast
-```
-
-Recommended settings (full image resolution, whole image as context):
-
-| region | strength | character LoRA | `pixel_art_xl` |
+| | `qwen_image21` | `flux2_klein_pixel_lora` | `z_image_turbo` |
 |---|---|---|---|
-| head (hair + face, ellipse slightly larger than the head) | 0.40-0.55 | 0.7-0.9 | 0.4-0.6 |
-| full body (box/ellipse around the figure, keep the other person out) | 0.60-0.75 | 0.7-0.9 | 0.5-0.7 |
+| text to image | yes (1024², 55-95 s) | yes (512², 5-11 s) | yes (about 100 s) |
+| `--ref` composition | yes | yes (untested for scenes) | no |
+| **real alpha** (`--opt rgba=1`) | **only this one** | no, painted background removed in post | no, same |
+| `edit`, `sheet` | **only this one** | no | no |
+| `refine` (img2img strength), `inpaint` (scenekit map tiles) | no | **only this one** | no |
 
-Put the character's hair colour and distinguishing features in the region prompt (the LoRA trigger is added automatically).
-Repaint a second character with a second region (own LoRA, own mask), or paint the body before the head so the head is last.
-Keep `feather` at 4-8 px; outside the feathered mask the pixels are unchanged (checked: 0 differing pixels).
+A command a backend lacks fails with a message naming the backends that support it.
 
-Result (WAI v17, 768x1152, man + woman on a sofa, head ellipse 184x177 px, `lgwoman1:0.8,pixel_art_xl:0.5`, strength 0.5, seed 7):
-head repainted in about 25 s; hair turns auburn, the face becomes the LoRA's, the man, sofa and room are untouched. `refine` and a one-region
-`cast` give identical pixels. The LoRA head is smoother and finer than the chunky scene pixels (the LoRA's own style), so run `post --grid auto`
-on the final image if a uniform pixel grid matters.
+## 1. Initial generation
 
-
-# Examples
+```sh
+# qwen_image21: best quality, 1024x1024 by default. --prompt is the SUBJECT; it is wrapped in
+# "Pixel art sprite of <subject>, 16-bit video game asset, crisp hard-edged pixels, flat colours, plain flat white background."
+artgen.py generate --backend qwen_image21 --seed 11 --out out/man --name man_front --json \
+    --prompt "an adult man in his late twenties, short brown hair, grey hoodie, dark blue jeans, white sneakers, standing, front view facing the viewer, full body, top-down RPG character"
+# faster / lighter options (no refs, no alpha, no edit):
+artgen.py generate --backend flux2_klein_pixel_lora --seed 11 --n 4 --out out/man --name man_front --prompt "<subject>"
+artgen.py generate --backend z_image_turbo --width 768 --height 1152 --seed 11 --out out/z \
+    --opt style="detailed hi-res pixel art, limited palette. " --prompt "a young man in a grey hoodie, front view, full body"
 ```
-.venv/bin/python artgen.py generate --backend sdxl --opt model=wai_v17 --opt loras=lgwoman1:0.6,pixel_art_xl:0.7 --opt rating=explicit --prompt "1boy, 1girl, sex, couch, penis, realistic, detailed, hi-res, shading, crisp specular highlights, limited palette" --width 768 --height 1152 --seed 11 --n 4 --out out/s2
+
+The first qwen run encodes the prompt in a separate process (about 20 s for text only); more seeds (`--n`, `--seed`) of the
+same prompt are free of that cost.
+
+## 2. Props with real transparency
+
+```sh
+artgen.py generate --backend qwen_image21 --opt rgba=1 --seed 11 --out out/sofa --name sofa \
+    --prompt "a modern grey fabric three-seat sofa, top-down 3/4 view from above, furniture prop for an apartment"
+artgen.py post out/sofa/sofa_s11.png --grid auto --colours 16 --outline inner --out out/sofa_px
 ```
+
+The raw alpha is 1-9 in the background (not exactly 0); `post` binarises it (about 68 % fully transparent for the sofa).
+With flux / z_image the background is painted and `post` removes it by flood fill (`--bg auto`).
+
+## 3. Characters and turnarounds
+
+Make a front view (stage 1), then derive the other views with `edit` so identity and outfit carry over (Picture 1 = source):
+
+```sh
+artgen.py edit --image out/man/man_front_s11.png --seed 11 --out out/man --name man_back \
+    --prompt "Picture 1 shows a young adult man from the front. Draw the same man from behind: back view seen from directly behind, the face is not visible, full body, same pixel art style, same clothes, plain flat white background."
+artgen.py edit --image out/man/man_front_s11.png --seed 11 --out out/man --name man_side \
+    --prompt "Picture 1 shows a young adult man from the front. Draw the same man in strict side view facing right, full body, same pixel art style, same clothes, plain flat white background."
+```
+
+`edit` writes at the source size (rounded to 32 px for generation, resized back). `--ref-res` (default 1024) applies to all
+inputs. Other edits (outfit change, expression) work the same way: describe what stays and what changes.
+
+Post-process a character into the game cell (96x192, feet on row 157). Fix `N` (raw px per art pixel) ONCE per character
+from the front view and reuse it for every pose, so all frames share one pixel size:
+
+```sh
+artgen.py post out/man/man_front_s11.png --grid fit --cell 96x192 --feet-row 157 --shadow --outline inner --colours 24 --keep-largest --out out/man_px   # first look: read the grid scale in the sidecar
+artgen.py post out/man/*_s11.png --grid N --cell 96x192 --feet-row 157 --shadow --outline inner --colours 24 --keep-largest --out out/man_px
+```
+
+## 4. Portraits
+
+```sh
+artgen.py generate --backend qwen_image21 --seed 11 --out out/portrait --name man \
+    --prompt "dialogue portrait bust of an adult man in his thirties, short dark hair, light stubble, neutral expression, head and shoulders, facing the viewer, visual novel portrait" \
+    --opt background="plain flat background"
+# a portrait of an existing character:
+artgen.py edit --image out/man/man_front_s11.png --seed 11 --out out/portrait --name man_bust \
+    --prompt "Picture 1 shows a man standing. Draw a head and shoulders dialogue portrait of the same man, facing the viewer, neutral expression, same pixel art style, plain flat background."
+artgen.py post out/portrait/man_s11.png --grid auto --colours 16 --outline inner --out out/portrait_px
+```
+
+## 5. Scene composition (room + characters)
+
+`generate --ref` with several references; Picture 1, 2, 3 are the refs in command-line order. With refs the prompt is sent
+verbatim (no sprite template), so write the whole prompt.
+
+```sh
+artgen.py generate --backend qwen_image21 --seed 11 --width 1024 --height 1024 --opt ref_res=512 --out out/scene --name scene \
+    --ref out/room/room_s11.png out/man/man_front_s11.png out/woman/woman_front_s11.png \
+    --prompt "Picture 1 is an empty apartment room, Picture 2 is a man, Picture 3 is a woman. Place the man and the woman from Pictures 2 and 3 sitting on the sofa cushions of the room in Picture 1, not on the rug or the coffee table. Keep the room unchanged: same layout, furniture and colours. Keep both characters' faces, hair and clothes. Scale them to the sofa so they look life-size. Same pixel art style."
+```
+
+Prompt pattern that worked: name every picture ("Picture 1 is ..."), give explicit placement ("on the sofa cushions, not on
+the rug or coffee table"), state scale, and say "keep the room unchanged". A reference costs encode time (about 3 min for
+3 refs at 512, once per prompt+refs; extra seeds are free).
+
+## 6. Local fixes (hands, faces)
+
+```sh
+artgen.py mask --size 1024x1024 --ellipse 448,300,568,440 --out out/fix/mask.png       # white = take the edit
+artgen.py edit --image out/scene/scene_s11.png --mark 508,338,42 --mask out/fix/mask.png --feather 8 \
+    --seed 11 --out out/fix --name hand --prompt "Picture 1 has a red circle marking a hand. Redraw that hand correctly with five fingers, same style, same lighting. Remove the circle and change nothing else."
+```
+
+`--mark x,y,r` draws a red circle on the source so the model sees where to work; `--mask` pastes only the masked area back
+(feathered), so pixels outside the mask equal the source. Check `drift_outside_reach` in the sidecar: it must be 0.0.
+The unpasted edit is kept as `hand_s11_raw.png`. A bare `edit` without a mask drifts over the whole image (about 13/255).
+
+## 7. Walk sheets
+
+```sh
+artgen.py sheet --ref out/man/man_front_s11.png out/man/man_side_s11.png --poses walk_side --frames 5 --cell 384x768 \
+    --ref-res 768 --seed 11 --subject "a young adult man with short messy brown hair, an olive green hoodie, dark blue jeans and brown sneakers" \
+    --slice --out out/walk --name walk
+```
+
+One generation draws all 5 frames in a row, guided by a skeleton strip (the last reference). `--slice` cuts the frames,
+post-processes each with ONE fixed grid (`--grid N`, else fitted on frame 0) into 96x192 cells with feet on row 157, and
+writes `walk_f{i}_px.png`, `walk_px_row.png` and `walk.gif`. Encode takes about 8.5 min at `--ref-res 768` (once). Pass
+`--prompt-file` to control the whole prompt. Pose words per frame are generated from the walk phase; the strip enforces the
+leg positions only roughly (no exact pose control).
+
+## 8. Post-processing settings
+
+| Kind | Command |
+|---|---|
+| characters (96x192) | `artgen.py post IN --grid N --cell 96x192 --feet-row 157 --shadow --outline inner --colours 24 --keep-largest --out OUT` |
+| older 64x128 characters | `--grid fit --cell 64x128 --feet-row 105 --shadow --outline inner --colours 24 --keep-largest` |
+| props, portraits | `--grid auto --colours 16 --outline inner` |
+| tiles (16x16) | `--tile --cell 16x16 --colours 8` : still weak for every model (not seamless); expect hand touch-up |
+| locked palette | `--palette palettes/player_ref.hex` |
+
+Stages and parameters are described in README.md (Post-processing stages).
+
+## 9. Limits
+
+Exact pose control (the skeleton strip is a hint), seamless tiles, and bit-identical reruns across machines are not
+available. Edits can drift the whole image: use `--mark` + `--mask` for local changes.
