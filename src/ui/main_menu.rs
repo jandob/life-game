@@ -62,9 +62,7 @@ fn spawn_button(
         TextColor::WHITE,
     );
 
-    let text = commands
-        .spawn((Text::new(title), button_text_style))
-        .id();
+    let text = commands.spawn((Text::new(title), button_text_style)).id();
 
     commands
         .spawn((

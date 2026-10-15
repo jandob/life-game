@@ -29,7 +29,9 @@ struct DebugZoom(f32);
 
 /// Physical screen px per art px: a whole number, so every pixel is drawn equally big.
 fn pixel_scale(physical_height: u32) -> f32 {
-    (physical_height as f32 / TARGET_VISIBLE_HEIGHT).round().max(1.0)
+    (physical_height as f32 / TARGET_VISIBLE_HEIGHT)
+        .round()
+        .max(1.0)
 }
 
 #[derive(Component)]
@@ -68,9 +70,7 @@ fn apply_y_sort_child(
     }
 }
 
-fn apply_y_sort_static(
-    mut q_transforms: Query<(&mut Transform, &GlobalTransform, &YSortStatic)>,
-) {
+fn apply_y_sort_static(mut q_transforms: Query<(&mut Transform, &GlobalTransform, &YSortStatic)>) {
     for (mut transform, global_transform, ysort) in &mut q_transforms {
         transform.translation.z = (ysort.0 - global_transform.translation().y) * YSORT_SCALE;
     }
@@ -79,7 +79,12 @@ fn apply_y_sort_static(
 fn apply_y_sort_static_child(
     q_parents: Query<&Transform, (With<YSortStatic>, Without<YSortStaticChild>)>,
     mut q_transforms: Query<
-        (&ChildOf, &mut Transform, &GlobalTransform, &YSortStaticChild),
+        (
+            &ChildOf,
+            &mut Transform,
+            &GlobalTransform,
+            &YSortStaticChild,
+        ),
         Without<YSortStatic>,
     >,
 ) {

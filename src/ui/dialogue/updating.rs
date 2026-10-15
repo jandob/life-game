@@ -7,8 +7,8 @@ use crate::GameAssets;
 
 use super::option_selection::OptionSelection;
 use super::runner::RunnerFlags;
-use super::speaker::{portrait, speaker};
 use super::spawn::{DialogueCharacterIcon, DialogueContinueNode, DialogueNameNode};
+use super::speaker::{portrait, speaker};
 use super::typewriter::{Typewriter, TypewriterFinished, WriteDialogueText};
 use super::DialogueViewSystemSet;
 

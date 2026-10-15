@@ -62,6 +62,10 @@ fn animate_actors(
         } else {
             CharacterAnim::Idle
         };
-        play_character_clip(&mut animator, &mut sprite, character_clip(facing.facing, anim));
+        play_character_clip(
+            &mut animator,
+            &mut sprite,
+            character_clip(facing.facing, anim),
+        );
     }
 }

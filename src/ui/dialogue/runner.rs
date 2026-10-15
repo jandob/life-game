@@ -5,9 +5,7 @@ use crate::{
     player::chat::{PlayerStartedChat, PlayerStoppedChat},
     story::{
         build_story_runner,
-        scripted::{
-            await_walks_command, face_command, hide_command, show_command, walk_command,
-        },
+        scripted::{await_walks_command, face_command, hide_command, show_command, walk_command},
         StoryVars,
     },
     world::{
@@ -206,7 +204,8 @@ impl Plugin for DialogueRunnerPlugin {
             )
             .add_systems(
                 Update,
-                hide_dialogue.run_if(on_message::<PlayerStoppedChat>.or_else(on_message::<EndingTriggered>)),
+                hide_dialogue
+                    .run_if(on_message::<PlayerStoppedChat>.or_else(on_message::<EndingTriggered>)),
             );
     }
 }

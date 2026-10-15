@@ -74,7 +74,10 @@ fn spawn_chunk(commands: &mut Commands, tiled_map: &Res<TiledMap>, chunk_pos: IV
                 let (tilemap_entity, storage) = tilemaps.entry(tile.tileset).or_insert_with(|| {
                     let entity = commands.spawn_empty().id();
                     commands.entity(chunk_entity).add_child(entity);
-                    (entity, TileStorage::empty(TilemapSize::new(CHUNK_SIZE, CHUNK_SIZE)))
+                    (
+                        entity,
+                        TileStorage::empty(TilemapSize::new(CHUNK_SIZE, CHUNK_SIZE)),
+                    )
                 });
                 let tile_entity = commands
                     .spawn(TileBundle {
@@ -95,19 +98,22 @@ fn spawn_chunk(commands: &mut Commands, tiled_map: &Res<TiledMap>, chunk_pos: IV
         }
 
         for (tileset, (tilemap_entity, storage)) in tilemaps {
-            commands.entity(tilemap_entity).insert((TileLayerName(layer.name.clone()), TilemapBundle {
-                grid_size: render_tile_size.into(),
-                size: TilemapSize::new(CHUNK_SIZE, CHUNK_SIZE),
-                storage,
-                texture: TilemapTexture::Single(tiled_map.tilesets[tileset].image.clone()),
-                tile_size: render_tile_size,
-                transform: Transform::from_translation(Vec3::new(0.0, 0.0, z)),
-                render_settings: TilemapRenderSettings {
-                    render_chunk_size: RENDER_CHUNK_SIZE,
+            commands.entity(tilemap_entity).insert((
+                TileLayerName(layer.name.clone()),
+                TilemapBundle {
+                    grid_size: render_tile_size.into(),
+                    size: TilemapSize::new(CHUNK_SIZE, CHUNK_SIZE),
+                    storage,
+                    texture: TilemapTexture::Single(tiled_map.tilesets[tileset].image.clone()),
+                    tile_size: render_tile_size,
+                    transform: Transform::from_translation(Vec3::new(0.0, 0.0, z)),
+                    render_settings: TilemapRenderSettings {
+                        render_chunk_size: RENDER_CHUNK_SIZE,
+                        ..Default::default()
+                    },
                     ..Default::default()
                 },
-                ..Default::default()
-            }));
+            ));
         }
     }
 }
@@ -136,7 +142,8 @@ pub fn spawn_chunks(
         Err(_) => return,
     };
 
-    let camera_chunk_pos = camera_pos_to_chunk_pos(&camera_transform.translation.xy(), tiled_map.tile_size);
+    let camera_chunk_pos =
+        camera_pos_to_chunk_pos(&camera_transform.translation.xy(), tiled_map.tile_size);
     let chunks_radius = IVec2::new(RENDERED_CHUNKS_RADIUS as i32, RENDERED_CHUNKS_RADIUS as i32);
 
     for y in (camera_chunk_pos.y - chunks_radius.y)..=(camera_chunk_pos.y + chunks_radius.y) {
@@ -165,7 +172,8 @@ pub fn despawn_chunks(
     let Some(tiled_map) = tiled_map else {
         return;
     };
-    let camera_chunk = camera_pos_to_chunk_pos(&camera_transform.translation.xy(), tiled_map.tile_size);
+    let camera_chunk =
+        camera_pos_to_chunk_pos(&camera_transform.translation.xy(), tiled_map.tile_size);
 
     for (entity, chunk) in &q_chunks {
         if (chunk.x - camera_chunk.x).unsigned_abs() > RENDERED_CHUNKS_RADIUS

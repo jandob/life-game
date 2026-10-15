@@ -125,10 +125,8 @@ pub const DIALOGUE_START_HINT: SpriteAnimationClip =
     SpriteAnimationClip::from_keyframe_range(0, 2, 1.5);
 
 /// Key icons: down/up/left/right and shift.
-pub const KEY_ICON: SpriteAnimationClip =
-    SpriteAnimationClip::from_keyframe_range(0, 2, 1.0);
-pub const SHIFT_ICON: SpriteAnimationClip =
-    SpriteAnimationClip::from_keyframe_range(0, 2, 3.5);
+pub const KEY_ICON: SpriteAnimationClip = SpriteAnimationClip::from_keyframe_range(0, 2, 1.0);
+pub const SHIFT_ICON: SpriteAnimationClip = SpriteAnimationClip::from_keyframe_range(0, 2, 3.5);
 
 // ---------------------------------------------------------------------------
 // Shared character clip selection

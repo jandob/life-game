@@ -194,14 +194,12 @@ fn spawn_dialogue_bottom(commands: &mut Commands, assets: &Res<GameAssets>) -> E
         .id();
 
     commands
-        .spawn((
-            Node {
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                flex_direction: FlexDirection::Column,
-                ..default()
-            },
-        ))
+        .spawn((Node {
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            flex_direction: FlexDirection::Column,
+            ..default()
+        },))
         .add_children(&[character_icon_node, continue_node])
         .id()
 }
@@ -250,17 +248,15 @@ fn spawn_dialogue(mut commands: Commands, assets: Res<GameAssets>) {
     let dialogue_bottom = spawn_dialogue_bottom(&mut commands, &assets);
 
     let dialogue_root = commands
-        .spawn((
-            Node {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                justify_content: JustifyContent::FlexEnd,
-                align_items: AlignItems::Center,
-                padding: UiRect::bottom(Val::Px(30.0)),
-                flex_direction: FlexDirection::Column,
-                ..default()
-            },
-        ))
+        .spawn((Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            justify_content: JustifyContent::FlexEnd,
+            align_items: AlignItems::Center,
+            padding: UiRect::bottom(Val::Px(30.0)),
+            flex_direction: FlexDirection::Column,
+            ..default()
+        },))
         .add_children(&[dialogue_content, dialogue_bottom])
         .id();
 
@@ -282,18 +278,16 @@ fn spawn_dialogue_main_menu(mut commands: Commands, assets: Res<GameAssets>) {
     let dialogue_content = spawn_dialogue_content(&mut commands, &assets);
 
     let dialogue_root = commands
-        .spawn((
-            Node {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                padding: UiRect::top(Val::Px(30.0)),
-                flex_direction: FlexDirection::Column,
-                top: Val::Px(-200.0),
-                ..default()
-            },
-        ))
+        .spawn((Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            padding: UiRect::top(Val::Px(30.0)),
+            flex_direction: FlexDirection::Column,
+            top: Val::Px(-200.0),
+            ..default()
+        },))
         .add_child(dialogue_content)
         .id();
 
@@ -319,12 +313,7 @@ fn despawn_dialogue_main_menu(
     }
 }
 
-pub fn set_dialogue_text(
-    text: &mut Text,
-    span: &mut TextSpan,
-    visible: &str,
-    invisible: &str,
-) {
+pub fn set_dialogue_text(text: &mut Text, span: &mut TextSpan, visible: &str, invisible: &str) {
     text.0 = visible.to_string();
     span.0 = invisible.to_string();
 }

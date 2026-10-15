@@ -69,10 +69,7 @@ fn spawn_wanderer(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Re
     };
 
     let collider = commands
-        .spawn((
-            LEGACY.feet_collider(),
-            CollisionGroups::default(),
-        ))
+        .spawn((LEGACY.feet_collider(), CollisionGroups::default()))
         .id();
 
     let clip = CHARACTER_CLIPS[0];
