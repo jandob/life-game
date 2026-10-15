@@ -27,15 +27,18 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-# Project constants (from assets/library/characters/player/player.png).
-OUTLINE = (34, 32, 52)
-SHADOW_FILL = (63, 63, 116, 125)
-SHADOW_RIM = (92, 92, 169, 125)
-CHAR_CELL = (64, 128)
-CHAR_FEET_ROW = 105   # lowest opaque row of the feet
-CHAR_TOP_ROW = 17     # top of the head in the reference
-SHADOW_CENTRE = (31.5, 102)
-SHADOW_RADII = (22.5, 11.5)
+# Project constants, read from the active profile (artprofile.py: ARTGEN_PROFILE, else art/artgen-profile.json, else profiles/default.json).
+from artprofile import load as _load_profile  # noqa: E402
+
+PROFILE = _load_profile()
+OUTLINE = PROFILE["outline"]
+SHADOW_FILL = PROFILE["shadow_fill"]
+SHADOW_RIM = PROFILE["shadow_rim"]
+CHAR_CELL = PROFILE["char_cell"]
+CHAR_FEET_ROW = PROFILE["char_feet_row"]   # lowest opaque row of the feet
+CHAR_TOP_ROW = PROFILE["char_top_row"]     # top of the head in the reference
+SHADOW_CENTRE = PROFILE["shadow_centre"]
+SHADOW_RADII = PROFILE["shadow_radii"]
 
 
 # --------------------------------------------------------------- helpers

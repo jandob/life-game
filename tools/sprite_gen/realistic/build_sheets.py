@@ -25,8 +25,8 @@ front/back walk = scripted warps of the standing frame (leg shortening = foot li
 arm swing), A'/P' are horizontal mirrors. Left rows are mirrors of right rows. Idle columns 4-7 are
 the breathing still (head and shoulders 1 row lower). Run rows reuse walk poses (A A P P A' A' P' P').
 
-Raw frames live in tools/artgen/out/sam_art/keys/ (git-ignored); the generation job lists are kept next
-to this script (jobs/*.json) so they can be regenerated with tools/artgen/out/sam_art/flux_batch.py.
+Raw frames live in art/characters/<name>/keys/ (tracked project data, not in assets/); the generation job lists are kept next
+to this script (art/jobs/*.json) so they can be regenerated with tools/artgen/out/sam_art/flux_batch.py.
 """
 import argparse
 import json
@@ -55,7 +55,7 @@ MOUTH = (176, 104, 98)
 RECIPES = {
     "player": {
         "target_h": 132,
-        "raw": "tools/artgen/out/sam_art/keys/player",
+        "raw": "art/characters/player/keys",
         "N": {"front": 7.36, "side": 7.36, "back": 7.36},  # 972/132; views agree within 0.5 %
         "iris": "green",
         "frames": {
@@ -70,7 +70,7 @@ RECIPES = {
     },
     "samantha": {
         "target_h": 126,
-        "raw": "tools/artgen/out/sam_art/keys/sam",
+        "raw": "art/characters/samantha/keys",
         "N": {"front": 7.48, "side": 7.29, "back": 7.33},  # per view: 943/919/924 raw rows / 126 (views differ 2.6 %)
         "iris": "blue",
         "clean_grey": False,  # white sneakers

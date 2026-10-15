@@ -207,7 +207,7 @@ def build():
     p.add_argument("--kind", choices=["floor", "wall"], default="floor", help="texture only")
     p.add_argument("--size", help="texture: 48 or 96 (art px); prop: W,H art px")
     p.add_argument("--grid", type=int, help="raw px per art px (default 8; a prop that does not fit drops to 6..7)")
-    p.add_argument("--palette", default="tools/artgen/palettes/interior.hex")
+    p.add_argument("--palette", default="art/palettes/interior.hex")
     p.add_argument("--seed", type=int, default=1)
     p.add_argument("--n", type=int, default=4)
     p.add_argument("--out-dir")

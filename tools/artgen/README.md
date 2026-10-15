@@ -1,166 +1,191 @@
 # artgen: AI pixel-art pipelines for Life Game
 
-`artgen` generates raw images with a pluggable **backend** (a local model or
-a remote service). It then turns them into game-ready pixel art with a
-**backend-agnostic post-processor**, and compares backends on a fixed
-**benchmark**. Every output PNG has a JSON sidecar (backend, models, prompt,
-seed, options, timings), so any image can be reproduced.
+`artgen` generates raw images with a pluggable **backend** (a local model or a remote service), edits and
+composes them (references, instruction edits, sprite sheets), and turns them into game-ready pixel art with a
+**backend-agnostic post-processor**. Every output PNG has a JSON sidecar (backend, models, prompt, seed,
+options, timings, shas), so any image can be reproduced. Every command prints one JSON object on stdout
+(`generate` prints paths unless `--json`) and exits non-zero on error. The stage-by-stage workflow with
+copy-paste commands is in [STYLES.md](STYLES.md); the agent skill is `.claude/skills/artgen/SKILL.md`.
 
 ```
 tools/artgen/
-  artgen.py            CLI: backends | generate | inpaint | refine | cast | mask | pose | snap | post | palette-from
-  compose.py           two-stage scenes: FLUX klein (refs) -> SDXL refine; scene | refine | sheet
-  maskkit.py           box/ellipse/head-protect repaint masks (artgen.py mask)
-  bench.py             runs a backend over prompts/bench.yaml -> contact sheets + table
-  compare.py           item x run grid to compare variants or backends side by side
+  artgen.py            CLI: backends | generate | edit | sheet | refine | inpaint | mask | pose | snap | post | palette-from | cache
+  runner.py            JobSpec + LocalRunner / RemoteRunner (remote hosts via ARTGEN_REMOTE_<NAME>_CMD)
+  maskkit.py           repaint masks, draw_mark, paste_back (artgen.py mask / edit)
+  pose.py              OpenPose-style skeletons; the strip that `sheet` feeds the model
+  bench.py / compare.py  run a backend over a bench yaml (the profile's `bench`, e.g. art/bench.yaml); side-by-side comparison
   postprocess.py       grid detect, downscale, bg removal, palette, cleanup, outline, cell fit
   backends/
-    base.py            Backend interface + BackendInfo metadata
-    __init__.py        registry (name -> module:Class)
-    flux2_klein_pixel_lora.py
-    sdxl.py            SDXL checkpoints: Illustrious, WAI, Pony, SDXL base (+ LoRA, ref, pose, inpaint)
-    z_image_turbo.py   Z-Image-Turbo built from the ComfyUI single files
-    _common.py         models.json reader, HF cache helpers, memory tracker
-    example_stub.py    template for new backends
-  models.json          registry for sdxl / z_image_turbo: model files (paths or HF files), LoRAs, VAE, IP-Adapter
-  pose.py              draws OpenPose skeleton PNGs (artgen.py pose)
-  STYLES.md            ready-to-run command templates per style (S2/S3/S4) x backend
-  test_backends.py     tests for the two backends above
-  prompts/bench.yaml   the fixed benchmark prompt set
-  palettes/player_ref.hex  37 colours from assets/library/characters/player/player.png
+    base.py, __init__.py, _common.py    interface, registry, models.json reader, memory tracker
+    qwen_image21.py    Qwen-Image 2.1 Turbo, GGUF transformer (generate, refs, edit, sheet)
+    qwen_encode.py     text-encoder worker (separate process), _enc_cache.py (encoding cache), _gguf.py (diffusers GGUF fix)
+    flux2_klein_pixel_lora.py, z_image_turbo.py, example_stub.py
+  models.json          model files / HF repos for z_image_turbo and qwen_image21
+  STYLES.md            the pipeline stage by stage, with commands
+  test_backends.py, test_infra.py, test_qwen.py, test_postprocess.py
+  profiles/default.json  generic bundled profile (project data lives in the repo's art/ folder)
 ```
 
-## Setup (macOS, Apple Silicon)
+## Setup (macOS, Apple Silicon, 24 GB)
 
 ```sh
 cd tools/artgen
 uv venv --python 3.14 .venv            # any Python >= 3.10 works
 uv pip install --python .venv/bin/python torch transformers accelerate safetensors \
-    huggingface_hub peft Pillow numpy pyyaml \
-    "git+https://github.com/huggingface/diffusers.git"   # needs >= 0.37.0.dev0
+    huggingface_hub peft gguf Pillow numpy pyyaml \
+    "git+https://github.com/huggingface/diffusers.git@85c9fa4caee33d1c5b473395784471d2d7957c1b"
 ```
 
-`.venv/` and `out/` are git-ignored. On first use the models download to the
-Hugging Face cache (`~/.cache/huggingface/hub`). For the FLUX backend, fetch
-only the diffusers folders (about 15 GB plus 310 MB for the LoRA):
+diffusers is **pinned to commit `85c9fa4caee33d1c5b473395784471d2d7957c1b`** (0.41.0.dev0): `QwenImage21Pipeline`
+only exists in the dev branch and `qwen_image21` checks the `encode_prompt` / `__call__` / `sample_sigmas` API at load
+time and fails with this commit in the message if it changed. `gguf` is needed for the GGUF transformer. `.venv/` and
+`out/` are git-ignored. Models download to the Hugging Face cache (`~/.cache/huggingface/hub`); nothing is
+downloaded without you running these:
 
 ```sh
 .venv/bin/python -c '
-from huggingface_hub import snapshot_download as d
+from huggingface_hub import snapshot_download as d, hf_hub_download as f
+# Qwen-Image 2.1 Turbo: configs, text encoder, VAE, processor. NOT the 40 GB transformer shards (the GGUF replaces them).
+d("Qwen/Qwen-Image-2.1-Turbo", allow_patterns=["*.json","*.jinja","*.txt","README.md","scheduler/*","vae/*","processor/*","text_encoder/*","transformer/config.json"])
+f("abenzerps/Qwen-Image-2.1-Turbo-Quantized", "qwen-image-2.1-turbo-Q8_0.gguf")          # 7.6 GB
+# FLUX.2 klein + pixel LoRA (about 15 GB + 310 MB); not the single-file flux-2-klein-4b.safetensors
 d("Limbicnation/pixel-art-lora", allow_patterns=["pytorch_lora_weights.safetensors","*.json","*.yaml","README.md","LICENSE"])
-d("black-forest-labs/FLUX.2-klein-4B", allow_patterns=["model_index.json","LICENSE.md","README.md",
-  "scheduler/*","text_encoder/*","tokenizer/*","transformer/*","vae/*"])'
+d("black-forest-labs/FLUX.2-klein-4B", allow_patterns=["model_index.json","LICENSE.md","README.md","scheduler/*","text_encoder/*","tokenizer/*","transformer/*","vae/*"])'
 ```
 
-Don't download `flux-2-klein-4b.safetensors` (the single-file checkpoint). The
-diffusers pipeline doesn't need it.
+Z-Image-Turbo reads the ComfyUI single files listed in `models.json` (`~/ComfyUI-Shared/models/...`) plus a few kB of
+config JSON from `Tongyi-MAI/Z-Image-Turbo`. Licences: Qwen-Image 2.1 and the GGUF conversion use the Qwen Research
+licence (see the model card); FLUX klein and Z-Image are Apache-2.0.
+
+Tests (fast, no models): `.venv/bin/python test_backends.py`, `test_infra.py`, `test_qwen.py`, `test_postprocess.py`;
+`ARTGEN_TEST_MODELS=1 .venv/bin/python test_backends.py` loads Z-Image.
+
+## Project profile and the three areas
+
+`tools/artgen/` is the generic tool; it holds no Life Game data. Project art constants (outline and shadow colours, the 64x128
+reference geometry, the sheet cell 96x192 with feet row 157, the sheet style words, the bench reference sheet and bench file)
+live in a **profile**, found in this order: env `ARTGEN_PROFILE=<path.json>`, then the first `art/artgen-profile.json` found
+walking up from the current directory and from this tool, then the bundled generic `profiles/default.json`. `artprofile.py`
+loads it, `postprocess.py`, `sheet` and `bench.py` read it, and generate/edit/sheet sidecars record the resolved path as `profile`.
+For Life Game the project data (profile, palettes, bench, generation jobs, character key frames) is in the top-level `art/`
+folder; `assets/` holds only finished shipped assets. See `art/README.md` and the `life-game-art` skill.
+
+## Memory and timing (24 GB Mac)
+
+**Run one model process at a time**: a second heavy process pushes the machine into swap.
+
+| Step | Cost |
+|---|---|
+| Qwen generate 1024², 8 steps | 55-95 s, peak 10-13 GB MPS |
+| Qwen sprite sheet 1920x768 + 3 refs @768 | ~160-185 s, peak ~15 GB MPS |
+| Qwen text encode (Qwen3-VL 8B bf16, CPU, 17.5 GB) | ~20 s text only; ~3 min with 3 refs @512; ~5 min with 1 ref @1024; ~8.5 min with 2 refs + strip @768 |
+| Qwen transformer load | 8-13 s |
+
+Why it fits, and the Mac workarounds the backend applies:
+
+- **Encoder in a separate process** (`backends/qwen_encode.py`, stdout routed to stderr). The 17.5 GB encoder and the
+  transformer are never resident together; `generate` encodes first, and drops the transformer before encoding on a miss.
+- **Encoding cache** (`~/.cache/artgen/enc/qwen21/`, key = prompt + resized reference pixels + `ref_res` + encoder repo and
+  revision). Extra seeds and repeated runs skip the encode entirely. `artgen.py cache --stats` / `--prune`.
+- **GGUF fix** (`_gguf.py`): diffusers leaves 65 non-Linear GGUF params (`txt_in.text_norm`, attention `norm_q/norm_k`) as raw
+  bytes, which fails at the first forward; they are dequantised after loading (count in the sidecar as `gguf_fixed`).
+- **Tiled VAE always** (an untiled 1024 px decode peaks at 28 GB); **bf16 VAE when references are passed**, fp32 otherwise.
+- MPS is not bit-exact across runs of different machines/versions; on this Mac, same-input reruns were identical.
+- FLUX klein and Z-Image notes are at the end of this file.
 
 ## Commands
 
-All commands run with `tools/artgen/.venv/bin/python`.
+All commands run with `tools/artgen/.venv/bin/python artgen.py ...` from `tools/artgen`.
+
+Each backend declares capabilities (`BackendInfo.caps`, printed by `artgen.py backends`); a command a backend lacks fails
+with a message naming the backends that support it (a backend never silently ignores references).
+
+| Command | `qwen_image21` | `flux2_klein_pixel_lora` | `z_image_turbo` |
+|---|---|---|---|
+| `generate` (text to image) | yes | yes | yes |
+| `generate --ref` (refs) | yes (Picture 1, 2, ...) | yes (FLUX multi-reference, untested for composition) | no |
+| `generate --opt rgba=1` (real alpha) | yes, the only one | no (painted background, removed in `post`) | no (same) |
+| `edit`, `sheet` | yes | no | no |
+| `refine`, `inpaint` (scenekit map tiles) | no | yes | no |
+| `--opt runner=remote:NAME` | yes | no | no |
 
 ```sh
-# list backends
-artgen.py backends
+artgen.py backends                                  # registered backends
 
-# generate 4 seeds (11..14). --prompt is the subject; the backend wraps it in
-# its trigger template ("pixel art sprite, <subject>, game asset, transparent background").
-artgen.py generate --backend flux2_klein_pixel_lora \
-    --prompt "an adult man, grey hoodie, jeans, standing, front view, full body" \
-    --seed 11 --n 4 --out out/man --name man_front
-# options: --opt lora_scale=1.0 --opt steps=4 --opt background="plain white background"
-#          --opt offload=none (all on GPU)   --raw-prompt (no template)   --width/--height
+# generate: --prompt is the subject; the backend wraps it in its template (--raw-prompt sends it verbatim).
+# qwen_image21 defaults to 1024x1024 (others 512x512); image i uses seed+i. --json prints {ok, files, seeds, stats}.
+artgen.py generate --backend qwen_image21 --prompt "a modern grey three-seat sofa, top-down 3/4 view" \
+    --seed 11 --n 2 --out out/sofa --name sofa --json
+#   --opt rgba=1                 trained RGBA wording: transparent background (alpha 1-9, post makes it 0)
+#   --opt background="..."      template background (default "plain flat white background")
+#   --opt sigmas=[...]           override the Turbo 8-step schedule      --opt variant=turbo|base
+#   --opt runner=local|remote:NAME   run locally (default) or on a remote host (below)
+# references: --ref A B C = Picture 1, 2, 3. With refs the prompt is sent VERBATIM (no sprite template).
+artgen.py generate --backend qwen_image21 --ref room.png man.png woman.png --opt ref_res=512 --seed 11 \
+    --width 1024 --height 1024 --prompt "Picture 1 is an empty room. ... Keep the room unchanged." --out out/scene --name scene
 
-# keep a character consistent: condition on an approved image (FLUX.2 reference)
-artgen.py generate --backend flux2_klein_pixel_lora --ref out/man/man_front_s11.png \
-    --prompt "the same man from the reference image, same clothes, back view, full body" \
-    --seed 11 --out out/man --name man_back
+# edit: source = Picture 1, extra --ref = Picture 2.. ; output size = source size; --ref-res (default 1024) is one value for all.
+artgen.py edit --image front.png --prompt "Picture 1 shows a man from the front. Draw the same man from behind ..." --seed 11 --out out/e
+# local fix: --mark draws a red circle on the source (the model sees it); --mask pastes ONLY the masked area back (feathered)
+artgen.py edit --image in.png --mark 508,338,42 --mask mask.png --feather 8 --prompt "..." --seed 11 --out out/fix --name fix
+#   -> fix_s11.png (pasted), fix_s11_raw.png (unpasted edit), sidecar with drift_outside_mask / drift_outside_reach (must be 0) and mask sha
 
-# post-process a character into a 64x128 cell, feet on row 105, with the drop shadow
-artgen.py post out/man/*.png --grid fit --cell 64x128 --feet-row 105 --shadow \
-    --outline inner --colours 24 --keep-largest --out out/man_px
+# sheet: one generation for a whole animation from character refs + a pose-skeleton strip (added last as the final Picture).
+artgen.py sheet --ref front.png side.png --poses walk_side --frames 5 --cell 384x768 --ref-res 768 --seed 11 \
+    --subject "a young adult man, olive hoodie, dark jeans" --slice --out out/walk --name walk
+#   --prompt/--prompt-file gives the full prompt verbatim. --slice writes walk_f{i}.png, walk_f{i}_px.png, walk_px_row.png, walk.gif;
+#   all frames share ONE pixel size (--grid N, else fitted on frame 0). --post-cell 96x192 --feet-row 157 are the defaults.
 
-# realistic characters (96x192 cell, feet on row 157, shadow centre (47.5, 152.5), radii 33.75x17.25):
-# fix N (the generator's pixel size in raw px) ONCE per character and backend from a standing front
-# view (man 132 rows, Samantha 126) and reuse it for every pose, so all frames share one pixel size.
-# --grid N samples at phase (0, 0); `--grid fit` is only for a first look, it re-scales every image.
-artgen.py post out/man/*.png --grid N --cell 96x192 --feet-row 157 --shadow \
-    --outline inner --colours 24 --keep-largest --out out/man_px96
+artgen.py pose --preset walk_side_0 --size 384x768 --out pose.png     # preview a skeleton (presets: stand_front, stand_side, sit_front, ...)
+artgen.py cache --stats                              # encoding cache size;  --prune --older-than 30 [--max-gb 20]
+```
 
+### Post-processing commands
+
+```sh
+# character into a 96x192 cell, feet on row 157, drop shadow. Fix N (raw px per art pixel) ONCE per character from a
+# standing front view and reuse it for every pose; `--grid fit` is only for a first look (it re-scales every image).
+artgen.py post out/man/*.png --grid N --cell 96x192 --feet-row 157 --shadow --outline inner --colours 24 --keep-largest --out out/man_px
+# older 64x128 characters: --grid fit --cell 64x128 --feet-row 105
 # props / portraits: native grid detection, no cell
 artgen.py post out/sofa/*.png --grid auto --colours 16 --outline inner --out out/sofa_px
-
-# tiles: snap to the native grid, take a 16x16 centre crop (or --tile-mode resample)
+# tiles (still weak for every model): native grid, 16x16 centre crop
 artgen.py post out/floor/*.png --tile --cell 16x16 --colours 8 --out out/floor_px
-
-# lock to a fixed palette instead of adaptive colours
-artgen.py post IN.png --grid auto --palette palettes/player_ref.hex --out OUT
-artgen.py palette-from SOME.png --out palettes/new.hex
+# fixed palette
+artgen.py post IN.png --grid auto --palette art/palettes/player_ref.hex --out OUT;  artgen.py palette-from SOME.png --out art/palettes/new.hex
 ```
 
-### refine, mask and the two-stage recipe
+### refine, mask, inpaint, snap
 
-`refine` runs an existing image through another model (img2img). `--strength` is the share of the image that gets
-repainted: 0.3 keeps layout, faces and colours, 0.75 repaints most of it. Several values run in one model load.
-
-```sh
-artgen.py refine --backend sdxl --image scene.png --prompt "<tags>" --strength 0.3 0.45 0.6 \
-    --opt model=wai_v17 --opt loras=pixel_art_xl:0.8 [--mask mask.png] [--pose pose.png] --seed 11 --n 1 \
-    --out out/refine --name scene
-# -> out/refine/scene_st30_s11.png (+ .json: source sha256, mask sha256, strength, seed, prompt, opts)
-```
-
-sdxl uses `StableDiffusionXLImg2ImgPipeline` (no mask) or the inpaint pipeline (mask; white = repaint). With a mask the
-original pixels are pasted back outside it (edge blur `--opt feather=6`), so protected areas stay unchanged. `--pose`
-switches to the ControlNet img2img/inpaint variants. Sides snap to a multiple of 8. Other backends: only the flux backend
-(through `inpaint` with a full mask). The prompt gets the backend's quality/rating tags like `inpaint`; `--raw-prompt` skips them.
+`refine` runs an existing image through FLUX klein's inpaint (img2img). `--strength` is the share that gets repainted
+(0.3 keeps layout and faces, 0.75 repaints most). With `--mask` white = repaint.
 
 ```sh
-# mask helper: white = repaint. Boxes are x0,y0,x1,y1 (px; --units frac for 0..1)
-artgen.py mask --image scene.png --heads 245,38,420,205 --heads 612,68,795,265 --feather 3 \
-    --preview mask_check.png --out mask.png       # everything except the heads; look at mask_check.png
+artgen.py refine --image scene.png --mask mask.png --prompt "..." --strength 0.3 0.45 --seed 11 --out out/refine --name scene
+# mask helper: white = repaint. Boxes are x0,y0,x1,y1 (px; --units frac for 0..1); no segmentation model.
+artgen.py mask --image scene.png --ellipse 448,300,568,440 --feather 3 --preview mask_check.png --out mask.png
 artgen.py mask --size 1024x768 --rect 0,300,1024,768 --keep-ellipse 100,300,200,400 --out m2.png
 ```
-`--rect/--ellipse` paint white on black, `--keep-rect/--keep-ellipse` paint black, `--heads` (ellipse grown by `--head-pad`,
-default 15 %, includes hair) paints black on white. No segmentation model: read the boxes off the stage-1 image.
 
-`compose.py` wraps both stages (styles s2/s3/s4 carry the wording and LoRA of STYLES.md):
+For local fixes with Qwen prefer `edit --mark ... --mask ...` (instruction-driven, exact paste-back).
 
-```sh
-compose.py scene  --ref man.png woman.png --scene "The man and the woman from the reference images, ..." --out out/c
-compose.py refine --image out/c/scene_s11.png --heads 245,38,420,205 --heads 612,68,795,265 \
-    --prompt "<tags>" --strength 0.3 0.45 0.6 --model wai_v17 --out out/c      # also writes the mask and its preview
-compose.py sheet --row "full=0.30@a.png,0.45@b.png" --row "heads=0.30@c.png" --out sheet.png
-```
+### Remote runner
 
-### cast: several masked regions in one command
+`--opt runner=remote:<name>` (generate, edit, sheet) pipes a JobSpec JSON to the command in `ARTGEN_REMOTE_<NAME>_CMD`
+(shell words, e.g. `ssh gpu 'artgen-worker'`) and reads a JSON list of `{png_base64, meta}` from its stdout. No host is
+bundled: without the variable the command fails with "no remote host configured". The `base` variant (40 steps, true_cfg
+4.0, negative prompt) runs remote only: `--opt variant=base` with the local runner fails.
 
-`cast RECIPE.json` applies a list of regions to one image, in order (each step's output is the next step's input).
-Every region is a full-resolution masked refine (whole image as context, same as `refine --mask`); one model load for all.
-The recipe is validated before any model loads: errors print `{"ok": false, "error": ...}` and exit 2.
+## What was removed
 
-```sh
-artgen.py cast examples/cast_recipe.json --out out/cast      # default out: <recipe dir>/<recipe stem>_cast
-# -> out/cast/01_woman_head.png, 01_woman_head_mask.png (mask tinted red), 02_..., final.png, cast.json
-```
+The SDXL stack (the `sdxl` backend with LoRAs, IP-Adapter and OpenPose ControlNet, `cast`, `compose.py`, `train/` and the
+SDXL part of `refine`) was deleted by the OpenSpec change `artgen-qwen-image` (user decision, 2026-10-16). Qwen-Image 2.1
+covers what it was used for: reference images keep a character's identity instead of a trained LoRA, instruction `edit`
+replaces masked LoRA repaints, and the skeleton strip of `sheet` replaces ControlNet pose. LoRA weights in
+`~/.cache/artgen/loras/` were left on disk. The evaluation that led here is in `out/eval_2026-10/results.md` (git-ignored,
+local only).
 
-Recipe (`examples/cast_recipe.json`; relative paths are relative to the recipe file):
-
-| field | meaning |
-|---|---|
-| `image` | source PNG (required). Optional top level: `backend` (default `sdxl`), `opts` (like `--opt`, e.g. `model`), `negative` |
-| `regions[].name` | required, unique, `[A-Za-z0-9_-]`; used in file names |
-| `regions[].mask` **or** boxes | `mask`: PNG, white = repaint, same size as the image. Boxes: `rect`, `ellipse` (white), `keep_rect`, `keep_ellipse` (black), `heads` (everything except heads, like `artgen.py mask`); each a `"x0,y0,x1,y1"` string or list of them; `units` `px`/`frac`, `head_pad`, `head_shape`, `base` as in `mask` |
-| `regions[].feather` | edge blur in px (default 6), applied by the backend when it pastes the original back outside the mask |
-| `regions[].prompt` | required subject; backend tags and LoRA triggers are added (`raw_prompt: true` sends it verbatim); optional `negative` |
-| `regions[].opts` | per-region `--opt` values (`loras`, `model`, `rating`, `steps`, ...), merged over the top-level `opts` |
-| `regions[].strength` | (0, 1], default 0.5 |
-| `regions[].seed` | integer, default 0; same recipe + same seeds reproduce the result |
-
-`cast.json` logs the resolved prompt, generation options, seed, strength, mask coverage and seconds of every region.
-There is no crop mode: the model always sees the whole image, so the pixel grid stays consistent across it.
-
-### Post-processing stages (`postprocess.py`)
+## Post-processing stages (`postprocess.py`)
 
 | Stage | What it does |
 |---|---|
@@ -183,7 +208,7 @@ bench.py --backend flux2_klein_pixel_lora --out OUT --precompute \
     --variant lora1.0:lora_scale=1.0 --variant base:lora_scale=0
 ```
 
-`prompts/bench.yaml` fixes the items, seeds (11, 42) and size (512²):
+The bench file (`--bench`, default: the profile's `bench`, Life Game: `art/bench.yaml`) fixes the items, seeds (11, 42) and size (512²; `sizes:` in the yaml overrides it per backend, `qwen_image21` runs at 1024²). Items with `ref:` pass the referenced raw image as `--ref` (qwen_image21 then sends the subject verbatim):
 
 - an adult man (front, side, back);
 - side and back again, conditioned on the front image (`ref:`);
@@ -226,8 +251,7 @@ compare.py OUT/flux2_klein_pixel_lora/lora1.0 OUT/<other_backend>/default \
 3. Register it in `backends/__init__.py`: `"<name>": "<name>:<Class>"`.
 4. Run `bench.py --backend <name> ...` and compare the contact sheets.
 
-The stub's docstring sketches SDXL + pixel LoRA (diffusers), Replicate and
-PixelLab. Remote backends read API keys from the environment and must never
+The stub's docstring sketches Replicate and PixelLab. Remote backends read API keys from the environment and must never
 write them into sidecars. Weights and services need approval before you
 download or sign up.
 
@@ -256,53 +280,7 @@ multiples of 16; scene prompt template). Prints one JSON object. `artgen.py snap
 [--key #rrggbb] [--grid fixed|detect --target WxH] --out DIR` downscales by an exact integer block mode
 (`postprocess.downscale_fixed`), locks the palette and cleans up. See `tools/scenekit/README.md`.
 
-## SDXL and Z-Image backends
-
-Two in-process diffusers backends next to FLUX. For ready-made commands per style see
-`STYLES.md`. Model files are never copied: `models.json` points at the HF cache, at
-`~/Downloads` (WAI v17) and at the shared ComfyUI folder `~/ComfyUI-Shared/models/`
-(read-only; ComfyUI itself is not used). Edit `models.json`, or set `ARTGEN_MODELS=/path/other.json`,
-to add a checkpoint.
-
-### `sdxl`
-
-```sh
-.venv/bin/python artgen.py generate --backend sdxl \
-    --opt model=illustrious_v1 --opt loras=pixel_art_xl:0.8 \
-    --prompt "1boy, solo, adult, brown hair, grey hoodie, jeans, standing, front view, full body, anime style pixel art" \
-    --opt background="plain flat white background" --width 768 --height 1152 --seed 11 --out out/man
-```
-
-| `--opt` | Meaning |
-|---|---|
-| `model` | `illustrious_v1` (default), `wai_v17`, `cyberrealistic_pony_v18`, `sdxl_base`. Switching model reloads (about 5-10 s). |
-| `loras` | `pixel_art_xl:0.8`, comma separated, or a path to a `.safetensors`. A registered LoRA's trigger (`pixel art`) is added to the prompt. `0` or omitted = none. |
-| `rating` | `safe` (default), `questionable`, `explicit`. Becomes `rating_*` (Pony) or `general` / `sensitive` / `nsfw, explicit` (Illustrious, WAI). Not used for `sdxl_base`. |
-| `background` | Text appended to the prompt (default `simple background`). `quality=` replaces the family's quality prefix (empty = none). |
-| `steps`, `guidance`, `sampler` | Defaults per model in `models.json` (28 / 6.0 / `euler_a` for Illustrious and WAI, 30 / 5.0 / `dpmpp_sde_karras` for Pony, 30 / 7.0 for base). Samplers: `euler_a`, `dpmpp_2m_karras`, `dpmpp_sde_karras`. |
-| `--negative` / `negative_extra` | `--negative` replaces the family default negative, `--opt negative_extra=...` appends to it. |
-| `--ref FILE` + `ip_scale` | Reference image through IP-Adapter Plus (ViT-H), default scale 0.6 (use 0.25-0.4 together with `pose`, 0.6 corrupts the image). It carries colours and look more than exact identity. |
-| `pose` + `pose_scale`, `pose_end` | Skeleton PNG (below) through the OpenPose ControlNet (scale 0.8, released at 80 % of the steps). |
-
-- **Prompts follow each family's convention** (`--raw-prompt` turns that off). Pony: `score_9, score_8_up, score_7_up, rating_safe, ...`.
-  Illustrious and WAI: `masterpiece, best quality, amazing quality, very aesthetic, absurdres, newest, general, ...`; Danbooru tags mixed with
-  plain English work. Their default negative contains `child, loli, shota, young` because these checkpoints skew young: put `adult` and an
-  age description in your prompt. `sdxl_base` takes plain English only.
-- **Prompts longer than 77 CLIP tokens are not truncated**: the backend encodes them in 75-token chunks and joins the embeddings
-  (an explicit `clip_skip` option falls back to diffusers' encoder and truncates). Pony's "clip skip 2" is diffusers' default for SDXL.
-- fp16 on MPS uses `madebyollin/sdxl-vae-fp16-fix` (the stock VAE gives black images). Image `i` is reproducible from `seed + i`
-  (CPU generator), but not identical to ComfyUI or Civitai seeds.
-- **Sizes**: SDXL wants about 1 MP: 768x1152 or 832x1216 for characters, 1024x768 for props. Multiples of 8. At 832x1216 a 28-step image takes
-  about 45 s on the M5, peaking at 13 GB on MPS.
-- `inpaint` works: `artgen.py inpaint --backend sdxl --image canvas.png --mask mask.png --prompt "..." --strength 0.75 --opt model=wai_v17`
-  (`StableDiffusionXLInpaintPipeline` on the loaded weights, white mask = repaint, sides multiples of 8; without `--raw-prompt` the
-  family's quality prefix is added).
-- **Pose (OpenPose ControlNet)**: `artgen.py pose --preset stand_front --size 768x1152 --out pose.png` draws the skeleton ourselves
-  (presets `stand_front`, `stand_front_arms_out`, `stand_side`, `sit_front`, or `--keypoints my.json` with 18 `[x, y]` pairs in 0..1).
-  No annotator model is used. The ControlNet is `xinsir/controlnet-openpose-sdxl-1.0` (Apache-2.0, single fp16-loaded safetensors, 2.5 GB, in the HF cache).
-  Multi-person skeletons: pass a JSON list of 18-point lists to `--keypoints`, or use the `sit_pair` preset.
-
-### `z_image_turbo`
+## Z-Image backend
 
 Built from `z_image_turbo_bf16.safetensors`, `qwen_3_4b.safetensors` and `ae.safetensors` plus a few kB of
 config JSON from `Tongyi-MAI/Z-Image-Turbo`. 8 steps, guidance 0 (negative prompts ignored). Natural-language prompts only, no tags, no
@@ -315,4 +293,4 @@ encoder is dropped, then the transformer loads to MPS (12 s). Peak about 18 GB o
     --opt style="detailed hi-res pixel art, limited palette. " --prompt "a young man in a grey hoodie, front view, full body" --out out/z
 ```
 
-Tests: `.venv/bin/python test_backends.py` (fast), `ARTGEN_TEST_MODELS=1 .venv/bin/python test_backends.py` (loads WAI v17 and Z-Image).
+

@@ -1,0 +1,113 @@
+# Fixed benchmark for comparing art backends on Life Game's needs.
+# Every backend runs the same items with the same seeds. ``subject`` is
+# wrapped in the backend's own prompt template (trigger words etc.), so the
+# subjects stay backend-neutral. All characters are adults.
+#
+# Item fields:
+#   id, kind (character|prop|tile|scene|portrait), subject
+#   background: optional override for the template's {background} field
+#   ref: id of another item whose raw output (same seed) is passed as a
+#        reference image, for backends that support references (consistency)
+#   post: arguments for postprocess.run_pipeline
+name: life-game-bench-v1
+seeds: [11, 42]
+width: 512
+height: 512
+# per-backend size override (qwen_image21 is built for 1024 px)
+sizes:
+  qwen_image21: [1024, 1024]
+
+items:
+  - id: man_front
+    kind: character
+    subject: >-
+      an adult man in his late twenties, short brown hair, grey hoodie, dark blue
+      jeans, white sneakers, standing, front view facing the viewer, full body,
+      top-down RPG character
+    post: {grid: fit, cell: [64, 128], feet_row: 105, shadow: true, colours: 24, keep_largest: true, outline: inner}
+
+  - id: man_side
+    kind: character
+    subject: >-
+      an adult man in his late twenties, short brown hair, grey hoodie, dark blue
+      jeans, white sneakers, standing, side view facing right, profile, full body,
+      top-down RPG character
+    post: {grid: fit, cell: [64, 128], feet_row: 105, shadow: true, colours: 24, keep_largest: true, outline: inner}
+
+  - id: man_back
+    kind: character
+    subject: >-
+      an adult man in his late twenties, short brown hair, grey hoodie, dark blue
+      jeans, white sneakers, standing, back view seen from behind, full body,
+      top-down RPG character
+    post: {grid: fit, cell: [64, 128], feet_row: 105, shadow: true, colours: 24, keep_largest: true, outline: inner}
+
+  # Same as man_side / man_back, but conditioned on man_front's image.
+  - id: man_side_ref
+    kind: character
+    ref: man_front
+    subject: >-
+      the same man from the reference image, same clothes and colours, now
+      standing in side view facing right, profile, full body
+    post: {grid: fit, cell: [64, 128], feet_row: 105, shadow: true, colours: 24, keep_largest: true, outline: inner}
+
+  - id: man_back_ref
+    kind: character
+    ref: man_front
+    subject: >-
+      the same man from the reference image, same clothes and colours, now
+      seen from behind, back view, full body
+    post: {grid: fit, cell: [64, 128], feet_row: 105, shadow: true, colours: 24, keep_largest: true, outline: inner}
+
+  - id: woman_blue_hair
+    kind: character
+    subject: >-
+      an adult woman in her twenties with long straight blue hair and blue eyes,
+      white tank top, white shorts, barefoot, standing, front view facing the
+      viewer, full body, top-down RPG character
+    post: {grid: fit, cell: [64, 128], feet_row: 105, shadow: true, colours: 24, keep_largest: true, outline: inner}
+
+  - id: sofa
+    kind: prop
+    subject: >-
+      a modern grey fabric three-seat sofa, top-down 3/4 view from above,
+      furniture prop for an apartment
+    post: {grid: auto, colours: 16, keep_largest: true, outline: inner}
+
+  - id: floor_wood
+    kind: tile
+    background: flat texture filling the whole image, no border
+    subject: >-
+      seamless wooden floor tile texture, light oak planks, top-down view, 16x16
+      tile
+    post: {tile: true, tile_mode: crop, cell: [16, 16], colours: 8}
+
+  - id: wall_tile
+    kind: tile
+    background: flat texture filling the whole image, no border
+    subject: >-
+      seamless interior wall tile texture, beige painted plaster with a white
+      skirting board at the bottom, front view, 16x16 tile
+    # resample: the skirting board only appears if the whole image maps to the tile
+    post: {tile: true, tile_mode: resample, cell: [16, 16], colours: 8}
+
+  - id: apartment
+    kind: scene
+    background: full scene filling the whole image
+    subject: >-
+      a small modern city apartment interior seen from top-down, living room with
+      sofa, table, kitchen counter, bed, wooden floor, walls, RPG map
+    # grid_max: scenes mix detail sizes; without a cap the detector can lock
+    # onto furniture-sized periods (15 px) and return a 34 px thumbnail.
+    post: {grid: auto, grid_max: 10, bg: none, colours: 32, outline: null, cleanup_level: 0}
+
+  - id: portrait_man
+    kind: portrait
+    background: plain flat background
+    subject: >-
+      dialogue portrait bust of an adult man in his thirties, short dark hair,
+      light stubble, neutral expression, head and shoulders, facing the viewer,
+      visual novel portrait
+    # bg: none. Portraits sit on a flat backdrop that often matches the shirt
+    # colour, so flood-fill removal eats the shoulders; keep the backdrop.
+    post: {grid: auto, bg: none, colours: 32, outline: null, cleanup_level: 0}

@@ -31,7 +31,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -62,7 +62,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -93,7 +93,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -124,7 +124,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -155,7 +155,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -186,7 +186,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -217,7 +217,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -248,7 +248,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -279,7 +279,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -310,7 +310,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -341,7 +341,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -372,7 +372,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -403,7 +403,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -434,7 +434,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -465,7 +465,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -496,7 +496,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "wall"
@@ -527,7 +527,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -558,7 +558,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -589,7 +589,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -620,7 +620,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -651,7 +651,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -682,7 +682,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -713,7 +713,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -744,7 +744,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -775,7 +775,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -806,7 +806,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -837,7 +837,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -868,7 +868,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -899,7 +899,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -930,7 +930,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -961,7 +961,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -992,7 +992,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1023,7 +1023,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1054,7 +1054,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1085,7 +1085,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1116,7 +1116,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1147,7 +1147,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1178,7 +1178,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1209,7 +1209,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1240,7 +1240,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1271,7 +1271,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1302,7 +1302,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1333,7 +1333,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1364,7 +1364,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1395,7 +1395,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1426,7 +1426,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1457,7 +1457,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1488,7 +1488,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1519,7 +1519,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1550,7 +1550,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1581,7 +1581,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1612,7 +1612,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1643,7 +1643,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1674,7 +1674,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1705,7 +1705,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1736,7 +1736,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1767,7 +1767,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1798,7 +1798,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1829,7 +1829,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1860,7 +1860,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1891,7 +1891,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1922,7 +1922,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1953,7 +1953,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -1984,7 +1984,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -2015,7 +2015,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -2046,7 +2046,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -2077,7 +2077,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -2108,7 +2108,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -2139,7 +2139,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -2170,7 +2170,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -2201,7 +2201,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -2232,7 +2232,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -2263,7 +2263,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -2294,7 +2294,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -2325,7 +2325,7 @@
     "scale": 3,
     "refs": [],
     "layout": "sha256:acbf288651d96e6b74c4509d56d6cee926e0c3591d3601857ee16b947208125e",
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    },
    "material": "floor"
@@ -2356,7 +2356,7 @@
     "scale": 4,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    }
   },
@@ -2386,7 +2386,7 @@
     "scale": 4,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    }
   },
@@ -2416,7 +2416,7 @@
     "scale": 4,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    }
   },
@@ -2446,7 +2446,7 @@
     "scale": 4,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/interior.hex",
+    "palette": "file art/palettes/interior.hex",
     "alpha": false
    }
   },
@@ -3414,7 +3414,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    }
   },
@@ -3444,7 +3444,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    }
   },
@@ -3474,7 +3474,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    }
   },
@@ -3504,7 +3504,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    }
   },
@@ -3534,7 +3534,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -3565,7 +3565,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -3596,7 +3596,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -3627,7 +3627,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -3658,7 +3658,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -3689,7 +3689,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -3720,7 +3720,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -3751,7 +3751,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -3782,7 +3782,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    }
   },
@@ -3812,7 +3812,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    }
   },
@@ -3842,7 +3842,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    }
   },
@@ -3872,7 +3872,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -3903,7 +3903,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -3934,7 +3934,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -3965,7 +3965,7 @@
     "scale": 8,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment.hex",
+    "palette": "file art/palettes/apartment.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -4343,7 +4343,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -4374,7 +4374,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -4405,7 +4405,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -4435,7 +4435,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -4465,7 +4465,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -4495,7 +4495,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -4525,7 +4525,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -4555,7 +4555,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -4585,7 +4585,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -4615,7 +4615,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -4646,7 +4646,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -4677,7 +4677,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -4708,7 +4708,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -4739,7 +4739,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -4770,7 +4770,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -4801,7 +4801,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -4832,7 +4832,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -4863,7 +4863,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -4894,7 +4894,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -4925,7 +4925,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -4956,7 +4956,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -4987,7 +4987,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -5018,7 +5018,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -5049,7 +5049,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -5080,7 +5080,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -5111,7 +5111,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -5142,7 +5142,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "counter"
@@ -5173,7 +5173,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -5204,7 +5204,7 @@
     "scale": 5,
     "refs": [],
     "layout": "sha256:f4abff81b34f1a229a96372e7a03127d66d4d46c87756bec9643a2f47436bc1e",
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -5802,7 +5802,7 @@
     "scale": 6,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -5832,7 +5832,7 @@
     "scale": 6,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -5862,7 +5862,7 @@
     "scale": 6,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -5892,7 +5892,7 @@
     "scale": 6,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    },
    "material": "furniture"
@@ -5923,7 +5923,7 @@
     "scale": 6,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -5953,7 +5953,7 @@
     "scale": 6,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -5983,7 +5983,7 @@
     "scale": 6,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -6013,7 +6013,7 @@
     "scale": 6,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -6043,7 +6043,7 @@
     "scale": 6,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -6073,7 +6073,7 @@
     "scale": 6,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -6103,7 +6103,7 @@
     "scale": 6,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },
@@ -6133,7 +6133,7 @@
     "scale": 6,
     "refs": [],
     "layout": null,
-    "palette": "file tools/artgen/palettes/apartment_kitchen.hex",
+    "palette": "file art/palettes/apartment_kitchen.hex",
     "alpha": true
    }
   },

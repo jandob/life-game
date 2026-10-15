@@ -36,6 +36,7 @@ class Flux2KleinPixelLora(Backend):
         models=[BASE, LORA],
         licence="Apache-2.0 (base model and LoRA; LoRA trained on CC0 data)",
         local=True,
+        caps=frozenset({"refs", "inpaint", "refine"}),
         defaults={"steps": 4, "guidance": 1.0, "lora_scale": 1.0,
                   "offload": "free_te", "dtype": "bf16", "ref": None,
                   "background": "transparent background"},

@@ -1,0 +1,45 @@
+{
+  "name": "life-game",
+  "_comment": "Life Game art constants for artgen. Found automatically by tools/artgen/artprofile.py (art/artgen-profile.json above the cwd or the tool); env ARTGEN_PROFILE=<path> overrides. Relative paths here are relative to the repo root (bench: to this file).",
+  "outline": [
+    34,
+    32,
+    52
+  ],
+  "shadow_fill": [
+    63,
+    63,
+    116,
+    125
+  ],
+  "shadow_rim": [
+    92,
+    92,
+    169,
+    125
+  ],
+  "char_cell": [
+    64,
+    128
+  ],
+  "char_feet_row": 105,
+  "char_top_row": 17,
+  "shadow_centre": [
+    31.5,
+    102
+  ],
+  "shadow_radii": [
+    22.5,
+    11.5
+  ],
+  "sheet_post_cell": [
+    96,
+    192
+  ],
+  "sheet_feet_row": 157,
+  "sheet_style": "same pixel art style with thick dark outlines and flat cel shading",
+  "style_suffix": "anime style pixel art, thick dark outlines, flat cel shading with two tones",
+  "bench_ref_sheet": "assets/library/characters/player/player.png",
+  "default_palette": null,
+  "bench": "bench.yaml"
+}

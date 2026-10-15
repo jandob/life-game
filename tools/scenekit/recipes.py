@@ -11,7 +11,7 @@ from common import TILE, SceneError, abspath_from_root, atomic_write, png_bytes,
 
 STYLE_SUFFIX = "anime style pixel art, thick dark outlines, flat cel shading with two tones"
 BACKEND_OPTS = ["--backend", "flux2_klein_pixel_lora", "--opt", "lora_scale=1.0"]
-PALETTE = "tools/artgen/palettes/interior.hex"
+PALETTE = "art/palettes/interior.hex"
 PY = "tools/artgen/.venv/bin/python"
 ARTGEN = "tools/artgen/artgen.py"
 SCENE = "tools/scenekit/scene.py"
