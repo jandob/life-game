@@ -75,6 +75,7 @@ fn main() {
                 let plugin = YarnSpinnerPlugin::with_yarn_sources([
                     YarnFileSource::file("dialogue/route1_viewing.yarn"),
                     YarnFileSource::file("dialogue/route1_movein.yarn"),
+                    YarnFileSource::file("dialogue/route1_croissant.yarn"),
                 ]);
                 #[cfg(not(target_arch = "wasm32"))]
                 let plugin =

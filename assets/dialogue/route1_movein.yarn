@@ -89,5 +89,7 @@ You: They're... pink.
 <<wait 1>>
 {$samantha_name}: Shoes!
 You: ...They're off.
-<<end_demo>>
+// Time skip to the next morning (route1_croissant.yarn).
+<<fade_out>>
+<<next_scene Route1Croissant>>
 ===

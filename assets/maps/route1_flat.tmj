@@ -741,6 +741,39 @@
        "y": -352.0
       }
      ]
+    },
+    {
+     "height": 0,
+     "id": 22,
+     "name": "PlayerTo3A",
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 0,
+     "x": 352.0,
+     "y": 960.0,
+     "point": true
+    },
+    {
+     "height": 0,
+     "id": 23,
+     "name": "SamanthaIn",
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 0,
+     "x": 432.0,
+     "y": 936.0,
+     "polyline": [
+      {
+       "x": 0.0,
+       "y": 0.0
+      },
+      {
+       "x": 0.0,
+       "y": 184.0
+      }
+     ]
     }
    ],
    "opacity": 1,
@@ -751,7 +784,7 @@
   }
  ],
  "nextlayerid": 12,
- "nextobjectid": 22,
+ "nextobjectid": 24,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.12.2",

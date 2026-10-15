@@ -1,0 +1,100 @@
+title: Route1Croissant
+tags: cutscene
+---
+<<declare $r1_croissant_bag = "">>
+<<declare $r1_croissant_socks = "">>
+<<declare $r1_croissant_dinner = "">>
+// Starts in black: moving day ends with <<fade_out>> and <<next_scene Route1Croissant>>.
+// The next morning. He comes back up the stairs from the bakery and knocks on 3A.
+<<place Player PlayerArrive>>
+<<place Samantha SamanthaOut>>
+<<hide Samantha>>
+<<face Player right>>
+<<card "Sunday morning.">>
+<<fade_in>>
+<<walk Player PlayerTo3A>>
+<<face Player right>>
+<<wait 2>>
+// Behind her door.
+{$samantha_name}: ...Who is it?
+You: Me. From across the hall.
+{$samantha_name}: Do you know what time it is?
+<<if $r1_movein_rules == "fair">>
+    {$samantha_name}: Hold on. I'm deciding whether I'm home.
+    <<wait 2>>
+    {$samantha_name}: Fine. I'm home.
+<<endif>>
+<<open_door Door3A>>
+<<show Samantha>>
+<<walk Samantha SamanthaOut>>
+<<face Samantha Player>>
+<<face Player Samantha>>
+{$samantha_name}: Five past six.
+You: You said the bakery opens at six.
+{$samantha_name}: I said it opens at six. I didn't say come at six.
+{$samantha_name}: But you did. Interesting.
+{$samantha_name}: What's in the bag?
+-> One croissant. Like you said.
+    <<set $r1_croissant_bag to "one">>
+    {$samantha_name}: Exactly what I asked for. Nothing more, nothing less.
+    {$samantha_name}: Good.
+-> Two. One's for me.
+    <<set $r1_croissant_bag to "two">>
+    {$samantha_name}: Was for you.
+    {$samantha_name}: Thank you. I'll have the second one for lunch.
+-> They were out. I got pain au chocolat.
+    <<set $r1_croissant_bag to "swap">>
+    {$samantha_name}: At five past six. They were out.
+    {$samantha_name}: You stood at the counter and picked the one you wanted. I'll allow it. Once.
+{$samantha_name}: Rent's paid. For today.
+// She looks down at his feet.
+{$samantha_name}: Now. I told you I'd ask.
+<<if $r1_movein_socks == "refuse">>
+    {$samantha_name}: You were very sure about it yesterday. Let's see if you meant it.
+<<endif>>
+{$samantha_name}: Are you wearing them?
+-> Yes.
+    <<set $r1_croissant_socks to "yes">>
+    {$samantha_name}: Show me.
+    You: Here? On the landing?
+    {$samantha_name}: You knocked on my door at six in the morning. You don't get to be shy now.
+    You: ...
+    {$samantha_name}: Blush. Told you they were your size.
+-> No. I'm not wearing pink socks.
+    <<set $r1_croissant_socks to "no">>
+    {$samantha_name}: Blush. And at least you're honest about it.
+    {$samantha_name}: I'll ask again tomorrow. And the day after.
+-> They're in the wash.
+    <<set $r1_croissant_socks to "wash">>
+    {$samantha_name}: You've had them for one day.
+    You: I wanted them clean.
+    {$samantha_name}: You're a bad liar. That's useful to know.
+{$samantha_name}: Thursday. Eight o'clock. Dinner at mine.
+You: Is that an invitation?
+{$samantha_name}: It's a time and a place.
+-> I'll be there.
+    <<set $r1_croissant_dinner to "yes">>
+    {$samantha_name}: I know.
+-> Should I bring anything?
+    <<set $r1_croissant_dinner to "bring">>
+    {$samantha_name}: Wine. Red. I'll text you which one.
+    {$samantha_name}: Don't pick it yourself.
+-> I might be busy.
+    <<set $r1_croissant_dinner to "busy">>
+    {$samantha_name}: You moved in yesterday. You don't know anyone else in this city.
+    {$samantha_name}: Eight o'clock.
+{$samantha_name}: Now go back to bed. You look like you didn't sleep.
+{$samantha_name}: And thank you. For breakfast.
+// She goes back inside with the bag.
+<<walk Samantha SamanthaIn>>
+<<hide Samantha>>
+<<close_door Door3A>>
+// He goes home.
+<<face Player up>>
+<<open_door Door3B>>
+<<walk Player PlayerInto3B>>
+<<face Player down>>
+<<close_door Door3B>>
+<<wait 1>>
+<<end_demo>>
+===
