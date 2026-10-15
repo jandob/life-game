@@ -306,6 +306,29 @@ def test_artgen_skill_copies_match() -> None:
         assert len(texts[0].decode().splitlines()) < limit
 
 
+def test_default_profile_without_project_profile() -> None:
+    import artprofile
+    old = os.environ.pop("ARTGEN_PROFILE", None)
+    saved = artprofile.HERE
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            artprofile.HERE = Path(td)                      # neither cwd nor the tool dir is under an art/ folder
+            assert artprofile.find_profile(Path(td)) == artprofile.DEFAULT_FILE
+            (Path(td) / "art").mkdir()
+            (Path(td) / "art" / "artgen-profile.json").write_text('{"name": "p", "char_cell": [1, 2]}')
+            found = artprofile.find_profile(Path(td) / "a" if (Path(td) / "a").exists() else Path(td))
+            assert found == Path(td).resolve() / "art" / "artgen-profile.json"
+            assert artprofile.load(found)["char_cell"] == (1, 2)
+    finally:
+        artprofile.HERE = saved
+        if old is not None:
+            os.environ["ARTGEN_PROFILE"] = old
+    d = artprofile.load(artprofile.DEFAULT_FILE)
+    assert d["name"] == "default" and d["bench_ref_sheet"] is None and d["bench"] is None
+    assert "assets/" not in json.dumps(d) and "Life" not in json.dumps(d)
+    assert d["char_cell"] == (64, 128) and d["sheet_post_cell"] == (96, 192)
+
+
 def test_profile_matches_sprite_format_spec() -> None:
     import re
     import artprofile
@@ -313,6 +336,7 @@ def test_profile_matches_sprite_format_spec() -> None:
     w, h = (int(v) for v in re.search(r"(\d+)x(\d+)-pixel cells", spec).groups())
     feet = int(re.search(r"feet on row (\d+)", spec).group(1))
     prof = artprofile.load()
+    assert prof["_path"].endswith("art/artgen-profile.json") and prof["name"] == "life-game"
     assert tuple(prof["sheet_post_cell"]) == (w, h) == (96, 192) and prof["sheet_feet_row"] == feet == 157
     import postprocess
     assert postprocess.CHAR_CELL == (64, 128) and postprocess.OUTLINE == (34, 32, 52)

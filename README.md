@@ -13,7 +13,7 @@ tools/artgen/
   runner.py            JobSpec + LocalRunner / RemoteRunner (remote hosts via ARTGEN_REMOTE_<NAME>_CMD)
   maskkit.py           repaint masks, draw_mark, paste_back (artgen.py mask / edit)
   pose.py              OpenPose-style skeletons; the strip that `sheet` feeds the model
-  bench.py / compare.py  run a backend over prompts/bench.yaml; side-by-side comparison
+  bench.py / compare.py  run a backend over a bench yaml (the profile's `bench`, e.g. art/bench.yaml); side-by-side comparison
   postprocess.py       grid detect, downscale, bg removal, palette, cleanup, outline, cell fit
   backends/
     base.py, __init__.py, _common.py    interface, registry, models.json reader, memory tracker
@@ -23,7 +23,7 @@ tools/artgen/
   models.json          model files / HF repos for z_image_turbo and qwen_image21
   STYLES.md            the pipeline stage by stage, with commands
   test_backends.py, test_infra.py, test_qwen.py, test_postprocess.py
-  prompts/bench.yaml   the fixed benchmark prompt set;  palettes/player_ref.hex
+  profiles/default.json  generic bundled profile (project data lives in the repo's art/ folder)
 ```
 
 ## Setup (macOS, Apple Silicon, 24 GB)
@@ -60,12 +60,15 @@ licence (see the model card); FLUX klein and Z-Image are Apache-2.0.
 Tests (fast, no models): `.venv/bin/python test_backends.py`, `test_infra.py`, `test_qwen.py`, `test_postprocess.py`;
 `ARTGEN_TEST_MODELS=1 .venv/bin/python test_backends.py` loads Z-Image.
 
-## Project profile
+## Project profile and the three areas
 
-The project's art constants (outline and shadow colours, the 64x128 reference geometry, the realistic sheet cell 96x192 with
-feet row 157, the sheet style words, the bench reference sheet) live in `profiles/life-game.json`, read by `artprofile.py` and
-used by `postprocess.py`, `sheet` and `bench.py`. Select another profile with env `ARTGEN_PROFILE=<name or path.json>`. Life Game
-is the only profile; the project conventions are in the `life-game-art` skill.
+`tools/artgen/` is the generic tool; it holds no Life Game data. Project art constants (outline and shadow colours, the 64x128
+reference geometry, the sheet cell 96x192 with feet row 157, the sheet style words, the bench reference sheet and bench file)
+live in a **profile**, found in this order: env `ARTGEN_PROFILE=<path.json>`, then the first `art/artgen-profile.json` found
+walking up from the current directory and from this tool, then the bundled generic `profiles/default.json`. `artprofile.py`
+loads it, `postprocess.py`, `sheet` and `bench.py` read it, and generate/edit/sheet sidecars record the resolved path as `profile`.
+For Life Game the project data (profile, palettes, bench, generation jobs, character key frames) is in the top-level `art/`
+folder; `assets/` holds only finished shipped assets. See `art/README.md` and the `life-game-art` skill.
 
 ## Memory and timing (24 GB Mac)
 
@@ -149,7 +152,7 @@ artgen.py post out/sofa/*.png --grid auto --colours 16 --outline inner --out out
 # tiles (still weak for every model): native grid, 16x16 centre crop
 artgen.py post out/floor/*.png --tile --cell 16x16 --colours 8 --out out/floor_px
 # fixed palette
-artgen.py post IN.png --grid auto --palette palettes/player_ref.hex --out OUT;  artgen.py palette-from SOME.png --out palettes/new.hex
+artgen.py post IN.png --grid auto --palette art/palettes/player_ref.hex --out OUT;  artgen.py palette-from SOME.png --out art/palettes/new.hex
 ```
 
 ### refine, mask, inpaint, snap
@@ -205,7 +208,7 @@ bench.py --backend flux2_klein_pixel_lora --out OUT --precompute \
     --variant lora1.0:lora_scale=1.0 --variant base:lora_scale=0
 ```
 
-`prompts/bench.yaml` fixes the items, seeds (11, 42) and size (512²; `sizes:` in the yaml overrides it per backend, `qwen_image21` runs at 1024²). Items with `ref:` pass the referenced raw image as `--ref` (qwen_image21 then sends the subject verbatim):
+The bench file (`--bench`, default: the profile's `bench`, Life Game: `art/bench.yaml`) fixes the items, seeds (11, 42) and size (512²; `sizes:` in the yaml overrides it per backend, `qwen_image21` runs at 1024²). Items with `ref:` pass the referenced raw image as `--ref` (qwen_image21 then sends the subject verbatim):
 
 - an adult man (front, side, back);
 - side and back again, conditioned on the front image (`ref:`);

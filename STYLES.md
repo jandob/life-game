@@ -3,7 +3,7 @@
 Copy-paste commands for the artgen pipeline. Run from `tools/artgen` with `.venv/bin/python artgen.py ...`
 (shortened to `artgen.py` below). Outputs go to the git-ignored `out/`. **One model process at a time** (24 GB Mac).
 Setup, memory and timings: [README.md](README.md). Cell sizes, feet row and style words below are the active profile's
-(`profiles/life-game.json`, env `ARTGEN_PROFILE`); the project conventions are in the `life-game-art` skill.
+(the active profile, see README); the project conventions are in the `life-game-art` skill.
 
 Who can do what (also printed by `artgen.py backends`):
 
@@ -127,7 +127,7 @@ leg positions only roughly (no exact pose control).
 | older 64x128 characters | `--grid fit --cell 64x128 --feet-row 105 --shadow --outline inner --colours 24 --keep-largest` |
 | props, portraits | `--grid auto --colours 16 --outline inner` |
 | tiles (16x16) | `--tile --cell 16x16 --colours 8` : still weak for every model (not seamless); expect hand touch-up |
-| locked palette | `--palette palettes/player_ref.hex` |
+| locked palette | `--palette art/palettes/player_ref.hex` |
 
 Stages and parameters are described in README.md (Post-processing stages).
 

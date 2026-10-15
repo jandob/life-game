@@ -27,7 +27,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-# Project constants, read from the active profile (profiles/life-game.json; ARTGEN_PROFILE overrides).
+# Project constants, read from the active profile (artprofile.py: ARTGEN_PROFILE, else art/artgen-profile.json, else profiles/default.json).
 from artprofile import load as _load_profile  # noqa: E402
 
 PROFILE = _load_profile()

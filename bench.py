@@ -31,7 +31,9 @@ from artgen import generate_images, parse_opts, write_sidecar  # noqa: E402
 from backends import REGISTRY, get_backend  # noqa: E402
 
 REPO = HERE.parent.parent
-REF_SHEET = REPO / pp.PROFILE["bench_ref_sheet"]
+PROFILE_FILE = Path(pp.PROFILE["_path"])
+# profile paths: bench_ref_sheet is relative to the project root (the parent of art/), bench to the profile file
+REF_SHEET = (PROFILE_FILE.parent.parent / pp.PROFILE["bench_ref_sheet"]) if pp.PROFILE.get("bench_ref_sheet") else None
 BG = (200, 200, 210, 255)
 ROW_H = 512
 LABEL_W = 220
@@ -77,7 +79,7 @@ def view_processed(px: Image.Image, kind: str) -> Image.Image:
 
 
 def reference_cell() -> Image.Image | None:
-    if not REF_SHEET.exists():
+    if REF_SHEET is None or not REF_SHEET.exists():
         return None
     return on_bg(zoom(Image.open(REF_SHEET).convert("RGBA").crop((0, 0, 64, 128)), 4))
 
@@ -134,6 +136,8 @@ def item_post_kwargs(item: dict) -> dict:
 
 
 def run(args) -> None:
+    if not args.bench:
+        raise SystemExit("no bench file: pass --bench FILE (the active profile defines none)")
     bench = yaml.safe_load(Path(args.bench).read_text())
     items = bench["items"]
     if args.items:
@@ -276,10 +280,16 @@ def write_table(path: Path, backend: str, b, vname: str, opts: dict, load_s: flo
     path.write_text("\n".join(lines))
 
 
+def default_bench() -> str | None:
+    b = pp.PROFILE.get("bench")
+    return str(Path(pp.PROFILE["_path"]).parent / b) if b else None
+
+
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--backend", required=True, choices=list(REGISTRY))
-    ap.add_argument("--bench", default=str(HERE / "prompts/bench.yaml"))
+    ap.add_argument("--bench", default=default_bench(),
+                    help="bench yaml (default: the active profile's `bench` file; required if the profile has none)")
     ap.add_argument("--out", required=True)
     ap.add_argument("--variant", action="append",
                     help="name:k=v,k=v backend options for one run (repeatable)")
