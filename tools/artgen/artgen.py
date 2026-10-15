@@ -11,7 +11,7 @@ reproduced.
     artgen.py pose --preset stand_front --size 832x1216 --out pose.png
     artgen.py snap DIR/*.png --factor 4 --palette p.hex --out DIR2
     artgen.py post DIR/*.png --grid fit --cell 64x128 --feet-row 105 --shadow --out DIR2
-    artgen.py palette-from IMAGE --out palettes/x.hex
+    artgen.py palette-from IMAGE --out art/palettes/x.hex
     artgen.py cache --stats | --prune --older-than 30
 
 Run with tools/artgen/.venv/bin/python.
@@ -129,7 +129,7 @@ def generate_images(backend, subject: str, *, raw_prompt: bool, seed: int, n: in
             "timings": {"call_total_s": round(total, 2),
                         "image_s": (stats.get("last_image_s") or [None] * n)[i],
                         "encode_s": stats.get("last_encode_s")},
-            "stats": stats,
+            "stats": stats, "profile": pp.PROFILE["_path"],
             "created": datetime.now(timezone.utc).isoformat(),
         })
         paths.append(p)
@@ -344,7 +344,8 @@ def edit_images(backend, src_path, prompt: str, *, extras=(), mark=None, mask_pa
             "ref_res": ref_res, "generated_size": [gw, gh], "output_size": [W, H], "opts": opts or {},
             "timings": {"call_total_s": round(total, 2), "image_s": (stats.get("last_image_s") or [None] * n)[i],
                         "encode_s": stats.get("last_encode_s")},
-            "stats": stats, "created": datetime.now(timezone.utc).isoformat(), **extra})
+            "stats": stats, "profile": pp.PROFILE["_path"],
+            "created": datetime.now(timezone.utc).isoformat(), **extra})
         files.append(str(p))
     st = dict(stats)
     if drifts:
@@ -472,7 +473,8 @@ def sheet_images(backend, refs, *, poses: str = "walk_side", frames: int = 5, ce
         "cell": list(cell), "size": [W, H], "ref_res": ref_res, "opts": opts or {},
         "timings": {"call_total_s": round(total, 2), "image_s": (stats.get("last_image_s") or [None])[0],
                     "encode_s": stats.get("last_encode_s")},
-        "stats": stats, "created": datetime.now(timezone.utc).isoformat(), **extra})
+        "stats": stats, "profile": pp.PROFILE["_path"],
+        "created": datetime.now(timezone.utc).isoformat(), **extra})
     st = dict(stats)
     if "grid" in extra:
         st["grid"] = extra["grid"]

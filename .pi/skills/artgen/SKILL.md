@@ -6,7 +6,7 @@ description: Generate, edit, compose and animate game art with tools/artgen (spr
 # artgen: game art generation and pixel-art post-processing
 
 Project numbers (cell size, feet row, outline and shadow colours, style words) come from the **active profile**
-(`tools/artgen/profiles/<name>.json`, default `life-game`, override with env `ARTGEN_PROFILE`). The commands below show the
+(lookup: env `ARTGEN_PROFILE=<path>`, else the first `art/artgen-profile.json` above the current directory or the tool, else the bundled generic `tools/artgen/profiles/default.json`). The commands below show the
 life-game values (cell 96x192, feet row 157); `sheet` uses the profile values when you omit `--post-cell`/`--feet-row`.
 **Life Game conventions: see the life-game-art skill.**
 
@@ -144,10 +144,10 @@ Only `--poses walk_side` exists.
 | characters 96x192 | `--grid N --cell 96x192 --feet-row 157 --shadow --outline inner --colours 24 --keep-largest` |
 | props, portraits | `--grid auto --colours 16 --outline inner` |
 | tiles 16x16 | `--tile --cell 16x16 --colours 8` (weak: not seamless, needs hand touch-up) |
-| fixed palette | `--palette palettes/player_ref.hex` |
+| fixed palette | `--palette art/palettes/player_ref.hex` |
 
 Locked-grid downscale without cell fitting (scenekit): `artgen.py snap`. Other commands: `artgen.py pose` previews skeletons,
-`artgen.py palette-from IMG --out palettes/x.hex`.
+`artgen.py palette-from IMG --out art/palettes/x.hex`.
 
 ## 5. Prompt patterns that worked
 

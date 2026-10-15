@@ -1,0 +1,58 @@
+{
+  "kind": "generate",
+  "backend": {
+    "name": "flux2_klein_pixel_lora",
+    "description": "FLUX.2 klein 4B (distilled, 4 steps) + pixel-art LoRA, local MPS",
+    "models": [
+      "black-forest-labs/FLUX.2-klein-4B",
+      "Limbicnation/pixel-art-lora"
+    ],
+    "licence": "Apache-2.0 (base model and LoRA; LoRA trained on CC0 data)",
+    "local": true,
+    "defaults": {
+      "steps": 4,
+      "guidance": 1.0,
+      "lora_scale": 1.0,
+      "offload": "free_te",
+      "dtype": "bf16",
+      "ref": null,
+      "background": "transparent background"
+    },
+    "prompt_template": "pixel art sprite, {prompt}, game asset, {background}"
+  },
+  "subject": "the same young woman from the reference image, adult, same blonde hair, same teal zip-up track jacket with white stripes, same white top, same black leggings, same white sneakers, fully clothed, standing, side view facing right, full body profile, anime style pixel art, thick dark outlines, flat cel shading with two tones",
+  "prompt": "pixel art sprite, the same young woman from the reference image, adult, same blonde hair, same teal zip-up track jacket with white stripes, same white top, same black leggings, same white sneakers, fully clothed, standing, side view facing right, full body profile, anime style pixel art, thick dark outlines, flat cel shading with two tones, game asset, plain flat white background",
+  "negative": null,
+  "seed": 11,
+  "width": 576,
+  "height": 1024,
+  "opts": {
+    "steps": 4,
+    "guidance": 1.0,
+    "lora_scale": 1.0,
+    "background": "plain flat white background",
+    "ref": [
+      "out/sam_art/front/sam_front_s13.png"
+    ]
+  },
+  "timings": {
+    "call_total_s": 91.57,
+    "image_s": 47.01,
+    "encode_s": 14.52
+  },
+  "stats": {
+    "load_s": 6.0,
+    "device": "mps",
+    "dtype": "bf16",
+    "offload": "free_te",
+    "peak_mps_driver_gb": 15.87,
+    "peak_rss_gb": 1.0,
+    "peak_mps_gen_gb": 14.75,
+    "last_encode_s": 14.52,
+    "last_image_s": [
+      47.01,
+      30.01
+    ]
+  },
+  "created": "2026-10-12T15:18:35.643524+00:00"
+}

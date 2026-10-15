@@ -38,4 +38,4 @@ FLUX.2 klein (4B/9B, any text encoder), Qwen 2.1 "Uncensored", abliterated text 
 
 ## Impact
 
-`tools/artgen/` (new backend and commands, deletions), `tools/sprite_gen/realistic/jobs/` (the SDXL job script becomes historical, kept as a record), `openspec/changes/character-refine/`. No game code. `tools/scenekit` keeps working unchanged (it uses only `inpaint` and `snap`, which stay byte-compatible). New downloads: none beyond the eval (Qwen GGUF, text encoder, VAE already in the HF cache).
+`tools/artgen/` (new backend and commands, deletions), `art/jobs/` (the SDXL job script becomes historical, kept as a record), `openspec/changes/character-refine/`. No game code. `tools/scenekit` keeps working unchanged (it uses only `inpaint` and `snap`, which stay byte-compatible). New downloads: none beyond the eval (Qwen GGUF, text encoder, VAE already in the HF cache).

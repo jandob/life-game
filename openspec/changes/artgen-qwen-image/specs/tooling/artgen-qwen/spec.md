@@ -65,7 +65,7 @@ The repository SHALL provide an `artgen` agent skill at `.claude/skills/artgen/S
 - **THEN** the artgen test suite fails
 
 ### Requirement: Project profile and project skill
-Life Game's art constants SHALL live in one profile file (`tools/artgen/profiles/life-game.json`) that the post-processor, `sheet` and the bench read, not in code. Life-Game-specific art conventions SHALL be documented in a `life-game-art` skill, separate from the project-neutral `artgen` skill.
+Life Game's art constants SHALL live in one profile file (`art/artgen-profile.json`, found automatically; a generic `tools/artgen/profiles/default.json` applies when none is found) that the post-processor, `sheet` and the bench read, not in code. Life-Game-specific art conventions SHALL be documented in a `life-game-art` skill, separate from the project-neutral `artgen` skill.
 
 #### Scenario: Profile matches the sprite format
 - **WHEN** the artgen tests run

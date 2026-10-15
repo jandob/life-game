@@ -35,7 +35,7 @@
 ## 7. Removals
 
 - [x] 7.1 Delete `backends/sdxl.py`, `cast.py`, `compose.py`, `train/`, `examples/cast_recipe.json`, the `cast` CLI and the SDXL path of `refine`; `refine` default backend -> `flux2_klein_pixel_lora`; drop the SDXL sections of `models.json`; update `test_backends.py`
-- [x] 7.2 Note in `openspec/changes/character-refine/` that cast is removed by this change; header note in `tools/sprite_gen/realistic/jobs/01_fronts_sdxl.sh` that it no longer runs
+- [x] 7.2 Note in `openspec/changes/character-refine/` that cast is removed by this change; header note in `art/jobs/01_fronts_sdxl.sh` that it no longer runs
 
 ## 8. Docs and integration
 
@@ -49,8 +49,9 @@
 
 ## 9. Generic tool and project layer (D7)
 
-- [x] 9.1 `profiles/life-game.json` + loader (`ARTGEN_PROFILE`); `postprocess.py`, `sheet` defaults and `bench.py` read it; outputs unchanged (existing post tests still pass bit-for-bit)
+- [x] 9.1 `art/artgen-profile.json` (was `profiles/life-game.json`) + loader (`ARTGEN_PROFILE`); `postprocess.py`, `sheet` defaults and `bench.py` read it; outputs unchanged (existing post tests still pass bit-for-bit)
 - [x] 9.2 `artgen` skill made project-neutral (profile-based sizes, pointer to `life-game-art`); README/STYLES mention the profile
 - [x] 9.3 `life-game-art` skill (+ `.pi`/`.github` copies): sprite format with spec link, character registry, style suffix, adults-only, output flow, agent roles
 - [x] 9.4 `.claude/agents/pixel-artist.md` updated to use artgen + both skills
 - [x] 9.5 Tests: profile matches the sprite-format spec (96x192, feet row 157); copies of both skills identical; all suites green (model-free only)
+- [x] 9.6 Three-area layout: `tools/artgen` generic (default profile only), `assets/` finished assets only, top-level `art/` = project data (profile, palettes, bench, jobs, character keys); profile lookup env > `art/artgen-profile.json` > default

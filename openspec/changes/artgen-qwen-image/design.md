@@ -80,7 +80,7 @@ Delete:
 
 `refine` keeps the FLUX klein path, and its default backend becomes `flux2_klein_pixel_lora`. `mask` and `pose` stay: they now feed `edit` and `sheet`.
 
-The LoRA weights in `~/.cache/artgen/loras/` are left on disk (not in git) for the user to delete. `tools/sprite_gen/realistic/jobs/01_fronts_sdxl.sh` stays as a historical record of how Samantha's first front was made, with a header note that it no longer runs.
+The LoRA weights in `~/.cache/artgen/loras/` are left on disk (not in git) for the user to delete. `art/jobs/01_fronts_sdxl.sh` stays as a historical record of how Samantha's first front was made, with a header note that it no longer runs.
 
 ### D5: Reproducibility
 
@@ -124,29 +124,25 @@ An `artgen` skill teaches agents to use the tool without reading its source.
   6. What it can't do: exact pose control, seamless 16 px tiles, bit-exact reruns on MPS.
 - **Size:** under ~300 lines. Long references link to README/STYLES rather than copying them.
 
-### D7: Generic tool, project profile and project skill
+### D7: Generic tool, project data and project skill
 
-User decision (2026-10-16): split, but keep it light. Life Game is the only user, and a bigger refactor can come later.
+User decisions (2026-10-16): split, keep it light (Life Game is the only user); then separate three areas strictly.
 
-- **Profile.** `tools/artgen/profiles/life-game.json` holds the project's art constants. Today they are hard-coded:
-  - outline and shadow colours, the 64x128 reference geometry (feet row 105, top row 17, shadow centre and radii);
-  - the realistic sheet cell 96x192 with feet row 157;
-  - the default palette;
-  - the style suffix used by `sheet`'s generated prompt;
-  - the bench reference sheet path.
-
-  `postprocess.py`, `sheet` and `bench.py` read it. It is the default profile, overridable with env `ARTGEN_PROFILE=<name or path>`. Not a plugin system: one JSON file, one loader function, the same defaults as today, so outputs stay identical.
-- **`artgen` skill (generic).** Tool usage, backends and capability table, recipes, prompt patterns, operating rules. Project sizes come from "the active profile", and the skill points to `life-game-art` for this project's numbers and conventions.
+- **Three areas.**
+  - `tools/artgen/` is the generic tool: code, backends, generic defaults, no Life Game data.
+  - `assets/` holds finished, shipped game assets only (`push_to_itch.sh` ships all of it).
+  - `art/` (top level) is Life Game's art data: `artgen-profile.json`, `palettes/*.hex`, `bench.yaml`, `jobs/` (generation job lists and notes), `characters/{player,samantha}/keys/` (chosen key frames with sidecars) and a short `README.md`. Project scripts stay in `tools/sprite_gen/` and read from `art/`. New takes land in the git-ignored `tools/artgen/out/`; chosen ones are copied into `art/`.
+- **Profile.** `art/artgen-profile.json` holds the project's art constants: outline and shadow colours, the 64x128 reference geometry (feet row 105, top row 17, shadow centre and radii), the realistic sheet cell 96x192 with feet row 157, the `sheet` style words, the bench reference sheet and the bench file. `artprofile.py` resolves it: env `ARTGEN_PROFILE=<path>`, else the first `art/artgen-profile.json` found walking up from the current directory and from the tool's directory, else the bundled generic `tools/artgen/profiles/default.json` (no project paths, neutral style words). `postprocess.py`, `sheet` and `bench.py` read it; sidecars record the resolved `profile` path. Not a plugin system: one JSON file, one small loader. With the project profile found, outputs are identical to the hard-coded constants they replaced.
+- **`artgen` skill (generic).** Tool usage, backends and capability table, recipes, prompt patterns, operating rules. Project sizes come from "the active profile" (lookup: env > `art/artgen-profile.json` > default), and the skill points to `life-game-art` for this project's numbers and conventions.
 - **`life-game-art` skill (project).** `.claude/skills/life-game-art/SKILL.md`, with copies in `.pi/` and `.github/`. It covers:
   - the sprite format, with a link to the authoritative OpenSpec spec `realistic-character-sprites/specs/characters/sprite-format`: 96x192 cells, feet row 157, a man 132 rows tall and a woman about 126, sheet layout;
-  - the character registry: the canonical reference images for the player and Samantha in `tools/artgen/out/sam_art/keys/` and `assets/library/`, plus their subject descriptions;
-  - the style suffix;
-  - every character is an adult;
-  - art is "good enough", not polished;
-  - the output flow: `tools/artgen/out/` → `tools/sprite_gen/realistic/build_sheets.py` → `assets/library/...`;
+  - the character registry: canonical reference images in `art/characters/*/keys/`, finished sheets in `assets/library/`, plus subject descriptions;
+  - where things live (the three areas);
+  - the style suffix, adults only, "good enough" art;
+  - the output flow: `tools/artgen/out/` -> `art/` (chosen keys) -> `tools/sprite_gen/realistic/build_sheets.py` -> `assets/library/...`;
   - which agent does what: pixel-artist for characters and sprites, scene-designer through scenekit for maps.
 - **`.claude/agents/pixel-artist.md`** is updated to use artgen with both skills instead of only hand-written Pillow generators.
-- **Test:** the profile's realistic cell and feet row match the sprite-format spec text, and the skill copies are identical.
+- **Test:** the project profile's realistic cell and feet row match the sprite-format spec text, the default profile loads without a project profile, and the skill copies are identical.
 
 ## Risks / Trade-offs
 

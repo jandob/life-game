@@ -1,0 +1,19 @@
+{
+  "name": "default",
+  "_comment": "Generic bundled profile used when no project profile (art/artgen-profile.json) or ARTGEN_PROFILE is found.",
+  "outline": [34, 32, 52],
+  "shadow_fill": [63, 63, 116, 125],
+  "shadow_rim": [92, 92, 169, 125],
+  "char_cell": [64, 128],
+  "char_feet_row": 105,
+  "char_top_row": 17,
+  "shadow_centre": [31.5, 102],
+  "shadow_radii": [22.5, 11.5],
+  "sheet_post_cell": [96, 192],
+  "sheet_feet_row": 157,
+  "sheet_style": "pixel art, clean outlines, flat shading",
+  "style_suffix": "pixel art, clean outlines, flat shading",
+  "bench_ref_sheet": null,
+  "bench": null,
+  "default_palette": null
+}

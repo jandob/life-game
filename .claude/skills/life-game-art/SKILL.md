@@ -6,7 +6,13 @@ description: Life Game art conventions and registry. Use when making or changing
 # Life Game art
 
 How to run the tool is in the **artgen** skill (`tools/artgen/README.md`, `STYLES.md`). This skill holds the project's
-numbers, references and rules. The active artgen profile is `tools/artgen/profiles/life-game.json`.
+numbers, references and rules. The active artgen profile is `art/artgen-profile.json`.
+
+## Where things live (three areas)
+
+- `tools/artgen/`: the generic tool (code, backends, generic defaults). No Life Game data.
+- `assets/`: finished, shipped game assets only (`push_to_itch.sh` ships all of it). Nothing else goes there.
+- `art/`: Life Game art data: `artgen-profile.json`, `palettes/`, `bench.yaml`, `jobs/` (generation job lists), `characters/{player,samantha}/keys/` (chosen key frames). Scripts in `tools/sprite_gen/` read from `art/`. See `art/README.md`.
 
 ## Rules
 
@@ -34,16 +40,16 @@ Authoritative spec: `openspec/changes/realistic-character-sprites/specs/characte
 
 ## Character registry (reference images)
 
-`tools/artgen/out/` is git-ignored: **these keys exist only on this machine**. Do not assume they are in a fresh clone.
-Paths below are from the repo root; artgen runs from `tools/artgen`, so drop the `tools/artgen/` prefix there. The keys are raw
+The keys are tracked in git under `art/characters/<name>/keys/` (not in `assets/`). Paths are from the repo root; from `tools/artgen` (where artgen runs) prefix them with `../../`. The keys are raw
 model output (576x1024 RGB, plain white background, FLUX klein + pixel LoRA), not pixel-art cells; use them as `--ref`/`--image`.
 
 | Character | Canonical references | Finished assets |
 |---|---|---|
-| Player | `tools/artgen/out/sam_art/keys/player/player_{front,side,back}_idle_s11.png` | `assets/library/characters/player/player.png`, `assets/library/portraits/player.png` |
-| Samantha | `tools/artgen/out/sam_art/keys/sam/sam_{front,side,back}_idle_s11.png` | `assets/library/characters/samantha/samantha.png`, `assets/library/portraits/samantha.png` |
+| Player | `art/characters/player/keys/player_{front,side,back}_idle_s11.png` | `assets/library/characters/player/player.png`, `assets/library/portraits/player.png` |
+| Samantha | `art/characters/samantha/keys/sam_{front,side,back}_idle_s11.png` | `assets/library/characters/samantha/samantha.png`, `assets/library/portraits/samantha.png` |
 
-Walk key frames sit next to them (`*_contact_*`, `*_passing_*`, `*_contactL/R_*`). `keys/rejected/` holds discarded takes.
+Walk key frames sit next to them (`*_contact_*`, `*_passing_*`, `*_contactL/R_*`). Discarded takes stay untracked in `tools/artgen/out/sam_art/keys/rejected/`. New generations land in
+`tools/artgen/out/` (the job files' `out`); copy a take into `art/characters/<name>/keys/` only once it is chosen, then rebuild the sheet.
 Other portraits: `assets/library/portraits/` (antonius, eleonore, ionas, isabelle, jotem, pai).
 
 Subject descriptions (use in prompts, plus the style words; templated `generate` already adds "pixel art sprite", verbatim
@@ -55,7 +61,7 @@ prompts and `sheet --subject` need the style words added). They start with "the 
 - **Samantha**: the same young woman, clearly an adult woman of 25, long blonde hair, blue eyes, teal zip-up track jacket with
   white stripes, fitted light grey top, black leggings, white sneakers.
 
-More wording and seeds: the job files `tools/sprite_gen/realistic/jobs/*.json` and the sidecar JSON of each key image.
+More wording and seeds: the job files `art/jobs/*.json` and the sidecar JSON of each key image.
 
 ## Producing a new view or pose
 

@@ -68,7 +68,7 @@ Props and textures at the world's density are made one by one with `recipe` belo
 
 Print a plan (`steps[]` with the exact command lines; nothing is run or written) with these fixed choices:
 - **Style suffix** of the characters: `anime style pixel art, thick dark outlines, flat cel shading with two tones`; **shared
-  palette** `tools/artgen/palettes/interior.hex` (override with `--palette`), snapped in the same step as the grid.
+  palette** `art/palettes/interior.hex` (override with `--palette`), snapped in the same step as the grid.
 - **Fixed grid**: `--grid` is the raw px per art px (default 8, the generator's own pixel). A texture is `size x grid` px
   square (384 or 768). A prop canvas is `(W+4) x (H+4)` art px times the grid, rounded to 16. If the long side would exceed
   1024 raw px the grid drops to 7 or 6 and a warning says so; beyond that `too_large` (split the prop). Never `--grid auto|fit`:
