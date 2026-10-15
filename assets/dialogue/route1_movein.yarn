@@ -1,0 +1,93 @@
+title: Route1MoveIn
+tags: cutscene
+---
+<<declare $r1_movein_keys = "">>
+<<declare $r1_movein_socks = "">>
+<<declare $r1_movein_rules = "">>
+// Starts in black: the viewing ends with <<fade_out>> and <<next_scene Route1MoveIn>>.
+// She is already waiting on the landing with the keys.
+<<place Player PlayerArrive>>
+<<place Samantha SamanthaWait>>
+<<show Samantha>>
+<<face Samantha left>>
+<<face Player right>>
+<<card "Saturday. Moving day.">>
+<<fade_in>>
+<<walk Player PlayerKnock>>
+<<face Player Samantha>>
+<<face Samantha Player>>
+{$samantha_name}: Ten o'clock exactly.
+{$samantha_name}: Last time you were six minutes early. I was starting to think you'd changed your mind.
+You: I got the flat. Why would I change my mind?
+{$samantha_name}: People do. Usually right after they read the contract.
+<<if $r1_viewing_why == "money">>
+    {$samantha_name}: Rent's due on the first. You said it's the one you can afford, so I'm holding you to that.
+<<elseif $r1_viewing_why == "light">>
+    {$samantha_name}: I told my father what you said about the light. He's been unbearable all week.
+<<elseif $r1_viewing_why == "first">>
+    {$samantha_name}: You said we were the first to write back. I've decided to take that as a compliment.
+<<endif>>
+{$samantha_name}: Two keys. The street door and 3B.
+{$samantha_name}: Hold out your hand.
+-> Okay.
+    <<set $r1_movein_keys to "hand">>
+    {$samantha_name}: Palm up. Good.
+    {$samantha_name}: You do what you're told. That's going to make this very easy.
+-> I can just take them.
+    <<set $r1_movein_keys to "take">>
+    {$samantha_name}: Ah-ah.
+    {$samantha_name}: I said hold out your hand.
+    You: ...Fine.
+    {$samantha_name}: Better.
+-> Is there a spare?
+    <<set $r1_movein_keys to "spare">>
+    {$samantha_name}: There is. I keep it.
+    You: Is that normal?
+    {$samantha_name}: It's normal here.
+// He unlocks his own door for the first time.
+<<face Player up>>
+<<open_door Door3B>>
+<<face Player Samantha>>
+{$samantha_name}: One more thing. A housewarming present.
+{$samantha_name}: Socks. A matching pair, for once. I couldn't stop thinking about the last ones.
+You: They're... pink.
+{$samantha_name}: They're blush. And they were on sale in your size. Roughly.
+-> Thank you. Really.
+    <<set $r1_movein_socks to "thanks">>
+    {$samantha_name}: See? Gracious. We'll make a decent tenant of you yet.
+-> Aren't these women's socks?
+    <<set $r1_movein_socks to "question">>
+    {$samantha_name}: They're socks. They don't know who's wearing them.
+    {$samantha_name}: Nobody else will either, unless you take your shoes off. Which you will.
+-> I'm not wearing these.
+    <<set $r1_movein_socks to "refuse">>
+    {$samantha_name}: You will. Your floor is cold and you're too proud to buy slippers.
+    {$samantha_name}: I'll know if you don't. I'll ask.
+{$samantha_name}: Since we're neighbours now. Three rules.
+{$samantha_name}: Shoes off inside. Yours too, not just mine.
+{$samantha_name}: Music off by eleven. The walls are thin.
+{$samantha_name}: And if I knock, you answer.
+-> And if I knock?
+    <<set $r1_movein_rules to "fair">>
+    {$samantha_name}: Then I'll decide whether I'm home.
+-> Deal.
+    <<set $r1_movein_rules to "deal">>
+    {$samantha_name}: That was quick. You didn't even ask what I'd knock for.
+-> That's a lot of rules for a neighbour.
+    <<set $r1_movein_rules to "pushback">>
+    {$samantha_name}: For a neighbour, yes. For the landlord's daughter, it's the bare minimum.
+{$samantha_name}: I'll let you settle in.
+{$samantha_name}: The bakery opens at six. Bring me a croissant tomorrow. Call it rent.
+// She goes back through her own door.
+<<walk Samantha SamanthaHome>>
+<<hide Samantha>>
+<<close_door Door3A>>
+// He goes into his flat and the door shuts behind him.
+<<walk Player PlayerInto3B>>
+<<face Player down>>
+<<close_door Door3B>>
+<<wait 1>>
+{$samantha_name}: Shoes!
+You: ...They're off.
+<<end_demo>>
+===

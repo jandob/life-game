@@ -6,6 +6,10 @@ use crate::{
     story::{
         build_story_runner,
         scripted::{await_walks_command, face_command, hide_command, show_command, walk_command},
+        transition::{
+            card_command, fade_in_command, fade_out_command, next_scene_command, place_command,
+            start_queued_scene, ScreenFade,
+        },
         StoryVars,
     },
     world::{
@@ -59,6 +63,11 @@ fn add_story_commands(commands: &mut Commands, runner: &mut DialogueRunner) {
     let hide = commands.register_system(hide_command);
     let open_door = commands.register_system(open_door_command);
     let close_door = commands.register_system(close_door_command);
+    let place = commands.register_system(place_command);
+    let fade_out = commands.register_system(fade_out_command);
+    let fade_in = commands.register_system(fade_in_command);
+    let card = commands.register_system(card_command);
+    let next_scene = commands.register_system(next_scene_command);
     runner
         .commands_mut()
         .add_command("stop_chat", stop_chat)
@@ -69,7 +78,12 @@ fn add_story_commands(commands: &mut Commands, runner: &mut DialogueRunner) {
         .add_command("show", show)
         .add_command("hide", hide)
         .add_command("open_door", open_door)
-        .add_command("close_door", close_door);
+        .add_command("close_door", close_door)
+        .add_command("place", place)
+        .add_command("fade_out", fade_out)
+        .add_command("fade_in", fade_in)
+        .add_command("card", card)
+        .add_command("next_scene", next_scene);
 }
 
 fn spawn_dialogue_runner(
@@ -77,6 +91,7 @@ fn spawn_dialogue_runner(
     mut typewriter: ResMut<Typewriter>,
     project: Res<YarnProject>,
     story_vars: Res<StoryVars>,
+    mut fade: ResMut<ScreenFade>,
     mut ev_spawn_dialogue_runner: MessageReader<SpawnDialogueRunner>,
     mut ev_player_stopped_chat: MessageWriter<PlayerStoppedChat>,
 ) {
@@ -87,6 +102,8 @@ fn spawn_dialogue_runner(
 
         if let Err(err) = dialogue_runner.try_start_node(&ev.node) {
             error!("Cannot start dialogue node '{}': {err}", ev.node);
+            // A scene that was queued behind a fade must not leave the screen black.
+            fade.clear();
             ev_player_stopped_chat.write(PlayerStoppedChat);
             continue;
         }
@@ -191,7 +208,11 @@ impl Plugin for DialogueRunnerPlugin {
             .add_observer(hide_dialogue_on_completed)
             .add_systems(
                 Update,
-                (activate_dialogue_runner, spawn_dialogue_runner)
+                (
+                    start_queued_scene,
+                    activate_dialogue_runner,
+                    spawn_dialogue_runner,
+                )
                     .chain()
                     .run_if(in_state(GameState::Gaming).and_then(resource_exists::<YarnProject>)),
             )

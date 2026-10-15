@@ -72,9 +72,10 @@ fn main() {
             HanabiPlugin,
             animation::SpriteAnimationPlugin,
             {
-                let plugin = YarnSpinnerPlugin::with_yarn_sources([YarnFileSource::file(
-                    "dialogue/route1_viewing.yarn",
-                )]);
+                let plugin = YarnSpinnerPlugin::with_yarn_sources([
+                    YarnFileSource::file("dialogue/route1_viewing.yarn"),
+                    YarnFileSource::file("dialogue/route1_movein.yarn"),
+                ]);
                 #[cfg(not(target_arch = "wasm32"))]
                 let plugin =
                     plugin.with_development_file_generation(DevelopmentFileGeneration::None);

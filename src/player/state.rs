@@ -4,6 +4,7 @@ use bevy_yarnspinner::events::DialogueCompleted;
 
 use crate::animation::{character_clip, play_character_clip, CharacterAnim, SpriteAnimator};
 use crate::story::scripted::ScriptedWalk;
+use crate::story::transition::QueuedScene;
 use crate::GameState;
 
 use super::{chat::PlayerStoppedChat, input::PlayerInput, Player};
@@ -27,8 +28,13 @@ fn switch_to_idling_from_talking(mut q_player: Query<&mut Player>) {
 
 fn switch_to_idling_from_talking_on_completed(
     _trigger: On<DialogueCompleted>,
+    queued: Option<Res<QueuedScene>>,
     mut q_player: Query<&mut Player>,
 ) {
+    // The next scene starts right away; the player stays in the conversation.
+    if queued.is_some_and(|q| q.0.is_some()) {
+        return;
+    }
     if let Ok(mut player) = q_player.single_mut() {
         player.state = PlayerState::Idling;
     }

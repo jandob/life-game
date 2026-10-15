@@ -10,7 +10,7 @@ const PATH_TO_DIR: &str = "assets/dialogue";
 const MAX_SIMILARITY_DISTANCE: usize = 4;
 
 /// Custom commands with their allowed number of arguments.
-const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 9] = [
+const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 14] = [
     ("stop_chat", 0..=0),
     ("end_demo", 0..=0),
     ("walk", 2..=3),
@@ -20,6 +20,11 @@ const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 9] = [
     ("hide", 1..=1),
     ("open_door", 1..=1),
     ("close_door", 1..=1),
+    ("place", 2..=2),
+    ("fade_out", 0..=0),
+    ("fade_in", 0..=0),
+    ("card", 1..=1),
+    ("next_scene", 1..=1),
 ];
 
 /// Commands that Yarn Spinner itself provides.
@@ -55,10 +60,28 @@ where
     }
 }
 
-/// Command name and arguments of a `<<name arg arg>>` line.
-fn parse_command(line: &str) -> Option<(&str, Vec<&str>)> {
+/// Command name and arguments of a `<<name arg "quoted arg">>` line. Like Yarn, a
+/// quoted argument may contain spaces and loses its quotes.
+fn parse_command(line: &str) -> Option<(String, Vec<String>)> {
     let inner = line.strip_prefix("<<")?.strip_suffix(">>")?;
-    let mut words = inner.split_whitespace();
+    let mut words = Vec::new();
+    let mut current = String::new();
+    let mut quoted = false;
+    for c in inner.chars() {
+        match c {
+            '"' => quoted = !quoted,
+            c if c.is_whitespace() && !quoted => {
+                if !current.is_empty() {
+                    words.push(std::mem::take(&mut current));
+                }
+            }
+            c => current.push(c),
+        }
+    }
+    if !current.is_empty() {
+        words.push(current);
+    }
+    let mut words = words.into_iter();
     let name = words.next()?;
     Some((name, words.collect()))
 }
@@ -96,6 +119,7 @@ fn validate_custom_commands() {
         let Some((command, _)) = parse_command(line) else {
             return;
         };
+        let command = command.as_str();
         if BUILTIN_COMMANDS.contains(&command) {
             return;
         }
@@ -121,7 +145,10 @@ fn validate_scripted_command_arity() {
         let Some((command, args)) = parse_command(line) else {
             return;
         };
-        let Some((_, allowed)) = CUSTOM_COMMANDS.iter().find(|(name, _)| *name == command) else {
+        let Some((_, allowed)) = CUSTOM_COMMANDS
+            .iter()
+            .find(|(name, _)| *name == command.as_str())
+        else {
             return;
         };
         assert!(
@@ -181,17 +208,43 @@ fn validate_node_exists() {
     }
 }
 
-/// Every `{$variable}: line` speaker needs a `<<declare $variable ...>>` in its file.
+/// Every `<<next_scene NODE>>` starts a node that exists in one of the files.
+#[test]
+fn validate_next_scene_exists() {
+    let files = yarn_files();
+    let titles: HashSet<String> = files
+        .iter()
+        .flat_map(|(_, contents)| nodes(contents))
+        .map(|(title, _)| title)
+        .collect();
+    validate_lines(|line, file| {
+        let Some((command, args)) = parse_command(line) else {
+            return;
+        };
+        if command == "next_scene" {
+            assert!(
+                args.first().is_some_and(|node| titles.contains(node)),
+                "<<next_scene>> in {file} names a node that doesn't exist: '{line}'"
+            );
+        }
+    });
+}
+
+/// Every `{$variable}: line` speaker needs a `<<declare $variable ...>>` in one of the files
+/// (Yarn allows a single declaration per project, so later scenes reuse the first one).
 #[test]
 fn validate_speaker_variables_declared() {
-    for (file, contents) in yarn_files() {
-        let declared: HashSet<&str> = contents
-            .lines()
-            .map(str::trim)
-            .filter_map(|line| line.strip_prefix("<<declare "))
-            .filter_map(|rest| rest.split_whitespace().next())
-            .collect();
+    let files = yarn_files();
+    let declared: HashSet<String> = files
+        .iter()
+        .flat_map(|(_, contents)| contents.lines())
+        .map(str::trim)
+        .filter_map(|line| line.strip_prefix("<<declare "))
+        .filter_map(|rest| rest.split_whitespace().next())
+        .map(str::to_string)
+        .collect();
 
+    for (file, contents) in files {
         for line in contents.lines().map(str::trim) {
             let Some(rest) = line.strip_prefix("{$") else {
                 continue;
@@ -201,8 +254,8 @@ fn validate_speaker_variables_declared() {
             };
             let variable = format!("${name}");
             assert!(
-                declared.contains(variable.as_str()),
-                "Speaker variable {variable} is not declared in {file}"
+                declared.contains(&variable),
+                "Speaker variable {variable} in {file} is not declared in any yarn file"
             );
         }
     }
@@ -257,4 +310,11 @@ fn nodes_are_split_at_markers() {
     assert_eq!(nodes.len(), 2);
     assert_eq!(nodes[0], ("A".to_string(), vec!["line"]));
     assert_eq!(nodes[1], ("B".to_string(), vec!["other"]));
+}
+
+#[test]
+fn quoted_command_arguments_stay_whole() {
+    let (name, args) = parse_command(r#"<<card "Saturday. Moving day.">>"#).unwrap();
+    assert_eq!(name, "card");
+    assert_eq!(args, vec!["Saturday. Moving day.".to_string()]);
 }
