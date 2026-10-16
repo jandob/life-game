@@ -374,7 +374,25 @@
       {
        "name": "node",
        "type": "string",
-       "value": "Route1Viewing"
+       "value": "Door3B"
+      }
+     ]
+    },
+    {
+     "height": 72.0,
+     "id": 24,
+     "name": "Door3A",
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 96.0,
+     "x": 384.0,
+     "y": 936.0,
+     "properties": [
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Door3A"
       }
      ]
     }
@@ -784,7 +802,7 @@
   }
  ],
  "nextlayerid": 12,
- "nextobjectid": 24,
+ "nextobjectid": 25,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.12.2",

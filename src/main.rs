@@ -76,6 +76,8 @@ fn main() {
                     YarnFileSource::file("dialogue/route1_viewing.yarn"),
                     YarnFileSource::file("dialogue/route1_movein.yarn"),
                     YarnFileSource::file("dialogue/route1_croissant.yarn"),
+                    YarnFileSource::file("dialogue/door_3a.yarn"),
+                    YarnFileSource::file("dialogue/door_3b.yarn"),
                 ]);
                 #[cfg(not(target_arch = "wasm32"))]
                 let plugin =

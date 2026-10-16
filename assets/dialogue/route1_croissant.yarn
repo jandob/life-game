@@ -4,14 +4,7 @@ tags: cutscene
 <<declare $r1_croissant_bag = "">>
 <<declare $r1_croissant_socks = "">>
 <<declare $r1_croissant_dinner = "">>
-// Starts in black: moving day ends with <<fade_out>> and <<next_scene Route1Croissant>>.
-// The next morning. He comes back up the stairs from the bakery and knocks on 3A.
-<<place Player PlayerArrive>>
-<<place Samantha SamanthaOut>>
-<<hide Samantha>>
-<<face Player right>>
-<<card "Sunday morning.">>
-<<fade_in>>
+// Started by knocking on 3A on Sunday morning, after moving day (see door_3a.yarn).
 <<walk Player PlayerTo3A>>
 <<face Player right>>
 <<wait 2>>

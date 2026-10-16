@@ -261,15 +261,24 @@ fn validate_speaker_variables_declared() {
     }
 }
 
-/// The first line of every node is spoken by a non-player character.
+/// A conversation with an NPC opens with the NPC's line. Nodes without NPC lines are
+/// exempt: staging nodes that only run commands, and the player's own remarks at an
+/// object (an interactable such as a door).
 #[test]
 fn validate_first_line_is_npc_line() {
     for (file, contents) in yarn_files() {
         for (title, body) in nodes(&contents) {
-            let first = body
+            let is_dialogue = |line: &&&str| {
+                !(line.is_empty() || line.starts_with("<<") || line.starts_with("//"))
+            };
+            if !body
                 .iter()
-                .find(|line| !(line.is_empty() || line.starts_with("<<") || line.starts_with("//")))
-                .unwrap_or_else(|| panic!("Node {title} in {file} has no dialogue line"));
+                .filter(is_dialogue)
+                .any(|line| line.starts_with("{$"))
+            {
+                continue;
+            }
+            let first = body.iter().find(is_dialogue).unwrap();
             assert!(
                 !first.starts_with("You:") && !first.starts_with("->"),
                 "The first line of node {title} in {file} must be spoken by an NPC, found '{first}'"

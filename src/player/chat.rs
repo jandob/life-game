@@ -15,6 +15,23 @@ pub struct Talkable {
     pub node: String,
 }
 
+/// The talk target closest to `player` within `NPC_PROXIMITY_DISTANCE`, so that two
+/// targets with overlapping ranges (such as two doors on one landing) never compete.
+pub fn nearest_talkable<'a, T>(
+    player: Vec2,
+    talkables: impl IntoIterator<Item = (&'a Transform, T)>,
+) -> Option<(&'a Transform, T)> {
+    talkables
+        .into_iter()
+        .map(|(transform, t)| {
+            let dist = player.distance_squared(transform.translation.xy());
+            (dist, transform, t)
+        })
+        .filter(|(dist, ..)| *dist <= NPC_PROXIMITY_DISTANCE.powi(2))
+        .min_by(|a, b| a.0.total_cmp(&b.0))
+        .map(|(_, transform, t)| (transform, t))
+}
+
 #[derive(Message)]
 pub struct PlayerStartedChat {
     pub node: String,
@@ -44,20 +61,13 @@ fn start_chat(
         Err(_) => return,
     };
 
-    for (transform, talkable) in &q_talkables {
-        if player_transform
-            .translation
-            .xy()
-            .distance_squared(transform.translation.xy())
-            <= NPC_PROXIMITY_DISTANCE.powi(2)
-        {
-            player.state = PlayerState::Talking;
-            ev_player_started_chat.write(PlayerStartedChat {
-                node: talkable.node.clone(),
-                direction: transform.translation.xy() - player_transform.translation.xy(),
-            });
-            break;
-        }
+    let player_pos = player_transform.translation.xy();
+    if let Some((transform, talkable)) = nearest_talkable(player_pos, q_talkables) {
+        player.state = PlayerState::Talking;
+        ev_player_started_chat.write(PlayerStartedChat {
+            node: talkable.node.clone(),
+            direction: transform.translation.xy() - player_pos,
+        });
     }
 }
 
