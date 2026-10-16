@@ -4,8 +4,8 @@ use bevy_tweening::{lens::*, *};
 use crate::animation::{SpriteAnimator, DIALOGUE_START_HINT};
 use crate::{
     player::{
-        chat::{PlayerStartedChat, Talkable},
-        Player, PlayerState, NPC_PROXIMITY_DISTANCE,
+        chat::{nearest_talkable, PlayerStartedChat, Talkable},
+        Player, PlayerState,
     },
     world::camera::YSort,
     GameAssets, GameState,
@@ -70,15 +70,10 @@ fn spawn_hints(
         return;
     }
 
-    for npc_transform in &q_talkables {
-        if player_transform
-            .translation
-            .xy()
-            .distance_squared(npc_transform.translation.xy())
-            <= NPC_PROXIMITY_DISTANCE.powi(2)
-        {
-            spawn_hint(&mut commands, &assets, npc_transform.translation);
-        }
+    let player_pos = player_transform.translation.xy();
+    if let Some((transform, _)) = nearest_talkable(player_pos, q_talkables.iter().map(|t| (t, ())))
+    {
+        spawn_hint(&mut commands, &assets, transform.translation);
     }
 }
 
@@ -86,6 +81,7 @@ fn despawn_hint(
     mut commands: Commands,
     q_player: Query<(&Transform, &Player)>,
     q_start_hints: Query<(Entity, &Transform), (With<StartHint>, Without<Player>)>,
+    q_talkables: Query<&Transform, (With<Talkable>, Without<Player>, Without<StartHint>)>,
     mut ev_player_started_chat: MessageReader<PlayerStartedChat>,
 ) {
     if !ev_player_started_chat.is_empty() {
@@ -112,13 +108,12 @@ fn despawn_hint(
         return;
     }
 
+    let player_pos = player_transform.translation.xy();
+    let nearest = nearest_talkable(player_pos, q_talkables.iter().map(|t| (t, ())))
+        .map(|(t, _)| t.translation.xy());
     for (entity, transform) in &q_start_hints {
-        if player_transform
-            .translation
-            .xy()
-            .distance_squared(transform.translation.xy())
-            > NPC_PROXIMITY_DISTANCE.powi(2)
-        {
+        // The hint moves when the player walks out of range or closer to another target.
+        if nearest != Some(transform.translation.xy()) {
             commands.entity(entity).despawn();
             break;
         }

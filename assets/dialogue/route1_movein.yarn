@@ -89,5 +89,12 @@ You: They're... pink.
 <<wait 1>>
 {$samantha_name}: Shoes!
 You: ...They're off.
-<<end_demo>>
+// Time skip to the next morning. He is back up the stairs from the bakery. When this
+// node ends the player walks freely; knocking on 3A starts Route1Croissant (door_3a.yarn).
+<<fade_out>>
+<<place Player PlayerArrive>>
+<<face Player right>>
+<<card "Sunday morning.">>
+<<fade_in>>
+You: Six o'clock. One croissant. Her door.
 ===

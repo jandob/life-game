@@ -374,7 +374,25 @@
       {
        "name": "node",
        "type": "string",
-       "value": "Route1Viewing"
+       "value": "Door3B"
+      }
+     ]
+    },
+    {
+     "height": 72.0,
+     "id": 24,
+     "name": "Door3A",
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 96.0,
+     "x": 384.0,
+     "y": 936.0,
+     "properties": [
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Door3A"
       }
      ]
     }
@@ -741,6 +759,39 @@
        "y": -352.0
       }
      ]
+    },
+    {
+     "height": 0,
+     "id": 22,
+     "name": "PlayerTo3A",
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 0,
+     "x": 352.0,
+     "y": 960.0,
+     "point": true
+    },
+    {
+     "height": 0,
+     "id": 23,
+     "name": "SamanthaIn",
+     "rotation": 0,
+     "type": "",
+     "visible": true,
+     "width": 0,
+     "x": 432.0,
+     "y": 936.0,
+     "polyline": [
+      {
+       "x": 0.0,
+       "y": 0.0
+      },
+      {
+       "x": 0.0,
+       "y": 184.0
+      }
+     ]
     }
    ],
    "opacity": 1,
@@ -751,7 +802,7 @@
   }
  ],
  "nextlayerid": 12,
- "nextobjectid": 22,
+ "nextobjectid": 25,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.12.2",
