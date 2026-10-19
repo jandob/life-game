@@ -3934,6 +3934,7 @@ dependencies = [
  "strum_macros",
  "unicode-segmentation",
  "web-sys",
+ "yarnspinner",
 ]
 
 [[package]]
