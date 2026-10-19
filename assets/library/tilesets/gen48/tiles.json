@@ -3,7 +3,7 @@
  "library": "gen48",
  "tile_size": 48,
  "page_tiles": 256,
- "next_id": 73,
+ "next_id": 89,
  "tiles": {
   "0": {
    "hash": "sha256:72d591255a8cf58d347329981942e2705577a4b279943fd1182f7f17c9174e7b",
@@ -1013,6 +1013,230 @@
     "x": 6,
     "y": 17
    }
+  },
+  "73": {
+   "hash": "sha256:b59509ef925a6e963dfedd65432334a1bbb3f154226171d56e875d48408e362a",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 11,
+    "y": 23
+   },
+   "material": "furniture"
+  },
+  "74": {
+   "hash": "sha256:4a86a916d8ffe84f1bccb3f5b4e944e2287553560278e5b539e483b02cff0b33",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 12,
+    "y": 23
+   },
+   "material": "furniture"
+  },
+  "75": {
+   "hash": "sha256:dea0ee9fb0e8bd07729944377cbe5dc95478d49ad713172d7baa0e30b0bb6d24",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 11,
+    "y": 24
+   },
+   "material": "furniture"
+  },
+  "76": {
+   "hash": "sha256:da43e492afba5e897a6cf0b5848676150325fc0916fc499b848d04696dd760e0",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 12,
+    "y": 24
+   },
+   "material": "furniture"
+  },
+  "77": {
+   "hash": "sha256:1f92aea5652b131912f3ac7bebce98f66743bf60612a88649bc03a9e9b0b74d1",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 11,
+    "y": 25
+   },
+   "material": "furniture"
+  },
+  "78": {
+   "hash": "sha256:fcb23355bb57af7e2f9c7b0649394e132badad68c361cac7d18188c2fecfcd1a",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 12,
+    "y": 25
+   },
+   "material": "furniture"
+  },
+  "79": {
+   "hash": "sha256:fe5f055397530c227d4c924bf1ffdaceac3359012ce60495ad33cc8f912dc892",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 11,
+    "y": 26
+   },
+   "material": "furniture"
+  },
+  "80": {
+   "hash": "sha256:66d421339b6e2af5be6152deb297f23072fdbd4a6d0b00881fc16cef3db67892",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 12,
+    "y": 26
+   },
+   "material": "furniture"
+  },
+  "81": {
+   "hash": "sha256:52b7478074307c655b416331d61dfc262d87e87385c94a5d514604cedf4eb9ac",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 4,
+    "y": 28
+   },
+   "material": "furniture"
+  },
+  "82": {
+   "hash": "sha256:6eaa822346b1c5ebd591c1349e4111ebd50967bdded54ab1af039dd26447df4c",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 5,
+    "y": 28
+   },
+   "material": "furniture"
+  },
+  "83": {
+   "hash": "sha256:4b240479f71017ddd60a6241d98c10214431107ea424ffa44fde0b085b913f10",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 4,
+    "y": 29
+   },
+   "material": "furniture"
+  },
+  "84": {
+   "hash": "sha256:7d4f245783a0d3f169666e7cf8cf7611e621a259f4e04e01d2f334cba3dc814d",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 5,
+    "y": 29
+   },
+   "material": "furniture"
+  },
+  "85": {
+   "hash": "sha256:40111b25eb8e48de9985565396f9f23840b1a5f7c8404987d6030ae9ee7e256f",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 4,
+    "y": 30
+   },
+   "material": "furniture"
+  },
+  "86": {
+   "hash": "sha256:de21fb8a8f48c35c5274349b60e85c12fb42b0c4e6e14924462808f8932b56cf",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 5,
+    "y": 30
+   },
+   "material": "furniture"
+  },
+  "87": {
+   "hash": "sha256:bd07e6fb9a918bda86ad8a0707462236fc2806064e3308d6496fe6406bf0d8c7",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 4,
+    "y": 31
+   },
+   "material": "furniture"
+  },
+  "88": {
+   "hash": "sha256:fdb6f7e9284b912f7c66f321f3c6fd4396a1480f929ad6e66e057da327b3fccb",
+   "created": "2026-10-19T11:15:59Z",
+   "origin": "edit",
+   "parent": null,
+   "job": null,
+   "source": {
+    "map": "assets/maps/route1_flat.tmj",
+    "layer": "Decor",
+    "x": 5,
+    "y": 31
+   },
+   "material": "furniture"
   }
  }
 }

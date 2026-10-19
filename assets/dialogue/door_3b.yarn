@@ -5,5 +5,7 @@ title: Door3B
     <<next_scene Route1Viewing>>
 <<elseif not visited("Route1Croissant")>>
     You: Not yet. Her croissant's getting cold.
+<<elseif not visited("Route1DinnerDoor")>>
+    You: She said eight. Not ten past.
 <<endif>>
 ===

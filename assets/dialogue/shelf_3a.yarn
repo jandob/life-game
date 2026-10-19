@@ -1,0 +1,15 @@
+title: Shelf3A
+---
+<<declare $r1_dinner_shelf = false>>
+// Talk target of Samantha's bookshelf (Interact layer).
+<<if not $r1_dinner_shelf>>
+    <<set $r1_dinner_shelf to true>>
+    {$samantha_name}: Find anything interesting?
+    You: "Power and Intimacy: A Reader." Is this for your course?
+    {$samantha_name}: Some of it is.
+    You: And the rest?
+    {$samantha_name}: The rest is for fun. Put it back where you found it.
+<<else>>
+    {$samantha_name}: It's not going anywhere. Neither is dinner. Sit.
+<<endif>>
+===

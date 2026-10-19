@@ -1,0 +1,9 @@
+title: Sink3A
+---
+// Talk target of Samantha's sink (Interact layer).
+<<if not visited("Route1Dinner")>>
+    {$samantha_name}: Dishes come after dinner. Sit down.
+<<elseif not visited("Route1Dishes")>>
+    <<next_scene Route1Dishes>>
+<<endif>>
+===

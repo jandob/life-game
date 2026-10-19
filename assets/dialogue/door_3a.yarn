@@ -5,5 +5,7 @@ title: Door3A
     You: Not this one. The listing said 3B.
 <<elseif not visited("Route1Croissant")>>
     <<next_scene Route1Croissant>>
+<<elseif not visited("Route1DinnerDoor")>>
+    <<next_scene Route1DinnerDoor>>
 <<endif>>
 ===

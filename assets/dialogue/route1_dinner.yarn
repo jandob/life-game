@@ -1,0 +1,130 @@
+title: Route1DinnerDoor
+tags: cutscene
+---
+<<declare $r1_dinner_notes = "">>
+<<declare $r1_dinner_reply = "">>
+<<declare $r1_dishes_turn = "">>
+// Started by knocking on 3A on Thursday evening (door_3a.yarn).
+<<walk Player PlayerTo3A>>
+<<face Player right>>
+<<wait 1>>
+<<open_door Door3A>>
+<<show Samantha>>
+<<walk Samantha SamanthaOut>>
+<<face Samantha Player>>
+<<face Player Samantha>>
+{$samantha_name}: Eight o'clock. You're learning.
+<<if $r1_croissant_dinner == "bring">>
+    {$samantha_name}: And the right bottle. Give it here.
+<<elseif $r1_croissant_dinner == "busy">>
+    {$samantha_name}: Not busy after all, then.
+    You: My plans fell through.
+    {$samantha_name}: You didn't have plans.
+<<else>>
+    {$samantha_name}: Empty-handed. I bought wine anyway. You owe me.
+<<endif>>
+{$samantha_name}: Come in. You know the rule.
+You: Shoes off.
+{$samantha_name}: Good.
+<<if $r1_croissant_socks == "yes">>
+    {$samantha_name}: Blush again. You're making a habit of it.
+<<elseif $r1_croissant_socks == "wash">>
+    {$samantha_name}: Out of the wash, I see. Finally.
+<<else>>
+    {$samantha_name}: Still not wearing them. I noticed. I notice everything.
+<<endif>>
+// She goes back to her stove; he follows her in.
+<<walk Samantha SamanthaToKitchen3A no_wait>>
+<<walk Player PlayerInto3A>>
+<<await_walks>>
+<<close_door Door3A>>
+<<face Samantha Player>>
+<<face Player Samantha>>
+{$samantha_name}: Five minutes. Look around if you want.
+{$samantha_name}: Don't touch the knives. Sit down when you're ready.
+// The player now walks around her flat. Sitting at the table starts Route1Dinner (table_3a.yarn).
+===
+title: Route1Dinner
+tags: cutscene
+---
+// Started by sitting down at her table (table_3a.yarn).
+<<place Player PlayerSit>>
+<<face Player up>>
+<<walk Samantha SamanthaSit>>
+<<face Samantha down>>
+{$samantha_name}: Pasta. Don't look so surprised.
+You: It smells great.
+{$samantha_name}: I know.
+{$samantha_name}: I study people, you know. It's practically my job.
+{$samantha_name}: After the viewing I wrote down a few lines about you. I do it with everyone who sees the flat.
+{$samantha_name}: Want to hear them?
+-> Yes.
+    <<set $r1_dinner_notes to "yes">>
+    {$samantha_name}: Of course you do.
+-> You wrote about me?
+    <<set $r1_dinner_notes to "surprised">>
+    {$samantha_name}: Three lines. Don't flatter yourself.
+-> No.
+    <<set $r1_dinner_notes to "no">>
+    {$samantha_name}: I'll tell you anyway. That's the other thing about me.
+{$samantha_name}: "Keen to please. Waits to be told. Doesn't know it yet."
+-> That's not true.
+    <<set $r1_dinner_reply to "deny">>
+    {$samantha_name}: You knocked at five past six because I said tomorrow.
+    {$samantha_name}: You took your shoes off tonight before I'd finished the sentence.
+    You: That's just manners.
+    {$samantha_name}: Mm. Eat your pasta.
+-> ...Maybe.
+    <<set $r1_dinner_reply to "maybe">>
+    {$samantha_name}: Maybe. That's the most honest thing you've said all week.
+-> Is that a bad thing?
+    <<set $r1_dinner_reply to "ask">>
+    {$samantha_name}: Not to me.
+    {$samantha_name}: It might turn out to be very good. We'll see.
+{$samantha_name}: Anyway. I cooked, so you wash up.
+You: Is that a rule too?
+{$samantha_name}: It is now. The sink's over there. Take your time. I like to watch.
+// The player walks to the sink himself. Using it starts Route1Dishes (sink_3a.yarn).
+===
+title: Route1Dishes
+tags: cutscene
+---
+// Started at her sink after dinner (sink_3a.yarn).
+<<walk Player PlayerAtSink>>
+<<face Player up>>
+<<wait 2>>
+<<walk Samantha SamanthaBehindSink>>
+<<face Samantha Player>>
+{$samantha_name}: You missed a spot.
+You: Where?
+{$samantha_name}: Don't turn around. Keep washing.
+-> Okay.
+    <<set $r1_dishes_turn to "stay">>
+    {$samantha_name}: See? Easy.
+-> Why?
+    <<set $r1_dishes_turn to "why">>
+    {$samantha_name}: Because I said so. That's usually enough for you.
+-> Turn around anyway.
+    <<set $r1_dishes_turn to "turned">>
+    <<face Player Samantha>>
+    {$samantha_name}: Hm. There he is.
+    {$samantha_name}: Back to the plates.
+    <<face Player up>>
+<<wait 2>>
+{$samantha_name}: You did well tonight.
+// She kisses his cheek from behind.
+{$samantha_name}: That's for doing as you're told.
+{$samantha_name}: Next Thursday. Same time. I'll text you what to bring.
+You: And if I'm busy?
+{$samantha_name}: You won't be.
+// She sees him out.
+<<walk Samantha SamanthaToDoor3AInside>>
+<<face Samantha Player>>
+<<open_door Door3A>>
+<<walk Player PlayerOutOf3A>>
+<<face Player Samantha>>
+{$samantha_name}: Goodnight, neighbour.
+<<close_door Door3A>>
+<<wait 1>>
+<<end_demo>>
+===

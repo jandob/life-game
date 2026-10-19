@@ -1,0 +1,9 @@
+title: Samantha3A
+---
+// Talk target at Samantha's spot in her flat (Interact layer).
+<<if not visited("Route1Dinner")>>
+    {$samantha_name}: Five minutes. Stop hovering and sit.
+<<elseif not visited("Route1Dishes")>>
+    {$samantha_name}: I'm not moving. You are. Sink.
+<<endif>>
+===

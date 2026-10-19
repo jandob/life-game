@@ -89,5 +89,16 @@ You: Is that an invitation?
 <<face Player down>>
 <<close_door Door3B>>
 <<wait 1>>
-<<end_demo>>
+// Time skip to Thursday evening. He is on the landing outside his own door. When this
+// node ends the player walks freely; knocking on 3A starts Route1DinnerDoor (door_3a.yarn).
+<<fade_out>>
+<<place Player PlayerKnock>>
+<<face Player down>>
+<<card "Thursday. Eight o'clock.">>
+<<fade_in>>
+<<if $r1_croissant_dinner == "bring">>
+    You: Red wine. The one she texted. Not the one I'd have picked.
+<<else>>
+    You: Eight o'clock. Dinner at hers.
+<<endif>>
 ===

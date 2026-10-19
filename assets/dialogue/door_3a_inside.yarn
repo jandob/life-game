@@ -1,0 +1,7 @@
+title: Door3AInside
+---
+// Talk target just inside Samantha's door (Interact layer).
+<<if not visited("Route1Dishes")>>
+    {$samantha_name}: Leaving already? You're not done here.
+<<endif>>
+===
