@@ -52,6 +52,12 @@ impl ScreenFade {
         self.start(0.0).store(true, Ordering::Relaxed);
         self.alpha = 0.0;
     }
+
+    /// Makes the screen black at once, e.g. for a start point after a `<<fade_out>>`.
+    pub fn black(&mut self) {
+        self.start(1.0).store(true, Ordering::Relaxed);
+        self.alpha = 1.0;
+    }
 }
 
 /// The title card shown by `<<card>>`.
