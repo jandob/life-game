@@ -5,7 +5,7 @@ use crate::player::chat::PlayerStoppedChat;
 use crate::player::input::PlayerInput;
 use crate::GameAssets;
 
-use super::option_selection::OptionSelection;
+use super::option_selection::{CreateOptions, OptionSelection};
 use super::runner::RunnerFlags;
 use super::spawn::{DialogueCharacterIcon, DialogueContinueNode, DialogueNameNode};
 use super::speaker::{portrait, speaker};
@@ -54,6 +54,7 @@ fn present_line(
     for mut flags in &mut q_runner_flags {
         if flags.active {
             flags.line = Some(event.line.clone());
+            flags.presented_line = true;
         }
     }
 }
@@ -62,9 +63,39 @@ fn present_options(
     trigger: On<PresentOptions>,
     mut commands: Commands,
     mut q_runner_flags: Query<&mut RunnerFlags>,
+    mut q_runners: Query<&mut DialogueRunner>,
+    mut ev_create_options: MessageWriter<CreateOptions>,
 ) {
     let event = trigger.event();
-    let option_selection = OptionSelection::from_option_set(&event.options);
+    let popup = q_runner_flags
+        .get(event.entity)
+        .is_ok_and(|flags| !flags.presented_line);
+    let option_selection = if popup {
+        // Options before any line are the actions at a talk target: one runs at once,
+        // none ends the conversation, several are shown as a popup.
+        let option_selection = OptionSelection::popup(&event.options);
+        let available = option_selection.get_options();
+        if available.len() <= 1 {
+            if let Ok(mut runner) = q_runners.get_mut(event.entity) {
+                match available.first() {
+                    Some(option) => {
+                        if let Err(err) = runner.select_option(option.id) {
+                            error!("Cannot pick the only action: {err}");
+                        }
+                    }
+                    None => {
+                        warn!("No action is available here; ending the conversation");
+                        runner.stop();
+                    }
+                }
+            }
+            return;
+        }
+        ev_create_options.write(CreateOptions(option_selection.clone()));
+        option_selection
+    } else {
+        OptionSelection::from_option_set(&event.options)
+    };
     commands.insert_resource(option_selection.clone());
 
     for mut flags in &mut q_runner_flags {

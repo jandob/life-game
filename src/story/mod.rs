@@ -1,5 +1,7 @@
 //! Story state and scripted scenes.
 
+pub mod inventory;
+pub mod phone;
 pub mod scripted;
 pub mod start_point;
 pub mod transition;
@@ -46,6 +48,8 @@ impl Plugin for StoryPlugin {
         app.init_resource::<StoryVars>()
             .add_plugins((
                 scripted::ScriptedPlugin,
+                inventory::InventoryPlugin,
+                phone::PhonePlugin,
                 transition::TransitionPlugin,
                 start_point::StartPointPlugin,
             ))

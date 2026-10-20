@@ -10,7 +10,7 @@ const PATH_TO_DIR: &str = "assets/dialogue";
 const MAX_SIMILARITY_DISTANCE: usize = 4;
 
 /// Custom commands with their allowed number of arguments.
-const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 14] = [
+const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 17] = [
     ("stop_chat", 0..=0),
     ("end_demo", 0..=0),
     ("walk", 2..=3),
@@ -25,6 +25,9 @@ const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 14] = [
     ("fade_in", 0..=0),
     ("card", 1..=1),
     ("next_scene", 1..=1),
+    ("phone", 1..=1),
+    ("note", 2..=2),
+    ("note_done", 1..=1),
 ];
 
 /// Commands that Yarn Spinner itself provides.
@@ -261,7 +264,8 @@ fn validate_speaker_variables_declared() {
     }
 }
 
-/// A conversation with an NPC opens with the NPC's line. Nodes without NPC lines are
+/// A conversation with an NPC opens with the NPC's line, or with the actions at a talk
+/// target (options before any line, shown as a popup). Nodes without NPC lines are
 /// exempt: staging nodes that only run commands, and the player's own remarks at an
 /// object (an interactable such as a door).
 #[test]
@@ -280,8 +284,8 @@ fn validate_first_line_is_npc_line() {
             }
             let first = body.iter().find(is_dialogue).unwrap();
             assert!(
-                !first.starts_with("You:") && !first.starts_with("->"),
-                "The first line of node {title} in {file} must be spoken by an NPC, found '{first}'"
+                !first.starts_with("You:"),
+                "The first line of node {title} in {file} must be spoken by an NPC or be an action, found '{first}'"
             );
         }
     }
@@ -326,4 +330,95 @@ fn quoted_command_arguments_stay_whole() {
     let (name, args) = parse_command(r#"<<card "Saturday. Moving day.">>"#).unwrap();
     assert_eq!(name, "card");
     assert_eq!(args, vec!["Saturday. Moving day.".to_string()]);
+}
+
+/// The node titles with their `tags:` header, of every file.
+fn node_tags() -> Vec<(String, Vec<String>)> {
+    let mut result = Vec::new();
+    for (_, contents) in yarn_files() {
+        let mut title = None;
+        let mut tags = Vec::new();
+        for line in contents.lines().map(str::trim) {
+            if let Some(t) = line.strip_prefix("title:") {
+                title = Some(t.trim().to_string());
+                tags.clear();
+            } else if let Some(t) = line.strip_prefix("tags:") {
+                tags = t.split_whitespace().map(str::to_string).collect();
+            } else if line == "---" {
+                if let Some(title) = title.take() {
+                    result.push((title, std::mem::take(&mut tags)));
+                }
+            }
+        }
+    }
+    result
+}
+
+/// Every `<<phone NODE>>` delivers a node that exists and is tagged `phone`.
+#[test]
+fn validate_phone_nodes() {
+    let tags = node_tags();
+    validate_lines(|line, file| {
+        let Some((command, args)) = parse_command(line) else {
+            return;
+        };
+        if command != "phone" {
+            return;
+        }
+        let node = args.first().cloned().unwrap_or_default();
+        let found = tags.iter().find(|(title, _)| *title == node);
+        assert!(
+            found.is_some_and(|(_, tags)| tags.iter().any(|t| t == crate::story::phone::PHONE_TAG)),
+            "<<phone {node}>> in {file} needs an existing node tagged 'phone'"
+        );
+    });
+}
+
+/// Every `$item_` variable is declared and has a row in the item table, and every row is
+/// declared.
+#[test]
+fn validate_items() {
+    use crate::story::inventory::{variable, ITEMS};
+    let declared: HashSet<String> = yarn_files()
+        .iter()
+        .flat_map(|(_, contents)| {
+            contents
+                .lines()
+                .map(str::trim)
+                .map(str::to_string)
+                .collect::<Vec<_>>()
+        })
+        .filter_map(|line| {
+            let rest = line.strip_prefix("<<declare ")?;
+            let name = rest.split_whitespace().next()?;
+            name.starts_with("$item_").then(|| name.to_string())
+        })
+        .collect();
+    for item in ITEMS {
+        assert!(
+            declared.contains(&variable(item.id)),
+            "Item '{}' needs <<declare {} = false>> in items.yarn",
+            item.id,
+            variable(item.id)
+        );
+    }
+    for name in &declared {
+        assert!(
+            ITEMS.iter().any(|item| variable(item.id) == *name),
+            "{name} is declared but has no row in ITEMS (src/story/inventory.rs)"
+        );
+    }
+    validate_lines(|line, file| {
+        if line.starts_with("//") {
+            return;
+        }
+        for word in line.split(|c: char| !(c.is_alphanumeric() || c == '_' || c == '$')) {
+            if word.starts_with("$item_") {
+                assert!(
+                    declared.contains(word),
+                    "{word} in {file} is not a declared item"
+                );
+            }
+        }
+    });
 }

@@ -17,6 +17,9 @@ pub struct DialogueNameNode;
 pub struct DialogueCharacterIcon;
 #[derive(Component)]
 pub struct DialogueContinueNode;
+/// The text box and portrait, hidden while an action popup is shown.
+#[derive(Component)]
+pub struct DialogueBox;
 
 #[derive(Component)]
 pub struct OptionsNode;
@@ -248,15 +251,18 @@ fn spawn_dialogue(mut commands: Commands, assets: Res<GameAssets>) {
     let dialogue_bottom = spawn_dialogue_bottom(&mut commands, &assets);
 
     let dialogue_root = commands
-        .spawn((Node {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            justify_content: JustifyContent::FlexEnd,
-            align_items: AlignItems::Center,
-            padding: UiRect::bottom(Val::Px(30.0)),
-            flex_direction: FlexDirection::Column,
-            ..default()
-        },))
+        .spawn((
+            DialogueBox,
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                justify_content: JustifyContent::FlexEnd,
+                align_items: AlignItems::Center,
+                padding: UiRect::bottom(Val::Px(30.0)),
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+        ))
         .add_children(&[dialogue_content, dialogue_bottom])
         .id();
 

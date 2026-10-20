@@ -1,9 +1,15 @@
 title: Door3B
 ---
-// Talk target of 3B's door (Interact layer). Picks what happens by story state.
-<<if not visited("Route1Viewing")>>
+// Talk target of 3B's door (Interact layer). It opens with the actions here: a popup
+// when several are available, the only one at once. Each picks by story state.
+-> Knock <<if not visited("Route1Viewing")>>
     <<next_scene Route1Viewing>>
-<<elseif not visited("Route1Croissant")>>
+-> Go in <<if visited("Route1Viewing") and not visited("Route1Croissant")>>
     You: Not yet. Her croissant's getting cold.
-<<endif>>
+-> Look
+    <<if not visited("Route1Viewing")>>
+        You: 3B. The one from the listing.
+    <<else>>
+        You: 3B. My door. Still feels like someone else's.
+    <<endif>>
 ===
