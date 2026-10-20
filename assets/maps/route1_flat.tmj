@@ -632,8 +632,8 @@
      "type": "",
      "visible": true,
      "width": 96.0,
-     "x": 464.0,
-     "y": 900.0,
+     "x": 560.0,
+     "y": 936.0,
      "properties": [
       {
        "name": "node",
