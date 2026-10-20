@@ -30,7 +30,11 @@ fn next_scene_targets() -> Vec<String> {
             contents
                 .lines()
                 .filter_map(|line| {
-                    let target = line.trim().strip_prefix("<<next_scene ")?;
+                    // Scenes and phone texts are both started by the engine, not jumped to.
+                    let line = line.trim();
+                    let target = line
+                        .strip_prefix("<<next_scene ")
+                        .or_else(|| line.strip_prefix("<<phone "))?;
                     Some(target.trim_end_matches(">>").trim().to_string())
                 })
                 .collect::<Vec<_>>()

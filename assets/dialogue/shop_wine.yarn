@@ -1,0 +1,33 @@
+title: ShopWine
+---
+// Talk target of the wine shelf in the corner shop (Interact layer). See shop_door.yarn.
+-> Look
+    <<if visited("PhoneWineChoice") or $r1_thu2_bottle_seen>>
+        You: Red Fox, the 2021. That's the one.
+        You: Next to it the Reserve. Same fox, gold label. Not that one.
+    <<else>>
+        You: Three reds. Two of them have a fox on the label.
+        You: One of the foxes has a gold label. The third has a price sticker on the front.
+    <<endif>>
+-> Take the Red Fox 2021 <<if not $item_wine_fox>>
+    <<if $item_wine_reserve or $item_wine_house>>
+        You: I put the other one back.
+    <<endif>>
+    <<set $item_wine_reserve to false>>
+    <<set $item_wine_house to false>>
+    <<set $item_wine_fox to true>>
+-> Take the Red Fox Reserve <<if not $item_wine_reserve>>
+    <<if $item_wine_fox or $item_wine_house>>
+        You: I put the other one back.
+    <<endif>>
+    <<set $item_wine_fox to false>>
+    <<set $item_wine_house to false>>
+    <<set $item_wine_reserve to true>>
+-> Take the house red <<if not $item_wine_house>>
+    <<if $item_wine_fox or $item_wine_reserve>>
+        You: I put the other one back.
+    <<endif>>
+    <<set $item_wine_fox to false>>
+    <<set $item_wine_reserve to false>>
+    <<set $item_wine_house to true>>
+===

@@ -126,5 +126,7 @@ You: And if I'm busy?
 {$samantha_name}: Goodnight, neighbour.
 <<close_door Door3A>>
 <<wait 1>>
-<<end_demo>>
+// Time skip to the next Thursday, after work (route1_thursday2.yarn). He comes up the
+// stairs; her text is waiting. When this node ends the player walks freely.
+<<next_scene Route1Thu2Start>>
 ===

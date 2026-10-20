@@ -50,6 +50,7 @@ You: I got the flat. Why would I change my mind?
 <<face Player Samantha>>
 {$samantha_name}: One more thing. A housewarming present.
 {$samantha_name}: Socks. A matching pair, for once. I couldn't stop thinking about the last ones.
+<<set $item_blush_socks to true>>
 You: They're... pink.
 {$samantha_name}: They're blush. And they were on sale in your size. Roughly.
 -> Thank you. Really.
@@ -97,4 +98,6 @@ You: ...They're off.
 <<card "Sunday morning.">>
 <<fade_in>>
 You: Six o'clock. One croissant. Her door.
+<<set $item_bakery_bag to true>>
+<<phone PhoneSundayMorning>>
 ===

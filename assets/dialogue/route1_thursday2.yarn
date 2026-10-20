@@ -1,0 +1,319 @@
+title: Route1Thu2Start
+tags: cutscene
+---
+<<declare $r1_thu2_text = "">>
+<<declare $r1_thu2_bottle_seen = false>>
+<<declare $r1_thu2_socks_at = "">>
+<<declare $r1_thu2_socks_noted = false>>
+<<declare $r1_thu2_socks = "">>
+<<declare $r1_thu2_wine = "">>
+<<declare $r1_thu2_gave = false>>
+<<declare $r1_thu2_tulips = false>>
+<<declare $r1_thu2_chocolates = false>>
+<<declare $r1_thu2_answer = "">>
+<<declare $r1_thu2_wine_open = false>>
+<<declare $r1_thu2_notebook = "">>
+<<declare $r1_thu2_think = "">>
+<<declare $r1_thu2_sink = "">>
+<<declare $r1_thu2_question = "">>
+<<declare $r1_thu2_kiss = "">>
+<<declare $r1_thu2_reply = "">>
+// Started at the end of Route1Dishes: a week later, he comes home from work.
+// The socks are somewhere in 3B, where his answer on Sunday morning put them
+// (flat3b_socks.yarn). Her text is waiting on his phone.
+<<fade_out>>
+<<hide Samantha>>
+<<set $item_blush_socks to false>>
+<<if $r1_croissant_socks == "yes">>
+    <<set $r1_thu2_socks_at to "drawers">>
+<<elseif $r1_croissant_socks == "wash">>
+    <<set $r1_thu2_socks_at to "rack">>
+<<else>>
+    <<set $r1_thu2_socks_at to "box">>
+<<endif>>
+<<place Player PlayerFromShop>>
+<<face Player right>>
+<<card "Thursday. A week later.">>
+<<fade_in>>
+<<phone PhoneThursday2>>
+You: Home. And my phone's buzzing.
+// The player walks freely from here. Knocking on 3A starts Route1Thu2Door (door_3a.yarn).
+===
+title: Route1Thu2Door
+tags: cutscene
+---
+// Started by knocking on 3A on the second Thursday (door_3a.yarn).
+<<walk Player PlayerTo3A>>
+<<face Player right>>
+<<wait 1>>
+<<open_door Door3A>>
+<<place Samantha SamanthaOut>>
+<<show Samantha>>
+<<walk Samantha SamanthaOut>>
+<<face Samantha Player>>
+<<face Player Samantha>>
+{$samantha_name}: Eight o'clock.
+<<if not visited("PhoneThursday2")>>
+    {$samantha_name}: You didn't read my text.
+    You: What text?
+    {$samantha_name}: The one that told you what to bring. Too late now.
+<<endif>>
+// She holds out her hand and waits.
+<<jump Route1Thu2Give>>
+===
+title: Route1Thu2Give
+---
+// What he hands her at the door. Loops until he says that's all; each give removes the
+// item, so the first available option always moves on.
+-> Give her the Red Fox 2021 <<if $item_wine_fox>>
+    <<set $item_wine_fox to false>>
+    <<set $r1_thu2_wine to "fox">>
+    <<set $r1_thu2_gave to true>>
+    <<if $r1_thu2_bottle_seen>>
+        {$samantha_name}: You found the bottle. I put it on top for you.
+        -> You planned that?
+            {$samantha_name}: I plan most things.
+        -> I thought you might have.
+            {$samantha_name}: Then you're learning.
+    <<elseif visited("PhoneWineChoice")>>
+        {$samantha_name}: You kept my text. Good.
+    <<else>>
+        {$samantha_name}: The right one. Did you guess?
+        -> Yes.
+            {$samantha_name}: Lucky. I'll take lucky.
+        -> I knew.
+            {$samantha_name}: You're still a bad liar.
+    <<endif>>
+    <<jump Route1Thu2Give>>
+-> Give her the Red Fox Reserve <<if $item_wine_reserve>>
+    <<set $item_wine_reserve to false>>
+    <<set $r1_thu2_wine to "reserve">>
+    <<set $r1_thu2_gave to true>>
+    {$samantha_name}: The gold label.
+    <<if visited("PhoneWineChoice")>>
+        {$samantha_name}: I said not that one.
+    <<endif>>
+    {$samantha_name}: Expensive and wrong. I'll drink it anyway.
+    <<jump Route1Thu2Give>>
+-> Give her the house red <<if $item_wine_house>>
+    <<set $item_wine_house to false>>
+    <<set $r1_thu2_wine to "house">>
+    <<set $r1_thu2_gave to true>>
+    {$samantha_name}: This is what you'd want.
+    {$samantha_name}: It'll do for the sauce.
+    <<jump Route1Thu2Give>>
+-> Give her the tulips <<if $item_tulips>>
+    <<set $item_tulips to false>>
+    <<set $r1_thu2_tulips to true>>
+    <<set $r1_thu2_gave to true>>
+    {$samantha_name}: I said what I'd want. Not what you think I'd want.
+    {$samantha_name}: ...I'll put them in water.
+    <<jump Route1Thu2Give>>
+-> Give her the chocolate <<if $item_chocolates>>
+    <<set $item_chocolates to false>>
+    <<set $r1_thu2_chocolates to true>>
+    <<set $r1_thu2_gave to true>>
+    {$samantha_name}: Bribery. Noted.
+    <<jump Route1Thu2Give>>
+-> Give her the blush socks <<if $item_blush_socks>>
+    <<set $item_blush_socks to false>>
+    <<set $r1_thu2_socks to "pocket">>
+    <<set $r1_thu2_gave to true>>
+    {$samantha_name}: I don't want them.
+    {$samantha_name}: I want them on you. Here. Now.
+    You: On your doormat?
+    {$samantha_name}: On my doormat.
+    // He puts them on.
+    {$samantha_name}: Better. Next time they're on before you knock.
+    <<jump Route1Thu2Give>>
+-> That's everything. <<if $r1_thu2_gave>>
+    <<jump Route1Thu2Shoes>>
+-> Hi. <<if not $r1_thu2_gave>>
+    <<if $item_wine_fox or $item_wine_reserve or $item_wine_house or $item_tulips or $item_chocolates or $item_blush_socks>>
+        {$samantha_name}: Your hands. Not your mouth.
+        <<jump Route1Thu2Give>>
+    <<else>>
+        {$samantha_name}: Empty-handed.
+        {$samantha_name}: Bold.
+        <<jump Route1Thu2Shoes>>
+    <<endif>>
+===
+title: Route1Thu2Shoes
+---
+{$samantha_name}: Come in. Shoes off.
+// She looks down at his feet.
+<<if $r1_thu2_socks == "on">>
+    {$samantha_name}: There.
+    {$samantha_name}: That's what I wanted.
+    <<if $r1_thu2_wine == "fox">>
+        <<set $r1_thu2_answer to "full">>
+        {$samantha_name}: Both. You worked it out.
+    <<else>>
+        <<set $r1_thu2_answer to "socks">>
+        {$samantha_name}: You worked out the part that mattered.
+    <<endif>>
+<<elseif $r1_thu2_socks == "pocket">>
+    <<set $r1_thu2_answer to "socks">>
+    {$samantha_name}: Blush. Finally.
+<<elseif $item_blush_socks>>
+    <<set $item_blush_socks to false>>
+    <<set $r1_thu2_socks to "pocket">>
+    <<set $r1_thu2_answer to "socks">>
+    {$samantha_name}: Grey. And what's in your pocket?
+    You: ...
+    {$samantha_name}: You brought them and didn't wear them. Put them on. Here.
+    // He puts them on, on her doormat.
+    {$samantha_name}: Blush. Finally.
+<<else>>
+    <<set $r1_thu2_socks to "off">>
+    <<if $r1_thu2_wine == "fox">>
+        <<set $r1_thu2_answer to "wine">>
+    <<else>>
+        <<set $r1_thu2_answer to "none">>
+    <<endif>>
+    {$samantha_name}: Grey.
+    {$samantha_name}: You thought this was about wine.
+    You: Wasn't it?
+    {$samantha_name}: Some of it.
+<<endif>>
+<<note_done thu2>>
+<<if $r1_thu2_bottle_seen>>
+    <<note_done thu2_wine>>
+<<endif>>
+<<if $r1_thu2_socks_noted>>
+    <<note_done thu2_socks>>
+<<endif>>
+// She goes back to her stove; he follows her in.
+<<walk Samantha SamanthaToKitchen3A no_wait>>
+<<walk Player PlayerInto3A>>
+<<await_walks>>
+<<close_door Door3A>>
+<<face Samantha Player>>
+<<face Player Samantha>>
+<<if $r1_thu2_wine != "">>
+    {$samantha_name}: Open the wine. The corkscrew's in the drawer by the sink.
+    <<note thu2_cork "Open her wine. Corkscrew: the drawer by her sink.">>
+<<else>>
+    {$samantha_name}: Sit. It's nearly ready.
+<<endif>>
+// The player walks around her flat. Sitting at the table starts Route1Thu2Dinner (table_3a.yarn).
+===
+title: Route1Thu2Dinner
+tags: cutscene
+---
+// Started by sitting down at her table on the second Thursday (table_3a.yarn).
+<<place Player PlayerSit>>
+<<face Player up>>
+<<walk Samantha SamanthaSit>>
+<<face Samantha down>>
+{$samantha_name}: Risotto. Not pasta. You'd get used to it.
+{$samantha_name}: A game while we eat. I ask, you answer. Honestly.
+{$samantha_name}: You get one question back.
+You: And if I lie?
+{$samantha_name}: I'll know. You saw how that went on Sunday.
+{$samantha_name}: Did you think about me this week?
+-> Yes.
+    <<set $r1_thu2_think to "yes">>
+    {$samantha_name}: Good.
+-> No.
+    <<set $r1_thu2_think to "no">>
+    {$samantha_name}: You're a bad liar. I've said that before.
+-> More than I'd like.
+    <<set $r1_thu2_think to "more">>
+    {$samantha_name}: That's the right amount.
+<<if $r1_dishes_turn == "turned">>
+    {$samantha_name}: Last week at the sink. I said don't turn around, and you did. Why?
+    -> I wanted to see you.
+        <<set $r1_thu2_sink to "see">>
+        {$samantha_name}: You could have waited. Next time, wait.
+    -> I don't like being told.
+        <<set $r1_thu2_sink to "told">>
+        {$samantha_name}: Yes you do. You just don't like that you do.
+<<else>>
+    {$samantha_name}: Last week at the sink. When I told you not to turn around.
+    {$samantha_name}: What did that feel like?
+    -> Easy.
+        <<set $r1_thu2_sink to "easy">>
+        {$samantha_name}: Mm. It was meant to.
+    -> Strange. Good strange.
+        <<set $r1_thu2_sink to "good">>
+        {$samantha_name}: I'll write that down later.
+    -> I didn't like it.
+        <<set $r1_thu2_sink to "disliked">>
+        {$samantha_name}: You did it anyway.
+<<endif>>
+{$samantha_name}: Your turn. One question.
+-> What else is in the notebook?
+    <<set $r1_thu2_question to "notebook">>
+    {$samantha_name}: Seven pages. You're on four of them.
+    You: Four?
+    {$samantha_name}: That was your question.
+-> Why me?
+    <<set $r1_thu2_question to "why">>
+    {$samantha_name}: Because you answer the door.
+-> Where's your father?
+    <<set $r1_thu2_question to "father">>
+    {$samantha_name}: Lisbon. Back in a few weeks. He leaves the building to me.
+    You: The building.
+    {$samantha_name}: And everyone in it.
+-> Have you done this before?
+    <<set $r1_thu2_question to "before">>
+    {$samantha_name}: Done what?
+    You: ...This.
+    {$samantha_name}: Not like this.
+{$samantha_name}: Leave the dishes. Tonight you're done when I say you're done.
+{$samantha_name}: And I say you're done.
+// She walks him to her door and stops him there.
+<<walk Samantha SamanthaKiss3A no_wait>>
+<<walk Player PlayerKiss3A>>
+<<await_walks>>
+<<face Player Samantha>>
+<<face Samantha Player>>
+{$samantha_name}: Stand there. Hands by your sides.
+{$samantha_name}: Don't move.
+-> Stay still.
+    <<set $r1_thu2_kiss to "still">>
+    // She kisses him. Short. She steps back first.
+    <<wait 1>>
+    {$samantha_name}: Good boy.
+    You: ...
+    {$samantha_name}: You heard me.
+-> Reach for her.
+    <<set $r1_thu2_kiss to "reached">>
+    // She catches his wrist, puts his hand back by his side, and kisses him anyway.
+    {$samantha_name}: Hands.
+    <<wait 1>>
+    {$samantha_name}: There. Was that so hard?
+-> Samantha...
+    <<set $r1_thu2_kiss to "spoke">>
+    {$samantha_name}: I said don't move. That includes talking.
+    // Then the kiss.
+    <<wait 1>>
+    {$samantha_name}: Better.
+<<open_door Door3A>>
+<<walk Player PlayerOutOf3AKiss>>
+<<face Player Samantha>>
+{$samantha_name}: Goodnight, neighbour.
+<<close_door Door3A>>
+<<hide Samantha>>
+<<wait 1>>
+// Home.
+<<face Player up>>
+<<open_door Door3B>>
+<<walk Player PlayerInto3B>>
+<<face Player down>>
+<<close_door Door3B>>
+<<wait 1>>
+<<phone PhoneThursday2Night>>
+You: ...My phone. Already.
+// The player is in control in 3B. Going to bed after reading her text starts
+// Route1Thu2End (bed_3b.yarn).
+===
+title: Route1Thu2End
+tags: cutscene
+---
+// Started by going to bed after her night text (bed_3b.yarn).
+<<fade_out>>
+<<card "Thursdays.">>
+<<end_demo>>
+===

@@ -1,9 +1,28 @@
 title: Table3A
 ---
-// Talk target of the chair at Samantha's table (Interact layer).
-<<if not visited("Route1Dinner")>>
+// Talk target of the chair at Samantha's table (Interact layer). Her notebook lies on it.
+-> Sit down <<if visited("Route1DinnerDoor") and not visited("Route1Dinner")>>
     <<next_scene Route1Dinner>>
-<<elseif not visited("Route1Dishes")>>
-    {$samantha_name}: Dinner's over. The sink isn't going to come to you.
-<<endif>>
+-> Open the wine <<if $item_corkscrew>>
+    <<set $item_corkscrew to false>>
+    <<set $r1_thu2_wine_open to true>>
+    <<note_done thu2_cork2>>
+    You: There.
+    {$samantha_name}: Two glasses. Not to the top.
+-> Sit down <<if visited("Route1Thu2Door") and not visited("Route1Thu2Dinner") and ($r1_thu2_wine == "" or $r1_thu2_wine_open)>>
+    <<next_scene Route1Thu2Dinner>>
+-> Sit down <<if visited("Route1Thu2Door") and not visited("Route1Thu2Dinner") and $r1_thu2_wine != "" and not $r1_thu2_wine_open>>
+    {$samantha_name}: Wine first. Corkscrew. Drawer. Sink.
+-> Look at her notebook <<if visited("Route1Thu2Door") and not visited("Route1Thu2Dinner")>>
+    You: Her notebook. Closed, with a pen clipped to it.
+-> Open her notebook <<if visited("Route1Thu2Door") and not visited("Route1Thu2Dinner") and $r1_thu2_notebook == "">>
+    <<set $r1_thu2_notebook to "reached">>
+    {$samantha_name}: Ah.
+    {$samantha_name}: That's mine.
+-> Look <<if not (visited("Route1Thu2Door") and not visited("Route1Thu2Dinner"))>>
+    <<if visited("Route1Dinner") and not visited("Route1Dishes")>>
+        {$samantha_name}: Dinner's over. The sink isn't going to come to you.
+    <<else>>
+        You: Her table. Her notebook on it, closed.
+    <<endif>>
 ===

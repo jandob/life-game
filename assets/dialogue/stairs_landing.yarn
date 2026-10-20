@@ -1,0 +1,16 @@
+title: StairsLanding
+---
+// Talk target of the stairs on the landing (Interact layer). On the second Thursday they
+// lead down to the corner shop, a separate area of the map (shop.yarn).
+-> Go down to the shop <<if visited("Route1Thu2Start") and not visited("Route1Thu2Door")>>
+    <<fade_out>>
+    <<place Player ShopIn>>
+    <<face Player up>>
+    <<fade_in>>
+-> Look
+    <<if visited("Route1Thu2Start") and not visited("Route1Thu2Door")>>
+        You: The corner shop's at the bottom of the street. Open till ten.
+    <<else>>
+        You: Three floors of stairs. No lift. I carried every box up these.
+    <<endif>>
+===

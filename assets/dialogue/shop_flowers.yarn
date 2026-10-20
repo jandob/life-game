@@ -1,0 +1,8 @@
+title: ShopFlowers
+---
+// Talk target of the tulips in the corner shop (Interact layer). See shop_door.yarn.
+-> Look
+    You: Tulips. Yellow and red, five a bunch.
+-> Take a bunch <<if not $item_tulips>>
+    <<set $item_tulips to true>>
+===

@@ -5,5 +5,11 @@ title: Samantha3A
     {$samantha_name}: Five minutes. Stop hovering and sit.
 <<elseif not visited("Route1Dishes")>>
     {$samantha_name}: I'm not moving. You are. Sink.
+<<elseif visited("Route1Thu2Door") and not visited("Route1Thu2Dinner")>>
+    <<if $r1_thu2_wine != "" and not $r1_thu2_wine_open>>
+        {$samantha_name}: The wine won't open itself.
+    <<else>>
+        {$samantha_name}: Sit. I'm not serving you standing up.
+    <<endif>>
 <<endif>>
 ===
