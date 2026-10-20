@@ -1,6 +1,9 @@
 //! Story state and scripted scenes.
 
+pub mod inventory;
+pub mod phone;
 pub mod scripted;
+pub mod start_point;
 pub mod transition;
 
 use bevy::prelude::*;
@@ -43,7 +46,13 @@ pub struct StoryPlugin;
 impl Plugin for StoryPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<StoryVars>()
-            .add_plugins((scripted::ScriptedPlugin, transition::TransitionPlugin))
+            .add_plugins((
+                scripted::ScriptedPlugin,
+                inventory::InventoryPlugin,
+                phone::PhonePlugin,
+                transition::TransitionPlugin,
+                start_point::StartPointPlugin,
+            ))
             .add_systems(OnExit(GameState::MainMenu), reset_story_vars);
     }
 }

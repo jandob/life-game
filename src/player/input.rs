@@ -23,6 +23,21 @@ pub struct PlayerInput {
     pub toggle_debug: bool,
 }
 
+/// Set while a panel (inventory, phone) is open: the player doesn't walk, talk or leave
+/// with Escape; the panel reads its own keys.
+#[derive(Resource, Default)]
+pub struct InputBlocked(pub bool);
+
+fn block_input(blocked: Res<InputBlocked>, mut player_input: ResMut<PlayerInput>) {
+    if blocked.0 {
+        player_input.move_direction = Vec2::ZERO;
+        player_input.running = false;
+        player_input.escape = false;
+        player_input.dialogue = false;
+        player_input.dialogue_direction = 0;
+    }
+}
+
 fn reset_player_input(mut player_input: ResMut<PlayerInput>) {
     *player_input = PlayerInput::default();
 }
@@ -178,6 +193,16 @@ impl Plugin for InputPlugin {
                 .run_if(not(in_state(GameState::AssetLoading)))
                 .after(InputSystems),
         )
+        .add_systems(
+            PreUpdate,
+            block_input
+                .after(player_movement)
+                .after(input_running)
+                .after(input_escape)
+                .after(input_dialogue)
+                .after(InputSystems),
+        )
+        .init_resource::<InputBlocked>()
         .init_resource::<PlayerInput>()
         .init_resource::<MouseWorldCoords>()
         .add_systems(PreUpdate, reset_player_input.before(InputSystems));

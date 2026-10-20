@@ -40,6 +40,14 @@ fn main() {
     const DEFAULT_WINDOW_WIDTH_PX: u32 = 1280;
     const DEFAULT_WINDOW_HEIGHT_PX: u32 = (DEFAULT_WINDOW_WIDTH * 9.0 / 16.0) as u32;
 
+    // `--start NAME` starts at a point in the story, `--start list` lists them.
+    let launch = story::start_point::LaunchOptions::from_environment();
+    #[cfg(not(target_arch = "wasm32"))]
+    if launch.wants_list() {
+        print!("{}", story::start_point::list());
+        return;
+    }
+
     App::new()
         .add_plugins((
             DefaultPlugins
@@ -78,6 +86,8 @@ fn main() {
                     YarnFileSource::file("dialogue/route1_croissant.yarn"),
                     YarnFileSource::file("dialogue/door_3a.yarn"),
                     YarnFileSource::file("dialogue/door_3b.yarn"),
+                    YarnFileSource::file("dialogue/items.yarn"),
+                    YarnFileSource::file("dialogue/phone_route1.yarn"),
                     YarnFileSource::file("dialogue/route1_dinner.yarn"),
                     YarnFileSource::file("dialogue/table_3a.yarn"),
                     YarnFileSource::file("dialogue/sink_3a.yarn"),
@@ -100,6 +110,7 @@ fn main() {
                 .load_collection::<GameAssets>(),
         )
         .insert_resource(ClearColor(BACKGROUND_COLOR))
+        .insert_resource(launch)
         .add_plugins((
             world::WorldPlugin,
             ui::UiPlugin,

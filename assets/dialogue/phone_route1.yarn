@@ -1,0 +1,13 @@
+title: PhoneSundayMorning
+tags: phone
+---
+// Her text on Sunday morning, delivered at the end of moving day (route1_movein.yarn).
+// PLACEHOLDER lines, to be rewritten.
+{$samantha_name}: You're up. I heard your door.
+{$samantha_name}: Knock once. I'm not deaf.
+-> On my way.
+    {$samantha_name}: I know. I can hear you on the stairs.
+-> Good morning to you too.
+    {$samantha_name}: Morning. Once.
+<<note croissant "Bring Samantha her croissant. Her door, 3A. Knock once.">>
+===
