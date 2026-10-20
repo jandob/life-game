@@ -5,6 +5,7 @@ use bevy_yarnspinner::{events::*, prelude::*};
 
 use crate::player::chat::PlayerStoppedChat;
 use crate::player::input::PlayerInput;
+use crate::story::phone::{in_phone_node, Message, Phone};
 use crate::{GameAssets, GameState};
 
 use super::runner::RunnerFlags;
@@ -21,6 +22,8 @@ struct HasSelectedOptionEvent;
 
 #[derive(Debug, Clone, Default, Resource)]
 pub struct OptionSelection {
+    /// The actions at a talk target, shown before any line (see `present_options`).
+    pub popup: bool,
     mouse_input: bool,
     current_selection: Option<usize>,
     options: Vec<DialogueOption>,
@@ -38,10 +41,21 @@ impl OptionSelection {
         }
 
         Self {
+            popup: false,
             mouse_input: true,
             current_selection: None,
             options,
         }
+    }
+
+    /// An action popup: there is no line to finish first, so the first action is
+    /// selected for the keyboard right away.
+    pub fn popup<'a>(dialogue_options: impl IntoIterator<Item = &'a DialogueOption>) -> Self {
+        let mut selection = Self::from_option_set(dialogue_options);
+        selection.popup = true;
+        selection.mouse_input = false;
+        selection.current_selection = (!selection.options.is_empty()).then_some(0);
+        selection
     }
 
     pub fn get_options(&self) -> Vec<DialogueOption> {
@@ -105,8 +119,9 @@ fn select_option(
     mut q_text: Query<(Entity, &mut TextColor), With<OptionsText>>,
     mut selected_option_message: MessageWriter<HasSelectedOptionEvent>,
     mut ev_mouse_motion: MessageReader<MouseMotion>,
+    mut phone: ResMut<Phone>,
 ) {
-    if !typewriter.is_finished() {
+    if !typewriter.is_finished() && !option_selection.popup {
         return;
     }
 
@@ -140,6 +155,12 @@ fn select_option(
                     selected_option_message.write(HasSelectedOptionEvent);
                     for (mut dialogue_runner, flags) in &mut dialogue_runners {
                         if flags.active {
+                            log_phone_reply(
+                                &dialogue_runner,
+                                &option_selection,
+                                button.0,
+                                &mut phone,
+                            );
                             dialogue_runner.select_option(button.0).unwrap();
                         }
                     }
@@ -174,9 +195,28 @@ fn select_option(
         selected_option_message.write(HasSelectedOptionEvent);
         for (mut dialogue_runner, flags) in &mut dialogue_runners {
             if flags.active {
+                log_phone_reply(&dialogue_runner, &option_selection, id, &mut phone);
                 dialogue_runner.select_option(id).unwrap();
             }
         }
+    }
+}
+
+/// His replies in a text conversation go into the phone history like her lines.
+fn log_phone_reply(
+    runner: &DialogueRunner,
+    selection: &OptionSelection,
+    id: OptionId,
+    phone: &mut Phone,
+) {
+    if !in_phone_node(runner) {
+        return;
+    }
+    if let Some(option) = selection.options.iter().find(|o| o.id == id) {
+        phone.messages.push(Message {
+            speaker: "You".to_string(),
+            text: option.line.text.clone(),
+        });
     }
 }
 

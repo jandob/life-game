@@ -1,4 +1,5 @@
 pub mod dialogue;
+pub mod hud;
 pub mod keyboard_hint;
 
 mod audio_bar;
@@ -18,6 +19,7 @@ impl Plugin for UiPlugin {
         app.add_plugins((
             dialogue::DialoguePlugin,
             keyboard_hint::KeyboardUiPlugin,
+            hud::HudPlugin,
             screen_fade::ScreenFadeUiPlugin,
             audio_bar::AudioBarPlugin,
             ending_text::EndingTextPlugin,

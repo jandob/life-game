@@ -18,6 +18,8 @@ use bevy_yarnspinner::default_impl::{MemoryVariableStorage, StringTableTextProvi
 use bevy_yarnspinner::prelude::*;
 use yarnspinner::runtime::{Dialogue, DialogueEvent};
 
+use super::inventory::ItemsSeen;
+use super::phone::Phone;
 use super::scripted::{face_command, hide_command, show_command, Actor, ScriptedWalk};
 use super::transition::{place_command, QueuedScene, ScreenFade};
 use super::StoryVars;
@@ -205,6 +207,9 @@ const REPLAYED: &[&str] = &[
     "close_door",
     "fade_out",
     "fade_in",
+    "phone",
+    "note",
+    "note_done",
 ];
 
 /// Plays `nodes` on `storage` without presenting anything: the first available option at
@@ -304,7 +309,8 @@ pub fn set_variable(
 }
 
 /// Restores the end state of the replayed commands.
-fn replay(world: &mut World, commands: Vec<WorldCommand>) {
+/// Texts (`<<phone>>`) are pending unless their node is in `played`.
+fn replay(world: &mut World, commands: Vec<WorldCommand>, played: &[&str]) {
     for (name, params) in commands {
         let arg = |i: usize| params.get(i).cloned().unwrap_or_default();
         let result = match name.as_str() {
@@ -336,6 +342,22 @@ fn replay(world: &mut World, commands: Vec<WorldCommand>) {
             }
             "fade_in" => {
                 world.resource_mut::<ScreenFade>().clear();
+                Ok(())
+            }
+            "phone" => {
+                // Yarn only counts visits of nodes some `visited()` asks about, so a
+                // text counts as read when the start point lists it as played.
+                if !played.contains(&arg(0).as_str()) {
+                    world.resource_mut::<Phone>().deliver(arg(0));
+                }
+                Ok(())
+            }
+            "note" => {
+                world.resource_mut::<Phone>().note(arg(0), arg(1));
+                Ok(())
+            }
+            "note_done" => {
+                world.resource_mut::<Phone>().note_done(&arg(0));
                 Ok(())
             }
             _ => Ok(()),
@@ -418,7 +440,9 @@ fn apply_start_point(world: &mut World) {
             error!("--set {name}={value}: {err}");
         }
     }
-    replay(world, commands);
+    replay(world, commands, request.point.played);
+    let storage = world.resource::<StoryVars>().0.clone();
+    world.resource_mut::<ItemsSeen>().rebaseline(&storage);
     if let Begin::Scene(node) = request.point.begin {
         world.resource_mut::<QueuedScene>().0 = Some(node.to_string());
     }

@@ -5,6 +5,7 @@ use crate::{
     player::chat::{PlayerStartedChat, PlayerStoppedChat},
     story::{
         build_story_runner,
+        phone::{note_command, note_done_command, phone_command},
         scripted::{await_walks_command, face_command, hide_command, show_command, walk_command},
         transition::{
             card_command, fade_in_command, fade_out_command, next_scene_command, place_command,
@@ -22,7 +23,7 @@ use crate::{
 use super::{
     command::{end_demo_command, stop_chat_command},
     option_selection::{CreateOptions, OptionSelection},
-    spawn::{DialogueContent, DialogueRoot},
+    spawn::{DialogueBox, DialogueContent, DialogueRoot, OptionsBackground},
     typewriter::{Typewriter, WriteDialogueText},
 };
 
@@ -33,6 +34,9 @@ pub struct RunnerFlags {
     pub node: String,
     pub line: Option<LocalizedLine>,
     pub options: Option<OptionSelection>,
+    /// Whether this conversation has presented a line yet. Until it has, its options are
+    /// an action popup and the dialogue box stays hidden.
+    pub presented_line: bool,
 }
 
 /// This is only fired when the dialogue runner isn't cached yet and was thus never spawned.
@@ -48,6 +52,7 @@ impl RunnerFlags {
             node,
             line: None,
             options: None,
+            presented_line: false,
         }
     }
 }
@@ -68,6 +73,9 @@ fn add_story_commands(commands: &mut Commands, runner: &mut DialogueRunner) {
     let fade_in = commands.register_system(fade_in_command);
     let card = commands.register_system(card_command);
     let next_scene = commands.register_system(next_scene_command);
+    let phone = commands.register_system(phone_command);
+    let note = commands.register_system(note_command);
+    let note_done = commands.register_system(note_done_command);
     runner
         .commands_mut()
         .add_command("stop_chat", stop_chat)
@@ -83,7 +91,10 @@ fn add_story_commands(commands: &mut Commands, runner: &mut DialogueRunner) {
         .add_command("fade_out", fade_out)
         .add_command("fade_in", fade_in)
         .add_command("card", card)
-        .add_command("next_scene", next_scene);
+        .add_command("next_scene", next_scene)
+        .add_command("phone", phone)
+        .add_command("note", note)
+        .add_command("note_done", note_done);
 }
 
 fn spawn_dialogue_runner(
@@ -179,9 +190,57 @@ fn hide_dialogue_on_completed(
     }
 }
 
-fn deactivate_dialogue_runner(mut q_runner_flags: Query<&mut RunnerFlags>) {
-    for mut flags in &mut q_runner_flags {
+fn deactivate_dialogue_runner(
+    mut commands: Commands,
+    mut q_runner_flags: Query<(Entity, &mut RunnerFlags)>,
+) {
+    for (entity, mut flags) in &mut q_runner_flags {
+        // An action popup left with Escape is forgotten, so the next E starts the node
+        // again and re-checks which actions are available.
+        let popup = flags.options.as_ref().is_some_and(|options| options.popup);
+        if flags.active && popup {
+            commands.entity(entity).despawn();
+            continue;
+        }
         flags.active = false;
+    }
+}
+
+/// Shows the dialogue box only once the active conversation has presented a line; an
+/// action popup shows its options alone.
+fn update_dialogue_box_visibility(
+    q_runner_flags: Query<&RunnerFlags>,
+    mut q_box: Query<&mut Visibility, With<DialogueBox>>,
+    mut q_options: Query<&mut Node, With<OptionsBackground>>,
+) {
+    // Also hidden while a new runner is being spawned, so the box doesn't flash before
+    // a popup.
+    let popup = q_runner_flags
+        .iter()
+        .filter(|flags| flags.active)
+        .all(|flags| !flags.presented_line);
+    // A popup sits low in the middle, near the player; choices in a conversation stay
+    // in the top right corner, clear of the dialogue box.
+    for mut node in &mut q_options {
+        let (top, bottom, left, right) = if popup {
+            (Val::Auto, Val::Percent(20.0), Val::Percent(55.0), Val::Auto)
+        } else {
+            (Val::Px(10.0), Val::Auto, Val::Auto, Val::Px(10.0))
+        };
+        if node.top != top || node.bottom != bottom {
+            node.top = top;
+            node.bottom = bottom;
+            node.left = left;
+            node.right = right;
+        }
+    }
+    for mut visibility in &mut q_box {
+        let target = if popup {
+            Visibility::Hidden
+        } else {
+            Visibility::Inherited
+        };
+        visibility.set_if_neq(target);
     }
 }
 
@@ -221,6 +280,7 @@ impl Plugin for DialogueRunnerPlugin {
                 (
                     deactivate_dialogue_runner.run_if(on_message::<PlayerStoppedChat>),
                     monitor_active_runners,
+                    update_dialogue_box_visibility,
                 ),
             )
             .add_systems(

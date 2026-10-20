@@ -40,6 +40,8 @@ You: You said the bakery opens at six.
     {$samantha_name}: At five past six. They were out.
     {$samantha_name}: You stood at the counter and picked the one you wanted. I'll allow it. Once.
 {$samantha_name}: Rent's paid. For today.
+<<set $item_bakery_bag to false>>
+<<note_done croissant>>
 // She looks down at his feet.
 {$samantha_name}: Now. I told you I'd ask.
 <<if $r1_movein_socks == "refuse">>
