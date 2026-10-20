@@ -8,6 +8,10 @@ title: Door3B
     You: Not yet. Her croissant's getting cold.
 -> Go in <<if visited("Route1Croissant") and not visited("Route1DinnerDoor")>>
     You: She said eight. Not ten past.
+-> Go in <<if visited("Route1Thu2Start") and not visited("Route1Thu2Door")>>
+    <<open_door Door3B>>
+    <<walk Player PlayerInto3B>>
+    <<close_door Door3B>>
 -> Look
     <<if not visited("Route1Viewing")>>
         You: 3B. The one from the listing.

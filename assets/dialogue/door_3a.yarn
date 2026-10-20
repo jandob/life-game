@@ -6,6 +6,8 @@ title: Door3A
     <<next_scene Route1Croissant>>
 -> Knock <<if visited("Route1Croissant") and not visited("Route1DinnerDoor")>>
     <<next_scene Route1DinnerDoor>>
+-> Knock <<if visited("Route1Thu2Start") and not visited("Route1Thu2Door")>>
+    <<next_scene Route1Thu2Door>>
 -> Look
     <<if not visited("Route1Viewing")>>
         You: Not this one. The listing said 3B.

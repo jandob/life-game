@@ -1,0 +1,22 @@
+title: Drawers3B
+---
+// Talk target of the chest of drawers in 3B (Interact layer). On the second Thursday the blush socks are in the
+// drawers, on the rack or in the moving box, after his answer on Sunday morning
+// ($r1_thu2_socks_at, set in Route1Thu2Start).
+-> Look
+    <<if $r1_thu2_socks_at == "drawers">>
+        You: Blush. Top drawer. Where they live now.
+        <<set $r1_thu2_socks_noted to true>>
+        <<note thu2_socks "The socks?">>
+    <<else>>
+        You: Shirts, mostly grey. Socks, mostly grey.
+    <<endif>>
+-> Put the blush socks on <<if $r1_thu2_socks_at == "drawers">>
+    <<set $r1_thu2_socks_at to "">>
+    <<set $item_blush_socks to false>>
+    <<set $r1_thu2_socks to "on">>
+    You: Fine. Blush.
+-> Take the blush socks <<if $r1_thu2_socks_at == "drawers">>
+    <<set $r1_thu2_socks_at to "">>
+    <<set $item_blush_socks to true>>
+===

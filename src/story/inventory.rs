@@ -31,6 +31,36 @@ pub const ITEMS: &[Item] = &[
         name: "Bakery bag",
         about: "One plain croissant. Still warm.",
     },
+    Item {
+        id: "wine_fox",
+        name: "Red Fox 2021",
+        about: "A red with a fox on the label. No gold.",
+    },
+    Item {
+        id: "wine_reserve",
+        name: "Red Fox Reserve",
+        about: "The same fox, with a gold label and a higher price.",
+    },
+    Item {
+        id: "wine_house",
+        name: "House red",
+        about: "The cheapest red in the shop. It says so on the sticker.",
+    },
+    Item {
+        id: "tulips",
+        name: "Tulips",
+        about: "A bunch of five, yellow and red.",
+    },
+    Item {
+        id: "chocolates",
+        name: "Sea salt chocolate",
+        about: "Dark, with sea salt. The fancy bar.",
+    },
+    Item {
+        id: "corkscrew",
+        name: "Her corkscrew",
+        about: "From the drawer by her sink.",
+    },
 ];
 
 /// The Yarn variable of an item.

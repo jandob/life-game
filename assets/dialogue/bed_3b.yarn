@@ -1,0 +1,17 @@
+title: Bed3B
+---
+// Talk target of his bed in 3B (Interact layer).
+-> Go to sleep <<if visited("Route1Thu2Dinner")>>
+    <<if visited("PhoneThursday2Night")>>
+        <<next_scene Route1Thu2End>>
+    <<else>>
+        You: My phone first. It's been buzzing since I got in.
+    <<endif>>
+-> Put the blush socks on <<if $item_blush_socks and visited("Route1Thu2Start") and not visited("Route1Thu2Door")>>
+    <<set $r1_thu2_socks_at to "">>
+    <<set $item_blush_socks to false>>
+    <<set $r1_thu2_socks to "on">>
+    You: Fine. Blush.
+-> Look
+    You: My bed. Made, for once.
+===

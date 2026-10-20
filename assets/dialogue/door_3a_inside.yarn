@@ -3,5 +3,7 @@ title: Door3AInside
 // Talk target just inside Samantha's door (Interact layer).
 <<if not visited("Route1Dishes")>>
     {$samantha_name}: Leaving already? You're not done here.
+<<elseif visited("Route1Thu2Door") and not visited("Route1Thu2Dinner")>>
+    {$samantha_name}: You've only just got here.
 <<endif>>
 ===

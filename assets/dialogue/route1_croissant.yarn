@@ -96,6 +96,10 @@ You: Is that an invitation?
 <<fade_out>>
 <<place Player PlayerKnock>>
 <<face Player down>>
+<<if $r1_croissant_dinner == "bring">>
+    // The wine she said she'd text him about.
+    <<phone PhoneWineChoice>>
+<<endif>>
 <<card "Thursday. Eight o'clock.">>
 <<fade_in>>
 <<if $r1_croissant_dinner == "bring">>

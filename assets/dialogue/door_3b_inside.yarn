@@ -1,0 +1,14 @@
+title: Door3BInside
+---
+// Talk target just inside 3B's door (Interact layer).
+-> Go out <<if visited("Route1Thu2Start") and not visited("Route1Thu2Door")>>
+    <<open_door Door3B>>
+    <<walk Player PlayerOutOf3B>>
+    <<close_door Door3B>>
+-> Look
+    <<if visited("Route1Thu2Dinner")>>
+        You: It's late. I'm not going anywhere.
+    <<else>>
+        You: My door. From the inside it feels more like mine.
+    <<endif>>
+===
