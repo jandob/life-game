@@ -65,6 +65,7 @@ fn present_options(
     mut q_runner_flags: Query<&mut RunnerFlags>,
     mut q_runners: Query<&mut DialogueRunner>,
     mut ev_create_options: MessageWriter<CreateOptions>,
+    typewriter: Res<Typewriter>,
 ) {
     let event = trigger.event();
     let popup = q_runner_flags
@@ -94,7 +95,14 @@ fn present_options(
         ev_create_options.write(CreateOptions(option_selection.clone()));
         option_selection
     } else {
-        OptionSelection::from_option_set(&event.options)
+        let option_selection = OptionSelection::from_option_set(&event.options);
+        // Options usually arrive with the line right before them and are shown when its
+        // typewriter finishes. Options reached later (after a jump, a command or an
+        // `<<if>>` block) arrive after that line was finished and continued: show them now.
+        if typewriter.is_finished() {
+            ev_create_options.write(CreateOptions(option_selection.clone()));
+        }
+        option_selection
     };
     commands.insert_resource(option_selection.clone());
 

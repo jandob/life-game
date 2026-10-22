@@ -1,0 +1,18 @@
+title: Sink3A
+---
+// Talk target of Samantha's sink (Interact layer).
+-> Wash up <<if visited("Route1Dinner") and not visited("Route1Dishes")>>
+    <<next_scene Route1Dishes>>
+-> Take the corkscrew <<if visited("Route1Thu2Door") and not visited("Route1Thu2Dinner") and $r1_thu2_wine != "" and not $r1_thu2_wine_open and not $item_corkscrew>>
+    <<set $item_corkscrew to true>>
+    <<note_done thu2_cork>>
+    <<note thu2_cork2 "Open the wine at her table.">>
+-> Look
+    <<if not visited("Route1Dinner")>>
+        {$samantha_name}: Dishes come after dinner. Sit down.
+    <<elseif visited("Route1Thu2Door") and not visited("Route1Thu2Dinner")>>
+        {$samantha_name}: Not tonight. Tonight the sink can wait.
+    <<else>>
+        You: Her sink. Cleaner than mine.
+    <<endif>>
+===

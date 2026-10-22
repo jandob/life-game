@@ -1,0 +1,8 @@
+title: ShopChocolates
+---
+// Talk target of the chocolate rack in the corner shop (Interact layer). See shop_door.yarn.
+-> Look
+    You: Milk, dark, and a dark one with sea salt that costs twice as much.
+-> Take the sea salt one <<if not $item_chocolates>>
+    <<set $item_chocolates to true>>
+===

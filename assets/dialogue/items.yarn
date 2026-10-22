@@ -5,4 +5,10 @@ title: Items
 // check it with <<if $item_ID>>. Every item needs a row in ITEMS and a declaration here.
 <<declare $item_blush_socks = false>>
 <<declare $item_bakery_bag = false>>
+<<declare $item_wine_fox = false>>
+<<declare $item_wine_reserve = false>>
+<<declare $item_wine_house = false>>
+<<declare $item_tulips = false>>
+<<declare $item_chocolates = false>>
+<<declare $item_corkscrew = false>>
 ===

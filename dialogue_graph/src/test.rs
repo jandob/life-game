@@ -20,8 +20,31 @@ fn graph_construction() {
     assert_eq!(dot_contents, dot.to_string());
 }
 
+/// Titles started with `<<next_scene NODE>>` from any dialogue file. Like a file's first
+/// node, they are entry points and need no incoming jump.
+fn next_scene_targets() -> Vec<String> {
+    read_dir(format!("../{}", PATH_TO_DIALOGUES))
+        .expect("Can't read entries in current dir")
+        .filter_map(try_read_yarn_contents)
+        .flat_map(|(contents, _)| {
+            contents
+                .lines()
+                .filter_map(|line| {
+                    // Scenes and phone texts are both started by the engine, not jumped to.
+                    let line = line.trim();
+                    let target = line
+                        .strip_prefix("<<next_scene ")
+                        .or_else(|| line.strip_prefix("<<phone "))?;
+                    Some(target.trim_end_matches(">>").trim().to_string())
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect()
+}
+
 #[test]
 fn validate_no_hanging_nodes() {
+    let entry_points = next_scene_targets();
     for entry in
         read_dir(format!("../{}", PATH_TO_DIALOGUES)).expect("Can't read entries in current dir")
     {
@@ -32,6 +55,14 @@ fn validate_no_hanging_nodes() {
 
         let graph = construct_graph(contents);
         for index in graph.node_indices().skip(1) {
+            let weight = graph.node_weight(index).expect("Node should exist");
+            let title = weight
+                .strip_prefix("title: ")
+                .and_then(|t| t.split('|').next())
+                .unwrap_or_default();
+            if entry_points.iter().any(|t| t == title) {
+                continue;
+            }
             assert!(
                 graph.edges_directed(index, Direction::Incoming).count() != 0,
                 "There is a node that doesn't have any incoming edges. This should only be the case for the very first node.\nfile: '{}', node: '{}'",

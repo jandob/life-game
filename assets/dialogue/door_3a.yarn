@@ -4,6 +4,10 @@ title: Door3A
 // popup when several are available, the only one at once. Each picks by story state.
 -> Knock <<if visited("Route1Viewing") and not visited("Route1Croissant")>>
     <<next_scene Route1Croissant>>
+-> Knock <<if visited("Route1Croissant") and not visited("Route1DinnerDoor")>>
+    <<next_scene Route1DinnerDoor>>
+-> Knock <<if visited("Route1Thu2Start") and not visited("Route1Thu2Door")>>
+    <<next_scene Route1Thu2Door>>
 -> Look
     <<if not visited("Route1Viewing")>>
         You: Not this one. The listing said 3B.

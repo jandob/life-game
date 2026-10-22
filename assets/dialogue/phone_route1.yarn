@@ -11,3 +11,55 @@ tags: phone
     {$samantha_name}: Morning. Once.
 <<note croissant "Bring Samantha her croissant. Her door, 3A. Knock once.">>
 ===
+title: PhoneWineChoice
+tags: phone
+---
+// The wine she promised to text him about, if he asked what to bring (route1_croissant.yarn).
+{$samantha_name}: Red Fox. The 2021.
+{$samantha_name}: Not the one with the gold label.
+-> Got it.
+    {$samantha_name}: Good.
+-> What's wrong with the gold label?
+    {$samantha_name}: It tries too hard.
+===
+title: PhoneThursday2
+tags: phone
+---
+// Her riddle on the second Thursday, delivered when he comes home (Route1Thu2Start).
+{$samantha_name}: Tonight. Bring what I'd want.
+-> What would you want?
+    <<set $r1_thu2_text to "ask">>
+    {$samantha_name}: If I tell you, it doesn't count.
+-> Wine again?
+    <<set $r1_thu2_text to "wine">>
+    {$samantha_name}: Maybe. Think harder.
+-> Okay.
+    <<set $r1_thu2_text to "ok">>
+    {$samantha_name}: Good.
+<<note thu2 "Tonight, eight, her door. Bring what she'd want.">>
+===
+title: PhoneThursday2Night
+tags: phone
+---
+// Her text after the second Thursday (Route1Thu2Dinner).
+<<if $r1_thu2_socks == "on">>
+    {$samantha_name}: Next Thursday. Same socks. Washed.
+<<else>>
+    {$samantha_name}: Next Thursday. Wear them.
+    {$samantha_name}: That's not a request.
+<<endif>>
+-> Yes.
+    <<set $r1_thu2_reply to "yes">>
+    <<if $r1_thu2_kiss == "still">>
+        {$samantha_name}: Good boy. You liked that, didn't you.
+    <<else>>
+        {$samantha_name}: Good boy.
+    <<endif>>
+-> And if I don't?
+    <<set $r1_thu2_reply to "if">>
+    {$samantha_name}: Then I'll know.
+-> Yes, Samantha.
+    <<set $r1_thu2_reply to "name">>
+    {$samantha_name}: Good boy.
+<<note thu3 "Next Thursday. Wear the socks.">>
+===

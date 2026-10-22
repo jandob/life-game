@@ -48,6 +48,70 @@ pub enum Begin {
 
 const VIEWING: &[&str] = &["Route1Viewing"];
 const MOVE_IN: &[&str] = &["Route1Viewing", "Route1MoveIn"];
+const CROISSANT: &[&str] = &[
+    "Route1Viewing",
+    "Route1MoveIn",
+    "PhoneSundayMorning",
+    "Route1Croissant",
+];
+const THURSDAY2: &[&str] = &[
+    "Route1Viewing",
+    "Route1MoveIn",
+    "PhoneSundayMorning",
+    "Route1Croissant",
+    "Route1DinnerDoor",
+    "Route1Dinner",
+    "Route1Dishes",
+    "Route1Thu2Start",
+];
+const THURSDAY2_READ: &[&str] = &[
+    "Route1Viewing",
+    "Route1MoveIn",
+    "PhoneSundayMorning",
+    "Route1Croissant",
+    "Route1DinnerDoor",
+    "Route1Dinner",
+    "Route1Dishes",
+    "Route1Thu2Start",
+    "PhoneThursday2",
+];
+const THURSDAY2_SHOP: &[&str] = &[
+    "Route1Viewing",
+    "Route1MoveIn",
+    "PhoneSundayMorning",
+    "Route1Croissant",
+    "Route1DinnerDoor",
+    "Route1Dinner",
+    "Route1Dishes",
+    "Route1Thu2Start",
+    "PhoneThursday2",
+    "StairsLanding",
+];
+const THURSDAY2_DOOR: &[&str] = &[
+    "Route1Viewing",
+    "Route1MoveIn",
+    "PhoneSundayMorning",
+    "Route1Croissant",
+    "Route1DinnerDoor",
+    "Route1Dinner",
+    "Route1Dishes",
+    "Route1Thu2Start",
+    "PhoneThursday2",
+    "Route1Thu2Door",
+];
+const THURSDAY2_NIGHT: &[&str] = &[
+    "Route1Viewing",
+    "Route1MoveIn",
+    "PhoneSundayMorning",
+    "Route1Croissant",
+    "Route1DinnerDoor",
+    "Route1Dinner",
+    "Route1Dishes",
+    "Route1Thu2Start",
+    "PhoneThursday2",
+    "Route1Thu2Door",
+    "Route1Thu2Dinner",
+];
 
 /// Every start point, in story order. Add one for each new scene.
 pub const START_POINTS: &[StartPoint] = &[
@@ -74,6 +138,42 @@ pub const START_POINTS: &[StartPoint] = &[
         about: "Sunday morning: the croissant at her door",
         played: MOVE_IN,
         begin: Begin::Scene("Route1Croissant"),
+    },
+    StartPoint {
+        name: "dinner",
+        about: "Thursday dinner: knocking on her door at eight",
+        played: CROISSANT,
+        begin: Begin::Scene("Route1DinnerDoor"),
+    },
+    StartPoint {
+        name: "thursday2",
+        about: "The second Thursday on the landing, her riddle unread (free to walk)",
+        played: THURSDAY2,
+        begin: Begin::Roam,
+    },
+    StartPoint {
+        name: "shop",
+        about: "The second Thursday in the corner shop, her text read",
+        played: THURSDAY2_SHOP,
+        begin: Begin::Roam,
+    },
+    StartPoint {
+        name: "thursday2door",
+        about: "The second Thursday: knocking on 3A (--set item_wine_fox=true etc.)",
+        played: THURSDAY2_READ,
+        begin: Begin::Scene("Route1Thu2Door"),
+    },
+    StartPoint {
+        name: "thursday2dinner",
+        about: "The second Thursday: the question game, the kiss and her night text",
+        played: THURSDAY2_DOOR,
+        begin: Begin::Scene("Route1Thu2Dinner"),
+    },
+    StartPoint {
+        name: "thursday2night",
+        about: "The second Thursday, home in 3B: her night text unread, then bed",
+        played: THURSDAY2_NIGHT,
+        begin: Begin::Roam,
     },
 ];
 
