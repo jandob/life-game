@@ -23,6 +23,7 @@ Sources and licences are taken from `CREDITS.md`. Status: `in use` is loaded by 
 | portraits/isabelle.png | Dialogue portrait | unknown - check | unknown - check | in use |
 | portraits/antonius.png | Dialogue portrait | unknown - check | unknown - check | in use |
 | portraits/ionas.png | Dialogue portrait | unknown - check | unknown - check | in use |
+| rooms/flat3a/background.png | Placeholder side-on background of Samantha's flat (1296x576) for the side-view spike room `maps/side/flat3a.tmj` | Generated in-house: `python tools/mapgen/side_placeholder_3a.py` (cut from the route1_flat render of tilesets/gen48, plus a drawn side-on table) | in-house | in use (with `--view side`) |
 | tilesets/forest/tileset.png | Forest ground tileset | https://seliel-the-shaper.itch.io/spring-forest | see source page | in use |
 | tilesets/forest/tileset.tsj | Tiled tileset (collision shapes) for tileset.png | derived from Spring Forest | see source page | in use |
 | tilesets/forest/water_sparkles.png | Water sparkle overlay | https://seliel-the-shaper.itch.io/spring-forest | see source page | reference |
