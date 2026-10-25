@@ -11,5 +11,16 @@
     "gguf_repo": "abenzerps/Qwen-Image-2.1-Turbo-Quantized",
     "gguf_file": "qwen-image-2.1-turbo-Q8_0.gguf",
     "config_repo": "Qwen/Qwen-Image-2.1-Turbo"
+  },
+  "runpod_qwen_image21": {
+    "model": "Qwen/Qwen-Image-2.1",
+    "endpoint_env": "ARTGEN_RUNPOD_ENDPOINT",
+    "worker": "rp_handler.py + remote/runpod/Dockerfile (endpoint model cache: Qwen/Qwen-Image-2.1)",
+    "timeout_s": 1800,
+    "defaults": {
+      "steps": 40,
+      "true_cfg": 4.0,
+      "negative": "low quality, blurry, deformed, text, watermark"
+    }
   }
 }

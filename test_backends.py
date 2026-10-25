@@ -26,8 +26,8 @@ CLI = str(HERE / "artgen.py")
 
 def test_registry_and_models_json() -> None:
     reg = load_registry()
-    assert set(k for k in reg if not k.startswith("_")) == {"z_image_turbo", "qwen_image21"}
-    assert set(REGISTRY) == {"flux2_klein_pixel_lora", "qwen_image21", "z_image_turbo", "example_stub"}
+    assert set(k for k in reg if not k.startswith("_")) == {"z_image_turbo", "qwen_image21", "runpod_qwen_image21"}
+    assert set(REGISTRY) == {"flux2_klein_pixel_lora", "qwen_image21", "runpod_qwen_image21", "z_image_turbo", "example_stub"}
 
 
 def test_pose() -> None:

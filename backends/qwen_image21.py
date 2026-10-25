@@ -44,11 +44,10 @@ RGBA_TEMPLATE = ("This is an RGBA image with transparency. Pixel art sprite of {
 ENCODE_PARAMS = ("prompt", "image", "device", "num_images_per_prompt", "prompt_embeds",
                  "prompt_embeds_mask", "image_pad_mask")
 
-# Variant profiles. "base" is the 40-step model with real CFG; it only runs on a remote host (phase 6).
+# Variant profiles (local). The 40-step base model with real CFG is the separate backend
+# runpod_qwen_image21 (RunPod Serverless).
 PROFILES = {
-    "turbo": {"steps": 8, "true_cfg": 1.0, "negative": None, "remote_only": False},
-    "base": {"steps": 40, "true_cfg": 4.0, "negative": "low quality, blurry, deformed, text, watermark",
-             "remote_only": True},
+    "turbo": {"steps": 8, "true_cfg": 1.0, "negative": None},
 }
 
 
@@ -127,7 +126,7 @@ class QwenImage21(Backend):
         models=["Qwen/Qwen-Image-2.1-Turbo", "abenzerps/Qwen-Image-2.1-Turbo-Quantized (Q8_0 GGUF)"],
         licence="Qwen Research licence (qwen-research, see the model card); GGUF conversion by abenzerps, same licence",
         local=True,
-        caps=frozenset({"refs", "edit", "sheet", "rgba", "remote"}),
+        caps=frozenset({"refs", "edit", "sheet", "rgba"}),
         defaults={"variant": "turbo", "background": "plain flat white background", "rgba": 0},
         prompt_template=TEMPLATE,
         default_size=(1024, 1024),
@@ -159,9 +158,8 @@ class QwenImage21(Backend):
     def load(self, variant: str = "turbo", **_ignored) -> None:
         """Light: scheduler, processor, VAE (no transformer, no text encoder)."""
         if variant not in PROFILES:
-            raise ValueError(f"unknown variant {variant!r}; known: {', '.join(PROFILES)}")
-        if PROFILES[variant]["remote_only"]:
-            raise RuntimeError(f"{variant} variant runs remote only (use --opt runner=remote:<name>)")
+            raise ValueError(f"unknown variant {variant!r}; known: {', '.join(PROFILES)} "
+                             "(the 40-step base model is the backend runpod_qwen_image21)")
         import torch
         from diffusers import (AutoencoderKLQwenImage21, FlowMatchEulerDiscreteScheduler, QwenImage21Pipeline)
         from transformers import Qwen3VLProcessor
@@ -266,7 +264,7 @@ class QwenImage21(Backend):
             raise ValueError("width and height must be multiples of 16")
         torch = self.torch
         if true_cfg is not None and float(true_cfg) != self.profile["true_cfg"]:
-            raise NotImplementedError("true_cfg != profile value is not supported locally (base runs remote only)")
+            raise NotImplementedError("true_cfg != profile value is not supported locally (use runpod_qwen_image21)")
         self._stats.pop("last_encode_s", None)
         ref_imgs = [Image.open(p).convert("RGBA") for p in ref]
         conds = [condition_image(im, ref_res) for im in ref_imgs]
