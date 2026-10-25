@@ -77,6 +77,9 @@ struct ImageLayerName(String);
 struct HoverLabel;
 
 fn spawn_rooms(mut commands: Commands, map: Res<TiledMap>, assets: Res<GameAssets>) {
+    if let Some(colour) = map.background {
+        commands.insert_resource(ClearColor(colour));
+    }
     // Layers draw in file order: each one a little in front of the one before.
     let behind = map.image_layers.iter().filter(|l| !l.above).count() as f32;
     for (i, layer) in map.image_layers.iter().enumerate() {

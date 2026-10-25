@@ -34,6 +34,8 @@ pub struct TiledMap {
     pub image_layers: Vec<ImageLayer>,
     /// Seen side-on and walked by clicking (map property `view` = `"side"`)
     pub side_view: bool,
+    /// What shows outside the rooms (`backgroundcolor`, `#rrggbb` or `#aarrggbb`)
+    pub background: Option<Color>,
 }
 
 /// An image layer of the map: one picture placed at its offset.
@@ -509,6 +511,17 @@ fn check_tileset_tile_size(
 #[derive(Default, TypePath)]
 pub struct TiledMapLoader;
 
+/// A Tiled colour, `#rrggbb` or `#aarrggbb`.
+fn parse_colour(hex: &str) -> Option<Color> {
+    let hex = hex.strip_prefix('#')?;
+    let byte = |i: usize| u8::from_str_radix(hex.get(i..i + 2)?, 16).ok();
+    match hex.len() {
+        6 => Some(Color::srgb_u8(byte(0)?, byte(2)?, byte(4)?)),
+        8 => Some(Color::srgba_u8(byte(2)?, byte(4)?, byte(6)?, byte(0)?)),
+        _ => None,
+    }
+}
+
 impl AssetLoader for TiledMapLoader {
     type Asset = TiledMap;
     type Settings = ();
@@ -646,6 +659,8 @@ impl AssetLoader for TiledMapLoader {
             .get("view")
             .is_some_and(|view| *view == PropValue::Str("side".to_string()));
 
+        let background = json["backgroundcolor"].as_str().and_then(parse_colour);
+
         let map = TiledMap {
             tile_size,
             width,
@@ -655,6 +670,7 @@ impl AssetLoader for TiledMapLoader {
             object_layers,
             image_layers,
             side_view,
+            background,
         };
         map.warn_flipped_colliders();
         Ok(map)
@@ -712,6 +728,17 @@ impl Plugin for TiledMapPlugin {
 mod tests {
     use super::*;
 
+    #[test]
+    fn tiled_colours_parse_with_and_without_alpha() {
+        assert_eq!(parse_colour("#3b3e4f"), Some(Color::srgb_u8(59, 62, 79)));
+        assert_eq!(
+            parse_colour("#803b3e4f"),
+            Some(Color::srgba_u8(59, 62, 79, 128))
+        );
+        assert_eq!(parse_colour("3b3e4f"), None);
+        assert_eq!(parse_colour("#3b3e"), None);
+    }
+
     fn map_with_objects(layer_json: &str) -> TiledMap {
         let layer: Value = serde_json::from_str(layer_json).unwrap();
         TiledMap {
@@ -722,6 +749,7 @@ mod tests {
             tilesets: Vec::new(),
             image_layers: Vec::new(),
             side_view: false,
+            background: None,
             object_layers: vec![parse_object_layer(&layer)],
         }
     }
@@ -788,6 +816,7 @@ mod tests {
             tilesets: Vec::new(),
             image_layers: Vec::new(),
             side_view: false,
+            background: None,
             object_layers: Vec::new(),
         };
         // Tile (0, 0) of the game grid is centred on the origin, so Tiled's

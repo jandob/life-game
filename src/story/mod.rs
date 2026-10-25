@@ -144,6 +144,7 @@ mod tests {
             tilesets: Vec::new(),
             image_layers: Vec::new(),
             side_view: false,
+            background: None,
             object_layers: vec![ObjectLayerData {
                 name: "Paths".to_string(),
                 objects: vec![TiledObject {

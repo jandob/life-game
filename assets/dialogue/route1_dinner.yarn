@@ -49,9 +49,9 @@ tags: cutscene
 ---
 // Started by sitting down at her table (table_3a.yarn).
 <<place Player PlayerSit>>
-<<face Player up>>
 <<walk Samantha SamanthaSit>>
-<<face Samantha down>>
+<<face Samantha Player>>
+<<face Player Samantha>>
 {$samantha_name}: Pasta. Don't look so surprised.
 You: It smells great.
 {$samantha_name}: I know.
