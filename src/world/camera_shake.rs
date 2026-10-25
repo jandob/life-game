@@ -33,6 +33,10 @@ impl CameraShake {
         self.add_trauma(trauma);
     }
 
+    pub fn target(&self) -> Vec2 {
+        self.target
+    }
+
     pub fn update_target(&mut self, target: Vec2) {
         self.target = target;
     }

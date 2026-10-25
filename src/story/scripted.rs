@@ -10,9 +10,11 @@ use bevy::prelude::*;
 use bevy::time::Real;
 use bevy_rapier2d::prelude::*;
 
+use super::transition::ScreenFade;
 use crate::npc::FourWayFacing;
 use crate::player::Player;
 use crate::world::map::tiled_map::TiledMap;
+use crate::world::side_view::SideRooms;
 use crate::GameState;
 
 /// Walking speed of every scripted actor, in px/s.
@@ -45,6 +47,9 @@ pub struct ScriptedWalk {
     stuck: Timer,
     /// Upper bound for the current point, set once its distance is known.
     deadline: Timer,
+    /// Points after which the actor steps through a door (side view): on arriving at
+    /// one, the actor is put at the next point at once.
+    teleports: Vec<usize>,
 }
 
 impl ScriptedWalk {
@@ -57,6 +62,7 @@ impl ScriptedWalk {
             best_dist: f32::MAX,
             stuck: Timer::from_seconds(STUCK_SECONDS, TimerMode::Once),
             deadline: Timer::from_seconds(STUCK_SECONDS, TimerMode::Once),
+            teleports: Vec::new(),
         }
     }
 
@@ -104,9 +110,11 @@ pub fn walk_command(
     In((actor, path, flag)): In<(String, String, Option<String>)>,
     mut commands: Commands,
     tiled_map: Res<TiledMap>,
-    q_actors: Query<(Entity, &Actor, Option<&ScriptedWalk>)>,
+    side_rooms: Option<Res<SideRooms>>,
+    q_actors: Query<(Entity, &Actor, &Transform, Option<&ScriptedWalk>)>,
 ) -> Arc<AtomicBool> {
-    let Some((entity, _, old_walk)) = q_actors.iter().find(|(_, a, _)| a.0 == actor) else {
+    let Some((entity, _, transform, old_walk)) = q_actors.iter().find(|(_, a, ..)| a.0 == actor)
+    else {
         error!("walk: unknown actor '{actor}'");
         return finished();
     };
@@ -129,9 +137,17 @@ pub fn walk_command(
         }
     };
     let done = Arc::new(AtomicBool::new(false));
-    commands
-        .entity(entity)
-        .insert(ScriptedWalk::new(&path, points, done.clone()));
+    let walk = match side_rooms {
+        // Side-view rooms: a point in another room is reached through the doors between.
+        Some(rooms) => {
+            let route = rooms.route(transform.translation.truncate(), &points);
+            let mut walk = ScriptedWalk::new(&path, route.points, done.clone());
+            walk.teleports = route.teleports;
+            walk
+        }
+        None => ScriptedWalk::new(&path, points, done.clone()),
+    };
+    commands.entity(entity).insert(walk);
     if wait {
         done
     } else {
@@ -256,6 +272,7 @@ pub(crate) fn scripted_walk(
         Option<&mut FourWayFacing>,
         Option<&mut Player>,
     )>,
+    mut fade: Option<ResMut<ScreenFade>>,
 ) {
     let dt = time.delta_secs();
 
@@ -281,6 +298,15 @@ pub(crate) fn scripted_walk(
         if arrived {
             transform.translation.x = target.x;
             transform.translation.y = target.y;
+            if walk.teleports.contains(&walk.next) && walk.next + 1 < walk.points.len() {
+                walk.next += 1;
+                let through = walk.points[walk.next];
+                transform.translation.x = through.x;
+                transform.translation.y = through.y;
+                if let (Some(_), Some(fade)) = (player.as_ref(), fade.as_mut()) {
+                    fade.dip();
+                }
+            }
             walk.next += 1;
             walk.best_dist = f32::MAX;
             walk.stuck.reset();
@@ -369,6 +395,8 @@ mod tests {
                 height: 40,
                 layers: Vec::new(),
                 tilesets: Vec::new(),
+                image_layers: Vec::new(),
+                side_view: false,
                 object_layers: vec![ObjectLayerData {
                     name: "Paths".to_string(),
                     objects: vec![

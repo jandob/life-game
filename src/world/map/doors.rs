@@ -29,6 +29,10 @@ fn spawn_doors(mut commands: Commands, tiled_map: Res<TiledMap>) {
         }
         let open = obj.prop_bool("open").unwrap_or(false);
         states.insert(obj.name.clone(), open);
+        // Side-view rooms walk along a floor line; their doors only change the art.
+        if tiled_map.side_view {
+            continue;
+        }
 
         let center = tiled_map.tiled_to_game(obj.x + obj.width / 2.0, obj.y + obj.height / 2.0);
         let mut door = commands.spawn((

@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_yarnspinner::prelude::*;
 
+use crate::world::side_view::side_view;
 use crate::{story::transition::scene_queued, ui::dialogue::runner::RunnerFlags, GameState};
 
 use super::{input::PlayerInput, Player, PlayerState, NPC_PROXIMITY_DISTANCE};
@@ -118,7 +119,11 @@ impl Plugin for PlayerChatPlugin {
             .add_message::<PlayerStoppedChat>()
             .add_systems(
                 Update,
-                (start_chat.run_if(not(scene_queued)), stop_chat)
+                // A side-view room starts conversations by clicking its hotspots.
+                (
+                    start_chat.run_if(not(scene_queued).and_then(not(side_view))),
+                    stop_chat,
+                )
                     .run_if(in_state(GameState::Gaming)),
             );
     }

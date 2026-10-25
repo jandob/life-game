@@ -23,6 +23,8 @@ Sources and licences are taken from `CREDITS.md`. Status: `in use` is loaded by 
 | portraits/isabelle.png | Dialogue portrait | unknown - check | unknown - check | in use |
 | portraits/antonius.png | Dialogue portrait | unknown - check | unknown - check | in use |
 | portraits/ionas.png | Dialogue portrait | unknown - check | unknown - check | in use |
+| rooms/{landing,flat3b,flat3a,shop}/background.png | Placeholder side-on backgrounds (1296x576) of the Route 1 rooms in the side-view map `maps/side/route1.tmj` | Generated in-house: `python tools/mapgen/side_placeholders.py` (cut from the route1_flat render of tilesets/gen48, plus drawn side-on furniture and doorways) | in-house | in use (with `--view side`) |
+| rooms/doors/door.png | Closed door leaf (96x192) drawn over a doorway while the door is shut | Generated in-house: `python tools/mapgen/side_placeholders.py` | in-house | in use (with `--view side`) |
 | tilesets/forest/tileset.png | Forest ground tileset | https://seliel-the-shaper.itch.io/spring-forest | see source page | in use |
 | tilesets/forest/tileset.tsj | Tiled tileset (collision shapes) for tileset.png | derived from Spring Forest | see source page | in use |
 | tilesets/forest/water_sparkles.png | Water sparkle overlay | https://seliel-the-shaper.itch.io/spring-forest | see source page | reference |

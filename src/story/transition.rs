@@ -53,6 +53,14 @@ impl ScreenFade {
         self.alpha = 0.0;
     }
 
+    /// Cuts to black and fades back in, e.g. as the player steps through a door to
+    /// another room. Does nothing while a scene's fade is running or the screen is dark.
+    pub fn dip(&mut self) {
+        if self.done.is_none() && self.target == 0.0 {
+            self.alpha = 1.0;
+        }
+    }
+
     /// Makes the screen black at once, e.g. for a start point after a `<<fade_out>>`.
     pub fn black(&mut self) {
         self.start(1.0).store(true, Ordering::Relaxed);
