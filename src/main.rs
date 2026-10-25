@@ -19,8 +19,6 @@ use bevy::prelude::*;
 use bevy::window::{PresentMode, Window, WindowMode, WindowResolution};
 
 use bevy_asset_loader::prelude::*;
-use bevy_hanabi::prelude::*;
-use bevy_rapier2d::prelude::*;
 use bevy_tweening::*;
 use bevy_yarnspinner::prelude::*;
 
@@ -72,12 +70,6 @@ fn main() {
                     ..default()
                 })
                 .build(),
-            RapierPhysicsPlugin::<NoUserData>::default(),
-            RapierDebugRenderPlugin {
-                enabled: false,
-                ..default()
-            },
-            HanabiPlugin,
             animation::SpriteAnimationPlugin,
             {
                 let plugin = YarnSpinnerPlugin::with_yarn_sources([

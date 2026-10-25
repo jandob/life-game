@@ -22,8 +22,9 @@
 
 ## 4. Remaining scenes
 
-- [ ] 4.1 Port croissant, dinner and second Thursday; replay every start point
+- [x] 4.1 Replay every start point side-on: room background colour outside the rooms, the player a step from Samantha at 3A, the two facing each other at the table
 
 ## 5. Switch over
 
-- [ ] 5.1 Side view by default; remove y-sort, keyboard movement, tile chunks, rapier for characters, the forest map, wanderer and flora code
+- [x] 5.1 Side view by default (`start.assets.ron`); remove `--view`, y-sort, keyboard movement, E-to-talk and its hints, tile layers and tile collision, rapier, the wanderer and flora (with hanabi; web back on WebGL2)
+- [ ] 5.2 Janosch plays it

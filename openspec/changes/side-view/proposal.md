@@ -29,6 +29,14 @@ Five stages, one PR each. Main stays playable on the top-down map until stage 5.
 3. Art: painted backgrounds (artgen), door and prop sprites, side-only sheets.
 4. Croissant, dinner and second Thursday ported, start points replayed.
 5. Switch over: side view by default, top-down code and the forest map removed.
+   Stages 4 and 5 ship together (user decision 2026-10-25, before the art of stage 3,
+   which needs artgen on Janosch's Mac). Removed: keyboard movement and E-to-talk with
+   the start hint and key hints, y-sorting, tile layers and tile collision (the loader
+   reads image and object layers only; tile layers are skipped with a warning),
+   `bevy_rapier2d` (characters move by transform), flora with `bevy_hanabi` (so the web
+   build goes back to WebGL2), the wanderer, `--view`. The top-down `.tmj` files and the
+   map tools (`scenekit`, `map-bootstrapper`) stay: `route1_flat.tmj` is the source of
+   the placeholder room art, and the tools are a separate decision.
 
 ## Non-Goals (stage 1)
 

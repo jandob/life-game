@@ -6,7 +6,6 @@ use std::sync::Arc;
 
 use bevy::prelude::*;
 use bevy::time::Real;
-use bevy_rapier2d::prelude::*;
 
 use super::scripted::{Actor, ScriptedWalk};
 use crate::player::chat::PlayerStartedChat;
@@ -121,15 +120,9 @@ pub fn place_command(
     In((actor, path)): In<(String, String)>,
     mut commands: Commands,
     tiled_map: Res<TiledMap>,
-    mut q_actors: Query<(
-        Entity,
-        &Actor,
-        &mut Transform,
-        Option<&ScriptedWalk>,
-        Option<&mut Velocity>,
-    )>,
+    mut q_actors: Query<(Entity, &Actor, &mut Transform, Option<&ScriptedWalk>)>,
 ) {
-    let Some((entity, _, mut transform, walk, velocity)) =
+    let Some((entity, _, mut transform, walk)) =
         q_actors.iter_mut().find(|(_, a, ..)| a.0 == actor)
     else {
         error!("place: unknown actor '{actor}'");
@@ -142,9 +135,6 @@ pub fn place_command(
     if let Some(walk) = walk {
         walk.finish();
         commands.entity(entity).remove::<ScriptedWalk>();
-    }
-    if let Some(mut velocity) = velocity {
-        velocity.linear = Vec2::ZERO;
     }
     transform.translation.x = point.x;
     transform.translation.y = point.y;

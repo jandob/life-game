@@ -8,7 +8,6 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 use bevy::time::Real;
-use bevy_rapier2d::prelude::*;
 
 use super::transition::ScreenFade;
 use crate::npc::FourWayFacing;
@@ -212,10 +211,9 @@ fn set_visible(
     commands: &mut Commands,
     actor: &str,
     visible: bool,
-    q_actors: &Query<(Entity, &Actor, Option<&Children>)>,
-    q_colliders: &Query<(), With<Collider>>,
+    q_actors: &Query<(Entity, &Actor)>,
 ) {
-    let Some((entity, _, children)) = q_actors.iter().find(|(_, a, _)| a.0 == actor) else {
+    let Some((entity, _)) = q_actors.iter().find(|(_, a)| a.0 == actor) else {
         error!("show/hide: unknown actor '{actor}'");
         return;
     };
@@ -224,39 +222,27 @@ fn set_visible(
     } else {
         Visibility::Hidden
     });
-    for child in children.into_iter().flatten() {
-        if q_colliders.contains(*child) {
-            if visible {
-                commands.entity(*child).remove::<ColliderDisabled>();
-            } else {
-                commands.entity(*child).insert(ColliderDisabled);
-            }
-        }
-    }
 }
 
 /// `<<show ACTOR>>`
 pub fn show_command(
     In(actor): In<String>,
     mut commands: Commands,
-    q_actors: Query<(Entity, &Actor, Option<&Children>)>,
-    q_colliders: Query<(), With<Collider>>,
+    q_actors: Query<(Entity, &Actor)>,
 ) {
-    set_visible(&mut commands, &actor, true, &q_actors, &q_colliders);
+    set_visible(&mut commands, &actor, true, &q_actors);
 }
 
 /// `<<hide ACTOR>>`
 pub fn hide_command(
     In(actor): In<String>,
     mut commands: Commands,
-    q_actors: Query<(Entity, &Actor, Option<&Children>)>,
-    q_colliders: Query<(), With<Collider>>,
+    q_actors: Query<(Entity, &Actor)>,
 ) {
-    set_visible(&mut commands, &actor, false, &q_actors, &q_colliders);
+    set_visible(&mut commands, &actor, false, &q_actors);
 }
 
-/// Moves every actor with a `ScriptedWalk`. Kinematic actors step their transform,
-/// dynamic ones (the player) get a velocity so that colliders still apply.
+/// Moves every actor with a `ScriptedWalk`.
 ///
 /// The fail-safes run on real time, so they fire even when virtual time stands still.
 pub(crate) fn scripted_walk(
@@ -268,7 +254,6 @@ pub(crate) fn scripted_walk(
         Option<&Actor>,
         &mut ScriptedWalk,
         &mut Transform,
-        Option<&mut Velocity>,
         Option<&mut FourWayFacing>,
         Option<&mut Player>,
     )>,
@@ -276,9 +261,7 @@ pub(crate) fn scripted_walk(
 ) {
     let dt = time.delta_secs();
 
-    for (entity, actor, mut walk, mut transform, mut velocity, mut facing, mut player) in
-        &mut q_walkers
-    {
+    for (entity, actor, mut walk, mut transform, mut facing, mut player) in &mut q_walkers {
         let pos = transform.translation.truncate();
         let target = walk.points[walk.next];
         let to_target = target - pos;
@@ -311,9 +294,6 @@ pub(crate) fn scripted_walk(
             walk.best_dist = f32::MAX;
             walk.stuck.reset();
             if walk.next >= walk.points.len() {
-                if let Some(velocity) = velocity.as_mut() {
-                    velocity.linear = Vec2::ZERO;
-                }
                 walk.done.store(true, Ordering::Relaxed);
                 commands.entity(entity).remove::<ScriptedWalk>();
             }
@@ -330,13 +310,8 @@ pub(crate) fn scripted_walk(
         if dt <= 0.0 {
             continue;
         }
-        match velocity.as_mut() {
-            Some(velocity) => velocity.linear = dir * SCRIPT_WALK_SPEED.min(dist / dt),
-            None => {
-                let step = (SCRIPT_WALK_SPEED * dt).min(dist);
-                transform.translation += (dir * step).extend(0.0);
-            }
-        }
+        let step = (SCRIPT_WALK_SPEED * dt).min(dist);
+        transform.translation += (dir * step).extend(0.0);
     }
 }
 
@@ -371,42 +346,28 @@ mod tests {
         }
     }
 
+    /// Frames last 16 ms.
     fn test_app() -> App {
-        test_app_with(false)
-    }
-
-    /// With `physics`, frames last 16 ms: rapier steps at most 1/60 s per frame.
-    fn test_app_with(physics: bool) -> App {
         let mut app = App::new();
         app.add_plugins(MinimalPlugins);
-        if physics {
-            app.add_plugins((
-                TransformPlugin,
-                AssetPlugin::default(),
-                RapierPhysicsPlugin::<NoUserData>::default(),
-            ));
-            app.init_asset::<Mesh>();
-        }
-        let frame = Duration::from_millis(if physics { 16 } else { 50 });
-        app.insert_resource(TimeUpdateStrategy::ManualDuration(frame))
-            .insert_resource(TiledMap {
-                tile_size: 48.0,
-                width: 40,
-                height: 40,
-                layers: Vec::new(),
-                tilesets: Vec::new(),
-                image_layers: Vec::new(),
-                side_view: false,
-                background: None,
-                object_layers: vec![ObjectLayerData {
-                    name: "Paths".to_string(),
-                    objects: vec![
-                        path_object("There", &[Vec2::new(100.0, 100.0), Vec2::new(160.0, 100.0)]),
-                        path_object("Single", &[Vec2::new(100.0, 100.0)]),
-                    ],
-                }],
-            })
-            .add_systems(Update, scripted_walk);
+        app.insert_resource(TimeUpdateStrategy::ManualDuration(Duration::from_millis(
+            16,
+        )))
+        .insert_resource(TiledMap {
+            tile_size: 48.0,
+            width: 40,
+            height: 40,
+            image_layers: Vec::new(),
+            background: None,
+            object_layers: vec![ObjectLayerData {
+                name: "Paths".to_string(),
+                objects: vec![
+                    path_object("There", &[Vec2::new(100.0, 100.0), Vec2::new(160.0, 100.0)]),
+                    path_object("Single", &[Vec2::new(100.0, 100.0)]),
+                ],
+            }],
+        })
+        .add_systems(Update, scripted_walk);
         app.world_mut().spawn((
             Actor("Walker".to_string()),
             FourWayFacing {
@@ -455,8 +416,6 @@ mod tests {
             let mut q = app.world_mut().query_filtered::<Entity, With<Actor>>();
             q.single(app.world()).unwrap()
         };
-        let collider = app.world_mut().spawn(Collider::ball(16.0)).id();
-        app.world_mut().entity_mut(walker).add_child(collider);
         app.world_mut().spawn((
             Actor("Other".to_string()),
             Player::default(),
@@ -495,7 +454,6 @@ mod tests {
             app.world().get::<Visibility>(walker),
             Some(&Visibility::Hidden)
         );
-        assert!(app.world().get::<ColliderDisabled>(collider).is_some());
         app.world_mut()
             .run_system_with(show, "Walker".to_string())
             .unwrap();
@@ -503,7 +461,6 @@ mod tests {
             app.world().get::<Visibility>(walker),
             Some(&Visibility::Inherited)
         );
-        assert!(app.world().get::<ColliderDisabled>(collider).is_none());
     }
 
     #[test]
@@ -543,21 +500,13 @@ mod tests {
         assert!(unknown_path.is_finished());
     }
 
-    /// A player like the real one: dynamic body, 96x192 sheet, feet collider.
     fn spawn_player(app: &mut App, pos: Vec2) -> Entity {
-        let (collider, local) = crate::character::REALISTIC.feet_collider();
-        let feet = app.world_mut().spawn((collider, local)).id();
         app.world_mut()
             .spawn((
                 Actor("Player".to_string()),
                 Player::default(),
-                RigidBody::Dynamic,
-                LockedAxes::ROTATION_LOCKED,
-                Velocity::zero(),
-                Ccd::enabled(),
-                crate::character::REALISTIC.transform(pos),
+                Transform::from_translation(pos.extend(0.0)),
             ))
-            .add_child(feet)
             .id()
     }
 
@@ -589,8 +538,8 @@ mod tests {
     }
 
     #[test]
-    fn dynamic_player_walks_at_full_speed_to_its_points() {
-        let mut app = test_app_with(true);
+    fn player_walks_at_full_speed_to_its_points() {
+        let mut app = test_app();
         let points = app.world().resource::<TiledMap>().path("Single").unwrap();
         let start = points[0] - Vec2::new(300.0, 0.0);
         let player = spawn_player(&mut app, start);
@@ -615,25 +564,41 @@ mod tests {
     }
 
     #[test]
-    fn blocked_walk_places_the_actor_within_the_stuck_time() {
-        let mut app = test_app_with(true);
-        let points = app.world().resource::<TiledMap>().path("Single").unwrap();
-        let start = points[0] - Vec2::new(300.0, 0.0);
-        let player = spawn_player(&mut app, start);
-        // A wall between the player and the first point
-        app.world_mut().spawn((
-            RigidBody::Fixed,
-            Collider::cuboid(10.0, 400.0),
-            Transform::from_translation((start + Vec2::new(150.0, 0.0)).extend(0.0)),
-        ));
-        app.update();
+    fn a_walk_into_another_room_steps_through_the_door() {
+        use crate::world::side_view::rooms::{Portal, Room};
+        let mut app = test_app();
+        let target = app.world().resource::<TiledMap>().path("Single").unwrap()[0];
+        // The walker's room below, the target's room above, a door between them.
+        let room = |name: &str, y: f32| Room {
+            name: name.to_string(),
+            bounds: Rect::new(-2000.0, y, 2000.0, y + 1000.0),
+            stand_y: y + 100.0,
+            min_x: -2000.0,
+            max_x: 2000.0,
+        };
+        let below = Vec2::new(target.x - 50.0, target.y - 1000.0);
+        let door = |name: &str, room: usize, pos: Vec2, to: usize| Portal {
+            name: name.to_string(),
+            room,
+            pos,
+            to,
+        };
+        app.insert_resource(SideRooms {
+            rooms: vec![
+                room("Below", target.y - 1500.0),
+                room("Above", target.y - 500.0),
+            ],
+            portals: vec![
+                door("Out", 0, below, 1),
+                door("In", 1, target - Vec2::new(100.0, 0.0), 0),
+            ],
+        });
+        let player = spawn_player(&mut app, below - Vec2::new(30.0, 0.0));
 
         let done = start_walk(&mut app, "Player", "Single");
-        // 100 px to the wall at 210 px/s, then the stuck time
-        let seconds = run_until_done(&mut app, &done, 5.0);
+        run_until_done(&mut app, &done, 3.0);
         assert!(done.load(Ordering::Relaxed), "the walk never finished");
-        assert!(seconds < 0.5 + STUCK_SECONDS + 0.5, "took {seconds}s");
-        assert!(position(&app, player).distance(points[0]) < 0.01);
+        assert!(position(&app, player).distance(target) < 0.01);
     }
 
     #[test]

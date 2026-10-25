@@ -1,14 +1,12 @@
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
 
 use crate::animation::{SpriteAnimator, CHARACTER_CLIPS};
-use crate::character::REALISTIC;
+use crate::character::{character_transform, PLAYER_Z};
 use crate::story::scripted::Actor;
-use crate::world::camera::YSort;
 use crate::world::map::tiled_map::TiledMap;
 use crate::{GameAssets, GameState};
 
-use super::{Player, PLAYER_COLLISION_GROUPS};
+use super::Player;
 
 fn spawn_player(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<TiledMap>) {
     // Read the spawn point from the "Spawn" object layer in TiledMap
@@ -19,37 +17,22 @@ fn spawn_player(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<
         .map(|obj| tiled_map.tiled_to_game(obj.x, obj.y))
         .unwrap_or(Vec2::ZERO); // Fallback: origin
 
-    let collider = commands
-        .spawn((
-            REALISTIC.feet_collider(),
-            ActiveEvents::COLLISION_EVENTS,
-            PLAYER_COLLISION_GROUPS,
-        ))
-        .id();
-
     let animator = SpriteAnimator::looping(CHARACTER_CLIPS[0]);
 
-    commands
-        .spawn((
-            Player::default(),
-            Actor("Player".to_string()),
-            RigidBody::Dynamic,
-            LockedAxes::ROTATION_LOCKED,
-            Velocity::zero(),
-            Ccd::enabled(),
-            YSort(0.0),
-            animator,
-            Sprite {
-                image: assets.player_texture.clone(),
-                texture_atlas: Some(TextureAtlas {
-                    layout: assets.player_layout.clone(),
-                    index: CHARACTER_CLIPS[0].first_frame,
-                }),
-                ..default()
-            },
-            REALISTIC.transform(spawn_pos),
-        ))
-        .add_child(collider);
+    commands.spawn((
+        Player::default(),
+        Actor("Player".to_string()),
+        animator,
+        Sprite {
+            image: assets.player_texture.clone(),
+            texture_atlas: Some(TextureAtlas {
+                layout: assets.player_layout.clone(),
+                index: CHARACTER_CLIPS[0].first_frame,
+            }),
+            ..default()
+        },
+        character_transform(spawn_pos, PLAYER_Z),
+    ));
 }
 
 pub struct PlayerSpawnPlugin;

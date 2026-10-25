@@ -140,10 +140,7 @@ mod tests {
             tile_size: 48.0,
             width: 40,
             height: 40,
-            layers: Vec::new(),
-            tilesets: Vec::new(),
             image_layers: Vec::new(),
-            side_view: false,
             background: None,
             object_layers: vec![ObjectLayerData {
                 name: "Paths".to_string(),

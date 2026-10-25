@@ -104,7 +104,7 @@ impl Plugin for SpriteAnimationPlugin {
 // Clip data
 // ---------------------------------------------------------------------------
 
-/// Animations of the 64x128 character sheets (player and wanderer):
+/// Animations of the character sheets (player and Samantha):
 /// `idle-down, idle-left, idle-right, idle-top, walking-*, running-*` (per direction).
 pub const CHARACTER_CLIPS: [SpriteAnimationClip; 12] = [
     SpriteAnimationClip::from_keyframe_range(0, 8, 0.8), // idle-down
@@ -120,13 +120,6 @@ pub const CHARACTER_CLIPS: [SpriteAnimationClip; 12] = [
     SpriteAnimationClip::from_keyframe_range(100, 108, 0.8), // running-right
     SpriteAnimationClip::from_keyframe_range(110, 118, 0.8), // running-top
 ];
-
-pub const DIALOGUE_START_HINT: SpriteAnimationClip =
-    SpriteAnimationClip::from_keyframe_range(0, 2, 1.5);
-
-/// Key icons: down/up/left/right and shift.
-pub const KEY_ICON: SpriteAnimationClip = SpriteAnimationClip::from_keyframe_range(0, 2, 1.0);
-pub const SHIFT_ICON: SpriteAnimationClip = SpriteAnimationClip::from_keyframe_range(0, 2, 3.5);
 
 // ---------------------------------------------------------------------------
 // Shared character clip selection

@@ -5,21 +5,12 @@ use bevy::window::PrimaryWindow;
 #[cfg(not(target_arch = "wasm32"))]
 use bevy::window::{MonitorSelection, VideoModeSelection, WindowMode};
 use bevy::{prelude::*, transform::TransformSystems};
-use bevy_rapier2d::plugin::PhysicsSet;
 
 use super::camera_shake::{update_camera, CameraShake};
 use crate::player::input::PlayerInput;
 use crate::player::Player;
 use crate::utils::DebugActive;
 
-// Only relevant for the backend.
-// We have to multiply each z coordinate with this value
-// because camera rendering only works for entities that are
-// at most 1000 z coordinates away.
-// Too small values may lead to float inpercision errors,
-// too large values will lead to overflow of the 1000 range
-// (in which case they won't get rendered on the camera anymore).
-const YSORT_SCALE: f32 = 0.0001;
 /// Art px visible vertically that the integer scale aims for.
 const TARGET_VISIBLE_HEIGHT: f32 = 540.0;
 
@@ -36,67 +27,6 @@ fn pixel_scale(physical_height: u32) -> f32 {
 
 #[derive(Component)]
 pub struct MainCamera;
-
-#[derive(Component)]
-pub struct YSort(pub f32);
-#[derive(Component)]
-pub struct YSortChild(pub f32);
-
-#[derive(Component)]
-pub struct YSortStatic(pub f32);
-#[derive(Component)]
-pub struct YSortStaticChild(pub f32);
-
-pub fn apply_y_sort(mut q_transforms: Query<(&mut Transform, &GlobalTransform, &YSort)>) {
-    for (mut transform, global_transform, ysort) in &mut q_transforms {
-        transform.translation.z = (ysort.0 - global_transform.translation().y) * YSORT_SCALE;
-    }
-}
-
-fn apply_y_sort_child(
-    q_parents: Query<&Transform, (With<YSort>, Without<YSortChild>)>,
-    mut q_transforms: Query<
-        (&ChildOf, &mut Transform, &GlobalTransform, &YSortChild),
-        Without<YSort>,
-    >,
-) {
-    for (parent, mut transform, global_transform, ysort) in &mut q_transforms {
-        let parent_transform = match q_parents.get(parent.parent()) {
-            Ok(r) => r,
-            Err(_) => continue,
-        };
-        transform.translation.z = (ysort.0 - global_transform.translation().y) * YSORT_SCALE
-            - parent_transform.translation.z;
-    }
-}
-
-fn apply_y_sort_static(mut q_transforms: Query<(&mut Transform, &GlobalTransform, &YSortStatic)>) {
-    for (mut transform, global_transform, ysort) in &mut q_transforms {
-        transform.translation.z = (ysort.0 - global_transform.translation().y) * YSORT_SCALE;
-    }
-}
-
-fn apply_y_sort_static_child(
-    q_parents: Query<&Transform, (With<YSortStatic>, Without<YSortStaticChild>)>,
-    mut q_transforms: Query<
-        (
-            &ChildOf,
-            &mut Transform,
-            &GlobalTransform,
-            &YSortStaticChild,
-        ),
-        Without<YSortStatic>,
-    >,
-) {
-    for (parent, mut transform, global_transform, ysort) in &mut q_transforms {
-        let parent_transform = match q_parents.get(parent.parent()) {
-            Ok(r) => r,
-            Err(_) => continue,
-        };
-        transform.translation.z = (ysort.0 - global_transform.translation().y) * YSORT_SCALE
-            - parent_transform.translation.z;
-    }
-}
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn((
@@ -211,19 +141,12 @@ impl Plugin for CameraPlugin {
                     toggle_full_screen,
                     #[cfg(not(target_arch = "wasm32"))]
                     take_screenshot,
-                    apply_y_sort,
-                    apply_y_sort_child
-                        .after(apply_y_sort)
-                        .before(apply_y_sort_static),
-                    apply_y_sort_static.after(apply_y_sort),
-                    apply_y_sort_static_child.after(apply_y_sort_static),
                     (zoom_camera, update_projection_scale).chain(),
                 ),
             )
             .add_systems(
                 PostUpdate,
                 update_camera_target
-                    .after(PhysicsSet::Writeback)
                     .before(TransformSystems::Propagate)
                     .before(update_camera),
             );

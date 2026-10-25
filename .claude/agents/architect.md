@@ -21,10 +21,10 @@ You may only edit files under `openspec/`. Never edit `src/`, `assets/`, `Cargo.
 ## Architecture
 
 - `src/main.rs` sets up the app and the `GameState` flow `AssetLoading → MainMenu → Gaming → Ending`. Assets load through `bevy_asset_loader` into `GameAssets` (`src/assets.rs`).
-- `src/world/`: camera (YSort, zoom, shake), the ending sequence, and the map. Tiles are streamed in chunks around the camera via `bevy_ecs_tilemap` (`chunk_manager.rs`); flora and collision live there too, and `tiled_map.rs` loads the map.
+- `src/world/`: camera (zoom, shake), the ending sequence, the map (`map/tiled_map.rs` loads it, `map/doors.rs` keeps door states) and the side view (`side_view/`: rooms, floors, portals between rooms, hotspots, click-to-walk). See `openspec/changes/side-view/`.
 - `src/player/`: input, movement, state, footstep audio, and starting conversations (`chat.rs`). `src/npc/` spawns the four NPCs: Eleonore, Jotem, Isabelle, and Ionas & Antonius.
 - `src/ui/dialogue/`: a custom Yarn Spinner front end (typewriter, option selection, start hints). The story is in `assets/dialogue/*.yarn`.
-- Physics is `bevy_rapier2d`; particles are `bevy_hanabi` (tree petals); UI animation is `bevy_tweening`.
+- There is no physics engine: characters move by transform along their room's floor line. UI animation is `bevy_tweening`.
 - Workspace crates: `dialogue_graph` (Graphviz graphs of the dialogue), `dialogue_lines`, and `map-bootstrapper`, which generated the first map from the old procedural generator.
 - Change management uses OpenSpec: changes in `openspec/changes/`, accepted specs in `openspec/specs/`. Follow `AGENTS.md`.
 
@@ -33,7 +33,7 @@ You may only edit files under `openspec/`. Never edit `src/`, `assets/`, `Cargo.
 **Web build (wasm32):**
 - `std::fs` doesn't work on wasm. Load data through Bevy's asset server; custom formats get an `AssetLoader`, like `TiledMapLoader`.
 - `std::time::Instant::now()` panics on wasm with "time not implemented on this platform". Use `bevy::platform::time::Instant`. Check dependencies for this too.
-- The wasm build uses **WebGPU** (the `webgpu` bevy feature is set for wasm only in `Cargo.toml`), because bevy_hanabi needs compute shaders and WebGL2 doesn't have them. Anything compute-based is fine on desktop and WebGPU, but would break a WebGL2 fallback. Browsers without WebGPU can't run the game.
+- The wasm build uses Bevy's default WebGL2 backend. Anything compute-based (e.g. GPU particles) would need the `webgpu` feature, which locks out browsers without WebGPU.
 - `wasm/index.html` must give Bevy a real `<canvas id="game-canvas">` (the window's `canvas` selector). If the selector points at a div, Bevy fails with "Unable to find a GPU". The loader hides when Bevy sets the canvas size.
 - `push_to_itch.sh` builds with the `wasm` profile and runs `wasm-bindgen`; the CLI version must match the `wasm-bindgen` crate version in `Cargo.lock`, currently 0.2.127.
 - Wasm panics abort the whole app. A panic during plugin build or startup leaves a black or half-loaded page, so check the browser console.
@@ -50,9 +50,8 @@ You may only edit files under `openspec/`. Never edit `src/`, `assets/`, `Cargo.
 - Every title starts with a non-player line, which is why there are `...` lines, especially around `jump`.
 - Yarn files are listed in `main.rs` (`YarnSpinnerPlugin::with_yarn_sources`), so new files must be registered there.
 
-**Physics and debugging:**
-- F3 toggles the Rapier debug overlay **and** noclip: it sets the player's collision groups to none. Never use it to test collisions.
-- Rapier colliders without a `RigidBody` act as fixed.
+**Debugging:**
+- F3 toggles debug mode (scroll zooms the camera).
 
 **Running and building:**
 - Running `target/debug/life-game` directly needs `CARGO_MANIFEST_DIR=<repo root>`, or Bevy looks for assets next to the binary.
