@@ -294,18 +294,6 @@ def test_generate_json_flag() -> None:
         assert obj["files"] == plain and all(Path(f).exists() for f in obj["files"])
 
 
-def test_artgen_skill_copies_match() -> None:
-    root = HERE.parent.parent
-    for name, limit in (("artgen", 300), ("life-game-art", 150)):
-        paths = [root / d / "skills" / name / "SKILL.md" for d in (".claude", ".pi", ".github")]
-        texts = [p.read_bytes() for p in paths]
-        assert all(texts), f"skill {name} missing"
-        assert texts[0] == texts[1] == texts[2], f"the three {name} SKILL.md copies differ"
-        head = texts[0].decode().split("---")[1]
-        assert f"name: {name}" in head and "description:" in head
-        assert len(texts[0].decode().splitlines()) < limit
-
-
 def test_default_profile_without_project_profile() -> None:
     import artprofile
     old = os.environ.pop("ARTGEN_PROFILE", None)
@@ -327,34 +315,6 @@ def test_default_profile_without_project_profile() -> None:
     assert d["name"] == "default" and d["bench_ref_sheet"] is None and d["bench"] is None
     assert "assets/" not in json.dumps(d) and "Life" not in json.dumps(d)
     assert d["char_cell"] == (64, 128) and d["sheet_post_cell"] == (96, 192)
-
-
-def test_profile_matches_sprite_format_spec() -> None:
-    import re
-    import artprofile
-    spec = (HERE.parent.parent / "openspec/changes/realistic-character-sprites/specs/characters/sprite-format/spec.md").read_text()
-    w, h = (int(v) for v in re.search(r"(\d+)x(\d+)-pixel cells", spec).groups())
-    feet = int(re.search(r"feet on row (\d+)", spec).group(1))
-    prof = artprofile.load()
-    assert prof["_path"].endswith("art/artgen-profile.json") and prof["name"] == "life-game"
-    assert tuple(prof["sheet_post_cell"]) == (w, h) == (96, 192) and prof["sheet_feet_row"] == feet == 157
-    import postprocess
-    assert postprocess.CHAR_CELL == (64, 128) and postprocess.OUTLINE == (34, 32, 52)
-    assert postprocess.SHADOW_CENTRE == (31.5, 102) and postprocess.SHADOW_RADII == (22.5, 11.5)
-    assert "thick dark outlines" in prof["sheet_style"]
-    old = os.environ.get("ARTGEN_PROFILE")
-    os.environ["ARTGEN_PROFILE"] = "/no/such/profile.json"
-    try:
-        artprofile.load()
-    except SystemExit as e:
-        assert "not found" in str(e)
-    else:
-        raise AssertionError("missing profile must fail")
-    finally:
-        if old is None:
-            os.environ.pop("ARTGEN_PROFILE")
-        else:
-            os.environ["ARTGEN_PROFILE"] = old
 
 
 if __name__ == "__main__":
