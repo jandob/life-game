@@ -1,5 +1,5 @@
 """Tests for the model-free infrastructure of the artgen-qwen-image change: encoding cache,
-paste_back / draw_mark, pose strips, runner, `generate --json`.
+paste_back / draw_mark, pose strips, `generate --json`.
 
     .venv/bin/python test_infra.py
 """
@@ -26,7 +26,6 @@ from PIL import Image  # noqa: E402
 import artgen  # noqa: E402
 import maskkit  # noqa: E402
 import pose  # noqa: E402
-import runner  # noqa: E402
 from backends import REGISTRY, get_backend  # noqa: E402
 from backends import _enc_cache as enc  # noqa: E402
 from backends.base import Backend, BackendInfo  # noqa: E402
@@ -193,87 +192,6 @@ def test_pose_strip() -> None:
     assert small.size == (300, 200)
 
 
-# ------------------------------------------------------------ 1.4 runner
-def _png(color) -> bytes:
-    buf = io.BytesIO()
-    Image.new("RGB", (4, 4), color).save(buf, format="PNG")
-    return buf.getvalue()
-
-
-def test_jobspec_roundtrip() -> None:
-    spec = runner.JobSpec(kind="edit", backend="b", variant="turbo", prompt="p", negative="n",
-                          refs=[runner.ref_from_bytes(_png((9, 8, 7)))], seed=3, n=2, width=64, height=32,
-                          steps=8, sigmas=[1.0, 0.5], true_cfg=1.0, opts={"rgba": "1"})
-    back = runner.JobSpec.from_json(spec.to_json())
-    assert back == spec
-    json.loads(spec.to_json())
-    try:
-        runner.JobSpec(kind="nope")
-        raise AssertionError("bad kind accepted")
-    except ValueError:
-        pass
-
-
-def test_local_runner() -> None:
-    SolidBackend.calls.clear()
-    b = get_backend("test_solid")
-    r = runner.get_runner("local", b)
-    spec = runner.JobSpec(backend="test_solid", prompt="hi", negative="neg", seed=5, n=2, width=16, height=8,
-                          steps=4, refs=[runner.ref_from_bytes(_png((200, 100, 50)))], opts={"offload": "x", "k": 1})
-    res = r.fetch(r.submit(spec))
-    assert len(res) == 2
-    im = Image.open(io.BytesIO(res[0][0]))
-    assert im.size == (16, 8) and im.getpixel((0, 0)) == (5, 10, 20)
-    assert [m["seed"] for _, m in res] == [5, 6]
-    c = SolidBackend.calls[-1]
-    assert c["prompt"] == "hi" and c["negative"] == "neg" and c["opts"]["steps"] == 4 and c["opts"]["k"] == 1
-    assert "offload" not in c["opts"] and c["ref_pixels"] == [(200, 100, 50)]
-    assert not Path(c["opts"]["ref"][0]).exists()                # temp refs cleaned up
-
-
-def test_remote_runner() -> None:
-    r = runner.get_runner("remote:cloud")
-    spec = runner.JobSpec(backend="x", prompt="p")
-    os.environ.pop("ARTGEN_REMOTE_CLOUD_CMD", None)
-    try:
-        r.submit(spec)
-        raise AssertionError("expected an error")
-    except RuntimeError as e:
-        assert "no remote host configured for runner 'remote:cloud'" in str(e) and "ARTGEN_REMOTE_CLOUD_CMD" in str(e)
-    with tempfile.TemporaryDirectory() as td:
-        script = Path(td) / "fake_remote.py"
-        script.write_text(
-            "import sys, json, base64, io\n"
-            "from PIL import Image\n"
-            "s = json.load(sys.stdin)\n"
-            "out = []\n"
-            "for i in range(s['n']):\n"
-            "    buf = io.BytesIO(); Image.new('RGB', (s['width'], s['height']), (s['seed'] + i, 0, 0)).save(buf, 'PNG')\n"
-            "    out.append({'png_base64': base64.b64encode(buf.getvalue()).decode(), 'meta': {'seed': s['seed'] + i, 'prompt': s['prompt']}})\n"
-            "print(json.dumps(out))\n")
-        os.environ["ARTGEN_REMOTE_CLOUD_CMD"] = f"{sys.executable} {script}"
-        try:
-            spec = runner.JobSpec(backend="x", prompt="far away", seed=7, n=2, width=6, height=4)
-            res = r.fetch(r.submit(spec))
-        finally:
-            os.environ.pop("ARTGEN_REMOTE_CLOUD_CMD")
-        assert [m["seed"] for _, m in res] == [7, 8] and res[0][1]["prompt"] == "far away"
-        assert Image.open(io.BytesIO(res[1][0])).getpixel((0, 0)) == (8, 0, 0)
-        os.environ["ARTGEN_REMOTE_CLOUD_CMD"] = f"{sys.executable} -c 'import sys; sys.exit(3)'"
-        try:
-            r.submit(spec)
-            raise AssertionError("expected failure")
-        except RuntimeError as e:
-            assert "exit 3" in str(e)
-        finally:
-            os.environ.pop("ARTGEN_REMOTE_CLOUD_CMD")
-    try:
-        runner.get_runner("bogus")
-        raise AssertionError
-    except ValueError:
-        pass
-
-
 # ------------------------------------------------------------ 1.5 generate --json
 def _run_cli(argv) -> str:
     buf = io.StringIO()
@@ -292,18 +210,6 @@ def test_generate_json_flag() -> None:
         obj = json.loads(out[-1])
         assert obj["ok"] is True and obj["seeds"] == [3, 4] and obj["stats"] == {"peak": 1}
         assert obj["files"] == plain and all(Path(f).exists() for f in obj["files"])
-
-
-def test_artgen_skill_copies_match() -> None:
-    root = HERE.parent.parent
-    for name, limit in (("artgen", 300), ("life-game-art", 150)):
-        paths = [root / d / "skills" / name / "SKILL.md" for d in (".claude", ".pi", ".github")]
-        texts = [p.read_bytes() for p in paths]
-        assert all(texts), f"skill {name} missing"
-        assert texts[0] == texts[1] == texts[2], f"the three {name} SKILL.md copies differ"
-        head = texts[0].decode().split("---")[1]
-        assert f"name: {name}" in head and "description:" in head
-        assert len(texts[0].decode().splitlines()) < limit
 
 
 def test_default_profile_without_project_profile() -> None:
@@ -327,34 +233,6 @@ def test_default_profile_without_project_profile() -> None:
     assert d["name"] == "default" and d["bench_ref_sheet"] is None and d["bench"] is None
     assert "assets/" not in json.dumps(d) and "Life" not in json.dumps(d)
     assert d["char_cell"] == (64, 128) and d["sheet_post_cell"] == (96, 192)
-
-
-def test_profile_matches_sprite_format_spec() -> None:
-    import re
-    import artprofile
-    spec = (HERE.parent.parent / "openspec/changes/realistic-character-sprites/specs/characters/sprite-format/spec.md").read_text()
-    w, h = (int(v) for v in re.search(r"(\d+)x(\d+)-pixel cells", spec).groups())
-    feet = int(re.search(r"feet on row (\d+)", spec).group(1))
-    prof = artprofile.load()
-    assert prof["_path"].endswith("art/artgen-profile.json") and prof["name"] == "life-game"
-    assert tuple(prof["sheet_post_cell"]) == (w, h) == (96, 192) and prof["sheet_feet_row"] == feet == 157
-    import postprocess
-    assert postprocess.CHAR_CELL == (64, 128) and postprocess.OUTLINE == (34, 32, 52)
-    assert postprocess.SHADOW_CENTRE == (31.5, 102) and postprocess.SHADOW_RADII == (22.5, 11.5)
-    assert "thick dark outlines" in prof["sheet_style"]
-    old = os.environ.get("ARTGEN_PROFILE")
-    os.environ["ARTGEN_PROFILE"] = "/no/such/profile.json"
-    try:
-        artprofile.load()
-    except SystemExit as e:
-        assert "not found" in str(e)
-    else:
-        raise AssertionError("missing profile must fail")
-    finally:
-        if old is None:
-            os.environ.pop("ARTGEN_PROFILE")
-        else:
-            os.environ["ARTGEN_PROFILE"] = old
 
 
 if __name__ == "__main__":

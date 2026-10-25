@@ -63,7 +63,7 @@ def write_sidecar(png: Path, data: dict) -> None:
 
 # ------------------------------------------------------------- capabilities
 CAPS_DOC = {"refs": "generate --ref", "edit": "edit", "sheet": "sheet", "rgba": "--opt rgba=1 (real alpha)",
-            "inpaint": "inpaint", "refine": "refine", "remote": "--opt runner=remote:NAME"}
+            "inpaint": "inpaint", "refine": "refine"}
 
 
 def require_cap(name: str, cap: str, what: str) -> None:
@@ -82,16 +82,7 @@ def require_cap(name: str, cap: str, what: str) -> None:
 
 
 def open_backend(name: str, opts: dict, kind: str):
-    """Backend for generate/edit/sheet honouring ``--opt runner=local|remote:<name>`` (consumed here).
-
-    local: the registered backend, loaded. remote:<name>: a ``runner.RunnerBackend`` proxy that ships each
-    call as a JobSpec to ``ARTGEN_REMOTE_<NAME>_CMD`` (nothing is loaded locally).
-    """
-    import runner as runnermod
-    spec = opts.pop("runner", "local")
-    if spec != "local":
-        require_cap(name, "remote", "--opt runner=remote:NAME")
-        return runnermod.RunnerBackend(name, spec, kind=kind, variant=opts.get("variant"))
+    """The registered backend for generate/edit/sheet, loaded (remote backends load nothing heavy)."""
     b = get_backend(name)
     b.load(**{k: v for k, v in opts.items() if k in b.load_keys})
     return b

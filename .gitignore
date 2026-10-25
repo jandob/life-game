@@ -10,3 +10,6 @@ __pycache__/
 /tools/scenekit/out/
 /tools/scenekit/.cache/
 /assets/library/tilesets/gen/.lock
+
+# local secrets (RunPod key etc.)
+mise.local.toml
