@@ -8,6 +8,7 @@ Run from `tools/artgen` with `.venv/bin/python`; JSON job lists go through `tool
 - `08_...json`: player front/side/back idles (side s11, back s11) and Samantha's walk key frames.
   Samantha's front idle `../characters/samantha/keys/sam_front_idle_s11.png` came from an earlier run of the same front-idle job (ref `sam_front_greytop_s12`).
 - `09_...json`: player walk key frames.
+- `10_side_rooms.sh`: side-view room backgrounds (qwen `edit` of the placeholders in `assets/library/rooms/`, keeping their layout), then `post` to the pixel grid. Outputs in `tools/artgen/out/side_rooms/`.
 Seeds and full prompts are in each output's JSON sidecar.
 
 The chosen key frames are tracked in `../characters/{player,samantha}/keys/` (with their generation sidecars); `build_sheets.py` and
