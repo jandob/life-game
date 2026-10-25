@@ -15,6 +15,6 @@ RUN pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cu130
 COPY remote/runpod/requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 
-COPY remote/runpod/handler.py /app/handler.py
+COPY rp_handler.py /app/rp_handler.py
 WORKDIR /app
-CMD ["python", "-u", "handler.py"]
+CMD ["python", "-u", "rp_handler.py"]

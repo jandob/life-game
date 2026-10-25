@@ -1,4 +1,4 @@
-"""RunPod Serverless worker: Qwen-Image 2.1 (base, 40 steps, true CFG) for artgen's remote runner.
+"""RunPod Serverless worker (repo root so RunPod's GitHub deploy finds the handler; image: remote/runpod/Dockerfile): Qwen-Image 2.1 (base, 40 steps, true CFG) for artgen's remote runner.
 
 Input  (``job["input"]``): an artgen ``JobSpec`` as JSON (see ``runner.py``): prompt, negative, refs
        ([{sha256, png_bytes(base64)}], Picture 1, 2, ...), seed, n, width, height, steps, true_cfg,
@@ -92,5 +92,4 @@ def handler(job: dict) -> dict:
     return {"images": images}
 
 
-if __name__ == "__main__":
-    runpod.serverless.start({"handler": handler})
+runpod.serverless.start({"handler": handler})

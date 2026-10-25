@@ -178,8 +178,8 @@ bundled: without the variable the command fails with "no remote host configured"
 
 #### RunPod Serverless (`remote/`)
 
-- `remote/runpod/` is the worker: `Dockerfile` (python:3.12-slim + torch 2.14.1 cu130 + the pinned diffusers) and
-  `handler.py` (Qwen-Image 2.1 base through `QwenImage21Pipeline`; JobSpec in, `{"images": [{png_base64, meta}]}` out).
+- The worker: `remote/runpod/Dockerfile` (python:3.12-slim + torch 2.14.1 cu130 + the pinned diffusers) and
+  `rp_handler.py` in the repo root ( where RunPod's GitHub deploy looks for `runpod.serverless.start`; Qwen-Image 2.1 base through `QwenImage21Pipeline`; JobSpec in, `{"images": [{png_base64, meta}]}` out).
   No weights in the image: the endpoint's **model cache** provides `Qwen/Qwen-Image-2.1` (mounted as an HF cache under
   `/runpod-volume/huggingface-cache/hub`; the download is not billed).
 - Endpoint (RunPod console, Serverless > New Endpoint > GitHub repo `jandob/artgen`): Dockerfile path
