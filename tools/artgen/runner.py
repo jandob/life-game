@@ -202,7 +202,9 @@ class RunnerBackend:
                        seed=seed, n=n, width=width, height=height, steps=steps, sigmas=sigmas,
                        true_cfg=true_cfg, opts=opts)
         res = self.runner.fetch(self.runner.submit(spec))
-        self._stats = dict(res[0][1].get("stats", {}) if res else {}, runner=self.runner_spec)
+        # Per-image meta from the remote side (GPU, timings, job id ...) goes into the sidecar stats as is.
+        self._stats = dict(res[0][1].get("stats", {}) if res else {}, runner=self.runner_spec,
+                           remote=[{k: v for k, v in m.items() if k != "stats"} for _, m in res])
         return [Image.open(io.BytesIO(b)).convert("RGBA") for b, _ in res]
 
     def stats(self) -> dict:

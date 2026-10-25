@@ -400,6 +400,7 @@ def test_runner_opt_remote_roundtrip_and_errors() -> None:
                                   "--width", "64", "--height", "32", "--opt", "runner=remote:fake", "--opt", "variant=base",
                                   "--ref", str(td / "a.png"), "--json", "--out", str(td / "o")]))
             assert obj["ok"] and obj["seeds"] == [3, 4] and obj["stats"]["runner"] == "remote:fake"
+            assert len(obj["stats"]["remote"]) == 2      # per-image remote meta kept for the sidecar
             assert Image.open(obj["files"][1]).getpixel((0, 0))[:3] == (4, 5, 5)
             spec = json.loads(seen.read_text())
             assert spec["variant"] == "base" and spec["kind"] == "generate" and spec["backend"] == "qwen_image21"
