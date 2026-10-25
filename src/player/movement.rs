@@ -1,45 +1,9 @@
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
 
-use crate::story::scripted::ScriptedWalk;
-use crate::utils::DebugActive;
-use crate::world::side_view::side_view;
 use crate::GameState;
 
 use super::chat::PlayerStartedChat;
-use super::input::PlayerInput;
-use super::{Player, PlayerState, RUN_SPEED, WALK_SPEED};
-
-fn player_movement(
-    player_input: Res<PlayerInput>,
-    debug_active: Res<DebugActive>,
-    mut q_player: Query<(&mut Velocity, &mut Player), Without<ScriptedWalk>>,
-) {
-    let (mut velocity, mut player) = match q_player.single_mut() {
-        Ok(p) => p,
-        Err(_) => return,
-    };
-
-    let direction = player_input.move_direction;
-    if player.state == PlayerState::Talking || direction == Vec2::ZERO {
-        velocity.linear = Vec2::ZERO;
-        return;
-    };
-
-    let speed = if player.state == PlayerState::Running {
-        RUN_SPEED
-    } else {
-        WALK_SPEED
-    };
-    let speed = if **debug_active {
-        RUN_SPEED * 5.0
-    } else {
-        speed
-    };
-
-    player.current_direction = direction;
-    velocity.linear = direction * speed;
-}
+use super::Player;
 
 fn face_npc(
     mut q_player: Query<&mut Player>,
@@ -59,9 +23,6 @@ pub struct PlayerMovementPlugin;
 
 impl Plugin for PlayerMovementPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            Update,
-            (player_movement.run_if(not(side_view)), face_npc).run_if(in_state(GameState::Gaming)),
-        );
+        app.add_systems(Update, face_npc.run_if(in_state(GameState::Gaming)));
     }
 }

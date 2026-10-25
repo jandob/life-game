@@ -61,10 +61,9 @@ files, so a renamed node or a broken scene fails `cargo test`.
 - Only the commands listed in `REPLAYED` restore world state. A new command that changes
   the world (e.g. switching maps) needs a case in `replay` too.
 
-## Side view (spike)
+## Rooms
 
-`--view side` (web: `?view=side`) plays Route 1 side-on, walked by clicking, instead of
-the top-down map: the landing, 3B, 3A and the corner shop as rooms of
-`maps/side/route1.tmj`. See `openspec/changes/side-view/`. Start points combine with it,
-e.g. `--view side --start viewing`: the spawns and paths have the same names as on the
-top-down map, and walks into another room go through the doors and stairs between them.
+Route 1 plays side-on, walked by clicking: the landing, 3B, 3A and the corner shop are
+rooms of `maps/side/route1.tmj` (see `openspec/changes/side-view/`). A start point puts
+the player at its spawn or path, in whichever room that lies; walks into another room go
+through the doors and stairs between them.

@@ -1,29 +1,15 @@
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
 
 use crate::animation::{SpriteAnimator, CHARACTER_CLIPS};
-use crate::character::REALISTIC;
+use crate::character::{character_transform, CHARACTER_Z};
 use crate::story::scripted::Actor;
-use crate::utils::COLLISION_GROUPS_NONE;
 use crate::world::map::tiled_map::TiledMap;
-use crate::{world::camera::YSort, GameAssets, GameState};
+use crate::{GameAssets, GameState};
 
 use super::{FourWayFacing, Npc, NpcDialogue};
 
-/// Samantha is a kinematic body: only scripted commands move her, she never gets
-/// pushed, and she pushes the player aside.
+/// Only scripted commands move Samantha.
 fn spawn_samantha(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec2, hidden: bool) {
-    let mut collider = commands.spawn((
-        REALISTIC.feet_collider(),
-        // Scripted scenes walk her and the player side by side through doorways;
-        // a solid kinematic body there would shove him into the walls.
-        COLLISION_GROUPS_NONE,
-    ));
-    if hidden {
-        collider.insert(ColliderDisabled);
-    }
-    let collider = collider.id();
-
     let clip = CHARACTER_CLIPS[0];
     let mut samantha = commands.spawn((
         Npc {
@@ -33,8 +19,6 @@ fn spawn_samantha(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec2, 
         FourWayFacing {
             facing: Vec2::NEG_Y,
         },
-        RigidBody::KinematicPositionBased,
-        YSort(0.0),
         SpriteAnimator::looping(clip),
         Sprite {
             image: assets.samantha_texture.clone(),
@@ -44,12 +28,11 @@ fn spawn_samantha(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec2, 
             }),
             ..default()
         },
-        REALISTIC.transform(pos),
+        character_transform(pos, CHARACTER_Z),
     ));
     if hidden {
         samantha.insert(Visibility::Hidden);
     }
-    samantha.add_child(collider);
 }
 
 /// Spawn NPCs from the "NPCs" object layer in the TiledMap.
@@ -69,8 +52,6 @@ fn spawn_npcs(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<Ti
                 pos,
                 obj.prop_bool("hidden").unwrap_or(false),
             ),
-            // Spawned by `wander::spawn_wanderer`, which reads this object itself.
-            "Wanderer" => {}
             _ => {
                 warn!("Unknown NPC name: {}", obj.name);
             }

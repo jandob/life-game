@@ -1,5 +1,4 @@
 //! Side view (see `openspec/changes/side-view`): rooms seen side-on, walked by clicking.
-//! Runs only on maps with the property `view = "side"` (`--view side`).
 //!
 //! The map holds image layers for the art and, per room (`Rooms`, see `rooms.rs`), a
 //! `Floor` polyline whose y is the line every character's feet stand on and whose x span
@@ -11,7 +10,6 @@
 use bevy::prelude::*;
 use bevy::time::Real;
 use bevy::window::{CursorIcon, PrimaryWindow, SystemCursorIcon};
-use bevy_rapier2d::prelude::*;
 use bevy_yarnspinner::prelude::DialogueRunner;
 
 use super::camera::{update_camera_target, MainCamera};
@@ -20,7 +18,7 @@ use super::map::doors::DoorStates;
 use super::map::tiled_map::TiledMap;
 use crate::character::SPRITE_FEET_BELOW_CENTRE;
 use crate::player::chat::PlayerStartedChat;
-use crate::player::input::{InputBlocked, MouseWorldCoords, PlayerInput};
+use crate::player::input::{InputBlocked, MouseWorldCoords};
 use crate::player::{Player, PlayerState, RUN_SPEED, WALK_SPEED};
 use crate::story::scripted::{Actor, ScriptedWalk};
 use crate::story::transition::scene_queued;
@@ -31,7 +29,7 @@ pub mod rooms;
 
 pub use rooms::SideRooms;
 
-/// Behind every character (their y-sort z stays within about +-1).
+/// Behind every character (see `character::CHARACTER_Z`).
 const BACKGROUND_Z: f32 = -800.0;
 /// In front of every character.
 const FOREGROUND_Z: f32 = 500.0;
@@ -41,11 +39,6 @@ const ARRIVE_DISTANCE: f32 = 4.0;
 const DOUBLE_CLICK_SECONDS: f64 = 0.35;
 /// Clicks this soon after a conversation ends are the click that ended it.
 const AFTER_TALK_SECONDS: f64 = 0.2;
-
-/// Whether the loaded map is a side-view room.
-pub fn side_view(map: Option<Res<TiledMap>>) -> bool {
-    map.is_some_and(|map| map.side_view)
-}
 
 /// Something in a room the player can click.
 #[derive(Component)]
@@ -77,6 +70,9 @@ struct ImageLayerName(String);
 struct HoverLabel;
 
 fn spawn_rooms(mut commands: Commands, map: Res<TiledMap>, assets: Res<GameAssets>) {
+    if let Some(colour) = map.background {
+        commands.insert_resource(ClearColor(colour));
+    }
     // Layers draw in file order: each one a little in front of the one before.
     let behind = map.image_layers.iter().filter(|l| !l.above).count() as f32;
     for (i, layer) in map.image_layers.iter().enumerate() {
@@ -277,29 +273,30 @@ fn click_to_walk(
 
 fn walk_to_target(
     mut commands: Commands,
-    mut player_input: ResMut<PlayerInput>,
-    mut q_player: Query<
-        (Entity, &Transform, &mut Velocity, &mut Player, &ClickWalk),
-        Without<ScriptedWalk>,
-    >,
+    time: Res<Time>,
+    mut q_player: Query<(Entity, &mut Transform, &mut Player, &ClickWalk), Without<ScriptedWalk>>,
     q_hotspots: Query<&Hotspot>,
     mut ev_started_chat: MessageWriter<PlayerStartedChat>,
 ) {
-    let Ok((entity, transform, mut velocity, mut player, walk)) = q_player.single_mut() else {
+    let Ok((entity, mut transform, mut player, walk)) = q_player.single_mut() else {
         return;
     };
-    let pos = transform.translation.xy();
-    let dx = walk.target_x - pos.x;
+    let dx = walk.target_x - transform.translation.x;
     if dx.abs() > ARRIVE_DISTANCE {
         let speed = if walk.run { RUN_SPEED } else { WALK_SPEED };
-        velocity.linear = Vec2::new(dx.signum() * speed, 0.0);
+        transform.translation.x += dx.signum() * (speed * time.delta_secs()).min(dx.abs());
         player.current_direction = Vec2::new(dx.signum(), 0.0);
-        player_input.running = walk.run;
+        player.state = if walk.run {
+            PlayerState::Running
+        } else {
+            PlayerState::Walking
+        };
         return;
     }
 
-    velocity.linear = Vec2::ZERO;
+    player.state = PlayerState::Idling;
     commands.entity(entity).remove::<ClickWalk>();
+    let pos = transform.translation.xy();
     let Some(hotspot) = walk.hotspot.and_then(|e| q_hotspots.get(e).ok()) else {
         return;
     };
@@ -410,7 +407,7 @@ pub struct SideViewPlugin;
 
 impl Plugin for SideViewPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::Gaming), spawn_rooms.run_if(side_view))
+        app.add_systems(OnEnter(GameState::Gaming), spawn_rooms)
             .add_systems(
                 Update,
                 (
@@ -425,18 +422,14 @@ impl Plugin for SideViewPlugin {
                         .chain(),
                     hover_hotspot,
                 )
-                    .run_if(
-                        in_state(GameState::Gaming)
-                            .and_then(side_view)
-                            .and_then(resource_exists::<SideRooms>),
-                    ),
+                    .run_if(in_state(GameState::Gaming).and_then(resource_exists::<SideRooms>)),
             )
             .add_systems(
                 PostUpdate,
                 clamp_camera
                     .after(update_camera_target)
                     .before(update_camera)
-                    .run_if(resource_exists::<SideRooms>.and_then(side_view)),
+                    .run_if(resource_exists::<SideRooms>),
             );
     }
 }

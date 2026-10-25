@@ -5,13 +5,13 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-You implement gameplay features for **Life Game**, a top-down 2D narrative game in Rust with Bevy 0.19. It ships natively and to wasm (itch.io).
+You implement gameplay features for **Life Game**, a side-view 2D narrative game in Rust with Bevy 0.19. It ships natively and to wasm (itch.io).
 
 ## Conventions
 
-- Layout: `src/player/` (input, movement, state/animation, spawn, chat), `src/npc/` (spawn, `Npc` component, `NpcDialogue`), `src/animation.rs` (`SpriteAnimator`, `SpriteAnimationClip`, clip constants), `src/assets.rs` (`GameAssets` via `bevy_asset_loader`), `src/world/camera.rs` (`YSort`, `YSortChild`).
+- Layout: `src/player/` (input, movement, state/animation, spawn, chat), `src/npc/` (spawn, `Npc` component, `NpcDialogue`), `src/animation.rs` (`SpriteAnimator`, `SpriteAnimationClip`, clip constants), `src/assets.rs` (`GameAssets` via `bevy_asset_loader`), `src/world/side_view/` (rooms, floors, portals, hotspots, click-to-walk), `src/character.rs` (feet offset, z of characters).
 - Bevy 0.19 APIs: `Message`/`MessageReader`/`MessageWriter` (not events), `query.single()` returns a `Result`, observers use `On<T>`. Check the dependency sources in `~/.cargo/registry/src/` instead of guessing APIs.
-- Physics is `bevy_rapier2d` 0.36. Colliders live on child entities; a collider without a `RigidBody` is fixed. F3 toggles noclip for the player, so never use it to test collisions.
+- There is no physics: the player walks by clicking (`ClickWalk`), scenes walk actors with `ScriptedWalk`; both move the transform along the room's floor line.
 - Wasm: no `std::fs`, no `std::time::Instant` (use `bevy::platform::time::Instant`). Use `rand` via `rand_xoshiro` or `rand::thread_rng` (getrandom has the `js` feature on wasm).
 - Match the surrounding code: small plugins per concern, `match q.single() { Ok(..) => .., Err(_) => return }`, sparse comments.
 - Systems that touch `Player` must not accidentally match other entities. Use `With<Player>`/`Without<Player>` filters.

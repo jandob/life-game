@@ -11,9 +11,7 @@ pub struct MouseWorldCoords(pub Vec2);
 
 #[derive(Resource, Default)]
 pub struct PlayerInput {
-    pub move_direction: Vec2,
     pub scroll: f32,
-    pub running: bool,
     pub escape: bool,
 
     pub dialogue: bool,
@@ -30,8 +28,6 @@ pub struct InputBlocked(pub bool);
 
 fn block_input(blocked: Res<InputBlocked>, mut player_input: ResMut<PlayerInput>) {
     if blocked.0 {
-        player_input.move_direction = Vec2::ZERO;
-        player_input.running = false;
         player_input.escape = false;
         player_input.dialogue = false;
         player_input.dialogue_direction = 0;
@@ -104,36 +100,6 @@ fn input_scroll(keys: Res<ButtonInput<KeyCode>>, mut player_input: ResMut<Player
     }
 }
 
-fn player_movement(keys: Res<ButtonInput<KeyCode>>, mut player_input: ResMut<PlayerInput>) {
-    let mut direction = Vec2::default();
-
-    if keys.pressed(KeyCode::KeyJ)
-        || keys.pressed(KeyCode::KeyS)
-        || keys.pressed(KeyCode::ArrowDown)
-    {
-        direction += Vec2::new(0.0, -1.0);
-    }
-    if keys.pressed(KeyCode::KeyK) || keys.pressed(KeyCode::KeyW) || keys.pressed(KeyCode::ArrowUp)
-    {
-        direction += Vec2::new(0.0, 1.0);
-    }
-    if keys.pressed(KeyCode::KeyF)
-        || keys.pressed(KeyCode::KeyD)
-        || keys.pressed(KeyCode::ArrowRight)
-    {
-        direction += Vec2::new(1.0, 0.0);
-    }
-    if keys.pressed(KeyCode::KeyA) || keys.pressed(KeyCode::ArrowLeft) {
-        direction += Vec2::new(-1.0, 0.0);
-    }
-
-    player_input.move_direction = direction.normalize_or_zero();
-}
-
-fn input_running(keys: Res<ButtonInput<KeyCode>>, mut player_input: ResMut<PlayerInput>) {
-    player_input.running = keys.pressed(KeyCode::ShiftLeft);
-}
-
 fn input_escape(keys: Res<ButtonInput<KeyCode>>, mut player_input: ResMut<PlayerInput>) {
     player_input.escape = keys.just_pressed(KeyCode::Escape);
 }
@@ -183,8 +149,6 @@ impl Plugin for InputPlugin {
                 fetch_scroll_events,
                 fetch_mouse_world_coords,
                 input_scroll,
-                player_movement,
-                input_running,
                 input_escape,
                 input_dialogue,
                 toggle_fullscreen,
@@ -196,8 +160,6 @@ impl Plugin for InputPlugin {
         .add_systems(
             PreUpdate,
             block_input
-                .after(player_movement)
-                .after(input_running)
                 .after(input_escape)
                 .after(input_dialogue)
                 .after(InputSystems),

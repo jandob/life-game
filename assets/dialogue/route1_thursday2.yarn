@@ -203,9 +203,9 @@ tags: cutscene
 ---
 // Started by sitting down at her table on the second Thursday (table_3a.yarn).
 <<place Player PlayerSit>>
-<<face Player up>>
 <<walk Samantha SamanthaSit>>
-<<face Samantha down>>
+<<face Samantha Player>>
+<<face Player Samantha>>
 {$samantha_name}: Risotto. Not pasta. You'd get used to it.
 {$samantha_name}: A game while we eat. I ask, you answer. Honestly.
 {$samantha_name}: You get one question back.

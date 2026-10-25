@@ -4,7 +4,6 @@ mod command;
 mod option_selection;
 mod spawn;
 mod speaker;
-mod start_hint;
 #[cfg(test)]
 mod test;
 mod typewriter;
@@ -25,7 +24,6 @@ impl Plugin for DialoguePlugin {
             option_selection::DialogueSelectionPlugin,
             typewriter::DialogueTypewriterPlugin,
             runner::DialogueRunnerPlugin,
-            start_hint::DialogueStartHintPlugin,
         ));
     }
 }

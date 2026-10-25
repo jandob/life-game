@@ -21,8 +21,6 @@ lto = true
 codegen-units = 1
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-# WebGPU instead of WebGL2: bevy_hanabi (tree petals) needs compute shaders.
-bevy = { version = "0.19.1", features = ["webgpu"] }
 web-sys = { version = "0.3.77", features = ["Window", "Location"] }
 getrandom = { version = "0.2", features = ["js"] }
 
@@ -39,12 +37,9 @@ strum_macros = "0.26.4"
 
 bevy = "0.19.1"
 bevy_asset_loader = { version = "0.27.0", features = ["2d", "standard_dynamic_assets"] }
-bevy_rapier2d = "0.36.0"
 
 noisy_bevy = "0.14.0"
 bevy_tweening = { version = "0.16.0", features = ["bevy_ui"]}
-bevy_hanabi = "0.19.0"
-bevy_ecs_tilemap = "0.19.0"
 bevy_yarnspinner = "0.9.0"
 yarnspinner = "0.9.0"
 

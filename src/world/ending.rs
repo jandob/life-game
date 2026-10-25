@@ -9,16 +9,16 @@ use crate::{
     GameAssets, GameState,
 };
 
-use super::camera::YSort;
-
 const FADE_OUT_DURATION: f32 = 2.0;
 const BLACK_OUT_FADE_DURATION: f32 = 4.5;
 const BLACK_OUT_DELAY: f32 = 10.0;
 const START_COLOR: Color = Color::srgba(0.0, 0.0, 0.0, 0.0);
 const END_COLOR: Color = Color::srgba(0.0, 0.0, 0.0, 1.0);
 
-const BACKGROUND_SPRITE_YSORT: f32 = 40_000.0;
-const CHARACTER_YSORT: f32 = 50_000.0;
+/// The black sprite covers the rooms, foreground layers included (z 500 and up)...
+const BLACK_SPRITE_Z: f32 = 600.0;
+/// ...and the characters step in front of it.
+const CHARACTER_ENDING_Z: f32 = 700.0;
 
 /// Which ending sequence to play.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -34,22 +34,22 @@ pub struct EndingTriggered {
     pub npc: Option<NpcDialogue>,
 }
 
-fn increase_ysorts(
-    mut q_player: Query<&mut YSort, With<Player>>,
-    mut q_npcs: Query<(&mut YSort, &Npc), Without<Player>>,
+fn bring_characters_forward(
+    mut q_player: Query<&mut Transform, With<Player>>,
+    mut q_npcs: Query<(&mut Transform, &Npc), Without<Player>>,
     mut ev_ending_triggered: MessageReader<EndingTriggered>,
 ) {
-    let mut player_ysort = match q_player.single_mut() {
+    let mut player = match q_player.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
 
     for ev in ev_ending_triggered.read() {
-        *player_ysort = YSort(CHARACTER_YSORT);
+        player.translation.z = CHARACTER_ENDING_Z;
 
-        for (mut npc_ysort, npc) in &mut q_npcs {
-            if ev.npc == Some(npc.id) {
-                *npc_ysort = YSort(CHARACTER_YSORT);
+        for (mut npc, id) in &mut q_npcs {
+            if ev.npc == Some(id.id) {
+                npc.translation.z = CHARACTER_ENDING_Z;
             }
         }
     }
@@ -67,14 +67,13 @@ fn fade_in_black_sprite(mut commands: Commands, assets: Res<GameAssets>) {
     );
 
     commands.spawn((
-        YSort(BACKGROUND_SPRITE_YSORT),
         TweenAnim::new(tween),
         Sprite {
             image: assets.white_pixel.clone(),
             color: START_COLOR,
             ..default()
         },
-        Transform::from_scale(Vec3::splat(10_000.0)),
+        Transform::from_xyz(0.0, 0.0, BLACK_SPRITE_Z).with_scale(Vec3::splat(10_000.0)),
     ));
 }
 
@@ -135,7 +134,7 @@ impl Plugin for EndingPlugin {
         app.add_systems(
             Update,
             (
-                increase_ysorts.run_if(not(in_state(GameState::AssetLoading))),
+                bring_characters_forward.run_if(not(in_state(GameState::AssetLoading))),
                 fade_in_black_sprite.run_if(
                     on_message::<EndingTriggered>.and_then(not(in_state(GameState::AssetLoading))),
                 ),

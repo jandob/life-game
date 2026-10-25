@@ -1,10 +1,8 @@
 mod spawn;
-mod wander;
 
 use strum_macros::{Display, EnumString};
 
 use bevy::prelude::*;
-use bevy_rapier2d::plugin::PhysicsSet;
 
 use crate::animation::{character_clip, play_character_clip, CharacterAnim, SpriteAnimator};
 use crate::story::scripted::ScriptedWalk;
@@ -21,13 +19,10 @@ pub struct NpcPlugin;
 
 impl Plugin for NpcPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((spawn::NpcSpawnPlugin, wander::WanderPlugin))
-            .add_systems(
-                PostUpdate,
-                animate_actors
-                    .before(PhysicsSet::Writeback)
-                    .run_if(in_state(GameState::Gaming)),
-            );
+        app.add_plugins(spawn::NpcSpawnPlugin).add_systems(
+            PostUpdate,
+            animate_actors.run_if(in_state(GameState::Gaming)),
+        );
     }
 }
 

@@ -1,13 +1,13 @@
 use bevy::prelude::*;
-use bevy_rapier2d::{dynamics::Velocity, plugin::PhysicsSet};
 use bevy_yarnspinner::events::DialogueCompleted;
 
 use crate::animation::{character_clip, play_character_clip, CharacterAnim, SpriteAnimator};
 use crate::story::scripted::ScriptedWalk;
 use crate::story::transition::QueuedScene;
+use crate::world::side_view::ClickWalk;
 use crate::GameState;
 
-use super::{chat::PlayerStoppedChat, input::PlayerInput, Player};
+use super::{chat::PlayerStoppedChat, Player};
 
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
 pub enum PlayerState {
@@ -40,27 +40,19 @@ fn switch_to_idling_from_talking_on_completed(
     }
 }
 
-fn switch_player_move_state(
-    player_input: Res<PlayerInput>,
-    mut q_player: Query<(&Velocity, &mut Player), Without<ScriptedWalk>>,
-) {
-    let (velocity, mut player) = match q_player.single_mut() {
-        Ok(p) => p,
-        Err(_) => return,
+/// Idle unless a click (which sets walking or running) or a scene walks the player.
+fn switch_player_move_state(mut q_player: Query<(&mut Player, Has<ClickWalk>, Has<ScriptedWalk>)>) {
+    let Ok((mut player, click_walk, scripted_walk)) = q_player.single_mut() else {
+        return;
     };
-
-    if player.state == PlayerState::Talking {
+    if player.state == PlayerState::Talking || click_walk {
         return;
     }
-
-    let state = if velocity.linear == Vec2::ZERO {
-        PlayerState::Idling
-    } else if player_input.running {
-        PlayerState::Running
-    } else {
+    player.state = if scripted_walk {
         PlayerState::Walking
+    } else {
+        PlayerState::Idling
     };
-    player.state = state;
 }
 
 fn update_animation(
@@ -95,7 +87,6 @@ impl Plugin for PlayerStatePlugin {
                     update_animation,
                 )
                     .chain()
-                    .before(PhysicsSet::Writeback)
                     .run_if(in_state(GameState::Gaming)),
             );
     }
