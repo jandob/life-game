@@ -29,6 +29,9 @@ Models are read from the Hugging Face cache; never download models or install pa
 
 ## 2. Which backend for which stage
 
+Remote: `runpod_qwen_image21` = Qwen-Image 2.1 base (40 steps, better quality) on RunPod; same commands and caps as
+`qwen_image21` except `rgba`, about 65 s and 1.5-2 cents per image (billed: ask before using it).
+
 | | `qwen_image21` | `flux2_klein_pixel_lora` | `z_image_turbo` |
 |---|---|---|---|
 | text to image | yes, best, 1024², 55-95 s | yes, fast, 512², 5-11 s | yes, ~100 s |
@@ -169,9 +172,8 @@ Locked-grid downscale without cell fitting (scenekit): `artgen.py snap`. Other c
 - Seamless 16 px tiles (weak for every model).
 - Bit-identical reruns across machines or versions (MPS); compare with tolerance.
 - References on `z_image_turbo`, `edit`/`sheet` on flux (the command refuses with a message).
-- Remote runs: `--opt runner=remote:runpod --opt variant=base` (40-step base model) needs
-  `ARTGEN_REMOTE_RUNPOD_CMD="python remote/runpod_cmd.py"`, `RUNPOD_API_KEY` and `ARTGEN_RUNPOD_ENDPOINT`; it costs money
-  per job (RunPod Serverless, README "RunPod Serverless"), so ask before using it. The base variant runs remote only.
+- Remote runs: `--backend runpod_qwen_image21` needs `RUNPOD_API_KEY` and `ARTGEN_RUNPOD_ENDPOINT`; each image is a
+  billed RunPod job (README "Remote backend"), so ask before using it.
 
 ## 7. Verify what you made
 
