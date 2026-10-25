@@ -27,8 +27,8 @@ pub struct GameAssets {
     // Start map: `world_map` in assets/start.assets.ron
     #[asset(key = "world_map")]
     pub world_map: Handle<crate::world::map::tiled_map::TiledMap>,
-    // The side-view spike room, played with `--view side`.
-    #[asset(path = "maps/side/flat3a.tmj")]
+    // Route 1 as side-view rooms, played with `--view side`.
+    #[asset(path = "maps/side/route1.tmj")]
     pub side_map: Handle<crate::world::map::tiled_map::TiledMap>,
 
     // --- FLORA ---

@@ -63,7 +63,8 @@ files, so a renamed node or a broken scene fails `cargo test`.
 
 ## Side view (spike)
 
-`--view side` (web: `?view=side`) plays the side-view test room, Samantha's flat as a
-side-on room walked by clicking, instead of the top-down map. See
-`openspec/changes/side-view/`. It combines with the menu only; start points still use the
-top-down map until their scenes are ported.
+`--view side` (web: `?view=side`) plays Route 1 side-on, walked by clicking, instead of
+the top-down map: the landing, 3B, 3A and the corner shop as rooms of
+`maps/side/route1.tmj`. See `openspec/changes/side-view/`. Start points combine with it,
+e.g. `--view side --start viewing`: the spawns and paths have the same names as on the
+top-down map, and walks into another room go through the doors and stairs between them.

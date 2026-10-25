@@ -1,0 +1,1469 @@
+{
+ "compressionlevel": -1,
+ "width": 27,
+ "height": 48,
+ "tilewidth": 48,
+ "tileheight": 48,
+ "infinite": false,
+ "orientation": "orthogonal",
+ "renderorder": "right-down",
+ "type": "map",
+ "version": "1.10",
+ "tiledversion": "1.11.2",
+ "nextlayerid": 17,
+ "nextobjectid": 69,
+ "layers": [
+  {
+   "id": 1,
+   "name": "Landing background",
+   "type": "imagelayer",
+   "image": "../../library/rooms/landing/background.png",
+   "imagewidth": 1296,
+   "imageheight": 576,
+   "offsetx": 0,
+   "offsety": 0,
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0,
+   "repeatx": false,
+   "repeaty": false
+  },
+  {
+   "id": 2,
+   "name": "Flat3B background",
+   "type": "imagelayer",
+   "image": "../../library/rooms/flat3b/background.png",
+   "imagewidth": 1296,
+   "imageheight": 576,
+   "offsetx": 0,
+   "offsety": 576,
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0,
+   "repeatx": false,
+   "repeaty": false
+  },
+  {
+   "id": 3,
+   "name": "Flat3A background",
+   "type": "imagelayer",
+   "image": "../../library/rooms/flat3a/background.png",
+   "imagewidth": 1296,
+   "imageheight": 576,
+   "offsetx": 0,
+   "offsety": 1152,
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0,
+   "repeatx": false,
+   "repeaty": false
+  },
+  {
+   "id": 4,
+   "name": "Shop background",
+   "type": "imagelayer",
+   "image": "../../library/rooms/shop/background.png",
+   "imagewidth": 1296,
+   "imageheight": 576,
+   "offsetx": 0,
+   "offsety": 1728,
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0,
+   "repeatx": false,
+   "repeaty": false
+  },
+  {
+   "id": 5,
+   "name": "Door3B",
+   "type": "imagelayer",
+   "image": "../../library/rooms/doors/door.png",
+   "imagewidth": 96,
+   "imageheight": 192,
+   "offsetx": 432,
+   "offsety": 96,
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0,
+   "repeatx": false,
+   "repeaty": false
+  },
+  {
+   "id": 6,
+   "name": "Door3A",
+   "type": "imagelayer",
+   "image": "../../library/rooms/doors/door.png",
+   "imagewidth": 96,
+   "imageheight": 192,
+   "offsetx": 816,
+   "offsety": 96,
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0,
+   "repeatx": false,
+   "repeaty": false
+  },
+  {
+   "id": 7,
+   "name": "Door3B",
+   "type": "imagelayer",
+   "image": "../../library/rooms/doors/door.png",
+   "imagewidth": 96,
+   "imageheight": 192,
+   "offsetx": 96,
+   "offsety": 672,
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0,
+   "repeatx": false,
+   "repeaty": false
+  },
+  {
+   "id": 8,
+   "name": "Door3A",
+   "type": "imagelayer",
+   "image": "../../library/rooms/doors/door.png",
+   "imagewidth": 96,
+   "imageheight": 192,
+   "offsetx": 816,
+   "offsety": 1248,
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0,
+   "repeatx": false,
+   "repeaty": false
+  },
+  {
+   "id": 9,
+   "name": "Rooms",
+   "type": "objectgroup",
+   "draworder": "topdown",
+   "objects": [
+    {
+     "id": 1,
+     "name": "Landing",
+     "type": "",
+     "x": 0,
+     "y": 0,
+     "width": 1296,
+     "height": 576,
+     "rotation": 0,
+     "visible": true
+    },
+    {
+     "id": 2,
+     "name": "Flat3B",
+     "type": "",
+     "x": 0,
+     "y": 576,
+     "width": 1296,
+     "height": 576,
+     "rotation": 0,
+     "visible": true
+    },
+    {
+     "id": 3,
+     "name": "Flat3A",
+     "type": "",
+     "x": 0,
+     "y": 1152,
+     "width": 1296,
+     "height": 576,
+     "rotation": 0,
+     "visible": true
+    },
+    {
+     "id": 4,
+     "name": "Shop",
+     "type": "",
+     "x": 0,
+     "y": 1728,
+     "width": 1296,
+     "height": 576,
+     "rotation": 0,
+     "visible": true
+    }
+   ],
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "id": 10,
+   "name": "Floor",
+   "type": "objectgroup",
+   "draworder": "topdown",
+   "objects": [
+    {
+     "id": 5,
+     "name": "Floor",
+     "type": "",
+     "x": 72,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "polyline": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1152,
+       "y": 0
+      }
+     ]
+    },
+    {
+     "id": 6,
+     "name": "Floor",
+     "type": "",
+     "x": 72,
+     "y": 944,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "polyline": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1152,
+       "y": 0
+      }
+     ]
+    },
+    {
+     "id": 7,
+     "name": "Floor",
+     "type": "",
+     "x": 72,
+     "y": 1520,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "polyline": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1152,
+       "y": 0
+      }
+     ]
+    },
+    {
+     "id": 8,
+     "name": "Floor",
+     "type": "",
+     "x": 72,
+     "y": 2096,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "polyline": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1152,
+       "y": 0
+      }
+     ]
+    }
+   ],
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "id": 11,
+   "name": "Portals",
+   "type": "objectgroup",
+   "draworder": "topdown",
+   "objects": [
+    {
+     "id": 9,
+     "name": "Landing3B",
+     "type": "",
+     "x": 480,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "to",
+       "type": "string",
+       "value": "Inside3B"
+      }
+     ],
+     "point": true
+    },
+    {
+     "id": 10,
+     "name": "Inside3B",
+     "type": "",
+     "x": 144,
+     "y": 944,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "to",
+       "type": "string",
+       "value": "Landing3B"
+      }
+     ],
+     "point": true
+    },
+    {
+     "id": 11,
+     "name": "Landing3A",
+     "type": "",
+     "x": 864,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "to",
+       "type": "string",
+       "value": "Inside3A"
+      }
+     ],
+     "point": true
+    },
+    {
+     "id": 12,
+     "name": "Inside3A",
+     "type": "",
+     "x": 864,
+     "y": 1520,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "to",
+       "type": "string",
+       "value": "Landing3A"
+      }
+     ],
+     "point": true
+    },
+    {
+     "id": 13,
+     "name": "Stairs",
+     "type": "",
+     "x": 120,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "to",
+       "type": "string",
+       "value": "ShopEntrance"
+      }
+     ],
+     "point": true
+    },
+    {
+     "id": 14,
+     "name": "ShopEntrance",
+     "type": "",
+     "x": 144,
+     "y": 2096,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "to",
+       "type": "string",
+       "value": "Stairs"
+      }
+     ],
+     "point": true
+    }
+   ],
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "id": 12,
+   "name": "Spawn",
+   "type": "objectgroup",
+   "draworder": "topdown",
+   "objects": [
+    {
+     "id": 15,
+     "name": "SpawnPoint",
+     "type": "",
+     "x": 300,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    }
+   ],
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "id": 13,
+   "name": "NPCs",
+   "type": "objectgroup",
+   "draworder": "topdown",
+   "objects": [
+    {
+     "id": 16,
+     "name": "Samantha",
+     "type": "",
+     "x": 864,
+     "y": 1520,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "hidden",
+       "type": "bool",
+       "value": true
+      }
+     ],
+     "point": true
+    }
+   ],
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "id": 14,
+   "name": "Doors",
+   "type": "objectgroup",
+   "draworder": "topdown",
+   "objects": [
+    {
+     "id": 17,
+     "name": "Door3B",
+     "type": "",
+     "x": 480,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "open",
+       "type": "bool",
+       "value": false
+      }
+     ],
+     "point": true
+    },
+    {
+     "id": 18,
+     "name": "Door3A",
+     "type": "",
+     "x": 864,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "open",
+       "type": "bool",
+       "value": false
+      }
+     ],
+     "point": true
+    }
+   ],
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "id": 15,
+   "name": "Hotspots",
+   "type": "objectgroup",
+   "draworder": "topdown",
+   "objects": [
+    {
+     "id": 19,
+     "name": "Stairs",
+     "type": "",
+     "x": 64,
+     "y": 218,
+     "width": 70,
+     "height": 130,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Stairs"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "StairsLanding"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 120
+      }
+     ]
+    },
+    {
+     "id": 20,
+     "name": "Door3B",
+     "type": "",
+     "x": 432,
+     "y": 126,
+     "width": 96,
+     "height": 162,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "3B"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Door3B"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 480
+      }
+     ]
+    },
+    {
+     "id": 21,
+     "name": "Door3A",
+     "type": "",
+     "x": 816,
+     "y": 126,
+     "width": 96,
+     "height": 162,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "3A"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Door3A"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 864
+      }
+     ]
+    },
+    {
+     "id": 22,
+     "name": "Recycling3A",
+     "type": "",
+     "x": 1020,
+     "y": 274,
+     "width": 40,
+     "height": 74,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Recycling"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Recycling3A"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 1040
+      }
+     ]
+    },
+    {
+     "id": 23,
+     "name": "Door3BInside",
+     "type": "",
+     "x": 96,
+     "y": 702,
+     "width": 96,
+     "height": 162,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Front door"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Door3BInside"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 144
+      }
+     ]
+    },
+    {
+     "id": 24,
+     "name": "Rack3B",
+     "type": "",
+     "x": 240,
+     "y": 863,
+     "width": 94,
+     "height": 61,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Clothes rack"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Rack3B"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 287
+      }
+     ]
+    },
+    {
+     "id": 25,
+     "name": "Bed3B",
+     "type": "",
+     "x": 380,
+     "y": 854,
+     "width": 200,
+     "height": 70,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Bed"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Bed3B"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 480
+      }
+     ]
+    },
+    {
+     "id": 26,
+     "name": "Drawers3B",
+     "type": "",
+     "x": 640,
+     "y": 832,
+     "width": 60,
+     "height": 92,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Drawers"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Drawers3B"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 670
+      }
+     ]
+    },
+    {
+     "id": 27,
+     "name": "Box3B",
+     "type": "",
+     "x": 760,
+     "y": 887,
+     "width": 43,
+     "height": 37,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Box"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Box3B"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 781
+      }
+     ]
+    },
+    {
+     "id": 28,
+     "name": "Sink3A",
+     "type": "",
+     "x": 52,
+     "y": 1400,
+     "width": 78,
+     "height": 100,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Sink"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Sink3A"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 100
+      }
+     ]
+    },
+    {
+     "id": 29,
+     "name": "Table3A",
+     "type": "",
+     "x": 488,
+     "y": 1432,
+     "width": 202,
+     "height": 68,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Table"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Table3A"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 600
+      }
+     ]
+    },
+    {
+     "id": 30,
+     "name": "Door3AInside",
+     "type": "",
+     "x": 816,
+     "y": 1278,
+     "width": 96,
+     "height": 162,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Front door"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Door3AInside"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 864
+      }
+     ]
+    },
+    {
+     "id": 31,
+     "name": "Shelf3A",
+     "type": "",
+     "x": 1110,
+     "y": 1318,
+     "width": 84,
+     "height": 182,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Bookshelf"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Shelf3A"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 1150
+      }
+     ]
+    },
+    {
+     "id": 32,
+     "name": "Samantha3A",
+     "type": "",
+     "x": 0,
+     "y": 1152,
+     "width": 60,
+     "height": 132,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Samantha"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Samantha3A"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 0
+      },
+      {
+       "name": "actor",
+       "type": "string",
+       "value": "Samantha"
+      }
+     ]
+    },
+    {
+     "id": 33,
+     "name": "ShopDoor",
+     "type": "",
+     "x": 96,
+     "y": 1854,
+     "width": 96,
+     "height": 162,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Door"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "ShopDoor"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 144
+      }
+     ]
+    },
+    {
+     "id": 34,
+     "name": "ShopWine",
+     "type": "",
+     "x": 330,
+     "y": 1900,
+     "width": 140,
+     "height": 176,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Wine"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "ShopWine"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 400
+      }
+     ]
+    },
+    {
+     "id": 35,
+     "name": "ShopChocolates",
+     "type": "",
+     "x": 640,
+     "y": 1972,
+     "width": 40,
+     "height": 104,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Chocolates"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "ShopChocolates"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 660
+      }
+     ]
+    },
+    {
+     "id": 36,
+     "name": "ShopTill",
+     "type": "",
+     "x": 720,
+     "y": 1952,
+     "width": 142,
+     "height": 124,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Till"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "ShopTill"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 790
+      }
+     ]
+    },
+    {
+     "id": 37,
+     "name": "ShopFlowers",
+     "type": "",
+     "x": 1000,
+     "y": 2005,
+     "width": 41,
+     "height": 71,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Flowers"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "ShopFlowers"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 1020
+      }
+     ]
+    }
+   ],
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0
+  },
+  {
+   "id": 16,
+   "name": "Paths",
+   "type": "objectgroup",
+   "draworder": "topdown",
+   "objects": [
+    {
+     "id": 38,
+     "name": "PlayerKnock",
+     "type": "",
+     "x": 470,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 39,
+     "name": "SamanthaOut",
+     "type": "",
+     "x": 760,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 40,
+     "name": "SamanthaTo3B",
+     "type": "",
+     "x": 560,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 41,
+     "name": "SamanthaToKitchen",
+     "type": "",
+     "x": 1000,
+     "y": 944,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 42,
+     "name": "PlayerToKitchen",
+     "type": "",
+     "x": 900,
+     "y": 944,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 43,
+     "name": "SamanthaToBedroom",
+     "type": "",
+     "x": 600,
+     "y": 944,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 44,
+     "name": "PlayerToBedroom",
+     "type": "",
+     "x": 480,
+     "y": 944,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 45,
+     "name": "SamanthaToWindow",
+     "type": "",
+     "x": 500,
+     "y": 944,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 46,
+     "name": "PlayerToWindow",
+     "type": "",
+     "x": 420,
+     "y": 944,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 47,
+     "name": "SamanthaToLanding",
+     "type": "",
+     "x": 560,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 48,
+     "name": "PlayerToLanding",
+     "type": "",
+     "x": 420,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 49,
+     "name": "SamanthaHome",
+     "type": "",
+     "x": 864,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 50,
+     "name": "PlayerArrive",
+     "type": "",
+     "x": 220,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 51,
+     "name": "SamanthaWait",
+     "type": "",
+     "x": 580,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 52,
+     "name": "PlayerInto3B",
+     "type": "",
+     "x": 260,
+     "y": 944,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 53,
+     "name": "PlayerTo3A",
+     "type": "",
+     "x": 780,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 54,
+     "name": "SamanthaIn",
+     "type": "",
+     "x": 864,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 55,
+     "name": "PlayerInto3A",
+     "type": "",
+     "x": 760,
+     "y": 1520,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 56,
+     "name": "SamanthaToKitchen3A",
+     "type": "",
+     "x": 200,
+     "y": 1520,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 57,
+     "name": "SamanthaSit",
+     "type": "",
+     "x": 670,
+     "y": 1520,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 58,
+     "name": "PlayerSit",
+     "type": "",
+     "x": 505,
+     "y": 1520,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 59,
+     "name": "PlayerAtSink",
+     "type": "",
+     "x": 100,
+     "y": 1520,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 60,
+     "name": "SamanthaBehindSink",
+     "type": "",
+     "x": 200,
+     "y": 1520,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 61,
+     "name": "SamanthaToDoor3AInside",
+     "type": "",
+     "x": 800,
+     "y": 1520,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 62,
+     "name": "PlayerOutOf3A",
+     "type": "",
+     "x": 820,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 63,
+     "name": "ShopIn",
+     "type": "",
+     "x": 220,
+     "y": 2096,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 64,
+     "name": "PlayerFromShop",
+     "type": "",
+     "x": 200,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 65,
+     "name": "PlayerKiss3A",
+     "type": "",
+     "x": 820,
+     "y": 1520,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 66,
+     "name": "SamanthaKiss3A",
+     "type": "",
+     "x": 900,
+     "y": 1520,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 67,
+     "name": "PlayerOutOf3B",
+     "type": "",
+     "x": 480,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    },
+    {
+     "id": 68,
+     "name": "PlayerOutOf3AKiss",
+     "type": "",
+     "x": 820,
+     "y": 368,
+     "width": 0,
+     "height": 0,
+     "rotation": 0,
+     "visible": true,
+     "point": true
+    }
+   ],
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0
+  }
+ ],
+ "tilesets": [],
+ "properties": [
+  {
+   "name": "view",
+   "type": "string",
+   "value": "side"
+  }
+ ]
+}

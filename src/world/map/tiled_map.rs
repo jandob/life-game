@@ -8,7 +8,7 @@ use bevy_rapier2d::rapier::math::Pose;
 use bevy_rapier2d::rapier::parry::shape::SharedShape;
 use serde_json::Value;
 
-use crate::character::FEET_BELOW_CENTRE;
+use crate::character::{FEET_BELOW_CENTRE, SPRITE_FEET_BELOW_CENTRE};
 use crate::story::start_point::LaunchOptions;
 use crate::{GameAssets, GameState};
 
@@ -137,6 +137,14 @@ impl TiledObject {
     pub fn prop_str(&self, name: &str) -> Option<&str> {
         match self.properties.get(name)? {
             PropValue::Str(s) => Some(s),
+            _ => None,
+        }
+    }
+
+    pub fn prop_f32(&self, name: &str) -> Option<f32> {
+        match self.properties.get(name)? {
+            PropValue::Float(f) => Some(*f as f32),
+            PropValue::Int(i) => Some(*i as f32),
             _ => None,
         }
     }
@@ -433,6 +441,8 @@ impl TiledMap {
     ///
     /// Path points are authored at the feet (collider centre). The collider sits
     /// `FEET_BELOW_CENTRE` (48 px) below the sprite centre, so every point is raised by that.
+    /// In the side view points sit on the floor line, where the sprite's feet stand
+    /// (`SPRITE_FEET_BELOW_CENTRE`).
     /// A polyline gives all its points; a point or rectangle object gives its centre.
     pub fn path(&self, name: &str) -> Option<Vec<Vec2>> {
         let obj = self
@@ -447,9 +457,18 @@ impl TiledMap {
         Some(
             tiled_points
                 .into_iter()
-                .map(|p| self.tiled_to_game(p.x, p.y) + Vec2::new(0.0, FEET_BELOW_CENTRE))
+                .map(|p| self.tiled_to_game(p.x, p.y) + Vec2::new(0.0, self.feet_offset()))
                 .collect(),
         )
+    }
+
+    /// How far a character's transform sits above the point its feet stand on.
+    pub fn feet_offset(&self) -> f32 {
+        if self.side_view {
+            SPRITE_FEET_BELOW_CENTRE
+        } else {
+            FEET_BELOW_CENTRE
+        }
     }
 
     /// Convert a Tiled pixel position (top-left origin, y-down) to

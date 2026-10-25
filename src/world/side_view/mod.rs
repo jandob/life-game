@@ -1,10 +1,12 @@
-//! Side view (stage 1 spike of the side-view plan): a room seen side-on, walked by
-//! clicking. Runs only on maps with the property `view = "side"` (`--view side`).
+//! Side view (see `openspec/changes/side-view`): rooms seen side-on, walked by clicking.
+//! Runs only on maps with the property `view = "side"` (`--view side`).
 //!
-//! The room's Tiled map holds image layers for the art, a `Floor` polyline whose y is
-//! the line every character's feet stand on and whose x span is walkable, and a
-//! `Hotspots` layer: rectangles over the art with a Yarn `node`, a `label` shown on
-//! hover and the `stand_x` the player walks to before the node starts.
+//! The map holds image layers for the art and, per room (`Rooms`, see `rooms.rs`), a
+//! `Floor` polyline whose y is the line every character's feet stand on and whose x span
+//! is walkable. `Hotspots` are rectangles over the art with a Yarn `node`, a `label`
+//! shown on hover and the `stand_x` the player walks to before the node starts; with
+//! `actor` set, a hotspot moves with that actor. Image layers named like a door are its
+//! leaf, hidden while the door is open.
 
 use bevy::prelude::*;
 use bevy::time::Real;
@@ -14,6 +16,7 @@ use bevy_yarnspinner::prelude::DialogueRunner;
 
 use super::camera::{update_camera_target, MainCamera};
 use super::camera_shake::{update_camera, CameraShake};
+use super::map::doors::DoorStates;
 use super::map::tiled_map::TiledMap;
 use crate::character::SPRITE_FEET_BELOW_CENTRE;
 use crate::player::chat::PlayerStartedChat;
@@ -23,6 +26,10 @@ use crate::story::scripted::{Actor, ScriptedWalk};
 use crate::story::transition::scene_queued;
 use crate::ui::dialogue::runner::RunnerFlags;
 use crate::{GameAssets, GameState};
+
+pub mod rooms;
+
+pub use rooms::SideRooms;
 
 /// Behind every character (their y-sort z stays within about +-1).
 const BACKGROUND_Z: f32 = -800.0;
@@ -40,24 +47,17 @@ pub fn side_view(map: Option<Res<TiledMap>>) -> bool {
     map.is_some_and(|map| map.side_view)
 }
 
-/// The walkable floor of the current room, in game space.
-#[derive(Resource)]
-pub struct SideRoom {
-    /// The y every character's feet stand on
-    pub floor_y: f32,
-    pub min_x: f32,
-    pub max_x: f32,
-    /// What the camera may show
-    pub bounds: Rect,
-}
-
-/// Something in the room the player can click.
+/// Something in a room the player can click.
 #[derive(Component)]
 pub struct Hotspot {
     pub label: String,
     pub node: String,
     pub area: Rect,
     pub stand_x: f32,
+    /// The actor this hotspot moves with (property `actor`), e.g. Samantha
+    pub follow: Option<String>,
+    /// Off while the actor it follows is hidden
+    pub enabled: bool,
 }
 
 /// Where a click sent the player, and the hotspot to use on arrival.
@@ -68,53 +68,34 @@ pub struct ClickWalk {
     pub hotspot: Option<Entity>,
 }
 
+/// A sprite drawn from the image layer of this name. A layer named like a door is that
+/// door's leaf, hidden while the door is open.
+#[derive(Component)]
+struct ImageLayerName(String);
+
 #[derive(Component)]
 struct HoverLabel;
 
-fn spawn_room(mut commands: Commands, map: Res<TiledMap>, assets: Res<GameAssets>) {
-    for layer in &map.image_layers {
+fn spawn_rooms(mut commands: Commands, map: Res<TiledMap>, assets: Res<GameAssets>) {
+    // Layers draw in file order: each one a little in front of the one before.
+    let behind = map.image_layers.iter().filter(|l| !l.above).count() as f32;
+    for (i, layer) in map.image_layers.iter().enumerate() {
         let corner = map.tiled_to_game(layer.offset.x, layer.offset.y);
         let z = if layer.above {
-            FOREGROUND_Z
+            FOREGROUND_Z + i as f32
         } else {
-            BACKGROUND_Z
+            BACKGROUND_Z - behind + i as f32
         };
         commands.spawn((
             Name::new(format!("Image layer {}", layer.name)),
+            ImageLayerName(layer.name.clone()),
             Sprite::from_image(layer.image.clone()),
             bevy::sprite::Anchor::TOP_LEFT,
             Transform::from_translation(corner.extend(z)),
         ));
     }
 
-    let bounds = map.world_bounds();
-    let floor = map
-        .object_layer("Floor")
-        .iter()
-        .find(|obj| obj.name == "Floor" && obj.points.len() >= 2);
-    let room = match floor {
-        Some(floor) => {
-            let xs = floor.points.iter().map(|p| p.x);
-            let min = xs.clone().fold(f32::MAX, f32::min);
-            let max = xs.fold(f32::MIN, f32::max);
-            SideRoom {
-                floor_y: map.tiled_to_game(0.0, floor.points[0].y).y,
-                min_x: map.tiled_to_game(min, 0.0).x,
-                max_x: map.tiled_to_game(max, 0.0).x,
-                bounds,
-            }
-        }
-        None => {
-            warn!("Side-view map has no 'Floor' polyline, using the map's middle");
-            SideRoom {
-                floor_y: bounds.center().y,
-                min_x: bounds.min.x,
-                max_x: bounds.max.x,
-                bounds,
-            }
-        }
-    };
-
+    let rooms = SideRooms::from_map(&map);
     for obj in map.object_layer("Hotspots") {
         let Some(node) = obj.prop_str("node") else {
             warn!("Hotspot '{}' has no 'node' property, skipping", obj.name);
@@ -125,16 +106,13 @@ fn spawn_room(mut commands: Commands, map: Res<TiledMap>, assets: Res<GameAssets
             map.tiled_to_game(obj.x + obj.width, obj.y + obj.height),
         );
         let stand_x = obj
-            .properties
-            .get("stand_x")
-            .and_then(|v| match v {
-                crate::world::map::tiled_map::PropValue::Float(f) => Some(*f as f32),
-                crate::world::map::tiled_map::PropValue::Int(i) => Some(*i as f32),
-                _ => None,
-            })
+            .prop_f32("stand_x")
             .map(|x| map.tiled_to_game(x, 0.0).x)
-            .unwrap_or(area.center().x)
-            .clamp(room.min_x, room.max_x);
+            .unwrap_or(area.center().x);
+        let stand_x = match rooms.room_at(area.center()).map(|r| &rooms.rooms[r]) {
+            Some(room) => stand_x.clamp(room.min_x, room.max_x),
+            None => stand_x,
+        };
         commands.spawn((
             Name::new(format!("Hotspot {}", obj.name)),
             Hotspot {
@@ -142,10 +120,12 @@ fn spawn_room(mut commands: Commands, map: Res<TiledMap>, assets: Res<GameAssets
                 node: node.to_string(),
                 area,
                 stand_x,
+                follow: obj.prop_str("actor").map(str::to_string),
+                enabled: true,
             },
         ));
     }
-    commands.insert_resource(room);
+    commands.insert_resource(rooms);
 
     commands.spawn((
         HoverLabel,
@@ -168,10 +148,61 @@ fn spawn_room(mut commands: Commands, map: Res<TiledMap>, assets: Res<GameAssets
     ));
 }
 
-/// Puts every character's feet on the floor line when it appears.
-fn stand_on_floor(room: Res<SideRoom>, mut q_actors: Query<&mut Transform, Added<Actor>>) {
+/// Puts every character's feet on the floor line of its room when it appears.
+fn stand_on_floor(rooms: Res<SideRooms>, mut q_actors: Query<&mut Transform, Added<Actor>>) {
     for mut transform in &mut q_actors {
-        transform.translation.y = room.floor_y + SPRITE_FEET_BELOW_CENTRE * transform.scale.y;
+        if let Some(room) = rooms.room_at(transform.translation.xy()) {
+            transform.translation.y = rooms.rooms[room].stand_y;
+        }
+    }
+}
+
+/// Moves hotspots that follow an actor with it, and turns them off while it's hidden.
+fn follow_actors(
+    mut q_hotspots: Query<&mut Hotspot>,
+    q_actors: Query<(&Actor, &Transform, &Visibility)>,
+) {
+    for mut hotspot in &mut q_hotspots {
+        let Some(name) = hotspot.follow.as_deref() else {
+            continue;
+        };
+        let Some((_, transform, visibility)) = q_actors.iter().find(|(a, ..)| a.0 == name) else {
+            continue;
+        };
+        let feet = transform.translation.xy() - Vec2::new(0.0, SPRITE_FEET_BELOW_CENTRE);
+        let size = hotspot.area.size();
+        let area = Rect::from_corners(
+            feet - Vec2::new(size.x / 2.0, 0.0),
+            feet + Vec2::new(size.x / 2.0, size.y),
+        );
+        let enabled = *visibility != Visibility::Hidden;
+        if hotspot.area != area || hotspot.enabled != enabled {
+            hotspot.area = area;
+            hotspot.stand_x = feet.x;
+            hotspot.enabled = enabled;
+        }
+    }
+}
+
+/// Shows a door's leaf while the door is closed.
+fn sync_door_leaves(
+    states: Option<Res<DoorStates>>,
+    mut q_layers: Query<(&ImageLayerName, &mut Visibility)>,
+) {
+    let Some(states) = states else {
+        return;
+    };
+    if !states.is_changed() {
+        return;
+    }
+    for (layer, mut visibility) in &mut q_layers {
+        if let Some(&open) = states.0.get(&layer.0) {
+            visibility.set_if_neq(if open {
+                Visibility::Hidden
+            } else {
+                Visibility::Inherited
+            });
+        }
     }
 }
 
@@ -182,7 +213,7 @@ fn hotspot_at<'a>(
 ) -> Option<(Entity, &'a Hotspot)> {
     hotspots
         .into_iter()
-        .filter(|(_, h)| h.area.contains(point))
+        .filter(|(_, h)| h.enabled && h.area.contains(point))
         .min_by(|a, b| {
             let area = |h: &Hotspot| h.area.width() * h.area.height();
             area(a.1).total_cmp(&area(b.1))
@@ -204,14 +235,14 @@ fn click_to_walk(
     mouse_buttons: Res<ButtonInput<MouseButton>>,
     mouse: Res<MouseWorldCoords>,
     blocked: Res<InputBlocked>,
-    room: Res<SideRoom>,
+    rooms: Res<SideRooms>,
     q_runners: Query<&RunnerFlags, With<DialogueRunner>>,
-    q_player: Query<(Entity, &Player), Without<ScriptedWalk>>,
+    q_player: Query<(Entity, &Player, &Transform), Without<ScriptedWalk>>,
     q_hotspots: Query<(Entity, &Hotspot)>,
     mut last_busy: Local<f64>,
     mut last_click: Local<f64>,
 ) {
-    let Ok((entity, player)) = q_player.single() else {
+    let Ok((entity, player, transform)) = q_player.single() else {
         return;
     };
     let now = time.elapsed_secs_f64();
@@ -225,9 +256,17 @@ fn click_to_walk(
     let run = now - *last_click < DOUBLE_CLICK_SECONDS;
     *last_click = now;
 
-    let (target_x, hotspot) = match hotspot_at(mouse.0, q_hotspots.iter()) {
+    let Some(room) = rooms.room_at(transform.translation.xy()) else {
+        return;
+    };
+    // Only this room is on screen, so only its hotspots and floor can be clicked.
+    let in_room = q_hotspots
+        .iter()
+        .filter(|(_, h)| rooms.room_at(h.area.center()) == Some(room));
+    let floor = &rooms.rooms[room];
+    let (target_x, hotspot) = match hotspot_at(mouse.0, in_room) {
         Some((hotspot_entity, hotspot)) => (hotspot.stand_x, Some(hotspot_entity)),
-        None => (mouse.0.x.clamp(room.min_x, room.max_x), None),
+        None => (mouse.0.x.clamp(floor.min_x, floor.max_x), None),
     };
     commands.entity(entity).insert(ClickWalk {
         target_x,
@@ -339,10 +378,10 @@ fn hover_hotspot(
     }
 }
 
-/// The camera follows the player along x, stops at the room's edges and keeps the
-/// room's vertical middle.
+/// The camera follows the player along x, stops at the edges of the player's room and
+/// keeps the room's vertical middle.
 fn clamp_camera(
-    room: Res<SideRoom>,
+    rooms: Res<SideRooms>,
     mut shake: ResMut<CameraShake>,
     q_window: Query<&Window, With<PrimaryWindow>>,
     q_projection: Query<&Projection, With<MainCamera>>,
@@ -350,6 +389,9 @@ fn clamp_camera(
     let (Ok(window), Ok(Projection::Orthographic(ortho))) =
         (q_window.single(), q_projection.single())
     else {
+        return;
+    };
+    let Some(room) = rooms.room_at(shake.target()).map(|r| &rooms.rooms[r]) else {
         return;
     };
     let half_width = window.width() * ortho.scale / 2.0;
@@ -368,11 +410,13 @@ pub struct SideViewPlugin;
 
 impl Plugin for SideViewPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::Gaming), spawn_room.run_if(side_view))
+        app.add_systems(OnEnter(GameState::Gaming), spawn_rooms.run_if(side_view))
             .add_systems(
                 Update,
                 (
                     stand_on_floor,
+                    follow_actors,
+                    sync_door_leaves,
                     (
                         click_to_walk.run_if(not(scene_queued)),
                         walk_to_target,
@@ -384,7 +428,7 @@ impl Plugin for SideViewPlugin {
                     .run_if(
                         in_state(GameState::Gaming)
                             .and_then(side_view)
-                            .and_then(resource_exists::<SideRoom>),
+                            .and_then(resource_exists::<SideRooms>),
                     ),
             )
             .add_systems(
@@ -392,7 +436,7 @@ impl Plugin for SideViewPlugin {
                 clamp_camera
                     .after(update_camera_target)
                     .before(update_camera)
-                    .run_if(resource_exists::<SideRoom>.and_then(side_view)),
+                    .run_if(resource_exists::<SideRooms>.and_then(side_view)),
             );
     }
 }
@@ -407,6 +451,8 @@ mod tests {
             node: String::new(),
             area: Rect::from_corners(min, max),
             stand_x: 0.0,
+            follow: None,
+            enabled: true,
         }
     }
 
