@@ -1,0 +1,7 @@
+diffusers @ git+https://github.com/huggingface/diffusers.git@85c9fa4caee33d1c5b473395784471d2d7957c1b
+transformers==5.19.0
+accelerate==1.15.0
+safetensors
+huggingface_hub
+Pillow
+runpod==1.12.0

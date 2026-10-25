@@ -176,6 +176,25 @@ For local fixes with Qwen prefer `edit --mark ... --mask ...` (instruction-drive
 bundled: without the variable the command fails with "no remote host configured". The `base` variant (40 steps, true_cfg
 4.0, negative prompt) runs remote only: `--opt variant=base` with the local runner fails.
 
+#### RunPod Serverless (`remote/`)
+
+- `remote/runpod/` is the worker: `Dockerfile` (python:3.12-slim + torch 2.14.1 cu130 + the pinned diffusers) and
+  `handler.py` (Qwen-Image 2.1 base through `QwenImage21Pipeline`; JobSpec in, `{"images": [{png_base64, meta}]}` out).
+  No weights in the image: the endpoint's **model cache** provides `Qwen/Qwen-Image-2.1` (mounted as an HF cache under
+  `/runpod-volume/huggingface-cache/hub`; the download is not billed).
+- Endpoint (RunPod console, Serverless > New Endpoint > GitHub repo `jandob/artgen`): Dockerfile path
+  `remote/runpod/Dockerfile`, Model `Qwen/Qwen-Image-2.1`, a 48 GB GPU, max workers 1, active workers 0 (scales to
+  zero), allowed CUDA versions >= 13.0, execution timeout ~15 min. A new GitHub release rebuilds and redeploys.
+- Local side: `remote/runpod_cmd.py` (standard library only) submits the job to `/run`, polls `/status` and prints the
+  images. Environment: `RUNPOD_API_KEY`, `ARTGEN_RUNPOD_ENDPOINT` (endpoint id), optional `ARTGEN_RUNPOD_TIMEOUT` (s).
+
+```sh
+export ARTGEN_REMOTE_RUNPOD_CMD="python remote/runpod_cmd.py"     # run artgen from its own dir
+artgen.py generate --backend qwen_image21 --opt runner=remote:runpod --opt variant=base --prompt "..." --out out/x
+```
+
+Tests (no network): `.venv/bin/python test_remote.py`.
+
 ## What was removed
 
 The SDXL stack (the `sdxl` backend with LoRAs, IP-Adapter and OpenPose ControlNet, `cast`, `compose.py`, `train/` and the
