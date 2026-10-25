@@ -10,7 +10,6 @@ copy-paste commands is in [STYLES.md](STYLES.md); the agent skill is `.claude/sk
 ```
 tools/artgen/
   artgen.py            CLI: backends | generate | edit | sheet | refine | inpaint | mask | pose | snap | post | palette-from | cache
-  runner.py            JobSpec + LocalRunner / RemoteRunner (remote hosts via ARTGEN_REMOTE_<NAME>_CMD)
   maskkit.py           repaint masks, draw_mark, paste_back (artgen.py mask / edit)
   pose.py              OpenPose-style skeletons; the strip that `sheet` feeds the model
   bench.py / compare.py  run a backend over a bench yaml (the profile's `bench`, e.g. art/bench.yaml); side-by-side comparison
@@ -18,6 +17,7 @@ tools/artgen/
   backends/
     base.py, __init__.py, _common.py    interface, registry, models.json reader, memory tracker
     qwen_image21.py    Qwen-Image 2.1 Turbo, GGUF transformer (generate, refs, edit, sheet)
+    runpod_qwen_image21.py  Qwen-Image 2.1 base (40 steps, true CFG) on RunPod Serverless; _runpod.py client
     qwen_encode.py     text-encoder worker (separate process), _enc_cache.py (encoding cache), _gguf.py (diffusers GGUF fix)
     flux2_klein_pixel_lora.py, z_image_turbo.py, example_stub.py
   models.json          model files / HF repos for z_image_turbo and qwen_image21
@@ -100,14 +100,13 @@ All commands run with `tools/artgen/.venv/bin/python artgen.py ...` from `tools/
 Each backend declares capabilities (`BackendInfo.caps`, printed by `artgen.py backends`); a command a backend lacks fails
 with a message naming the backends that support it (a backend never silently ignores references).
 
-| Command | `qwen_image21` | `flux2_klein_pixel_lora` | `z_image_turbo` |
-|---|---|---|---|
-| `generate` (text to image) | yes | yes | yes |
-| `generate --ref` (refs) | yes (Picture 1, 2, ...) | yes (FLUX multi-reference, untested for composition) | no |
-| `generate --opt rgba=1` (real alpha) | yes, the only one | no (painted background, removed in `post`) | no (same) |
-| `edit`, `sheet` | yes | no | no |
-| `refine`, `inpaint` (scenekit map tiles) | no | yes | no |
-| `--opt runner=remote:NAME` | yes | no | no |
+| Command | `qwen_image21` | `runpod_qwen_image21` (remote) | `flux2_klein_pixel_lora` | `z_image_turbo` |
+|---|---|---|---|---|
+| `generate` (text to image) | yes | yes | yes | yes |
+| `generate --ref` (refs) | yes (Picture 1, 2, ...) | yes (Picture 1, 2, ...) | yes (FLUX multi-reference, untested for composition) | no |
+| `generate --opt rgba=1` (real alpha) | yes, the only one | not yet (untested remotely) | no (painted background, removed in `post`) | no (same) |
+| `edit`, `sheet` | yes | yes | no | no |
+| `refine`, `inpaint` (scenekit map tiles) | no | no | yes | no |
 
 ```sh
 artgen.py backends                                  # registered backends
@@ -118,8 +117,8 @@ artgen.py generate --backend qwen_image21 --prompt "a modern grey three-seat sof
     --seed 11 --n 2 --out out/sofa --name sofa --json
 #   --opt rgba=1                 trained RGBA wording: transparent background (alpha 1-9, post makes it 0)
 #   --opt background="..."      template background (default "plain flat white background")
-#   --opt sigmas=[...]           override the Turbo 8-step schedule      --opt variant=turbo|base
-#   --opt runner=local|remote:NAME   run locally (default) or on a remote host (below)
+#   --opt sigmas=[...]           override the Turbo 8-step schedule
+#   the 40-step base model is the remote backend runpod_qwen_image21 (below)
 # references: --ref A B C = Picture 1, 2, 3. With refs the prompt is sent VERBATIM (no sprite template).
 artgen.py generate --backend qwen_image21 --ref room.png man.png woman.png --opt ref_res=512 --seed 11 \
     --width 1024 --height 1024 --prompt "Picture 1 is an empty room. ... Keep the room unchanged." --out out/scene --name scene
@@ -169,28 +168,28 @@ artgen.py mask --size 1024x768 --rect 0,300,1024,768 --keep-ellipse 100,300,200,
 
 For local fixes with Qwen prefer `edit --mark ... --mask ...` (instruction-driven, exact paste-back).
 
-### Remote runner
+### Remote backend: `runpod_qwen_image21` (RunPod Serverless)
 
-`--opt runner=remote:<name>` (generate, edit, sheet) pipes a JobSpec JSON to the command in `ARTGEN_REMOTE_<NAME>_CMD`
-(shell words, e.g. `ssh gpu 'artgen-worker'`) and reads a JSON list of `{png_base64, meta}` from its stdout. No host is
-bundled: without the variable the command fails with "no remote host configured". The `base` variant (40 steps, true_cfg
-4.0, negative prompt) runs remote only: `--opt variant=base` with the local runner fails.
+One remote backend = one RunPod endpoint = one model. `runpod_qwen_image21` runs Qwen-Image 2.1 **base** (40 steps,
+true CFG 4.0, default negative prompt) and supports `generate` (incl. `--ref`), `edit` and `sheet` like `qwen_image21`.
+Each call is one billed RunPod job (about 1.5-2 cents per 1024 px image, ~65 s from command to image when the queue is
+short); the sidecar records the remote GPU, timings, peak memory and the RunPod job id.
 
-#### RunPod Serverless (`remote/`)
-
-- The worker: `remote/runpod/Dockerfile` (python:3.12-slim + torch 2.14.1 cu130 + the pinned diffusers) and
-  `rp_handler.py` in the repo root ( where RunPod's GitHub deploy looks for `runpod.serverless.start`; Qwen-Image 2.1 base through `QwenImage21Pipeline`; JobSpec in, `{"images": [{png_base64, meta}]}` out).
-  No weights in the image: the endpoint's **model cache** provides `Qwen/Qwen-Image-2.1` (mounted as an HF cache under
+- Config: the `runpod_qwen_image21` entry in `models.json` (model, `endpoint_env`, defaults, timeout). Environment:
+  `RUNPOD_API_KEY` and `ARTGEN_RUNPOD_ENDPOINT` (the endpoint id), e.g. in a git-ignored `mise.local.toml`.
+- Worker: `rp_handler.py` in the repo root (RunPod's GitHub deploy looks for `runpod.serverless.start` there) and
+  `remote/runpod/Dockerfile` (python:3.12-slim + torch 2.14.1/torchvision 0.29.1 cu130 + the pinned diffusers). No weights
+  in the image: the endpoint's **model cache** provides `Qwen/Qwen-Image-2.1` (HF cache under
   `/runpod-volume/huggingface-cache/hub`; the download is not billed).
 - Endpoint (RunPod console, Serverless > New Endpoint > GitHub repo `jandob/artgen`): Dockerfile path
   `remote/runpod/Dockerfile`, Model `Qwen/Qwen-Image-2.1`, a 48 GB GPU, max workers 1, active workers 0 (scales to
-  zero), allowed CUDA versions >= 13.0, execution timeout ~15 min. A new GitHub release rebuilds and redeploys.
-- Local side: `remote/runpod_cmd.py` (standard library only) submits the job to `/run`, polls `/status` and prints the
-  images. Environment: `RUNPOD_API_KEY`, `ARTGEN_RUNPOD_ENDPOINT` (endpoint id), optional `ARTGEN_RUNPOD_TIMEOUT` (s).
+  zero), allowed CUDA versions >= 13.0. Pushes do not redeploy; a new GitHub **release** rebuilds and redeploys.
+- Another remote model = a new worker (handler + Dockerfile), a new endpoint, a `models.json` entry and a small backend
+  module like `runpod_qwen_image21.py` (the HTTP client `backends/_runpod.py` is shared).
 
 ```sh
-export ARTGEN_REMOTE_RUNPOD_CMD="python remote/runpod_cmd.py"     # run artgen from its own dir
-artgen.py generate --backend qwen_image21 --opt runner=remote:runpod --opt variant=base --prompt "..." --out out/x
+artgen.py generate --backend runpod_qwen_image21 --prompt "..." --seed 11 --out out/x --json
+artgen.py edit --backend runpod_qwen_image21 --image front.png --prompt "Picture 1 ... back view ..." --out out/x
 ```
 
 Tests (no network): `.venv/bin/python test_remote.py`.

@@ -52,15 +52,15 @@ def test_rgba_reaches_template_through_artgen() -> None:
     assert "alpha channel" in seen["prompt"] and seen["kw"].get("rgba") == 1
 
 
-def test_base_variant_is_remote_only() -> None:
+def test_base_model_is_a_separate_backend() -> None:
     try:
         get_backend("qwen_image21").load(variant="base")
-    except RuntimeError as e:
-        assert "remote only" in str(e)
+    except ValueError as e:
+        assert "runpod_qwen_image21" in str(e)
     else:
-        raise AssertionError("base variant must not load locally")
-    assert q.PROFILES["base"]["steps"] == 40 and q.PROFILES["base"]["true_cfg"] == 4.0
-    assert q.PROFILES["base"]["negative"]
+        raise AssertionError("the local backend has no base variant")
+    info = get_backend("runpod_qwen_image21").info
+    assert info.local is False and info.models == ["Qwen/Qwen-Image-2.1"] and "Turbo" not in info.description
 
 
 def test_api_guard() -> None:
@@ -371,68 +371,6 @@ def test_sheet_cli_json_last_line() -> None:
         assert obj["ok"] and obj["seeds"] == [2] and obj["files"] == [str(td / "o" / "s.png")]
 
 
-def test_runner_opt_remote_roundtrip_and_errors() -> None:
-    import contextlib, io, json, os, sys
-    from PIL import Image
-    with tempfile.TemporaryDirectory() as td:
-        td = Path(td)
-        Image.new("RGB", (64, 64), (1, 2, 3)).save(td / "a.png")
-        (td / "fake.py").write_text(
-            "import sys, json, base64, io\n"
-            "from PIL import Image\n"
-            "s = json.load(sys.stdin)\n"
-            "json.dump(s, open(sys.argv[1], 'w'))\n"
-            "out = []\n"
-            "for i in range(s['n']):\n"
-            "    b = io.BytesIO(); Image.new('RGB', (s['width'], s['height']), (s['seed'] + i, 5, 5)).save(b, 'PNG')\n"
-            "    out.append({'png_base64': base64.b64encode(b.getvalue()).decode(), 'meta': {'stats': {'remote_gpu': 'fake', 'last_image_s': [1.5] * s['n']}}})\n"
-            "print(json.dumps(out))\n")
-        seen = td / "spec.json"
-        os.environ["ARTGEN_REMOTE_FAKE_CMD"] = f"{sys.executable} {td / 'fake.py'} {seen}"
-
-        def run(argv):
-            buf = io.StringIO()
-            with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
-                artgen.main(argv)
-            return buf.getvalue().strip().splitlines()[-1]
-        try:
-            obj = json.loads(run(["generate", "--backend", "qwen_image21", "--prompt", "a sofa", "--seed", "3", "--n", "2",
-                                  "--width", "64", "--height", "32", "--opt", "runner=remote:fake", "--opt", "variant=base",
-                                  "--ref", str(td / "a.png"), "--json", "--out", str(td / "o")]))
-            assert obj["ok"] and obj["seeds"] == [3, 4] and obj["stats"]["runner"] == "remote:fake"
-            assert len(obj["stats"]["remote"]) == 2      # per-image remote meta kept for the sidecar
-            assert Image.open(obj["files"][1]).getpixel((0, 0))[:3] == (4, 5, 5)
-            spec = json.loads(seen.read_text())
-            assert spec["variant"] == "base" and spec["kind"] == "generate" and spec["backend"] == "qwen_image21"
-            assert spec["prompt"] == "a sofa" or spec["prompt"].startswith("a sofa")   # refs given: verbatim
-            assert len(spec["refs"]) == 1 and spec["width"] == 64 and "runner" not in spec["opts"]
-            assert (td / "o" / "sheet.json").exists() is False and Path(obj["files"][0]).with_suffix(".json").exists()
-            # edit and sheet go through the same seam
-            e = json.loads(run(["edit", "--image", str(td / "a.png"), "--prompt", "x", "--opt", "runner=remote:fake",
-                                "--out", str(td / "e")]))
-            assert e["ok"] and json.loads(seen.read_text())["kind"] == "edit"
-            sh = json.loads(run(["sheet", "--ref", str(td / "a.png"), "--cell", "64x128", "--opt", "runner=remote:fake",
-                                 "--out", str(td / "s")]))
-            sp = json.loads(seen.read_text())
-            assert sh["ok"] and sp["kind"] == "sheet" and sp["width"] == 320 and len(sp["refs"]) == 2
-        finally:
-            os.environ.pop("ARTGEN_REMOTE_FAKE_CMD")
-        # no host configured
-        try:
-            run(["generate", "--backend", "qwen_image21", "--prompt", "x", "--opt", "runner=remote:nohost", "--out", str(td / "x")])
-        except RuntimeError as err:
-            assert "no remote host configured" in str(err) and "ARTGEN_REMOTE_NOHOST_CMD" in str(err)
-        else:
-            raise AssertionError("expected an error")
-        # base + local runner
-        try:
-            run(["generate", "--backend", "qwen_image21", "--prompt", "x", "--opt", "variant=base", "--out", str(td / "y")])
-        except RuntimeError as err:
-            assert "base variant runs remote only (use --opt runner=remote:<name>)" in str(err)
-        else:
-            raise AssertionError("expected an error")
-
-
 def test_cache_cli_and_bench_size() -> None:
     import contextlib, io, json, os, time
     import bench
@@ -472,17 +410,17 @@ def test_cache_cli_and_bench_size() -> None:
 def test_capability_guards() -> None:
     import contextlib, io
     caps = {n: get_backend(n).info.caps for n in REGISTRY}
-    assert caps["qwen_image21"] == {"refs", "edit", "sheet", "rgba", "remote"}
+    assert caps["qwen_image21"] == {"refs", "edit", "sheet", "rgba"}
+    assert caps["runpod_qwen_image21"] == {"refs", "edit", "sheet"}
     assert caps["flux2_klein_pixel_lora"] == {"refs", "inpaint", "refine"}
     assert not caps["z_image_turbo"] and not caps["example_stub"]
-    assert get_backend("qwen_image21").info.to_dict()["caps"] == ["edit", "refs", "remote", "rgba", "sheet"]
+    assert get_backend("qwen_image21").info.to_dict()["caps"] == ["edit", "refs", "rgba", "sheet"]
     cases = [
         (["edit", "--backend", "z_image_turbo", "--image", "x.png", "--prompt", "p", "--out", "o"], "edit", "qwen_image21"),
         (["edit", "--backend", "flux2_klein_pixel_lora", "--image", "x.png", "--prompt", "p", "--out", "o"], "edit", "qwen_image21"),
         (["sheet", "--backend", "flux2_klein_pixel_lora", "--ref", "x.png", "--out", "o"], "sheet", "qwen_image21"),
         (["generate", "--backend", "z_image_turbo", "--prompt", "p", "--ref", "x.png", "--out", "o"], "--ref", "flux2_klein_pixel_lora, qwen_image21"),
         (["generate", "--backend", "flux2_klein_pixel_lora", "--prompt", "p", "--opt", "rgba=1", "--out", "o"], "rgba", "qwen_image21"),
-        (["generate", "--backend", "flux2_klein_pixel_lora", "--prompt", "p", "--opt", "runner=remote:x", "--out", "o"], "runner", "qwen_image21"),
         (["refine", "--backend", "qwen_image21", "--image", "x.png", "--prompt", "p", "--out", "o"], "refine", "flux2_klein_pixel_lora"),
         (["inpaint", "--backend", "z_image_turbo", "--image", "x.png", "--mask", "m.png", "--prompt", "p", "--out", "o"], "inpaint", "flux2_klein_pixel_lora"),
     ]
@@ -498,7 +436,7 @@ def test_capability_guards() -> None:
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         artgen.main(["backends"])
-    assert "caps=edit,refs,remote,rgba,sheet" in buf.getvalue() and "caps=inpaint,refine,refs" in buf.getvalue()
+    assert "caps=edit,refs,rgba,sheet" in buf.getvalue() and "caps=inpaint,refine,refs" in buf.getvalue()
 
 
 if __name__ == "__main__":
