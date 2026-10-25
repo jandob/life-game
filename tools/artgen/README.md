@@ -192,6 +192,18 @@ artgen.py generate --backend runpod_qwen_image21 --prompt "..." --seed 11 --out 
 artgen.py edit --backend runpod_qwen_image21 --image front.png --prompt "Picture 1 ... back view ..." --out out/x
 ```
 
+**Batch (keep the worker warm).** A cold worker reloads the model, so queue many images at once instead of calling the
+CLI in a loop: `artgen.py batch jobs.json [--max-parallel 32] [--default-backend runpod_qwen_image21]`. The file is a JSON
+list of `generate`/`edit` jobs whose fields are the CLI flags (`cmd` defaults to `generate`; needs `backend`, `prompt`,
+`out`, plus `image` for edit; `opt` may be a `{k: v}` object). All jobs are submitted to `/run` immediately, polled
+together, and written exactly like single runs (PNG + sidecar). One JSON object on stdout with a result per job; a
+failed job doesn't stop the rest, and the exit code is 1 if any failed.
+
+```json
+[{"backend": "runpod_qwen_image21", "prompt": "a tavern interior", "seed": 1, "width": 1024, "height": 768, "out": "out/rooms"},
+ {"cmd": "edit", "backend": "runpod_qwen_image21", "image": "front.png", "prompt": "Picture 1 ... back view ...", "out": "out/x"}]
+```
+
 Tests (no network): `.venv/bin/python test_remote.py`.
 
 ## What was removed

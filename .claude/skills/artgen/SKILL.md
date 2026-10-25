@@ -174,6 +174,8 @@ Locked-grid downscale without cell fitting (scenekit): `artgen.py snap`. Other c
 - References on `z_image_turbo`, `edit`/`sheet` on flux (the command refuses with a message).
 - Remote runs: `--backend runpod_qwen_image21` needs `RUNPOD_API_KEY` and `ARTGEN_RUNPOD_ENDPOINT`; each image is a
   billed RunPod job (README "Remote backend"), so ask before using it.
+  Many images? Use `artgen.py batch jobs.json` (a JSON list of generate/edit jobs): every job is queued at once so the
+  worker stays warm instead of reloading the model per call.
 
 ## 7. Verify what you made
 

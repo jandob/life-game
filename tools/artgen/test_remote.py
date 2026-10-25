@@ -123,6 +123,82 @@ def test_backend_payload_and_stats() -> None:
         os.environ.update(old_env)
 
 
+def test_batch_queues_all_jobs_before_polling() -> None:
+    """Every job's /run is submitted before any /status poll; outputs and sidecars match single runs."""
+    import json
+    import threading
+    import artgen
+
+    lock, log, gate = threading.Lock(), [], threading.Barrier(3, timeout=10)
+
+    def fake_api(url, key, body=None):
+        with lock:
+            log.append(url.split("/v2/")[-1])
+        if url.endswith("/run"):
+            with lock:
+                jid = f"j{sum(1 for u in log if u.endswith('/run'))}"
+            gate.wait()                      # all three submissions must be in flight together
+            return {"id": jid}
+        return {"status": "COMPLETED", "delayTime": 1, "executionTime": 2,
+                "output": {"images": [{"png_base64": _png_b64((9, 9, 9, 255)), "meta": {"image_s": 1.0}}]}}
+
+    old_req, old_env = _runpod._request, dict(os.environ)
+    old_run = _runpod.run
+    _runpod.run = lambda payload, endpoint, **kw: old_run(payload, endpoint, key="k", request=fake_api,
+                                                          sleep=lambda s: None, **kw)
+    os.environ.update(RUNPOD_API_KEY="k", ARTGEN_RUNPOD_ENDPOINT="ep1")
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            td = Path(td)
+            src = td / "src.png"
+            Image.new("RGB", (64, 64), "red").save(src)
+            jobs = [{"backend": "runpod_qwen_image21", "prompt": "a", "seed": 1, "width": 64, "height": 64, "out": str(td / "o")},
+                    {"cmd": "generate", "backend": "runpod_qwen_image21", "prompt": "b", "seed": 5, "width": 64,
+                     "height": 64, "name": "bee", "out": str(td / "o")},
+                    {"cmd": "edit", "backend": "runpod_qwen_image21", "image": str(src), "prompt": "Picture 1 ...",
+                     "seed": 7, "out": str(td / "o")}]
+            jf = td / "jobs.json"
+            jf.write_text(json.dumps(jobs))
+            import argparse
+            import contextlib
+            import io as _io
+            buf = _io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                rc = artgen.cmd_batch(argparse.Namespace(jobs=str(jf), default_backend=None, max_parallel=8))
+            res = json.loads(buf.getvalue())
+            assert rc == 0 and res["ok"] and res["failed"] == [] and len(res["results"]) == 3, res
+            runs = [i for i, u in enumerate(log) if u.endswith("/run")]
+            polls = [i for i, u in enumerate(log) if "/status/" in u]
+            assert len(runs) == 3 and max(runs) < min(polls)
+            for stem in ("a_s1", "bee_s5", "src_edit_s7"):
+                assert (td / "o" / f"{stem}.png").exists() and (td / "o" / f"{stem}.json").exists(), stem
+            # a failing job is reported, the others still finish, exit code is non-zero
+            jf.write_text(json.dumps(jobs[:2]))
+
+            def runner(j):
+                if j["prompt"] == "b":
+                    raise RuntimeError("boom")
+                return {"ok": True, "files": []}
+            buf = _io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                rc = artgen.cmd_batch(argparse.Namespace(jobs=str(jf), default_backend=None, max_parallel=8), runner=runner)
+            res = json.loads(buf.getvalue())
+            assert rc == 1 and res["failed"] == [1] and res["results"][0]["ok"] and "boom" in res["results"][1]["error"]
+        bad = Path(tempfile.mkdtemp()) / "b.json"
+        bad.write_text('[{"prompt":"x"}]')
+        try:
+            artgen.load_jobs(bad)
+        except SystemExit as e:
+            assert "missing" in str(e)
+        else:
+            raise AssertionError("invalid job must fail")
+    finally:
+        _runpod.run = old_run
+        _runpod._request = old_req
+        os.environ.clear()
+        os.environ.update(old_env)
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for t in tests:
