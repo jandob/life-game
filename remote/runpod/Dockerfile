@@ -9,9 +9,9 @@ ENV PYTHONUNBUFFERED=1 \
 
 RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 
-# Same versions as the verified local setup (tools/artgen README): torch 2.14.1, diffusers at the pinned commit.
+# Same versions as the verified local setup: torch 2.14.1 + torchvision 0.29.1 (the Qwen3-VL processor needs it), diffusers at the pinned commit.
 # The CUDA 13.0 wheel needs a host driver for CUDA >= 13.0 (set the endpoint's allowed CUDA versions accordingly).
-RUN pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cu130
+RUN pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu130
 COPY remote/runpod/requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 
