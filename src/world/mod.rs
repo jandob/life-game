@@ -2,6 +2,7 @@ pub mod camera;
 pub mod camera_shake;
 pub mod ending;
 pub mod map;
+pub mod side_view;
 
 pub use camera::MainCamera;
 // pub use camera_shake::CameraShake;
@@ -20,6 +21,7 @@ impl Plugin for WorldPlugin {
             camera_shake::CameraShakePlugin,
             map::MapPlugin,
             ending::EndingPlugin,
+            side_view::SideViewPlugin,
         ))
         .add_systems(OnExit(GameState::AssetLoading), configure_physics);
     }

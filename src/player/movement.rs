@@ -3,6 +3,7 @@ use bevy_rapier2d::prelude::*;
 
 use crate::story::scripted::ScriptedWalk;
 use crate::utils::DebugActive;
+use crate::world::side_view::side_view;
 use crate::GameState;
 
 use super::chat::PlayerStartedChat;
@@ -60,7 +61,7 @@ impl Plugin for PlayerMovementPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            (player_movement, face_npc).run_if(in_state(GameState::Gaming)),
+            (player_movement.run_if(not(side_view)), face_npc).run_if(in_state(GameState::Gaming)),
         );
     }
 }

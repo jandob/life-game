@@ -211,10 +211,14 @@ pub struct KeyboardUiPlugin;
 
 impl Plugin for KeyboardUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::Gaming), spawn_keyboard_ui)
-            .add_systems(
-                Update,
-                update_keyboard_hint.run_if(in_state(GameState::Gaming)),
-            );
+        // A side-view room is walked by clicking, so it shows no movement keys.
+        app.add_systems(
+            OnEnter(GameState::Gaming),
+            spawn_keyboard_ui.run_if(not(crate::world::side_view::side_view)),
+        )
+        .add_systems(
+            Update,
+            update_keyboard_hint.run_if(in_state(GameState::Gaming)),
+        );
     }
 }

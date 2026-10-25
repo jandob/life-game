@@ -8,6 +8,9 @@ pub const FEET_RADIUS: f32 = 24.0;
 /// The feet collider's centre lies this far below the sprite centre, in world px.
 pub const FEET_BELOW_CENTRE: f32 = 48.0;
 
+/// The sprite's feet (row 157 of a 192 px cell) lie this far below its centre, in world px.
+pub const SPRITE_FEET_BELOW_CENTRE: f32 = 61.0;
+
 /// How a character sheet maps to the world: the sprite scale.
 #[derive(Clone, Copy)]
 pub struct SheetFormat {

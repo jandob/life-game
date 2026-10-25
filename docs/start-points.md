@@ -60,3 +60,10 @@ files, so a renamed node or a broken scene fails `cargo test`.
 - Only the first option is taken at every choice; use `--set` for other branches.
 - Only the commands listed in `REPLAYED` restore world state. A new command that changes
   the world (e.g. switching maps) needs a case in `replay` too.
+
+## Side view (spike)
+
+`--view side` (web: `?view=side`) plays the side-view test room, Samantha's flat as a
+side-on room walked by clicking, instead of the top-down map. See
+`openspec/changes/side-view/`. It combines with the menu only; start points still use the
+top-down map until their scenes are ported.

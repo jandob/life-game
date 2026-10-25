@@ -111,7 +111,10 @@ fn spawn_camera(mut commands: Commands) {
     ));
 }
 
-fn update_camera_target(mut shake: ResMut<CameraShake>, q_player: Query<&Transform, With<Player>>) {
+pub(crate) fn update_camera_target(
+    mut shake: ResMut<CameraShake>,
+    q_player: Query<&Transform, With<Player>>,
+) {
     let player_transform = match q_player.single() {
         Ok(r) => r,
         Err(_) => return,

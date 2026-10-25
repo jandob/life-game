@@ -196,6 +196,8 @@ pub fn list() -> String {
 pub struct LaunchOptions {
     pub start: Option<String>,
     pub sets: Vec<(String, String)>,
+    /// `--view side` (web: `?view=side`) plays the side-view spike room instead.
+    pub view: Option<String>,
 }
 
 impl LaunchOptions {
@@ -217,6 +219,10 @@ impl LaunchOptions {
         self.start.as_deref() == Some("list")
     }
 
+    pub fn side_view(&self) -> bool {
+        self.view.as_deref() == Some("side")
+    }
+
     #[cfg_attr(target_arch = "wasm32", allow(dead_code))]
     fn from_args(args: impl IntoIterator<Item = String>) -> Self {
         let mut options = Self::default();
@@ -226,7 +232,7 @@ impl LaunchOptions {
                 Some((key, value)) if key.starts_with("--") => (key.to_string(), Some(value)),
                 _ => (arg.clone(), None),
             };
-            if key != "--start" && key != "--set" {
+            if key != "--start" && key != "--set" && key != "--view" {
                 continue;
             }
             let Some(value) = inline.map(str::to_string).or_else(|| args.next()) else {
@@ -252,6 +258,7 @@ impl LaunchOptions {
     fn add(&mut self, key: &str, value: String) {
         match key {
             "start" => self.start = Some(value),
+            "view" => self.view = Some(value),
             "set" => match value.split_once('=') {
                 Some((name, value)) => self.sets.push((name.to_string(), value.to_string())),
                 None => eprintln!("set: expected NAME=VALUE, got '{value}'"),
@@ -670,6 +677,7 @@ mod tests {
         let expected = LaunchOptions {
             start: Some("movein".to_string()),
             sets: vec![("r1_viewing_why".to_string(), "money".to_string())],
+            view: None,
         };
         assert_eq!(
             args(&["--start", "movein", "--set", "r1_viewing_why=money"]),
@@ -689,6 +697,9 @@ mod tests {
         );
         assert_eq!(LaunchOptions::from_query(""), LaunchOptions::default());
         assert!(args(&["--start", "list"]).wants_list());
+        assert!(args(&["--view", "side"]).side_view());
+        assert!(LaunchOptions::from_query("?view=side").side_view());
+        assert!(!args(&["--view", "top"]).side_view());
         assert_eq!(percent_decode("a+b%20c%zz"), "a b c%zz");
     }
 }

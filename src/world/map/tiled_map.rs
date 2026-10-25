@@ -9,6 +9,7 @@ use bevy_rapier2d::rapier::parry::shape::SharedShape;
 use serde_json::Value;
 
 use crate::character::FEET_BELOW_CENTRE;
+use crate::story::start_point::LaunchOptions;
 use crate::{GameAssets, GameState};
 
 /// Parsed Tiled map data (loaded from a `.tmj` file plus its `.tsj` tileset).
@@ -29,6 +30,21 @@ pub struct TiledMap {
     pub tilesets: Vec<Tileset>,
     /// Object layers
     pub object_layers: Vec<ObjectLayerData>,
+    /// Image layers in file order (bottom to top)
+    pub image_layers: Vec<ImageLayer>,
+    /// Seen side-on and walked by clicking (map property `view` = `"side"`)
+    pub side_view: bool,
+}
+
+/// An image layer of the map: one picture placed at its offset.
+#[derive(Clone)]
+pub struct ImageLayer {
+    pub name: String,
+    pub image: Handle<Image>,
+    /// Top-left corner in Tiled px
+    pub offset: Vec2,
+    /// Draws over the characters (`above = true`), e.g. a foreground
+    pub above: bool,
 }
 
 /// A tile layer of the map.
@@ -504,8 +520,7 @@ impl AssetLoader for TiledMapLoader {
 
         let tileset_refs = json["tilesets"]
             .as_array()
-            .filter(|t| !t.is_empty())
-            .ok_or("Map references no tileset")?;
+            .ok_or("Map has no tilesets array")?;
         let mut tilesets = Vec::new();
         for tileset_ref in tileset_refs {
             let first_gid = tileset_ref["firstgid"].as_u64().unwrap_or(1) as u32;
@@ -557,6 +572,7 @@ impl AssetLoader for TiledMapLoader {
 
         let mut layers = Vec::new();
         let mut object_layers = Vec::new();
+        let mut image_layers = Vec::new();
 
         for layer in layers_json {
             match layer["type"].as_str().unwrap_or("") {
@@ -577,6 +593,25 @@ impl AssetLoader for TiledMapLoader {
                     });
                 }
                 "objectgroup" => object_layers.push(parse_object_layer(layer)),
+                "imagelayer" => {
+                    let image_src = layer["image"].as_str().unwrap_or("");
+                    if image_src.is_empty() {
+                        continue;
+                    }
+                    let image_path = load_context
+                        .path()
+                        .resolve_embed_str(image_src)
+                        .map_err(|e| format!("Invalid image layer path {image_src}: {e}"))?;
+                    image_layers.push(ImageLayer {
+                        name: layer["name"].as_str().unwrap_or("").to_string(),
+                        image: load_context.load(image_path),
+                        offset: Vec2::new(
+                            layer["offsetx"].as_f64().unwrap_or(0.0) as f32,
+                            layer["offsety"].as_f64().unwrap_or(0.0) as f32,
+                        ),
+                        above: layer_bool_property(layer, "above").unwrap_or(false),
+                    });
+                }
                 "group" => warn!(
                     "Layer group {:?} is not supported, its layers are ignored",
                     layer["name"].as_str().unwrap_or("")
@@ -585,6 +620,13 @@ impl AssetLoader for TiledMapLoader {
             }
         }
 
+        if !layers.is_empty() && tilesets.is_empty() {
+            return Err("Map has tile layers but references no tileset".into());
+        }
+        let side_view = parse_properties(&json)
+            .get("view")
+            .is_some_and(|view| *view == PropValue::Str("side".to_string()));
+
         let map = TiledMap {
             tile_size,
             width,
@@ -592,6 +634,8 @@ impl AssetLoader for TiledMapLoader {
             layers,
             tilesets,
             object_layers,
+            image_layers,
+            side_view,
         };
         map.warn_flipped_colliders();
         Ok(map)
@@ -607,9 +651,16 @@ fn insert_tiled_map_resource(
     mut commands: Commands,
     assets: Res<GameAssets>,
     maps: Res<Assets<TiledMap>>,
+    launch: Option<Res<LaunchOptions>>,
     render_device: Option<Res<RenderDevice>>,
 ) {
-    let Some(map) = maps.get(&assets.world_map) else {
+    // `--view side` swaps the start map for the side-view spike room.
+    let handle = if launch.is_some_and(|l| l.side_view()) {
+        &assets.side_map
+    } else {
+        &assets.world_map
+    };
+    let Some(map) = maps.get(handle) else {
         error!("Tiled map asset missing after loading");
         return;
     };
@@ -650,6 +701,8 @@ mod tests {
             height: 20,
             layers: Vec::new(),
             tilesets: Vec::new(),
+            image_layers: Vec::new(),
+            side_view: false,
             object_layers: vec![parse_object_layer(&layer)],
         }
     }
@@ -714,6 +767,8 @@ mod tests {
             height: 8,
             layers: Vec::new(),
             tilesets: Vec::new(),
+            image_layers: Vec::new(),
+            side_view: false,
             object_layers: Vec::new(),
         };
         // Tile (0, 0) of the game grid is centred on the origin, so Tiled's
