@@ -5,6 +5,7 @@ reproduced.
 
     artgen.py backends
     artgen.py generate --backend flux2_klein_pixel_lora --prompt "..." --seed 1 --n 4 --out DIR
+    artgen.py batch jobs.json [--max-parallel 32] [--default-backend runpod_qwen_image21]
     artgen.py inpaint --image canvas.png --mask mask.png --prompt "..." --strength 0.75 --n 4 --out DIR
     artgen.py refine --image scene.png --mask head.png --strength 0.4 --prompt "..." --out DIR
     artgen.py mask --size 1024x768 --heads 0.2,0.1,0.3,0.3 --units frac --out mask.png
@@ -366,6 +367,95 @@ def cmd_edit(a) -> None:
     print(json.dumps(out))
 
 
+# ----------------------------------------------------------------- batch
+_JOB_KEYS = {
+    "generate": {"cmd", "backend", "prompt", "raw_prompt", "negative", "seed", "n", "width", "height", "ref",
+                 "opt", "name", "out"},
+    "edit": {"cmd", "backend", "image", "prompt", "mark", "mask", "feather", "ref", "ref_res", "seed", "n",
+             "opt", "name", "out"},
+}
+
+
+def load_jobs(path, default_backend: str | None = None) -> list[dict]:
+    """Read and validate a batch file: a JSON list of generate/edit jobs (same fields as the CLI flags)."""
+    jobs = json.loads(Path(path).read_text())
+    if isinstance(jobs, dict):
+        jobs = jobs.get("jobs")
+    if not isinstance(jobs, list) or not jobs:
+        raise SystemExit("batch: the file must hold a non-empty JSON list of jobs (or {\"jobs\": [...]})")
+    out = []
+    for i, j in enumerate(jobs):
+        j = dict(j)
+        j.setdefault("cmd", "generate")
+        if j["cmd"] not in _JOB_KEYS:
+            raise SystemExit(f"batch: job {i}: cmd must be generate or edit, not {j['cmd']!r}")
+        if default_backend:
+            j.setdefault("backend", default_backend)
+        required = ["backend", "prompt", "out"] + (["image"] if j["cmd"] == "edit" else [])
+        missing = [k for k in required if not j.get(k)]
+        unknown = set(j) - _JOB_KEYS[j["cmd"]]
+        if missing or unknown:
+            raise SystemExit(f"batch: job {i}: missing {sorted(missing)} unknown {sorted(unknown)}")
+        if j["backend"] not in REGISTRY:
+            raise SystemExit(f"batch: job {i}: unknown backend {j['backend']!r}")
+        if isinstance(j.get("opt"), dict):
+            j["opt"] = [f"{k}={json.dumps(v)}" for k, v in j["opt"].items()]
+        out.append(j)
+    return out
+
+
+def run_job(j: dict) -> dict:
+    """Run one batch job with its own backend instance (so threads share no state); returns the JSON result."""
+    opts_in = parse_opts(j.get("opt"))
+    if j["cmd"] == "edit":
+        require_cap(j["backend"], "edit", "edit")
+        b = open_backend(j["backend"], opts_in, "edit")
+        opts = {k: v for k, v in {**{k: v for k, v in b.info.defaults.items() if v is not None}, **opts_in}.items()
+                if k not in b.load_keys and k not in ("ref", "ref_res")}
+        mark = tuple(float(v) for v in j["mark"].split(",")) if j.get("mark") else None
+        return edit_images(b, j["image"], j["prompt"], extras=j.get("ref") or [], mark=mark, mask_path=j.get("mask"),
+                           feather=j.get("feather", 0.0), ref_res=j.get("ref_res", 1024), seed=j.get("seed", 0),
+                           n=j.get("n", 1), out_dir=Path(j["out"]), stem=j.get("name"), opts=opts)
+    b = get_backend(j["backend"])
+    opts = {k: v for k, v in b.info.defaults.items() if v is not None}
+    opts.update(opts_in)
+    if j.get("ref"):
+        opts["ref"] = j["ref"]
+        require_cap(j["backend"], "refs", "ref")
+    b = open_backend(j["backend"], opts, "generate")
+    gen = {k: v for k, v in opts.items() if k not in b.load_keys}
+    dw, dh = b.info.default_size
+    paths = generate_images(b, j["prompt"], raw_prompt=bool(j.get("raw_prompt")), seed=j.get("seed", 0),
+                            n=j.get("n", 1), width=j.get("width") or dw, height=j.get("height") or dh,
+                            negative=j.get("negative"), opts=gen, out_dir=Path(j["out"]), stem=j.get("name"))
+    return {"ok": True, "files": [str(p) for p in paths],
+            "seeds": [j.get("seed", 0) + i for i in range(len(paths))], "stats": b.stats()}
+
+
+def cmd_batch(a, runner=run_job) -> int:
+    """Run every job at once: each thread submits its RunPod job immediately and polls it, so the whole batch is
+    queued before the first one finishes and the worker stays warm. Outputs and sidecars are those of single runs."""
+    from concurrent.futures import ThreadPoolExecutor
+    jobs = load_jobs(a.jobs, a.default_backend)
+    results: list[dict] = [{}] * len(jobs)
+
+    def one(i: int) -> None:
+        try:
+            results[i] = {"job": i, **runner(jobs[i])}
+        except (Exception, SystemExit) as e:  # noqa: BLE001  one failed job must not stop the others
+            results[i] = {"job": i, "ok": False, "error": str(e)}
+        print(f"batch: job {i} {'ok' if results[i]['ok'] else 'FAILED'} ({sum(1 for r in results if r)}/{len(jobs)} done)",
+              file=sys.stderr, flush=True)
+
+    t0 = time.perf_counter()
+    with ThreadPoolExecutor(max_workers=max(1, min(a.max_parallel, len(jobs)))) as ex:
+        list(ex.map(one, range(len(jobs))))
+    failed = [r["job"] for r in results if not r["ok"]]
+    print(json.dumps({"ok": not failed, "jobs": len(jobs), "failed": failed, "total_s": round(time.perf_counter() - t0, 1),
+                      "results": results}))
+    return 1 if failed else 0
+
+
 # ----------------------------------------------------------------- sheet
 def _pose_cycles() -> dict:
     """name -> function(frames, cell) returning that many keypoint sets. Add new cycles here."""
@@ -697,6 +787,13 @@ def main(argv=None) -> None:
                    help='print one JSON object {"ok","files","seeds","stats"} as the last stdout line instead of paths')
     g.add_argument("--out", required=True)
 
+    bt = sub.add_parser("batch", help="run many generate/edit jobs from a JSON file, all queued at once "
+                        "(remote backends: the RunPod worker stays warm); one JSON result on stdout")
+    bt.add_argument("jobs", help='JSON list of jobs, e.g. [{"cmd":"generate","backend":"runpod_qwen_image21",'
+                    '"prompt":"...","seed":1,"out":"out/x"}, {"cmd":"edit","image":"a.png",...}]; fields = CLI flags')
+    bt.add_argument("--default-backend", choices=list(REGISTRY), help="backend for jobs that name none")
+    bt.add_argument("--max-parallel", type=int, default=32, help="jobs in flight at once (default 32)")
+
     ed = sub.add_parser("edit", help="edit an image by instruction (source = Picture 1, then extra refs); "
                                      "optional --mark circle and --mask paste-back; prints one JSON object")
     ed.add_argument("--backend", default="qwen_image21", choices=list(REGISTRY))
@@ -827,6 +924,8 @@ def main(argv=None) -> None:
         cmd_sheet(a)
     elif a.cmd == "edit":
         cmd_edit(a)
+    elif a.cmd == "batch":
+        sys.exit(cmd_batch(a))
     elif a.cmd == "inpaint":
         cmd_inpaint(a)
     elif a.cmd == "refine":
