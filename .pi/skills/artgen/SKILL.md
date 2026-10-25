@@ -169,8 +169,9 @@ Locked-grid downscale without cell fitting (scenekit): `artgen.py snap`. Other c
 - Seamless 16 px tiles (weak for every model).
 - Bit-identical reruns across machines or versions (MPS); compare with tolerance.
 - References on `z_image_turbo`, `edit`/`sheet` on flux (the command refuses with a message).
-- Remote runs: `--opt runner=remote:NAME` needs `ARTGEN_REMOTE_<NAME>_CMD` (no host is configured); the 40-step `base`
-  variant runs remote only.
+- Remote runs: `--opt runner=remote:runpod --opt variant=base` (40-step base model) needs
+  `ARTGEN_REMOTE_RUNPOD_CMD="python remote/runpod_cmd.py"`, `RUNPOD_API_KEY` and `ARTGEN_RUNPOD_ENDPOINT`; it costs money
+  per job (RunPod Serverless, README "RunPod Serverless"), so ask before using it. The base variant runs remote only.
 
 ## 7. Verify what you made
 
