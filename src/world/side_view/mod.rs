@@ -12,7 +12,7 @@ use bevy::time::Real;
 use bevy::window::{CursorIcon, PrimaryWindow, SystemCursorIcon};
 use bevy_yarnspinner::prelude::DialogueRunner;
 
-use super::camera::{update_camera_target, MainCamera};
+use super::camera::{update_camera_target, DebugZoom, MainCamera, VIEW_WIDTH};
 use super::camera_shake::{update_camera, CameraShake};
 use super::map::doors::DoorStates;
 use super::map::tiled_map::TiledMap;
@@ -327,8 +327,9 @@ fn hover_hotspot(
     mut commands: Commands,
     mouse: Res<MouseWorldCoords>,
     blocked: Res<InputBlocked>,
+    rooms: Res<SideRooms>,
     q_runners: Query<&RunnerFlags, With<DialogueRunner>>,
-    q_player: Query<&Player>,
+    q_player: Query<(&Player, &Transform)>,
     q_hotspots: Query<(Entity, &Hotspot)>,
     q_window: Query<(Entity, &Window), With<PrimaryWindow>>,
     mut q_label: Query<(&mut Text, &mut Node, &mut Visibility), With<HoverLabel>>,
@@ -342,10 +343,18 @@ fn hover_hotspot(
     };
     let player_busy = q_player
         .single()
-        .is_ok_and(|player| busy(player, &blocked, &q_runners));
+        .is_ok_and(|(player, _)| busy(player, &blocked, &q_runners));
+    // Rooms are stacked and several can be on screen; only the player's room is clickable.
+    let player_room = q_player
+        .single()
+        .ok()
+        .and_then(|(_, transform)| rooms.room_at(transform.translation.xy()));
     let hovered = match window.cursor_position() {
         Some(cursor) if !player_busy => {
-            hotspot_at(mouse.0, q_hotspots.iter()).map(|(_, h)| (cursor, h.label.clone()))
+            let in_room = q_hotspots
+                .iter()
+                .filter(|(_, h)| rooms.room_at(h.area.center()) == player_room);
+            hotspot_at(mouse.0, in_room).map(|(_, h)| (cursor, h.label.clone()))
         }
         _ => None,
     };
@@ -376,22 +385,26 @@ fn hover_hotspot(
 }
 
 /// The camera follows the player along x, stops at the edges of the player's room and
-/// keeps the room's vertical middle.
+/// keeps the room's vertical middle. The view size is fixed (see `camera.rs`).
 fn clamp_camera(
     rooms: Res<SideRooms>,
     mut shake: ResMut<CameraShake>,
-    q_window: Query<&Window, With<PrimaryWindow>>,
-    q_projection: Query<&Projection, With<MainCamera>>,
+    zoom: Res<DebugZoom>,
+    mut q_projection: Query<&mut Projection, With<MainCamera>>,
 ) {
-    let (Ok(window), Ok(Projection::Orthographic(ortho))) =
-        (q_window.single(), q_projection.single())
-    else {
+    let Ok(mut projection) = q_projection.single_mut() else {
+        return;
+    };
+    let Projection::Orthographic(ortho) = &mut *projection else {
         return;
     };
     let Some(room) = rooms.room_at(shake.target()).map(|r| &rooms.rooms[r]) else {
         return;
     };
-    let half_width = window.width() * ortho.scale / 2.0;
+    if ortho.scale != zoom.0 {
+        ortho.scale = zoom.0;
+    }
+    let half_width = VIEW_WIDTH * zoom.0 / 2.0;
     let x = if room.bounds.width() <= 2.0 * half_width {
         room.bounds.center().x
     } else {

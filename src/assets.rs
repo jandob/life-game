@@ -2,20 +2,18 @@ use bevy::audio::AudioSource;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
+use crate::look::Look;
+
 #[derive(AssetCollection, Resource)]
 pub struct GameAssets {
-    #[asset(path = "library/characters/player/player.png")]
-    pub player_texture: Handle<Image>,
-    // Sheet format: character::REALISTIC (96x192 cells).
-    #[asset(texture_atlas(tile_size_x = 96, tile_size_y = 192, columns = 10, rows = 12))]
-    pub player_layout: Handle<TextureAtlasLayout>,
-
-    // --- NPC ---
-    #[asset(path = "library/characters/samantha/samantha.png")]
-    pub samantha_texture: Handle<Image>,
-    // Sheet format: character::REALISTIC (96x192 cells).
-    #[asset(texture_atlas(tile_size_x = 96, tile_size_y = 192, columns = 10, rows = 12))]
-    pub samantha_layout: Handle<TextureAtlasLayout>,
+    // --- LOOKS (see look.rs) ---
+    #[asset(path = "library/characters/looks/player_main/look.ron")]
+    pub player_look: Handle<Look>,
+    #[asset(path = "library/characters/looks/sam_casual/look.ron")]
+    pub samantha_look: Handle<Look>,
+    #[asset(path = "library/characters/looks/sam_ponytail/look.ron")]
+    #[allow(dead_code)]
+    pub samantha_ponytail_look: Handle<Look>,
 
     // --- MAP ---
     // Start map: `world_map` in assets/start.assets.ron

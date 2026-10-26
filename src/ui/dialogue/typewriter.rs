@@ -13,6 +13,7 @@ use super::option_selection::OptionSelection;
 use super::spawn::{set_dialogue_text, DialogueContent};
 use super::speaker::{speaker, writer_speed, AVERAGE_SPEED};
 use super::DialogueViewSystemSet;
+use crate::story::start_point::LaunchOptions;
 
 #[derive(Message)]
 pub struct TypewriterFinished;
@@ -209,6 +210,8 @@ fn set_writer_speed(trigger: On<PresentLine>, mut typewriter: ResMut<Typewriter>
     typewriter.current_speed = writer_speed(speaker(name));
 }
 
+const INSTANT_SPEED_MULTIPLIER: f32 = 500.0;
+
 fn update_speed_multiplier(
     mut typewriter: ResMut<Typewriter>,
     mut ev_main_menu_button_pressed: MessageReader<MainMenuButtonPressed>,
@@ -218,10 +221,21 @@ fn update_speed_multiplier(
             ButtonAction::Normal => 2.5,
             ButtonAction::Quick => 5.0,
             ButtonAction::Fast => 10.0,
-            ButtonAction::Instant => 500.0,
+            ButtonAction::Instant => INSTANT_SPEED_MULTIPLIER,
             _ => continue,
         };
         typewriter.speed_multiplier = speed_multiplier;
+    }
+}
+
+/// Starting at a point in the story with `--start` is for testing a scene, so the text
+/// is instant. The main menu speed buttons still override it.
+fn instant_text_for_start_point(
+    launch: Option<Res<LaunchOptions>>,
+    mut typewriter: ResMut<Typewriter>,
+) {
+    if launch.is_some_and(|l| l.start.is_some()) {
+        typewriter.speed_multiplier = INSTANT_SPEED_MULTIPLIER;
     }
 }
 
@@ -233,6 +247,7 @@ impl Plugin for DialogueTypewriterPlugin {
             .add_message::<TypewriterFinished>()
             .add_message::<WriteDialogueText>()
             .add_observer(set_writer_speed)
+            .add_systems(Startup, instant_text_for_start_point)
             .add_systems(
                 Update,
                 update_speed_multiplier.run_if(in_state(GameState::MainMenu)),

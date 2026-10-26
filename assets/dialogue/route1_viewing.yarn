@@ -46,13 +46,13 @@ You: Nice to meet you, I'm-
 You: House rule?
 {$samantha_name}: My rule. My father doesn't care.
 {$samantha_name}: Interesting socks.
-// Kitchen.
+// The main room, the clothes rack and the boxes.
 <<walk Samantha SamanthaToKitchen no_wait>>
 <<walk Player PlayerToKitchen>>
 <<await_walks>>
 <<face Samantha Player>>
 <<face Player Samantha>>
-{$samantha_name}: Kitchen. The stove works. The oven works if you ask it nicely.
+{$samantha_name}: This is the main room. Bare walls, good floor. The window opens if you ask it nicely.
 {$samantha_name}: The last tenant never asked nicely.
 You: What happened to him?
 {$samantha_name}: He moved out. People do.
@@ -62,14 +62,14 @@ You: Last month. This would be my first flat.
 {$samantha_name}: How old are you, anyway?
 You: Old enough to sign a lease.
 {$samantha_name}: Barely, by the look of you. I'm twenty-five, I've signed four.
-// Bedroom.
+// The bare corner where the bed would go.
 <<walk Samantha SamanthaToBedroom no_wait>>
 <<walk Player PlayerToBedroom>>
 <<await_walks>>
 <<face Samantha Player>>
 <<face Player Samantha>>
-{$samantha_name}: Bedroom. The bed's not included. The last tenant took it. Sentimental, I suppose.
-// The window. Both look out (assumes the window is on the north wall).
+{$samantha_name}: And this is where the bed goes. There's a mattress, but no frame. The last tenant took it. Sentimental, I suppose.
+// The window. Both look out.
 <<walk Samantha SamanthaToWindow no_wait>>
 <<walk Player PlayerToWindow>>
 <<await_walks>>

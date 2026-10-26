@@ -1,0 +1,9 @@
+Look(
+    id: "player_main",
+    character: "player",
+    cell: (128, 256),
+    clips: {
+        Idle: (file: "idle.png", frames: 1, rows: [Down, Left, Right, Up], mirror_left: true),
+        Walk: (file: "walk.png", frames: 4, rows: [Right], mirror_left: true, frame_ms: 140),
+    },
+)

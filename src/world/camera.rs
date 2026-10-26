@@ -1,4 +1,5 @@
-use bevy::camera::ScalingMode;
+use bevy::camera::visibility::RenderLayers;
+use bevy::camera::{ScalingMode, Viewport};
 #[cfg(not(target_arch = "wasm32"))]
 use bevy::render::view::window::screenshot::{save_to_disk, Screenshot};
 use bevy::window::PrimaryWindow;
@@ -11,18 +12,26 @@ use crate::player::input::PlayerInput;
 use crate::player::Player;
 use crate::utils::DebugActive;
 
-/// Art px visible vertically that the integer scale aims for.
-const TARGET_VISIBLE_HEIGHT: f32 = 540.0;
+/// The virtual resolution the game is drawn at, whatever the window size.
+pub const VIEW_WIDTH: f32 = 1280.0;
+pub const VIEW_HEIGHT: f32 = 720.0;
 
-/// The F3 zoom factor, on top of the integer pixel scale.
+/// The F3 zoom factor, on top of the fixed view.
 #[derive(Resource)]
-struct DebugZoom(f32);
+pub(crate) struct DebugZoom(pub f32);
 
-/// Physical screen px per art px: a whole number, so every pixel is drawn equally big.
-fn pixel_scale(physical_height: u32) -> f32 {
-    (physical_height as f32 / TARGET_VISIBLE_HEIGHT)
-        .round()
-        .max(1.0)
+/// Physical size of the largest `VIEW_WIDTH` x `VIEW_HEIGHT` view that fits the window:
+/// a whole-number multiple once the window is big enough, otherwise scaled down to fit.
+pub fn view_size(physical_width: u32, physical_height: u32) -> UVec2 {
+    let fit = (physical_width as f32 / VIEW_WIDTH).min(physical_height as f32 / VIEW_HEIGHT);
+    if fit >= 1.0 {
+        let k = fit.floor();
+        UVec2::new((VIEW_WIDTH * k) as u32, (VIEW_HEIGHT * k) as u32)
+    } else {
+        let w = ((VIEW_WIDTH * fit) as u32).max(1);
+        let h = ((VIEW_HEIGHT * fit) as u32).max(1);
+        UVec2::new(w, h)
+    }
 }
 
 #[derive(Component)]
@@ -32,13 +41,52 @@ fn spawn_camera(mut commands: Commands) {
     commands.spawn((
         MainCamera,
         Camera2d,
-        // `WindowSize` maps one world unit to one logical px at scale 1;
-        // `update_projection_scale` sets the scale for whole physical px per art px.
+        // The view is always VIEW_WIDTH x VIEW_HEIGHT world units; `update_viewport`
+        // letterboxes the camera into the window.
         Projection::Orthographic(OrthographicProjection {
-            scaling_mode: ScalingMode::WindowSize,
+            scaling_mode: ScalingMode::Fixed {
+                width: VIEW_WIDTH,
+                height: VIEW_HEIGHT,
+            },
             ..OrthographicProjection::default_2d()
         }),
     ));
+    // Draws nothing, only clears the whole window black so the bars are black.
+    commands.spawn((
+        Camera2d,
+        Camera {
+            order: -1,
+            clear_color: ClearColorConfig::Custom(Color::BLACK),
+            ..default()
+        },
+        RenderLayers::none(),
+    ));
+}
+
+fn update_viewport(
+    q_window: Query<&Window, With<PrimaryWindow>>,
+    mut q_camera: Query<&mut Camera, With<MainCamera>>,
+) {
+    let (Ok(window), Ok(mut camera)) = (q_window.single(), q_camera.single_mut()) else {
+        return;
+    };
+    let (w, h) = (window.physical_width(), window.physical_height());
+    if w == 0 || h == 0 {
+        return;
+    }
+    let size = view_size(w, h);
+    let viewport = Viewport {
+        physical_position: (UVec2::new(w, h) - size) / 2,
+        physical_size: size,
+        ..default()
+    };
+    let same = camera.viewport.as_ref().is_some_and(|v| {
+        v.physical_position == viewport.physical_position
+            && v.physical_size == viewport.physical_size
+    });
+    if !same {
+        camera.viewport = Some(viewport);
+    }
 }
 
 pub(crate) fn update_camera_target(
@@ -61,30 +109,6 @@ fn zoom_camera(
         return;
     }
     zoom.0 = (zoom.0 + player_input.scroll).clamp(1.0, 10.0);
-}
-
-/// Keeps `ortho.scale = scale_factor / t * debug_zoom`, which follows window size
-/// and scale factor changes.
-fn update_projection_scale(
-    zoom: Res<DebugZoom>,
-    q_window: Query<&Window, With<PrimaryWindow>>,
-    mut q_projection: Query<&mut Projection, With<MainCamera>>,
-) {
-    let Ok(window) = q_window.single() else {
-        return;
-    };
-    let Ok(mut projection) = q_projection.single_mut() else {
-        return;
-    };
-    let Projection::Orthographic(ortho) = &*projection else {
-        return;
-    };
-    let scale = window.scale_factor() / pixel_scale(window.physical_height()) * zoom.0;
-    if ortho.scale != scale {
-        if let Projection::Orthographic(ortho) = &mut *projection {
-            ortho.scale = scale;
-        }
-    }
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -141,7 +165,8 @@ impl Plugin for CameraPlugin {
                     toggle_full_screen,
                     #[cfg(not(target_arch = "wasm32"))]
                     take_screenshot,
-                    (zoom_camera, update_projection_scale).chain(),
+                    zoom_camera,
+                    update_viewport,
                 ),
             )
             .add_systems(
@@ -158,12 +183,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn pixel_scale_is_a_whole_number_near_540_visible() {
-        assert_eq!(pixel_scale(360), 1.0);
-        assert_eq!(pixel_scale(720), 1.0);
-        assert_eq!(pixel_scale(900), 2.0);
-        assert_eq!(pixel_scale(1080), 2.0);
-        assert_eq!(pixel_scale(1440), 3.0);
-        assert_eq!(pixel_scale(2160), 4.0);
+    fn view_is_a_whole_multiple_when_it_fits() {
+        assert_eq!(view_size(1280, 720), UVec2::new(1280, 720));
+        assert_eq!(view_size(1920, 1080), UVec2::new(1280, 720));
+        assert_eq!(view_size(2560, 1440), UVec2::new(2560, 1440));
+        assert_eq!(view_size(3000, 1440), UVec2::new(2560, 1440));
+    }
+
+    #[test]
+    fn view_scales_down_in_small_windows_and_keeps_the_aspect() {
+        assert_eq!(view_size(640, 360), UVec2::new(640, 360));
+        assert_eq!(view_size(640, 1000), UVec2::new(640, 360));
+        assert_eq!(view_size(2000, 300), UVec2::new(533, 300));
     }
 }
