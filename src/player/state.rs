@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_yarnspinner::events::DialogueCompleted;
 
 use crate::animation::{character_clip, play_character_clip, CharacterAnim, SpriteAnimator};
+use crate::look::CharacterLook;
 use crate::story::scripted::ScriptedWalk;
 use crate::story::transition::QueuedScene;
 use crate::world::side_view::ClickWalk;
@@ -56,9 +57,15 @@ fn switch_player_move_state(mut q_player: Query<(&mut Player, Has<ClickWalk>, Ha
 }
 
 fn update_animation(
-    mut q_player: Query<(&mut SpriteAnimator, &mut Sprite, &Player, Has<ScriptedWalk>)>,
+    mut q_player: Query<(
+        &mut SpriteAnimator,
+        &mut Sprite,
+        &Player,
+        Has<ScriptedWalk>,
+        Option<&mut CharacterLook>,
+    )>,
 ) {
-    let (mut animator, mut sprite, player, walking_scripted) = match q_player.single_mut() {
+    let (mut animator, mut sprite, player, walking_scripted, look) = match q_player.single_mut() {
         Ok(r) => r,
         Err(_) => return,
     };
@@ -70,6 +77,11 @@ fn update_animation(
         PlayerState::Running => CharacterAnim::Run,
     };
 
+    // Looks are applied by `look::apply_looks`; other characters use the legacy sheet.
+    if let Some(mut look) = look {
+        look.set_intent(player.current_direction, anim);
+        return;
+    }
     let clip = character_clip(player.current_direction, anim);
     play_character_clip(&mut animator, &mut sprite, clip);
 }

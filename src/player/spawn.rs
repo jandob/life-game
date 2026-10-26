@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 use crate::animation::{SpriteAnimator, CHARACTER_CLIPS};
 use crate::character::{character_transform, PLAYER_Z};
+use crate::look::CharacterLook;
 use crate::story::scripted::Actor;
 use crate::world::map::tiled_map::TiledMap;
 use crate::{GameAssets, GameState};
@@ -23,14 +24,9 @@ fn spawn_player(mut commands: Commands, assets: Res<GameAssets>, tiled_map: Res<
         Player::default(),
         Actor("Player".to_string()),
         animator,
-        Sprite {
-            image: assets.player_texture.clone(),
-            texture_atlas: Some(TextureAtlas {
-                layout: assets.player_layout.clone(),
-                index: CHARACTER_CLIPS[0].first_frame,
-            }),
-            ..default()
-        },
+        // Image, atlas and flip are filled in by `look::apply_looks`.
+        Sprite::default(),
+        CharacterLook::new(assets.player_look.clone(), assets.player_look.clone()),
         character_transform(spawn_pos, PLAYER_Z),
     ));
 }

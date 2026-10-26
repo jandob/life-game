@@ -17,7 +17,7 @@
 
 ## 3. Art
 
-- [ ] 3.1 Painted backgrounds per room (artgen), door and prop sprites
+- [x] 3.1 Painted backgrounds per room (artgen, `out/side_rooms2/picked`), door leaves (`tools/mapgen/side_doors.py`); floor lines, hotspots, portals and paths re-fitted to the art (rooms 1296x384 stacked; checked in offline composites, not yet in the running game)
 - [ ] 3.2 Side-only sheets for the player and Samantha
 
 ## 4. Remaining scenes

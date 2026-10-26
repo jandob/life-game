@@ -390,7 +390,7 @@ mod tests {
         assert!(!done.is_finished());
 
         let end = app.world().resource::<TiledMap>().path("There").unwrap()[1];
-        for _ in 0..400 {
+        for _ in 0..1000 {
             if done.is_finished() {
                 break;
             }

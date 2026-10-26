@@ -3,10 +3,11 @@
 //! Hand-rolled system that drives `Sprite::texture_atlas.index` for
 //! sprite-sheet animation clips.
 
-use std::f32::consts::PI;
 use std::time::Duration;
 
 use bevy::prelude::*;
+
+use crate::look::{facing_of, Facing};
 
 /// A single looping animation clip: an inclusive atlas frame range plus the total
 /// loop duration. Frame indices refer to the entity's [`TextureAtlas`] layout.
@@ -125,9 +126,6 @@ pub const CHARACTER_CLIPS: [SpriteAnimationClip; 12] = [
 // Shared character clip selection
 // ---------------------------------------------------------------------------
 
-// Used to make sure we always play up/down animation when a character moves diagonally.
-const MOVEMENT_ANIMATION_ANGLE_BUFFER: f32 = 0.05;
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CharacterAnim {
     Idle,
@@ -135,29 +133,14 @@ pub enum CharacterAnim {
     Run,
 }
 
-/// Picks the clip in [`CHARACTER_CLIPS`] for a facing direction and movement state.
+/// Picks the clip in [`CHARACTER_CLIPS`] for a facing direction and movement state
+/// (legacy 960x2304 sheets).
 pub fn character_clip(dir: Vec2, anim: CharacterAnim) -> SpriteAnimationClip {
-    let dir = if dir == Vec2::ZERO { Vec2::NEG_X } else { dir };
-
-    let angle = Vec2::X.angle_to(dir);
-    let direction_index = if (-3.0 / 4.0 * PI - MOVEMENT_ANIMATION_ANGLE_BUFFER
-        ..=-1.0 / 4.0 * PI + MOVEMENT_ANIMATION_ANGLE_BUFFER)
-        .contains(&angle)
-    {
-        // Down
-        0
-    } else if (1.0 / 4.0 * PI - MOVEMENT_ANIMATION_ANGLE_BUFFER
-        ..=3.0 / 4.0 * PI + MOVEMENT_ANIMATION_ANGLE_BUFFER)
-        .contains(&angle)
-    {
-        // Up
-        3
-    } else if !(-3.0 / 4.0 * PI..=3.0 / 4.0 * PI).contains(&angle) {
-        // Left
-        1
-    } else {
-        // Right
-        2
+    let direction_index = match facing_of(dir) {
+        Facing::Down => 0,
+        Facing::Left => 1,
+        Facing::Right => 2,
+        Facing::Up => 3,
     };
 
     match anim {

@@ -3744,6 +3744,8 @@ dependencies = [
  "open",
  "rand 0.8.7",
  "rand_xoshiro",
+ "ron 0.12.2",
+ "serde",
  "serde_json",
  "strsim",
  "strum",

@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 use crate::animation::{SpriteAnimator, CHARACTER_CLIPS};
 use crate::character::{character_transform, CHARACTER_Z};
+use crate::look::CharacterLook;
 use crate::story::scripted::Actor;
 use crate::world::map::tiled_map::TiledMap;
 use crate::{GameAssets, GameState};
@@ -20,14 +21,9 @@ fn spawn_samantha(commands: &mut Commands, assets: &Res<GameAssets>, pos: Vec2, 
             facing: Vec2::NEG_Y,
         },
         SpriteAnimator::looping(clip),
-        Sprite {
-            image: assets.samantha_texture.clone(),
-            texture_atlas: Some(TextureAtlas {
-                layout: assets.samantha_layout.clone(),
-                index: clip.first_frame,
-            }),
-            ..default()
-        },
+        // Image, atlas and flip are filled in by `look::apply_looks`.
+        Sprite::default(),
+        CharacterLook::new(assets.samantha_look.clone(), assets.samantha_look.clone()),
         character_transform(pos, CHARACTER_Z),
     ));
     if hidden {

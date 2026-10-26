@@ -4,6 +4,7 @@ mod animation;
 mod assets;
 mod audio;
 mod character;
+mod look;
 mod npc;
 mod player;
 mod story;
@@ -117,6 +118,7 @@ fn main() {
         .insert_resource(ClearColor(BACKGROUND_COLOR))
         .insert_resource(launch)
         .add_plugins((
+            look::LookPlugin,
             world::WorldPlugin,
             ui::UiPlugin,
             audio::GameAudioPlugin,

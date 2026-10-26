@@ -5,6 +5,7 @@ use strum_macros::{Display, EnumString};
 use bevy::prelude::*;
 
 use crate::animation::{character_clip, play_character_clip, CharacterAnim, SpriteAnimator};
+use crate::look::CharacterLook;
 use crate::story::scripted::ScriptedWalk;
 use crate::GameState;
 
@@ -47,16 +48,21 @@ fn animate_actors(
             Option<&ScriptedWalk>,
             &mut SpriteAnimator,
             &mut Sprite,
+            Option<&mut CharacterLook>,
         ),
         With<Npc>,
     >,
 ) {
-    for (facing, walk, mut animator, mut sprite) in &mut q_npcs {
+    for (facing, walk, mut animator, mut sprite, look) in &mut q_npcs {
         let anim = if walk.is_some() {
             CharacterAnim::Walk
         } else {
             CharacterAnim::Idle
         };
+        if let Some(mut look) = look {
+            look.set_intent(facing.facing, anim);
+            continue;
+        }
         play_character_clip(
             &mut animator,
             &mut sprite,
