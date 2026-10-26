@@ -1,15 +1,18 @@
 title: Shelf3A
 ---
 <<declare $r1_dinner_shelf = false>>
-// Talk target of Samantha's bookshelf (Interact layer).
-<<if not $r1_dinner_shelf>>
+// Talk target of Samantha's bookshelf (Hotspots layer). She has a word for him while he
+// is in her flat.
+<<if (($chapter == "R1Thu1" and $gate_r1_thu1_door and not $gate_r1_thu1_dishes) or ($chapter == "R1Thu2" and $gate_r1_thu2_shoes and not $gate_r1_thu2_stand)) and not $r1_dinner_shelf>>
     <<set $r1_dinner_shelf to true>>
     {$samantha_name}: Find anything interesting?
     You: "Power and Intimacy: A Reader." Is this for your course?
     {$samantha_name}: Some of it is.
     You: And the rest?
     {$samantha_name}: The rest is for fun. Put it back where you found it.
-<<else>>
+<<elseif ($chapter == "R1Thu1" and $gate_r1_thu1_door and not $gate_r1_thu1_dishes) or ($chapter == "R1Thu2" and $gate_r1_thu2_shoes and not $gate_r1_thu2_stand)>>
     {$samantha_name}: It's not going anywhere. Neither is dinner. Sit.
+<<else>>
+    You: Her bookshelf. Everything in alphabetical order.
 <<endif>>
 ===

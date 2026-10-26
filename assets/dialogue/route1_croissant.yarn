@@ -1,10 +1,32 @@
+title: Route1SundayStart
+tags: cutscene
+---
+// The start node of chapter R1Sunday, started by going to bed on moving day (bed_3b.yarn).
+// He is back up the stairs from the bakery with her croissant; her text is waiting.
+<<set $chapter to "R1Sunday">>
+<<fade_out>>
+<<place Player PlayerArrive>>
+<<face Player right>>
+<<card "Sunday morning.">>
+<<fade_in>>
+<<set $item_bakery_bag to true>>
+<<phone PhoneSundayMorning>>
+<<note r1_sun "A text from Samantha.">>
+You: Six o'clock. One croissant. And my phone's buzzing.
+===
 title: Route1Croissant
 tags: cutscene
 ---
-<<declare $r1_croissant_bag = "">>
 <<declare $r1_croissant_socks = "">>
-<<declare $r1_croissant_dinner = "">>
-// Started by knocking on 3A on Sunday morning, after moving day (see door_3a.yarn).
+// Started by knocking on 3A on Sunday morning with the bakery bag (door_3a.yarn).
+// What he did with the socks before knocking: wearing them, on the rack, or neither.
+<<if $r1_socks_at == "feet">>
+    <<set $r1_croissant_socks to "yes">>
+<<elseif $r1_socks_at == "rack">>
+    <<set $r1_croissant_socks to "wash">>
+<<else>>
+    <<set $r1_croissant_socks to "no">>
+<<endif>>
 <<walk Player PlayerTo3A>>
 <<face Player right>>
 <<wait 2>>
@@ -12,11 +34,6 @@ tags: cutscene
 {$samantha_name}: ...Who is it?
 You: Me. From across the hall.
 {$samantha_name}: Do you know what time it is?
-<<if $r1_movein_rules == "fair">>
-    {$samantha_name}: Hold on. I'm deciding whether I'm home.
-    <<wait 2>>
-    {$samantha_name}: Fine. I'm home.
-<<endif>>
 <<open_door Door3A>>
 <<show Samantha>>
 <<walk Samantha SamanthaOut>>
@@ -27,84 +44,45 @@ You: You said the bakery opens at six.
 {$samantha_name}: I said it opens at six. I didn't say come at six.
 {$samantha_name}: But you did. Interesting.
 {$samantha_name}: What's in the bag?
--> One croissant. Like you said.
-    <<set $r1_croissant_bag to "one">>
-    {$samantha_name}: Exactly what I asked for. Nothing more, nothing less.
-    {$samantha_name}: Good.
--> Two. One's for me.
-    <<set $r1_croissant_bag to "two">>
-    {$samantha_name}: Was for you.
-    {$samantha_name}: Thank you. I'll have the second one for lunch.
--> They were out. I got pain au chocolat.
-    <<set $r1_croissant_bag to "swap">>
-    {$samantha_name}: At five past six. They were out.
-    {$samantha_name}: You stood at the counter and picked the one you wanted. I'll allow it. Once.
+// PLACEHOLDER: replaces the bag menu.
+You: One croissant. Like you said.
+{$samantha_name}: Exactly what I asked for. Nothing more, nothing less.
+{$samantha_name}: Good.
 {$samantha_name}: Rent's paid. For today.
 <<set $item_bakery_bag to false>>
-<<note_done croissant>>
 // She looks down at his feet.
 {$samantha_name}: Now. I told you I'd ask.
 <<if $r1_movein_socks == "refuse">>
-    {$samantha_name}: You were very sure about it yesterday. Let's see if you meant it.
+    // PLACEHOLDER line.
+    {$samantha_name}: You looked at them yesterday like they might bite. Let's see.
 <<endif>>
 {$samantha_name}: Are you wearing them?
--> Yes.
-    <<set $r1_croissant_socks to "yes">>
+<<if $r1_croissant_socks == "yes">>
+    You: Yes.
     {$samantha_name}: Show me.
     You: Here? On the landing?
     {$samantha_name}: You knocked on my door at six in the morning. You don't get to be shy now.
     You: ...
     {$samantha_name}: Blush. Told you they were your size.
--> No. I'm not wearing pink socks.
-    <<set $r1_croissant_socks to "no">>
-    {$samantha_name}: Blush. And at least you're honest about it.
-    {$samantha_name}: I'll ask again tomorrow. And the day after.
--> They're in the wash.
-    <<set $r1_croissant_socks to "wash">>
+<<elseif $r1_croissant_socks == "wash">>
+    You: They're in the wash.
     {$samantha_name}: You've had them for one day.
     You: I wanted them clean.
     {$samantha_name}: You're a bad liar. That's useful to know.
+<<else>>
+    You: No. I'm not wearing pink socks.
+    {$samantha_name}: Blush. And at least you're honest about it.
+    {$samantha_name}: I'll ask again tomorrow. And the day after.
+<<endif>>
 {$samantha_name}: Thursday. Eight o'clock. Dinner at mine.
 You: Is that an invitation?
-{$samantha_name}: It's a time and a place.
--> I'll be there.
-    <<set $r1_croissant_dinner to "yes">>
-    {$samantha_name}: I know.
--> Should I bring anything?
-    <<set $r1_croissant_dinner to "bring">>
-    {$samantha_name}: Wine. Red. I'll text you which one.
-    {$samantha_name}: Don't pick it yourself.
--> I might be busy.
-    <<set $r1_croissant_dinner to "busy">>
-    {$samantha_name}: You moved in yesterday. You don't know anyone else in this city.
-    {$samantha_name}: Eight o'clock.
+{$samantha_name}: It's a time and a place. I'll text you the rest.
 {$samantha_name}: Now go back to bed. You look like you didn't sleep.
 {$samantha_name}: And thank you. For breakfast.
 // She goes back inside with the bag.
 <<walk Samantha SamanthaIn>>
 <<hide Samantha>>
 <<close_door Door3A>>
-// He goes home.
-<<face Player up>>
-<<open_door Door3B>>
-<<walk Player PlayerInto3B>>
-<<face Player down>>
-<<close_door Door3B>>
-<<wait 1>>
-// Time skip to Thursday evening. He is on the landing outside his own door. When this
-// node ends the player walks freely; knocking on 3A starts Route1DinnerDoor (door_3a.yarn).
-<<fade_out>>
-<<place Player PlayerKnock>>
-<<face Player down>>
-<<if $r1_croissant_dinner == "bring">>
-    // The wine she said she'd text him about.
-    <<phone PhoneWineChoice>>
-<<endif>>
-<<card "Thursday. Eight o'clock.">>
-<<fade_in>>
-<<if $r1_croissant_dinner == "bring">>
-    You: Red wine. The one she texted. Not the one I'd have picked.
-<<else>>
-    You: Eight o'clock. Dinner at hers.
-<<endif>>
+<<set $gate_r1_sun_croissant to true>>
+<<note r1_sun "Back to bed. She said so.">>
 ===

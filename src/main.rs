@@ -74,6 +74,7 @@ fn main() {
             animation::SpriteAnimationPlugin,
             {
                 let plugin = YarnSpinnerPlugin::with_yarn_sources([
+                    YarnFileSource::file("dialogue/chart_route1.yarn"),
                     YarnFileSource::file("dialogue/route1_viewing.yarn"),
                     YarnFileSource::file("dialogue/route1_movein.yarn"),
                     YarnFileSource::file("dialogue/route1_croissant.yarn"),
@@ -100,6 +101,9 @@ fn main() {
                     YarnFileSource::file("dialogue/shop_flowers.yarn"),
                     YarnFileSource::file("dialogue/shop_chocolates.yarn"),
                     YarnFileSource::file("dialogue/shop_till.yarn"),
+                    YarnFileSource::file("dialogue/window_3b.yarn"),
+                    YarnFileSource::file("dialogue/kitchen_3b.yarn"),
+                    YarnFileSource::file("dialogue/bath_3b.yarn"),
                 ]);
                 #[cfg(not(target_arch = "wasm32"))]
                 let plugin =

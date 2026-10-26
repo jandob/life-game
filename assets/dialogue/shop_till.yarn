@@ -1,6 +1,6 @@
 title: ShopTill
 ---
-// Talk target of the till in the corner shop (Interact layer). See shop_door.yarn.
+// Talk target of the till in the corner shop (Hotspots layer). See shop_door.yarn.
 -> Look
     You: A bell and a handwritten sign. "Back in 5 min. Leave it on the counter."
     You: Honest shop.

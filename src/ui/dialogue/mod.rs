@@ -5,7 +5,7 @@ mod option_selection;
 mod spawn;
 mod speaker;
 #[cfg(test)]
-mod test;
+pub(crate) mod test;
 mod typewriter;
 mod updating;
 

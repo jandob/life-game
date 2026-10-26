@@ -1,16 +1,29 @@
 title: StairsLanding
 ---
-// Talk target of the stairs on the landing (Interact layer). On the second Thursday they
-// lead down to the corner shop, a separate area of the map (shop.yarn).
--> Go down to the shop <<if visited("Route1Thu2Start") and not visited("Route1Thu2Door")>>
-    <<fade_out>>
-    <<place Player ShopIn>>
-    <<face Player up>>
-    <<fade_in>>
--> Look
-    <<if visited("Route1Thu2Start") and not visited("Route1Thu2Door")>>
-        You: The corner shop's at the bottom of the street. Open till ten.
+// Talk target of the stairs on the landing (Hotspots layer). On moving day his box is at
+// the bottom. On the second Thursday they lead down to the corner shop, a separate room of
+// the map (shop_door.yarn). Before that there is nothing to get down there.
+-> Go down
+    <<if $chapter == "R1MoveIn" and $gate_r1_move_keys and not $gate_r1_move_box>>
+        <<next_scene Route1MoveInBox>>
+    <<elseif $chapter == "R1Thu2" and not $gate_r1_thu2_door and $gate_r1_thu2_text>>
+        <<fade_out>>
+        <<place Player ShopIn>>
+        <<face Player up>>
+        <<fade_in>>
+    <<elseif $chapter == "R1Thu2" and not $gate_r1_thu2_door>>
+        You: Her text first. Then I'll know what I need.
+    <<elseif $chapter == "R1MoveIn" and not $gate_r1_move_keys>>
+        You: My box can wait. Keys first.
     <<else>>
-        You: Three floors of stairs. No lift. I carried every box up these.
+        You: I've got nothing to get down there.
+    <<endif>>
+-> Look
+    <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door>>
+        You: The corner shop's at the bottom of the street. Open till ten.
+    <<elseif $chapter == "R1MoveIn" and not $gate_r1_move_box>>
+        You: My box is down there. Everything I own, in one box.
+    <<else>>
+        You: Three floors of stairs. No lift. I carried my box up these.
     <<endif>>
 ===

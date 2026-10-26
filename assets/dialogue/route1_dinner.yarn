@@ -1,10 +1,28 @@
-title: Route1DinnerDoor
+title: Route1Thu1Start
 tags: cutscene
 ---
 <<declare $r1_dinner_notes = "">>
-<<declare $r1_dinner_reply = "">>
+<<declare $r1_dishes_started = false>>
 <<declare $r1_dishes_turn = "">>
-// Started by knocking on 3A on Thursday evening (door_3a.yarn).
+// The start node of chapter R1Thu1, started by going to bed on Sunday (bed_3b.yarn).
+// Thursday evening on the landing. The socks he wore on Sunday are back in the drawers.
+<<set $chapter to "R1Thu1">>
+<<fade_out>>
+<<if $r1_socks_at == "feet">>
+    <<set $r1_socks_at to "drawers">>
+<<endif>>
+<<place Player PlayerArrive>>
+<<face Player right>>
+<<card "Thursday. Eight o'clock.">>
+<<fade_in>>
+<<phone PhoneThursday1>>
+<<note r1_thu1 "A text from Samantha.">>
+You: Thursday. And my phone's buzzing.
+===
+title: Route1Thu1Door
+tags: cutscene
+---
+// Started by knocking on 3A on the first Thursday (door_3a.yarn).
 <<walk Player PlayerTo3A>>
 <<face Player right>>
 <<wait 1>>
@@ -14,22 +32,14 @@ tags: cutscene
 <<face Samantha Player>>
 <<face Player Samantha>>
 {$samantha_name}: Eight o'clock. You're learning.
-<<if $r1_croissant_dinner == "bring">>
-    {$samantha_name}: And the right bottle. Give it here.
-<<elseif $r1_croissant_dinner == "busy">>
-    {$samantha_name}: Not busy after all, then.
-    You: My plans fell through.
-    {$samantha_name}: You didn't have plans.
-<<else>>
-    {$samantha_name}: Empty-handed. I bought wine anyway. You owe me.
-<<endif>>
+{$samantha_name}: Empty-handed. Good. You listened.
 {$samantha_name}: Come in. You know the rule.
 You: Shoes off.
 {$samantha_name}: Good.
 <<if $r1_croissant_socks == "yes">>
     {$samantha_name}: Blush again. You're making a habit of it.
 <<elseif $r1_croissant_socks == "wash">>
-    {$samantha_name}: Out of the wash, I see. Finally.
+    {$samantha_name}: Grey. Still in the wash, I suppose.
 <<else>>
     {$samantha_name}: Still not wearing them. I noticed. I notice everything.
 <<endif>>
@@ -42,12 +52,14 @@ You: Shoes off.
 <<face Player Samantha>>
 {$samantha_name}: Five minutes. Look around if you want.
 {$samantha_name}: Don't touch the knives. Sit down when you're ready.
+<<set $gate_r1_thu1_door to true>>
+<<note r1_thu1 "Dinner at hers. Sit at her table.">>
 // The player now walks around her flat. Sitting at the table starts Route1Dinner (table_3a.yarn).
 ===
 title: Route1Dinner
 tags: cutscene
 ---
-// Started by sitting down at her table (table_3a.yarn).
+// Started by sitting down at her table on the first Thursday (table_3a.yarn).
 <<place Player PlayerSit>>
 <<walk Samantha SamanthaSit>>
 <<face Samantha Player>>
@@ -56,40 +68,31 @@ tags: cutscene
 You: It smells great.
 {$samantha_name}: I know.
 {$samantha_name}: I study people, you know. It's practically my job.
-{$samantha_name}: After the viewing I wrote down a few lines about you. I do it with everyone who sees the flat.
-{$samantha_name}: Want to hear them?
--> Yes.
-    <<set $r1_dinner_notes to "yes">>
-    {$samantha_name}: Of course you do.
--> You wrote about me?
-    <<set $r1_dinner_notes to "surprised">>
-    {$samantha_name}: Three lines. Don't flatter yourself.
--> No.
-    <<set $r1_dinner_notes to "no">>
-    {$samantha_name}: I'll tell you anyway. That's the other thing about me.
+<<if $r1_dinner_notes == "peeked">>
+    // PLACEHOLDER lines: he looked at her notebook before she showed it.
+    {$samantha_name}: And you already had your hand on my notebook. So you know there's a page about you.
+    You: I didn't read it.
+    {$samantha_name}: Then I'll read it to you.
+<<else>>
+    {$samantha_name}: After the viewing I wrote down a few lines about you. I do it with everyone who sees the flat.
+    {$samantha_name}: I'll read them to you.
+<<endif>>
 {$samantha_name}: "Keen to please. Waits to be told. Doesn't know it yet."
--> That's not true.
-    <<set $r1_dinner_reply to "deny">>
-    {$samantha_name}: You knocked at five past six because I said tomorrow.
-    {$samantha_name}: You took your shoes off tonight before I'd finished the sentence.
-    You: That's just manners.
-    {$samantha_name}: Mm. Eat your pasta.
--> ...Maybe.
-    <<set $r1_dinner_reply to "maybe">>
-    {$samantha_name}: Maybe. That's the most honest thing you've said all week.
--> Is that a bad thing?
-    <<set $r1_dinner_reply to "ask">>
-    {$samantha_name}: Not to me.
-    {$samantha_name}: It might turn out to be very good. We'll see.
+// PLACEHOLDER: replaces the reply menu.
+You: ...Maybe.
+{$samantha_name}: Maybe. That's the most honest thing you've said all week.
 {$samantha_name}: Anyway. I cooked, so you wash up.
 You: Is that a rule too?
 {$samantha_name}: It is now. The sink's over there. Take your time. I like to watch.
+<<set $gate_r1_thu1_sit to true>>
+<<note r1_thu1 "Wash up. Her sink.">>
 // The player walks to the sink himself. Using it starts Route1Dishes (sink_3a.yarn).
 ===
 title: Route1Dishes
 tags: cutscene
 ---
-// Started at her sink after dinner (sink_3a.yarn).
+// Started at her sink after dinner (sink_3a.yarn). It stops on her order; the sink then
+// offers "Keep washing" and "Turn around", and either goes on with Route1DishesEnd.
 <<walk Player PlayerAtSink>>
 <<face Player up>>
 <<wait 2>>
@@ -98,18 +101,16 @@ tags: cutscene
 {$samantha_name}: You missed a spot.
 You: Where?
 {$samantha_name}: Don't turn around. Keep washing.
--> Okay.
-    <<set $r1_dishes_turn to "stay">>
+<<set $r1_dishes_started to true>>
+<<note r1_thu1 "Keep washing.">>
+===
+title: Route1DishesEnd
+tags: cutscene
+---
+// Started from her sink once he keeps washing or has turned around (sink_3a.yarn).
+<<if $r1_dishes_turn == "stay">>
     {$samantha_name}: See? Easy.
--> Why?
-    <<set $r1_dishes_turn to "why">>
-    {$samantha_name}: Because I said so. That's usually enough for you.
--> Turn around anyway.
-    <<set $r1_dishes_turn to "turned">>
-    <<face Player Samantha>>
-    {$samantha_name}: Hm. There he is.
-    {$samantha_name}: Back to the plates.
-    <<face Player up>>
+<<endif>>
 <<wait 2>>
 {$samantha_name}: You did well tonight.
 // She kisses his cheek from behind.
@@ -125,8 +126,22 @@ You: And if I'm busy?
 <<face Player Samantha>>
 {$samantha_name}: Goodnight, neighbour.
 <<close_door Door3A>>
-<<wait 1>>
-// Time skip to the next Thursday, after work (route1_thursday2.yarn). He comes up the
-// stairs; her text is waiting. When this node ends the player walks freely.
-<<next_scene Route1Thu2Start>>
+<<set $gate_r1_thu1_dishes to true>>
+<<note r1_thu1 "Home. Bed.">>
+===
+title: PhoneThursday1
+tags: phone
+---
+// Her text on the first Thursday, delivered by Route1Thu1Start. The wine she names is the
+// clue for the second Thursday. PLACEHOLDER lines.
+{$samantha_name}: Eight. Mine. Not five to.
+{$samantha_name}: Don't bring anything. I drink Red Fox, the 2021, and I have it.
+{$samantha_name}: Not the one with the gold label. Remember that.
+-> Got it.
+    {$samantha_name}: Good.
+-> What's wrong with the gold label?
+    {$samantha_name}: It tries too hard.
+<<set $gate_r1_thu1_text to true>>
+<<note r1_thu1 "Dinner at hers. 3A, eight. Bring nothing.">>
+<<note r1_wine "She drinks Red Fox. The 2021, not the gold label.">>
 ===

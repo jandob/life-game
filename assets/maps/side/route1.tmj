@@ -12,7 +12,7 @@
  "version": "1.10",
  "tiledversion": "1.11.2",
  "nextlayerid": 17,
- "nextobjectid": 69,
+ "nextobjectid": 72,
  "layers": [
   {
    "id": 1,
@@ -668,6 +668,90 @@
        "name": "stand_x",
        "type": "float",
        "value": 156
+      }
+     ]
+    },
+    {
+     "id": 69,
+     "name": "Bath3B",
+     "type": "",
+     "x": 22,
+     "y": 472,
+     "width": 56,
+     "height": 262,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Bathroom"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Bath3B"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 80
+      }
+     ]
+    },
+    {
+     "id": 70,
+     "name": "Kitchen3B",
+     "type": "",
+     "x": 250,
+     "y": 560,
+     "width": 190,
+     "height": 172,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Kitchenette"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Kitchen3B"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 345
+      }
+     ]
+    },
+    {
+     "id": 71,
+     "name": "Window3B",
+     "type": "",
+     "x": 473,
+     "y": 512,
+     "width": 124,
+     "height": 132,
+     "rotation": 0,
+     "visible": true,
+     "properties": [
+      {
+       "name": "label",
+       "type": "string",
+       "value": "Window"
+      },
+      {
+       "name": "node",
+       "type": "string",
+       "value": "Window3B"
+      },
+      {
+       "name": "stand_x",
+       "type": "float",
+       "value": 535
       }
      ]
     },

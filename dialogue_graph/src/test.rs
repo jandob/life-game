@@ -3,7 +3,7 @@ use std::fs::{read_dir, read_to_string};
 use petgraph::{dot::Dot, Direction};
 use pretty_assertions::assert_eq;
 
-use crate::{construct_graph, try_read_yarn_contents, PATH_TO_DIALOGUES};
+use crate::{chart_dot, chart_titles, construct_graph, try_read_yarn_contents, PATH_TO_DIALOGUES};
 
 const PATH_TO_YARN: &str = "./DUMMY.yarn";
 const PATH_TO_DOT: &str = "./DUMMY.dot";
@@ -53,6 +53,8 @@ fn validate_no_hanging_nodes() {
             None => continue,
         };
 
+        // Chart nodes are data, never run.
+        let charts = chart_titles(&contents);
         let graph = construct_graph(contents);
         for index in graph.node_indices().skip(1) {
             let weight = graph.node_weight(index).expect("Node should exist");
@@ -60,7 +62,7 @@ fn validate_no_hanging_nodes() {
                 .strip_prefix("title: ")
                 .and_then(|t| t.split('|').next())
                 .unwrap_or_default();
-            if entry_points.iter().any(|t| t == title) {
+            if entry_points.iter().any(|t| t == title) || charts.iter().any(|t| t == title) {
                 continue;
             }
             assert!(
@@ -71,4 +73,17 @@ fn validate_no_hanging_nodes() {
             );
         }
     }
+}
+
+#[test]
+fn chart_has_a_cluster_per_chapter_in_order() {
+    let contents = "title: ChartA\ntags: chart\n---\n<<chapter A \"Day one.\">>\n<<gate a_x \"Do x\">>\n<<bottleneck a_bed \"Bed\" a_x>>\n===\ntitle: ChartB\ntags: chart\n---\n<<chapter B \"Day two.\">>\n<<gate b_y \"Do y\">>\n<<bottleneck b_bed \"Bed\" b_y>>\n===\n";
+    assert_eq!(chart_titles(contents), ["ChartA", "ChartB"]);
+    let dot = chart_dot(contents);
+    let a = dot.find("label=\"A: Day one.\"").unwrap();
+    let b = dot.find("label=\"B: Day two.\"").unwrap();
+    assert!(a < b);
+    assert!(dot.contains("\"a_bed\" [label=\"Bed\", style=bold];"));
+    assert!(dot.contains("\"a_x\" -> \"a_bed\";"));
+    assert!(dot.contains("\"a_bed\" -> \"b_y\" [style=dashed];"));
 }

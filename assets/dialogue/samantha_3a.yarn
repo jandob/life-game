@@ -1,15 +1,67 @@
 title: Samantha3A
 ---
-// Talk target at Samantha's spot in her flat (Interact layer).
-<<if not visited("Route1Dinner")>>
-    {$samantha_name}: Five minutes. Stop hovering and sit.
-<<elseif not visited("Route1Dishes")>>
-    {$samantha_name}: I'm not moving. You are. Sink.
-<<elseif visited("Route1Thu2Door") and not visited("Route1Thu2Dinner")>>
-    <<if $r1_thu2_wine != "" and not $r1_thu2_wine_open>>
-        {$samantha_name}: The wine won't open itself.
+// Talk target of Samantha, wherever she stands (Hotspots layer, follows the actor). The
+// actions on her: telling her he's seen enough at the viewing, giving her things and
+// standing still at her door on the second Thursday.
+-> I've seen enough <<if $chapter == "R1Viewing" and $gate_r1_view_knock>>
+    <<if $gate_r1_view_window and $gate_r1_view_kitchen and $gate_r1_view_bath>>
+        <<next_scene Route1ViewingEnd>>
+    <<elseif not $gate_r1_view_bath>>
+        {$samantha_name}: You haven't seen the bathroom. Go on, I'll wait.
+    <<elseif not $gate_r1_view_kitchen>>
+        {$samantha_name}: You haven't even looked at the kitchen. Go on.
     <<else>>
-        {$samantha_name}: Sit. I'm not serving you standing up.
+        {$samantha_name}: You haven't looked out of the window. That's the best part.
     <<endif>>
-<<endif>>
+-> Give her the Red Fox 2021 <<if $chapter == "R1Thu2" and $gate_r1_thu2_door and $item_wine_fox>>
+    <<set $item_wine_fox to false>>
+    <<if $r1_thu2_bottle_seen>>
+        {$samantha_name}: You found the bottle. I put it on top for you.
+    <<else>>
+        {$samantha_name}: You remembered. Good.
+    <<endif>>
+-> Give her the tulips <<if $chapter == "R1Thu2" and $gate_r1_thu2_door and $item_tulips>>
+    <<set $item_tulips to false>>
+    <<set $r1_thu2_tulips to true>>
+    {$samantha_name}: I said what I'd want. Not what you think I'd want.
+    {$samantha_name}: ...I'll put them in water.
+-> Give her the chocolate <<if $chapter == "R1Thu2" and $gate_r1_thu2_door and $item_chocolates>>
+    <<set $item_chocolates to false>>
+    <<set $r1_thu2_chocolates to true>>
+    {$samantha_name}: Bribery. Noted.
+-> Give her the blush socks <<if $chapter == "R1Thu2" and $gate_r1_thu2_door and not $gate_r1_thu2_shoes and $item_blush_socks>>
+    <<set $item_blush_socks to false>>
+    <<set $r1_socks_at to "feet">>
+    <<set $r1_thu2_socks to "pocket">>
+    {$samantha_name}: I don't want them.
+    {$samantha_name}: I want them on you. Here. Now.
+    You: On your doormat?
+    {$samantha_name}: On my doormat.
+    // He puts them on.
+    {$samantha_name}: Better. Next time they're on before you knock.
+-> Stand still <<if $chapter == "R1Thu2" and $gate_r1_thu2_dinner and not $gate_r1_thu2_stand>>
+    <<next_scene Route1Thu2Kiss>>
+-> Reach for her <<if $chapter == "R1Thu2" and $gate_r1_thu2_dinner and not $gate_r1_thu2_stand and $r1_thu2_kiss == "">>
+    <<set $r1_thu2_kiss to "reached">>
+    // She catches his wrist and puts his hand back by his side.
+    {$samantha_name}: Hands.
+    {$samantha_name}: I said don't move.
+-> Talk
+    <<if $chapter == "R1Viewing">>
+        {$samantha_name}: Take your time. I've got all day. Well, until the next one.
+    <<elseif $chapter == "R1Thu1" and not $gate_r1_thu1_sit>>
+        {$samantha_name}: Five minutes. Stop hovering and sit.
+    <<elseif $chapter == "R1Thu1" and not $gate_r1_thu1_dishes>>
+        {$samantha_name}: I'm not moving. You are. Sink.
+    <<elseif $chapter == "R1Thu2" and not $gate_r1_thu2_shoes>>
+        {$samantha_name}: Hands first. Then shoes.
+    <<elseif $chapter == "R1Thu2" and not $gate_r1_thu2_open>>
+        {$samantha_name}: The wine won't open itself.
+    <<elseif $chapter == "R1Thu2" and not $gate_r1_thu2_dinner>>
+        {$samantha_name}: Sit. I'm not serving you standing up.
+    <<elseif $chapter == "R1Thu2" and not $gate_r1_thu2_stand>>
+        {$samantha_name}: Don't move.
+    <<else>>
+        {$samantha_name}: Mm?
+    <<endif>>
 ===

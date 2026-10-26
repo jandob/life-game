@@ -1,11 +1,21 @@
+title: Route1Start
+tags: cutscene
+---
+// The game starts here (chart.rs FIRST_NODE): the start node of chapter R1Viewing.
+// He is on the landing, at ten, for the viewing of 3B.
+<<set $chapter to "R1Viewing">>
+<<fade_out>>
+<<card "Saturday. The viewing.">>
+<<fade_in>>
+<<note r1_view "Viewing: flat 3B, top floor. Saturday, ten. Knock.">>
+You: 3B. Top floor. Ten o'clock.
+===
 title: Route1Viewing
 tags: cutscene
 ---
 <<declare $samantha_name = "_Samantha">>
-<<declare $r1_viewing_opening = "">>
 <<declare $r1_viewing_why = "">>
-<<declare $r1_viewing_question = "">>
-// Landing. He knocked on 3B; the door across the hall opens instead.
+// Started by knocking on 3B (door_3b.yarn). The door across the hall opens instead.
 <<walk Player PlayerKnock>>
 <<face Player up>>
 <<open_door Door3A>>
@@ -17,16 +27,9 @@ tags: cutscene
 You: Oh. Sorry. I'm here for the viewing.
 {$samantha_name}: I know. You're six minutes early.
 {$samantha_name}: Keen or nervous?
--> Keen. I really need a place.
-    <<set $r1_viewing_opening to "keen">>
-    {$samantha_name}: Honest. That's a terrible way to start a negotiation.
-    {$samantha_name}: I'll pretend I didn't hear it.
--> Nervous, if I'm honest.
-    <<set $r1_viewing_opening to "nervous">>
-    {$samantha_name}: Cute. Most people pretend they aren't.
--> Just punctual.
-    <<set $r1_viewing_opening to "punctual">>
-    {$samantha_name}: Mm. You're going a little red, but sure.
+// PLACEHOLDER: replaces the opening menu.
+You: ...Both?
+{$samantha_name}: Honest. That's a terrible way to start a negotiation.
 // She turns back to her open door for the keys (assumes 3A is south of her).
 <<face Samantha down>>
 {$samantha_name}: My father owns the building. He's away this week, so you get me instead.
@@ -46,52 +49,27 @@ You: Nice to meet you, I'm-
 You: House rule?
 {$samantha_name}: My rule. My father doesn't care.
 {$samantha_name}: Interesting socks.
-// The main room, the clothes rack and the boxes.
+// The main room. She stays in the middle of it while he looks around.
 <<walk Samantha SamanthaToKitchen no_wait>>
 <<walk Player PlayerToKitchen>>
 <<await_walks>>
+<<close_door Door3B>>
 <<face Samantha Player>>
 <<face Player Samantha>>
-{$samantha_name}: This is the main room. Bare walls, good floor. The window opens if you ask it nicely.
-{$samantha_name}: The last tenant never asked nicely.
-You: What happened to him?
-{$samantha_name}: He moved out. People do.
-{$samantha_name}: So. You just finished?
-You: Last month. This would be my first flat.
-{$samantha_name}: I can tell. You're looking at the sockets like they might bite.
-{$samantha_name}: How old are you, anyway?
-You: Old enough to sign a lease.
-{$samantha_name}: Barely, by the look of you. I'm twenty-five, I've signed four.
-// The bare corner where the bed would go.
-<<walk Samantha SamanthaToBedroom no_wait>>
-<<walk Player PlayerToBedroom>>
-<<await_walks>>
-<<face Samantha Player>>
-<<face Player Samantha>>
-{$samantha_name}: And this is where the bed goes. There's a mattress, but no frame. The last tenant took it. Sentimental, I suppose.
-// The window. Both look out.
-<<walk Samantha SamanthaToWindow no_wait>>
-<<walk Player PlayerToWindow>>
-<<await_walks>>
-<<face Samantha up>>
-<<face Player up>>
-{$samantha_name}: And this is the part I always save for last.
-{$samantha_name}: Tram stop on the corner. Bakery opens at six. You'll hate it for a week, then you'll love it.
-<<face Samantha Player>>
-<<face Player Samantha>>
-{$samantha_name}: So. Why this one?
--> The light. It's nice in here.
-    <<set $r1_viewing_why to "light">>
-    {$samantha_name}: It is. I'll tell my father. He'll act like he built the sun.
--> Honestly? It's the one I can afford.
-    <<set $r1_viewing_why to "money">>
-    {$samantha_name}: Practical. He'd like that. I find it a little boring.
-    {$samantha_name}: Lucky for you, he's not the one deciding.
--> It's the first place that wrote back.
-    <<set $r1_viewing_why to "first">>
-    {$samantha_name}: Wow. You really know how to make someone feel special.
-    {$samantha_name}: I'll try not to take it personally.
-// Back on the landing. She locks up.
+{$samantha_name}: This is it. Bare walls, good floor.
+// PLACEHOLDER: the tour is his now.
+{$samantha_name}: Window, kitchenette, bathroom. Look at whatever you like.
+{$samantha_name}: Tell me when you've seen enough.
+<<set $gate_r1_view_knock to true>>
+<<note r1_view "Look around 3B: the window, the kitchenette, the bathroom. Then tell her.">>
+===
+title: Route1ViewingEnd
+tags: cutscene
+---
+// Started by telling her he's seen enough (samantha_3a.yarn): the bottleneck of
+// R1Viewing. Back on the landing, she locks up.
+<<set $gate_r1_view_end to true>>
+<<note_done r1_view>>
 <<walk Samantha SamanthaToLanding no_wait>>
 <<walk Player PlayerToLanding>>
 <<await_walks>>
@@ -100,18 +78,11 @@ You: Old enough to sign a lease.
 <<face Samantha Player>>
 <<face Player Samantha>>
 {$samantha_name}: Anything you want to ask me?
--> When will I hear back?
-    <<set $r1_viewing_question to "when">>
-    {$samantha_name}: When I've decided.
-    You: Not your father?
-    {$samantha_name}: He signs whatever I hand him.
--> Are the neighbours quiet?
-    <<set $r1_viewing_question to "neighbours">>
-    {$samantha_name}: The man downstairs, very.
-    {$samantha_name}: Across the hall... depends on the night.
--> No, I think I've seen everything.
-    <<set $r1_viewing_question to "none">>
-    {$samantha_name}: You haven't. But it's enough for one day.
+// PLACEHOLDER: replaces the question menu.
+You: When will I hear back?
+{$samantha_name}: When I've decided.
+You: Not your father?
+{$samantha_name}: He signs whatever I hand him.
 {$samantha_name}: There are two more viewings this week.
 {$samantha_name}: Both of them wore matching socks.
 {$samantha_name}: I'll let you know.
@@ -121,5 +92,5 @@ You: Old enough to sign a lease.
 <<close_door Door3A>>
 // Time skip to moving day (route1_movein.yarn).
 <<fade_out>>
-<<next_scene Route1MoveIn>>
+<<next_scene Route1MoveInStart>>
 ===

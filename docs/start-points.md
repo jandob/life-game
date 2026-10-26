@@ -9,16 +9,16 @@ Native:
 
 ```sh
 cargo run -- --start list                 # print the start points and exit
-cargo run -- --start croissant            # skip the menu, start the croissant scene
-cargo run -- --start sunday --set r1_movein_rules=fair
+cargo run -- --start r1thu2               # skip the menu, start the second Thursday
+cargo run -- --start r1thu2 --set gate_r1_thu2_text=true
 ```
 
 Web build (local server or the direct page URL; the itch.io page doesn't pass query
 parameters to the game's iframe):
 
 ```
-index.html?start=croissant
-index.html?start=sunday&set=r1_movein_rules=fair
+index.html?start=r1thu2
+index.html?start=r1thu2&set=gate_r1_thu2_text=true
 index.html?start=list                     # logs the list to the browser console
 ```
 
@@ -26,40 +26,45 @@ An unknown name logs the list as an error and opens the normal menu.
 
 ## What a start point does
 
-The main menu is skipped. The scenes before the point are fast-forwarded without being
-shown: the **first available option at every choice**, lines skipped. That sets every
-Yarn variable and visit count (`visited()`) as real play would. Then the end state of the
-world those scenes leave is restored: actors where their last walk or `<<place>>` put
-them, facing, shown or hidden, doors open or closed, the screen black after a
-`<<fade_out>>` or clear after a `<<fade_in>>`. Finally the point's scene starts, or the
-player gets control.
+The main menu is skipped. The story chart's walker (`src/story/chart.rs`) finds the
+shortest way to the point, chapter by chapter, from a new game: in each chapter the
+fewest player actions (hotspot actions and texts read) that reach the point or the next
+chapter. It plays that way without showing it. That sets every Yarn variable, pending
+text and phone note as real play would. Then the end state of the world it leaves is
+restored: actors where their last walk or `<<place>>` put them, facing, shown or hidden,
+doors open or closed, the screen black after a `<<fade_out>>` or clear after a
+`<<fade_in>>`. Then the player gets control.
 
-`--set NAME=VALUE` (repeatable, `$` optional) overrides a variable after the
-fast-forward, for testing another branch. The value is typed like the variable's
-declaration (string, number, `true`/`false`); an unknown name is logged and skipped.
+Because the walk is found, not written down, a start point keeps working however the
+earlier chapters change.
 
-The log says which start point was applied (`Starting at 'croissant': ...`), and any
-error during the fast-forward.
+`--set NAME=VALUE` (repeatable, `$` optional) overrides a variable afterwards, e.g. a
+gate inside a chapter (`gate_r1_thu2_text=true`) or a flag (`r1_movein_socks=refuse`).
+The value is typed like the variable's declaration (string, number, `true`/`false`); an
+unknown name is logged and skipped.
+
+The log says which start point was applied (`Starting at 'r1thu2': ...`), and any error
+during the walk.
 
 ## Adding a start point
 
 Add an entry to `START_POINTS` in `src/story/start_point.rs`, in story order:
 
 - `name`: short, lowercase, what you'd type after `--start`.
-- `played`: the scenes played before it, in order. List only nodes the game starts
-  itself (`<<next_scene>>` targets and the first scene), not nodes reached by `<<jump>>`,
-  since a jump is followed during the fast-forward.
-- `begin`: `Begin::Scene("Node")` to start a scene at once, or `Begin::Roam` to hand the
-  player control, as at the end of a scene that leaves the player free to walk.
+- `begin`: `Begin::Chapter("R1Thu2")` for the start of a chapter (its start node
+  played), or `Begin::Gate("r1_thu2_door")` for the first point inside a chapter where
+  that gate is done.
 
-The tests in `start_point.rs` fast-forward every start point against the real dialogue
-files, so a renamed node or a broken scene fails `cargo test`.
+Every chapter has one. The tests in `start_point.rs` walk to every start point against
+the real dialogue files and map, so a broken chapter fails `cargo test`.
 
 ## Limits
 
-- Only the first option is taken at every choice; use `--set` for other branches.
-- Only the commands listed in `REPLAYED` restore world state. A new command that changes
-  the world (e.g. switching maps) needs a case in `replay` too.
+- The walk takes the shortest way, so flags come out as the shortest way sets them; use
+  `--set` for others.
+- Only the world commands listed in `chart.rs` (`WORLD_COMMANDS`) restore world state. A
+  new command that changes the world (e.g. switching maps) needs a case in `replay` too.
+- Read texts are not in the phone's message history.
 
 ## Rooms
 

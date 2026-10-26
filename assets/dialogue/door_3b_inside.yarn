@@ -1,12 +1,16 @@
 title: Door3BInside
 ---
-// Talk target just inside 3B's door (Interact layer).
--> Go out <<if visited("Route1Thu2Start") and not visited("Route1Thu2Door")>>
+// Talk target just inside 3B's door (Hotspots layer).
+-> Go out <<if $gate_r1_move_keys and not $gate_r1_thu2_stand>>
     <<open_door Door3B>>
     <<walk Player PlayerOutOf3B>>
     <<close_door Door3B>>
+-> Answer the door <<if $chapter == "R1MoveIn" and $gate_r1_move_box and not $gate_r1_move_rules>>
+    <<next_scene Route1MoveInRules>>
 -> Look
-    <<if visited("Route1Thu2Dinner")>>
+    <<if $chapter == "R1Viewing">>
+        {$samantha_name}: That's the way out. When you've seen enough, tell me.
+    <<elseif $gate_r1_thu2_stand>>
         You: It's late. I'm not going anywhere.
     <<else>>
         You: My door. From the inside it feels more like mine.
