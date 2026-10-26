@@ -16,6 +16,46 @@ A draft of the story graph as rules, first in plain words, then as mathematical 
 - **Free time is a hub.** Between story boxes there can be a hub box: the player picks what to do, side boxes loop back to the hub, and the hub has one door on to the story. Free time never changes the story, so it adds nothing to the graph's size.
 - **Side stories join at join points.** The main story's chapter doors are join points. A side story starts and ends between two of them, so the next chapter always starts the same way.
 
+## In pictures
+
+An example, not real content. **The story level**: boxes are subgraphs, and arrows are doors out. Rounded boxes are main chapters, and hexagons are hubs (free time). The detour loops back, and the crisis forks.
+
+```mermaid
+flowchart TD
+    C1(["Chapter 1"]) --> H1{{"Free time"}}
+    H1 -->|visit a friend| S1["Side: friend"]
+    S1 --> H1
+    H1 -->|go to work| S2["Side: work"]
+    S2 --> H1
+    H1 --> C2(["Chapter 2"])
+    C2 -->|went along| C3(["Chapter 3"])
+    C2 -->|refused| D1["Detour: she cools off"]
+    D1 --> C2b(["Chapter 2, second try"])
+    C2b --> C3
+    C3 --> H2{{"Free time"}}
+    H2 --> C4(["Crisis"])
+    C4 -->|stays| E1(["Ending A"])
+    C4 -->|leaves| E2(["Ending B"])
+```
+
+`Chapter 1 → Free time → Chapter 2` are join points: whatever happens in free time, Chapter 2 starts the same way. The detour does not loop back to Chapter 2 itself, since that would replay it identically. It leads into a second version of it.
+
+**Inside one box**: one door in, things to do, one choice, two doors out. A solid arrow means "needs this". The two dashed arrows into *Knock on her door* mean "needs either".
+
+```mermaid
+flowchart TD
+    IN((in)) --> T["Read her text"]
+    T --> Q{"Answer her text"}
+    Q -->|"Wine again?"| W["Buy the wine"]
+    Q -->|"What would you want?"| S["Find the socks"]
+    W -.-> K["Knock on her door"]
+    S -.-> K
+    K --> D["Dinner"]
+    D --> X{"Stand still?"}
+    X -->|yes| O1((out: went along))
+    X -->|reaches for her| O2((out: refused))
+```
+
 ## Definitions
 
 A **subgraph** is G = (N, R, s, X, σ):
