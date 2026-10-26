@@ -2,17 +2,6 @@ schema: spec-driven
 githubCopilot:
   cloudAgent: true
 
-context: |
-  Story glossary:
-  - Story graph: the directed graph of what can happen in the story, declared in the
-    chart Yarn files (assets/dialogue/chart_*.yarn).
-  - Gate: a node of the story graph (`<<gate>>`, a `$gate_*` variable). Do not call these
-    or anything else "beats".
-  - Chapter: a stretch of the story graph on one day or evening (`<<chapter>>`).
-  - Bottleneck: a gate that ends a chapter (`<<bottleneck>>`).
-  Every choice in the game must be meaningful: it changes the world, such as which gates
-  open or where something can be found, not only her next line.
-
 # Project context (optional)
 # This is shown to AI when creating artifacts.
 # Add your tech stack, conventions, style guides, domain knowledge, etc.
