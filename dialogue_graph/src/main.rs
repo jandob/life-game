@@ -221,8 +221,11 @@ fn parse_labels_dot_file(path: &str) {
             continue;
         }
 
-        let parts: Vec<&str> = line.split("\"").collect();
-        assert_eq!(parts.len(), 3);
+        // The label is between the first and the last quote; it may hold escaped quotes.
+        let (Some(start), Some(end)) = (line.find('"'), line.rfind('"')) else {
+            panic!("A labelled line without quotes: '{line}'");
+        };
+        let parts = [&line[..start], &line[start + 1..end], &line[end + 1..]];
         let label = parts[1];
 
         assert!(label.contains(ATTR_DELIMETER));

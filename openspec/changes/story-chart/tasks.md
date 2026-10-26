@@ -31,9 +31,9 @@
 
 ## 6. Checks
 
-- [ ] 6.1 `cargo test --workspace`, clippy, fmt, `cargo check --target wasm32-unknown-unknown`
-- [ ] 6.2 Play every chapter start point natively (Xvfb, lavapipe), once in chart order and once in another order where a chapter allows it; screenshots in `screenshots/`
-- [ ] 6.3 `dialogue_graph` output checked by eye against the specs
+- [x] 6.1 `cargo test --workspace`, clippy, fmt, `cargo check --target wasm32-unknown-unknown`
+- [ ] 6.2 Play every chapter start point natively (Xvfb, lavapipe), once in chart order and once in another order where a chapter allows it; screenshots in `screenshots/` (partial: every start point loads natively; a full click-through is still to do)
+- [x] 6.3 `dialogue_graph` output checked by eye against the specs
 
 ## 7. Review (user)
 
