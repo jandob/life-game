@@ -1,6 +1,18 @@
 # Story graph: the model
 
-A draft of the story graph as mathematical constraints. Decided by Janosch (2026-10-26): every subgraph has exactly one entry state, any number of edges may lead into it, and nothing is remembered outside the graph.
+A draft of the story graph as rules, first in plain words, then as mathematical constraints. Decided by Janosch (2026-10-26): every subgraph has exactly one entry state, any number of edges may lead into it, and nothing is remembered outside the graph.
+
+## In plain words
+
+- **The story is a map of boxes.** Each box is a part of the story, such as a chapter. A box can hold smaller boxes, as many levels deep as needed.
+- **A box always starts the same way.** It has one door in. However the player got there, the world looks the same when they enter.
+- **Inside a box, the player does things.** Each thing can need other things done first. Some needs are "all of these", some are "any one of these".
+- **A choice picks one path.** Each option must lead somewhere different: to other things to do, or out through a different door.
+- **A box has one or more doors out.** Which door the player leaves by is the only thing the rest of the story learns. Different doors lead to different boxes.
+- **The player can never get stuck.** From anywhere inside a box, some door out can still be reached.
+- **Nothing is wasted.** Every thing in a box can be reached by some way of playing.
+- **Boxes stay small.** A box that gets too big is split into two.
+- **Going back is allowed.** A door out may lead back to an earlier box, which then starts fresh. The way out of the loop must always stay reachable.
 
 ## Definitions
 
@@ -16,11 +28,11 @@ Play inside G is a sequence of done nodes. Its local state is the set D ⊆ N of
 
 ## Constraints
 
-1. **Acyclic.** The edges of R form no cycle.
+1. **No cycles inside a subgraph.** Within one subgraph, the edges of R form no cycle, since a cycle of requirements can never be done. Edges between subgraphs (an exit of one leading to the entry of another) may form cycles. A subgraph entered again starts from its σ, as on its first visit.
 2. **One entry.** s is the only node without requirements, and σ is fixed.
 3. **Locality.** Every story variable belongs to exactly one subgraph. Only that subgraph's nodes read or write it. Nothing outside G can tell how G was played, except by which exit it left.
 4. **Exits.** X is non-empty, and an exit is required by no node of G.
-5. **No dead ends.** From every reachable D, some exit can still be reached.
+5. **No dead ends.** From every reachable D, some exit can still be reached. In a parent with cycles, from every child that can be reached, some exit of the parent can still be reached, so every loop has a way out.
 6. **Everything reachable.** Every node is in some reachable D.
 7. **Meaningful choices.** For a choice c with options o ≠ o′, picking o and picking o′ leave different sets of nodes still reachable.
 8. **Meaningful exits.** Two exits of G lead to different nodes in G's parent. Two exits that lead to the same place are one exit.
@@ -29,6 +41,7 @@ Play inside G is a sequence of done nodes. Its local state is the set D ⊆ N of
 ## Consequences
 
 - **Composition.** If every subgraph meets 5 and 6, so does the whole story. Each subgraph is checked once from its one entry, so the cost is the sum over subgraphs, not their product.
+- **Loops repeat exactly.** Since σ is fixed and nothing is remembered, a loop gives the same subgraph again. A loop that should play differently the second time needs its own subgraph for the second pass.
 - **Levels are free.** Nesting changes nothing in the rules. A chapter is the level that means one day.
 - **No callbacks.** A later scene can differ only because play reached a different subgraph. A line that refers back to an earlier choice needs that choice to be an exit that leads to its own subgraph.
 
