@@ -1,21 +1,25 @@
-## 1. Format and checks
+## 1. Format and runtime
 
-- [ ] 1.1 `<<choice>>` and `<<option>>` commands, `|` and `=` in requirements, cross-chapter requirements; rename `chart` to `graph` (tag, files, module)
-- [ ] 1.2 Graph checks: well-formed, reachable, walkable, meaningful, complete
-- [ ] 1.3 Yarn link checks: gate conditions, option assignments, menus set choices or are `flavour`
-- [ ] 1.4 Remove the walker; start points set gates and choices from the graph, `--set choice_<id>=<key>`
+- [ ] 1.1 `<<box>>`, `<<gate>>`, `<<choice>>`, `<<option>>`, `<<exit>>` in `CUSTOM_COMMANDS`; `graph` nodes exempt from the first-line rule; parser in `src/story/graph.rs`
+- [ ] 1.2 `<<enter_box>>`: set `$box`, reset the box's variables
+- [ ] 1.3 Start points: `--start <box>` runs the entry node; remove the walker and replay
 
-## 2. Rendering
+## 2. Checks
 
-- [ ] 2.1 `dialogue_graph` draws choices, options, alternatives and cross-chapter edges
+- [ ] 2.1 Graph checks: well-formed, no cycles in a box, no dead ends, reachable, exits, bounds; report choices
+- [ ] 2.2 Link checks: gate and choice conditions, variable ownership, option values, box starts only through exits
 
 ## 3. Route 1
 
-- [ ] 3.1 Second Thursday: her riddle as a choice (wine errand or socks), meeting at her door
-- [ ] 3.2 Janosch decides, menu by menu, which become choices and which go: viewing (what he looks at first), move-in (where the socks go), Sunday (socks worn or on the rack), first Thursday (notebook, turning around at the sink), second Thursday (gifts, reaching for her), and her text replies
-- [ ] 3.3 Chapter start nodes set the world from choices (where the socks are, items)
+- [ ] 3.1 Redraw route 1 as boxes in `graph_route1.yarn`; rename variables by box; shared dispatchers branch on `$box`
+- [ ] 3.2 Janosch decides each cross-chapter callback: cut, or an exit (socks at the croissant and both Thursdays, the viewing's first look at the move-in, turning around at the sink at the second dinner, her notebook)
+- [ ] 3.3 Janosch decides which in-box choices stay (fewer choices)
 
-## 4. Checks
+## 4. Diagrams
 
-- [ ] 4.1 `cargo test --workspace`, clippy, fmt, `cargo check --target wasm32-unknown-unknown`
-- [ ] 4.2 Play the second Thursday on both branches natively
+- [ ] 4.1 `dialogue_graph`: `story_<route>.dot` and `box_<ID>.dot`
+
+## 5. Checks
+
+- [ ] 5.1 `cargo test --workspace`, clippy, fmt, `cargo check --target wasm32-unknown-unknown`
+- [ ] 5.2 Play every route 1 box from its start point natively

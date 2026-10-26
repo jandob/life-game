@@ -1,56 +1,62 @@
 ## Context
 
-`story-chart` declares chapters and gates in chart nodes (`chart_route1.yarn`), tests the declaration statically, and proves the scenes against it with a walker that plays every chapter. Start points replay the walker's shortest path. Route flags (`$r1_socks_at`, `$r1_dishes_turn`, ...) live outside the chart and mostly change lines.
+The model is in `model.md`. This file is how it maps onto Yarn and the code. Today: chart nodes in `chart_route1.yarn`, `$chapter` and `$gate_*` variables, route flags that live across chapters, a walker (`src/story/chart.rs`), and start points that replay the walker's path.
 
 ## Decisions
 
-**D1. One graph node per chapter, in Yarn.** Example, the second Thursday with her riddle as a real branch:
+**D1. One graph node per box.** Example, the inside-a-box picture of `model.md`:
 
 ```
 title: GraphR1Thu2
 tags: graph
 ---
-<<chapter R1Thu2 "Thursday. A week later.">>
-<<gate r1_thu2_text "Read her riddle">>
-<<choice r1_thu2_riddle "Answer her riddle" r1_thu2_text>>
-<<option r1_thu2_riddle wine "Wine again?">>
-<<option r1_thu2_riddle ask "What would you want?">>
-<<gate r1_thu2_wine "Buy the Red Fox 2021" r1_thu2_riddle=wine r1_thu1_text>>
-<<gate r1_thu2_socks "Put on the blush socks" r1_thu2_riddle=ask>>
-<<gate r1_thu2_door "Knock on 3A" r1_thu2_wine|r1_thu2_socks>>
-...
-<<bottleneck r1_thu2_bed "Go to bed" r1_thu2_night>>
+<<box R1Thu2 "Thursday. A week later." Route1Thu2Start>>
+<<gate text "Read her text">>
+<<choice answer "Answer her text" text>>
+<<option answer wine "Wine again?">>
+<<option answer ask "What would you want?">>
+<<gate wine "Buy the wine" answer=wine>>
+<<gate socks "Find the socks" answer=ask>>
+<<gate door "Knock on her door" wine|socks>>
+<<gate dinner "Dinner" door>>
+<<choice still "Stand still?" dinner>>
+<<option still yes "Stand still">>
+<<option still no "Reach for her">>
+<<exit along "Went along" still=yes R1Thu3>>
+<<exit refused "Refused" still=no R1Thu2Detour>>
 ===
 ```
 
-Requirements, separated by spaces, are all needed. `a|b` needs any one of them. `choice=key` needs that option to have been picked. A requirement may name anything in its own or an earlier chapter, so the first Thursday's wine clue (`r1_thu1_text`) can matter a week later.
+`<<box ID "LABEL" ENTRY_NODE [PARENT]>>` names the box, its label, the Yarn node that enters it and, for nested boxes, the box it sits in. Ids of gates, choices and exits are local to the box. A requirement lists node ids (all needed), `a|b` (any one), and `choice=option`. `<<exit ID "LABEL" REQ... TARGET>>` ends with the box it leads to. A box with no gates is fine: a hub is a box whose exits are its side boxes and one exit onward.
 
-**D2. State stays plain Yarn.** Gates are `$gate_<id>` bools, choices are `$choice_<id>` strings holding the picked key (empty until picked), and `$chapter` is a string. A choice is picked once and stays picked.
+**D2. Variables belong to boxes.** Story variables are named `$<box>_<name>`, lower case (`$r1thu2_gate_door`, `$r1thu2_choice_answer`, `$r1thu2_item_wine`). Gates are bools, choices hold the picked option. The current box is `$box`, the only story variable outside any box. Entering a box (its entry node runs `<<enter_box ID>>`) resets every variable of that box to its default. So a box always starts in its one state, even on a second visit, and nothing it set can outlive it. Items are box variables too: if wine bought in one box is needed in the next, that is an exit (`bought the wine`) into a box that starts with it.
 
-**D3. Every choice is meaningful, and every branching flag is a choice.** A route flag that a later chapter or another scene reads is a choice in the graph. Example: where he put the socks on moving day (`drawers`, `box`) becomes `<<choice r1_move_socks>>`, and Sunday's gates depend on it. A menu whose options all lead to the same gates is either turned into a choice or removed. Lines may still vary by choice, but varying lines alone never justify a menu.
+**D3. Exits start the next box.** An exit's node runs the target box's entry node. Nothing else may start a node of another box.
 
-**D4. Graph checks instead of the walker.** The graph is dozens of nodes, so checks are exact and fast:
-- *Well-formed*: unique ids, known references, no requirement on a later chapter, no cycles, every option belongs to a declared choice, one start node per chapter.
-- *Reachable*: every gate and option can be reached by some set of picks.
-- *Walkable*: for every combination of picks reachable so far, every chapter's bottleneck can still be reached. Picks are enumerated chapter by chapter, and only picks that something later still reads are kept apart, so routes that converge collapse into one case.
-- *Meaningful*: for every choice, each option makes reachable (or required) at least one gate or option the others don't.
-- *Completeness*: every gate lies on some path to its chapter's bottleneck.
+**D4. Graph checks.** Per box, on the declared graph, and exact (boxes are small):
+- *Well-formed*: unique ids, known references, every option belongs to a choice, every exit names a known box, one entry node per box (constraints 2, 4).
+- *No cycles inside a box* (1). Exits between boxes may loop.
+- *No dead ends*: enumerate the box's local states (sets of done nodes, at most one option per choice), and from every reachable one some exit can still be reached (5). At the story level, from every box some ending can still be reached, so every loop has a way out.
+- *Everything reachable* (6).
+- *Exits*: two exits of a box lead to different boxes (8).
+- *Report, don't fail*: choices whose options lead to the same nodes, and the count of choices per box (7).
+- *Bounds*: at most `X_MAX` exits and `N_MAX` nodes per box (9). Values to be decided, `3` and `20` to start.
 
-Failures name the node and, for walkability, the picks that strand the player.
+**D5. Link checks** (static, on the compiled Yarn):
+- A gate or choice variable is set only in nodes whose conditions read its requirements.
+- A node that reads or writes `$<box>_*` variables either belongs to that box (tagged `box_<ID>`) or does so only inside `<<if $box == "<ID>">>`. Shared dispatchers (her door, the bed) branch on `$box` first.
+- Every option of every choice is assigned somewhere, and no other value is.
+- `<<enter_box>>` is only in entry nodes, and an entry node is only started from an exit of a box that leads to it (or a start point).
 
-**D5. Yarn link checks keep scenes honest, statically.** On the compiled story:
-- Every `$gate_X` that is set to true is set under conditions (the enclosing `<<if>>`s, option conditions and the hotspot's popup condition) that read every requirement of X. For `a|b` the conditions must read `a` or `b`.
-- Every option `key` of every choice is assigned somewhere (`<<set $choice_id to "key">>`), and no other value is.
-- Every menu (`->`) in route files sets a choice in each branch, or is in a node tagged `flavour` (phone small talk) that sets no route variables.
-- `$chapter` is only set in start nodes; story conditions don't use `visited()` (kept from `story-chart`).
+**D6. Start points.** Since every box starts the same way, `--start <box>` sets `$box` and runs its entry node. Mid-box points add `--set <var>=<value>`. The walker, path replay and world-command replay go.
 
-This does not prove the scenes play as drawn (a condition can read a variable and still be wrong), but it catches forgotten requirements and stray flags, and costs nothing as the story grows.
+**D7. Diagrams.** `dialogue_graph` writes, from the graph nodes:
+- `graphs/story_<route>.dot`: boxes (hubs as hexagons), exits as labelled edges, nested boxes as clusters.
+- `graphs/box_<ID>.dot`: the inside of a box. Boxes for gates, diamonds for choices with one labelled edge per option, solid edges for "all of", dashed for "any of", circles for the entry and exits.
 
-**D6. Start points come from the graph.** A start point names a chapter or a gate. It sets every gate and choice that the target needs and everything earlier, picking the first option of each choice unless `--set choice_<id>=<key>` picks another, then runs the chapter's start node. Items and world state that a chapter needs are set by its start node from the graph state (for example Thu2's start puts the socks where `$choice_r1_move_socks` says). So start nodes, not replay, own the world at a chapter's start.
-
-**D7. Rendering.** `dialogue_graph` writes `graphs/graph_<route>.dot`: one cluster per chapter labelled with its card, boxes for gates, bold for bottlenecks, diamonds for choices with one edge per option labelled with its text, solid edges for "all of", dashed edges for "any of", and dotted edges across chapters.
+Graphviz, as today. Mermaid output is a small addition if wanted.
 
 ## Risks
 
-- **Link checks are approximate.** A scene can satisfy them and still be wrong. Mitigation: start points make any point quick to play, and the old walker stays in git history if we need it back.
-- **Combinations of picks.** Walkability enumerates picks. Convergence keeps it small; if a route grows past a cap, the check fails and names the choices to converge.
+- **Lost callbacks.** Route 1 lines that refer back to earlier chapters lose their source. Each one is cut or becomes an exit. Task 3.2 lists them.
+- **Link checks are approximate.** A condition can read the right variable and still be wrong. Start points make any box quick to play.

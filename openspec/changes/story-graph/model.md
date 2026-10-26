@@ -92,8 +92,6 @@ Play inside G is a sequence of done nodes. Its local state is the set D ⊆ N of
 - **Levels are free.** Nesting changes nothing in the rules. A chapter is the level that means one day.
 - **No callbacks.** A later scene can differ only because play reached a different subgraph. A line that refers back to an earlier choice needs that choice to be an exit that leads to its own subgraph.
 
-## In Yarn (to be worked out)
+## In Yarn
 
-- Every Yarn variable is tagged with its subgraph (3 can then be checked statically).
-- Gates, choices and options set `$gate_*` and `$choice_*`. Exits start the next subgraph's entry node.
-- The graph checks (1, 2, 4–9) run on the declared graph. A link check proves each scene sets a node only where R(n) is read.
+See `design.md`.

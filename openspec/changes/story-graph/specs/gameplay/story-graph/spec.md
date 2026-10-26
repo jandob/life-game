@@ -1,65 +1,57 @@
 ## ADDED Requirements
 
-### Requirement: The story graph is declared in Yarn
+### Requirement: Boxes are declared in Yarn
 
-Each chapter SHALL have one node tagged `graph` that is never run. It SHALL hold one `<<chapter ID "CARD">>`, any number of `<<gate ID "LABEL" REQ...>>`, `<<choice ID "LABEL" REQ...>>` and `<<option CHOICE KEY "LABEL">>`, and exactly one `<<bottleneck ID "LABEL" REQ...>>`. A requirement SHALL be a gate id, `CHOICE=KEY`, or alternatives joined by `|`, and it MAY name its own or an earlier chapter.
+Each box SHALL have one node tagged `graph` that is never run. It SHALL hold one `<<box ID "LABEL" ENTRY_NODE [PARENT]>>`, any number of `<<gate>>`, `<<choice>>` and `<<option>>`, and at least one `<<exit ID "LABEL" REQ... TARGET>>`. A requirement SHALL be a node id of the same box, `CHOICE=OPTION`, or ids joined by `|` (any one).
 
 #### Scenario: Two ways to her door
-- **WHEN** the graph holds `<<gate r1_thu2_door "Knock on 3A" r1_thu2_wine|r1_thu2_socks>>`
-- **THEN** knocking SHALL need either gate, and the graph SHALL draw two dashed edges into it
+- **WHEN** a box holds `<<gate door "Knock on her door" wine|socks>>`
+- **THEN** knocking SHALL need either gate, and the box's diagram SHALL draw two dashed edges into it
 
-### Requirement: The graph is well-formed
+### Requirement: A box always starts the same way
 
-A test SHALL fail when an id is duplicated, a requirement names an unknown or later node, requirements form a cycle, an option names an unknown choice, or a chapter does not have exactly one start node.
+Entering a box SHALL reset every `$<box>_*` variable to its default. A node SHALL only read or write another box's variables inside `<<if $box == "<ID>">>`.
 
-#### Scenario: An option of a missing choice
-- **WHEN** a graph holds `<<option r1_thu2_riddl wine "Wine again?">>`
-- **THEN** the test SHALL fail and name the option
+#### Scenario: Looping back
+- **WHEN** an exit leads back to a box the player has played before
+- **THEN** the box SHALL start exactly as on the first visit
 
-### Requirement: The graph is walkable
+### Requirement: The graph checks hold
 
-For every combination of picks the player can reach, every chapter's bottleneck SHALL still be reachable, and every gate and option SHALL be reachable by some combination. A failure SHALL name the picks that strand the player.
+A test SHALL fail when ids are duplicated or unknown, a box has a cycle, a box has no exit or two exits to the same box, some reachable local state of a box can no longer reach an exit, some node is unreachable, some box can no longer reach an ending, or a box has more than `X_MAX` exits or `N_MAX` nodes. It SHALL report, without failing, the choices whose options lead to the same nodes and the number of choices per box.
 
 #### Scenario: A branch with no way out
-- **WHEN** picking `ask` leads to a gate that nothing after it requires and the bottleneck needs `r1_thu2_wine`
-- **THEN** the test SHALL fail and name `r1_thu2_riddle=ask`
-
-### Requirement: Every choice is meaningful
-
-For every choice, each option SHALL make reachable or required at least one gate or option that no other option of that choice does.
-
-#### Scenario: A choice that changes nothing
-- **WHEN** both options of a choice lead to the same gates
-- **THEN** the test SHALL fail and name the choice
+- **WHEN** picking an option leads to gates from which no exit can be reached
+- **THEN** the test SHALL fail and name the box and the option
 
 ### Requirement: The scenes match the graph
 
-A test SHALL fail when a gate is set to true outside conditions that read its requirements, when an option is never assigned or a choice variable gets an undeclared value, or when a menu in a route file has a branch that sets no choice and is not in a node tagged `flavour`.
+A test SHALL fail when a gate or choice is set in a node whose conditions do not read its requirements, when a choice gets a value that is not one of its options, or when a node starts another box's node other than through an exit.
 
 #### Scenario: A gate set too early
-- **WHEN** a scene sets `$gate_r1_thu2_door` without its conditions reading `$gate_r1_thu2_wine` or `$gate_r1_thu2_socks`
+- **WHEN** a scene sets `$r1thu2_gate_door` with no condition reading `$r1thu2_gate_wine` or `$r1thu2_gate_socks`
 - **THEN** the test SHALL fail and name the node
 
-### Requirement: Start points come from the graph
+### Requirement: Start points start boxes
 
-A start point SHALL name a chapter or a gate. It SHALL set every gate and choice the target needs and everything in earlier chapters, picking each choice's first option unless `--set choice_<id>=<key>` picks another, and then run the chapter's start node.
+`--start <box>` SHALL set `$box` and run the box's entry node, with no replay.
 
-#### Scenario: Starting the second Thursday on the socks branch
-- **WHEN** the game starts with `--start r1thu2 --set choice_r1_thu2_riddle=ask`
-- **THEN** the second Thursday SHALL start with the riddle answered `ask`, and the shop SHALL not sell the wine
+#### Scenario: Starting the second Thursday
+- **WHEN** the game starts with `--start R1Thu2`
+- **THEN** the second Thursday SHALL start exactly as when reached by playing
 
-### Requirement: The graph can be drawn
+### Requirement: Diagrams are generated from the Yarn
 
-`dialogue_graph` SHALL write `graphs/graph_<route>.dot` with one cluster per chapter, boxes for gates, bold bottlenecks, diamonds for choices with one labelled edge per option, solid edges for required nodes, dashed edges for alternatives and dotted edges across chapters.
+`dialogue_graph` SHALL write a story-level diagram (boxes and exits) per route and one diagram per box (gates, choices with labelled options, "all of" and "any of" edges, entry and exits), from the graph nodes only.
 
 #### Scenario: Reading route 1
 - **WHEN** `dialogue_graph` runs
-- **THEN** `graphs/graph_route1.dot` SHALL show the riddle as a diamond with two labelled edges that meet again at her door
+- **THEN** `graphs/story_route1.dot` and one `graphs/box_<ID>.dot` per route 1 box SHALL be written
 
 ## REMOVED Requirements
 
 ### Requirement: Every chapter can be finished in any order
-**Reason**: The walker does not scale. Replaced by the graph checks and the scene link checks.
+**Reason**: The walker does not scale. Replaced by the graph checks and the link checks.
 
 ### Requirement: Chapter start points
-**Reason**: Start points now set state from the graph instead of replaying the walker's path.
+**Reason**: A box always starts the same way, so start points run its entry node directly.
