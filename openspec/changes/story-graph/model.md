@@ -7,12 +7,14 @@ A draft of the story graph as rules, first in plain words, then as mathematical 
 - **The story is a map of boxes.** Each box is a part of the story, such as a chapter. A box can hold smaller boxes, as many levels deep as needed.
 - **A box always starts the same way.** It has one door in. However the player got there, the world looks the same when they enter.
 - **Inside a box, the player does things.** Each thing can need other things done first. Some needs are "all of these", some are "any one of these".
-- **A choice picks one path.** Each option must lead somewhere different: to other things to do, or out through a different door.
+- **A choice picks one path.** Choices are few. An option may lead somewhere different, or only change what is said inside the box: nothing outside the box remembers it.
 - **A box has one or more doors out.** Which door the player leaves by is the only thing the rest of the story learns. Different doors lead to different boxes.
 - **The player can never get stuck.** From anywhere inside a box, some door out can still be reached.
 - **Nothing is wasted.** Every thing in a box can be reached by some way of playing.
 - **Boxes stay small.** A box that gets too big is split into two.
 - **Going back is allowed.** A door out may lead back to an earlier box, which then starts fresh. The way out of the loop must always stay reachable.
+- **Free time is a hub.** Between story boxes there can be a hub box: the player picks what to do, side boxes loop back to the hub, and the hub has one door on to the story. Free time never changes the story, so it adds nothing to the graph's size.
+- **Side stories join at join points.** The main story's chapter doors are join points. A side story starts and ends between two of them, so the next chapter always starts the same way.
 
 ## Definitions
 
@@ -34,9 +36,14 @@ Play inside G is a sequence of done nodes. Its local state is the set D ⊆ N of
 4. **Exits.** X is non-empty, and an exit is required by no node of G.
 5. **No dead ends.** From every reachable D, some exit can still be reached. In a parent with cycles, from every child that can be reached, some exit of the parent can still be reached, so every loop has a way out.
 6. **Everything reachable.** Every node is in some reachable D.
-7. **Meaningful choices.** For a choice c with options o ≠ o′, picking o and picking o′ leave different sets of nodes still reachable.
+7. **Few choices.** Options of a choice may lead to the same nodes (they then only change lines inside G). The check reports such choices and counts choices per subgraph, against a cap like those in 9, but does not fail on them.
 8. **Meaningful exits.** Two exits of G lead to different nodes in G's parent. Two exits that lead to the same place are one exit.
 9. **Bounds.** |X| ≤ x_max and |N| ≤ n_max, with both values to be decided. A subgraph that breaks a bound is split.
+
+## Patterns
+
+- **Hub.** A subgraph H whose exits lead to side subgraphs that lead back to H, plus one exit onward. Side subgraphs have one exit each (back to H), so H's onward exit has the same σ whatever was played.
+- **Join point.** An exit of a main-story subgraph. Every side story is a chain of subgraphs entered from a hub and closed before the next join point.
 
 ## Consequences
 
