@@ -70,6 +70,22 @@ More wording and seeds: the job files `art/jobs/*.json` and the sidecar JSON of 
 2. Look at the result; reroll the seed if identity or outfit drifted; do not polish.
 3. Post with the fixed N of that character (above).
 
+## Side-view scene backgrounds (decided 2026-10-26, Janosch)
+
+Look, from the flat 3A concept round (seed 11, `runpod_qwen_image21`): **anime outline** (thick dark outlines, flat two-tone
+cel shading), **modern indie pixel art** (crisp visible square pixels, hard edges, strictly no anti-aliasing, "drawn at 480x270
+and scaled up with nearest neighbour"), **medium detail** (props with one or two telling details, calm uncluttered wall), flat side
+elevation (wall straight on, thin floor band), realistic adult proportions, characters about half the screen height.
+Generate **raw, no snapping**, `--raw-prompt`, text only.
+
+**Constant pixel density:** a character sprite always has the same number of pixels (the 96x192 cell), whatever the scene size.
+Scenes vary in size, the density does not. The reference is **height 576**: a 1024x576 generation is one 16:9 screen, characters
+about 1/2 of 576 high. **Keep the height at 576 and change only the width** for other rooms (tested: an empty flat at 1024, 1536 and
+2048 x 576 kept props at the same scale, fridge height within about 15%, so no stitching is needed up to about 2048x576, 1.2 MP).
+Do not raise the height with the width at the same aspect ratio (1536x864 gave smaller figures and more black, a smaller size
+chunkier ones). Taller or much wider rooms (beyond about 2048 wide) are not tested: build them from panels with about 128 px overlap.
+Characters are sprites, not part of the background; only some NPCs may be baked in.
+
 ## Known gaps (don't guess, ask)
 
 - `artgen.py sheet` makes one direction (side view, facing right) with N frames; the game sheet needs 10 columns per clip and
