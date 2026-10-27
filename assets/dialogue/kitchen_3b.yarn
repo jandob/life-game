@@ -1,6 +1,14 @@
 title: Kitchen3B
 ---
 // Talk target of the kitchenette in 3B (Hotspots layer). See window_3b.yarn.
+-> Look at the notebook <<if can("R1Notebook", "left")>>
+    <<done R1Notebook left>>
+    You: Her notebook. Black cover, the pen clipped to it.
+    You: On my counter. I didn't leave it here.
+    You: She has the spare key. "I keep it."
+    <<note r1_nb "Read what she wrote about you.">>
+-> Read the pages about you <<if can("R1Notebook", "read")>>
+    <<next_scene Route1NotebookRead>>
 -> Look
     <<if can("R1Viewing", "kitchen")>>
         <<done R1Viewing kitchen>>
@@ -16,6 +24,10 @@ title: Kitchen3B
         <<if can("R1Viewing", "flat")>>
             <<note r1_view "Tell Samantha you've seen enough.">>
         <<endif>>
+    <<elseif in_box("R1Notebook") and not is_done("R1Notebook", "left")>>
+        You: Two rings, a fridge that hums, and a notebook that isn't mine.
+    <<elseif in_box("R1Notebook")>>
+        You: Her notebook. Closed. It has my name in it more than once.
     <<elseif in_box("R1Viewing")>>
         You: Two rings and a fridge that hums.
     <<else>>

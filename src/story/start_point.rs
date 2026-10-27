@@ -106,6 +106,24 @@ pub const START_POINTS: &[StartPoint] = &[
         box_id: "R1Dinner2",
         steps: &["wait"],
     },
+    StartPoint {
+        name: "r1retry",
+        about: "The evening after she sent him home: her text, then her door again",
+        box_id: "R1Dinner2Retry",
+        steps: &[],
+    },
+    StartPoint {
+        name: "r1knock",
+        about: "Late at night in 3B: the knock",
+        box_id: "R1Knock",
+        steps: &[],
+    },
+    StartPoint {
+        name: "r1notebook",
+        about: "Evening in 3B: her notebook on the kitchenette counter",
+        box_id: "R1Notebook",
+        steps: &[],
+    },
 ];
 
 /// What the earlier boxes leave behind that a box's entry node does not set: after the

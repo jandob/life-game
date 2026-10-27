@@ -12,6 +12,9 @@ cargo run -- --start list                 # print the start points and exit
 cargo run -- --start r1dinner2            # skip the menu, start the second Thursday
 cargo run -- --start r1dinner2night       # inside that box, after the kiss
 cargo run -- --start r1dinner1 --set r1_dishes_turn=stay
+cargo run -- --start r1retry              # the evening after she sent him home
+cargo run -- --start r1knock              # late at night in 3B: the knock
+cargo run -- --start r1notebook           # evening in 3B: her notebook on the counter
 ```
 
 Web build (local server or the direct page URL; the itch.io page doesn't pass query

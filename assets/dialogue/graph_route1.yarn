@@ -116,9 +116,10 @@ tags: graph
 title: GraphR1Dinner2Retry
 tags: graph
 ---
-<<box R1Dinner2Retry "Try again" kind=retry goal="“Tonight. Same time.”">>
+<<box R1Dinner2Retry "Try again" kind=retry goal="“Tonight. Same time.”" entry=Route1RetryStart>>
 <<gate text "Her text: “Tonight. Same time.”">>
-<<choice still "At her door" text>>
+<<gate door "Knock on 3A" text>>
+<<choice still "At her door" door>>
 <<option still wait "Stand still">>
 <<option still reach "Reach for her">>
 <<exit knock "Stood still" still=wait to=R1Knock>>
@@ -127,10 +128,10 @@ tags: graph
 title: GraphR1Knock
 tags: graph
 ---
-<<box R1Knock "The knock" goal="Answer when she knocks">>
+<<box R1Knock "The knock" goal="Answer when she knocks" entry=Route1KnockStart>>
 <<gate late "Late at night: a knock on 3B">>
 <<gate open "Open the door, as the rule says" late R1MoveIn.answer>>
-<<gate wait "She tells him to wait" detail="the puzzle is to hold still" open>>
+<<gate wait "She tells him to wait" detail="reaching for her only gets “Wait.”; the puzzle is to hold still" open>>
 <<gate morning "Morning: “You're my boyfriend now. I decided.”" wait>>
 <<exit on "Go to work" morning to=R1Free2>>
 ===
@@ -151,7 +152,7 @@ tags: graph
 title: GraphR1Notebook
 tags: graph
 ---
-<<box R1Notebook "The notebook" goal="Find out what she writes about you">>
+<<box R1Notebook "The notebook" goal="Find out what she writes about you" entry=Route1NotebookStart>>
 <<gate left "Her notebook, left on his table">>
 <<gate read "Read the pages about him" left R1Dinner1.notes|R1Dinner2.pages>>
 <<gate ask "Ask her about it" read>>

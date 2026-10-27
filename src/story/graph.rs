@@ -191,6 +191,9 @@ mod tests {
                 ("R1Breakfast", "Route1SundayStart"),
                 ("R1Dinner1", "Route1Thu1Start"),
                 ("R1Dinner2", "Route1Thu2Start"),
+                ("R1Dinner2Retry", "Route1RetryStart"),
+                ("R1Knock", "Route1KnockStart"),
+                ("R1Notebook", "Route1NotebookStart"),
             ]
         );
     }

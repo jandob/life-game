@@ -3,7 +3,8 @@ title: Bed3B
 // Talk target of his bed in 3B (Hotspots layer). Going to sleep is the exit of most boxes:
 // it ends the box once its steps are done, and says it is too early before that. The
 // exit enters the next box (the entry node runs). The breakfast leads to free time, a hub
-// without a scene, so its bed starts the next box with a scene itself.
+// without a scene, so its bed starts the next box with a scene itself. So does the way
+// out of the knock (door_3b_inside.yarn) and the last bed, which ends the demo.
 -> Go to sleep <<if not in_box("R1Viewing")>>
     <<if can("R1MoveIn", "bed")>>
         <<note_done r1_move>>
@@ -32,14 +33,33 @@ title: Bed3B
     <<elseif in_box("R1Dinner1")>>
         You: It's not even eight. Dinner at hers first.
     <<elseif can("R1Dinner2", "knock")>>
+        <<note_done thu3>>
         <<done R1Dinner2 knock>>
-        <<next_scene Route1Thu2End>>
     <<elseif in_box("R1Dinner2")>>
         <<if is_done("R1Dinner2", "wait")>>
             You: My phone first. It's been buzzing since I got in.
         <<else>>
             You: Not yet. Tonight's at hers.
         <<endif>>
+    <<elseif can("R1Dinner2Retry", "knock")>>
+        <<note_done r1_retry>>
+        <<done R1Dinner2Retry knock>>
+    <<elseif in_box("R1Dinner2Retry")>>
+        You: Not yet. Tonight's at hers.
+    <<elseif in_box("R1Knock")>>
+        <<if not is_done("R1Knock", "open")>>
+            You: Not now. She's knocking.
+        <<elseif not is_done("R1Knock", "morning")>>
+            You: Not now. She's here.
+        <<else>>
+            You: Work first. It's morning.
+        <<endif>>
+    <<elseif can("R1Notebook", "on")>>
+        <<note_done r1_nb>>
+        <<done R1Notebook on>>
+        <<next_scene Route1NotebookEnd>>
+    <<elseif in_box("R1Notebook")>>
+        You: Not yet. Her notebook first.
     <<endif>>
 -> Put the blush socks on <<if in_box("R1Dinner2") and not $r1_thu2_knocked and $item_blush_socks>>
     <<set $item_blush_socks to false>>

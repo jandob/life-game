@@ -9,7 +9,6 @@ tags: cutscene
 <<declare $r1_thu2_tulips = false>>
 <<declare $r1_thu2_chocolates = false>>
 <<declare $r1_thu2_answer = "">>
-<<declare $r1_thu2_kiss = "">>
 <<declare $r1_thu2_reply = "">>
 // The entry node of box R1Dinner2, started by going to bed on the first Thursday
 // (bed_3b.yarn). A week later, he comes home from work. However the week went, the socks
@@ -20,7 +19,6 @@ tags: cutscene
 <<set $r1_thu2_knocked to false>>
 <<set $r1_thu2_bottle_seen to false>>
 <<set $r1_thu2_socks to "">>
-<<set $r1_thu2_kiss to "">>
 <<fade_out>>
 <<hide Samantha>>
 <<set $r1_socks_at to "rack">>
@@ -163,19 +161,12 @@ title: Route1Thu2Kiss
 tags: cutscene
 ---
 // Started by standing still at her door after the second dinner (samantha_3a.yarn).
-<<if $r1_thu2_kiss == "">>
-    <<set $r1_thu2_kiss to "still">>
-<<endif>>
 <<done R1Dinner2 wait>>
 // She kisses him. Short. She steps back first.
 <<wait 1>>
-<<if $r1_thu2_kiss == "still">>
-    {$samantha_name}: Good boy.
-    You: ...
-    {$samantha_name}: You heard me.
-<<else>>
-    {$samantha_name}: There. Was that so hard?
-<<endif>>
+{$samantha_name}: Good boy.
+You: ...
+{$samantha_name}: You heard me.
 <<open_door Door3A>>
 <<walk Player PlayerOutOf3AKiss>>
 <<face Player Samantha>>
@@ -193,14 +184,30 @@ tags: cutscene
 <<phone PhoneThursday2Night>>
 <<note r1_thu2 "A text from Samantha.">>
 You: ...My phone. Already.
-// The player is in control in 3B. Going to bed after reading her text starts
-// Route1Thu2End (bed_3b.yarn).
+// The player is in control in 3B. Going to bed after reading her text starts box R1Knock
+// (bed_3b.yarn).
 ===
-title: Route1Thu2End
+title: Route1Thu2Reach
 tags: cutscene
 ---
-// Started by going to bed after her night text (bed_3b.yarn): the end of route 1 so far.
+// Started by reaching for her at her door after the second dinner (samantha_3a.yarn). She
+// ends the evening: the exit "retry" enters box R1Dinner2Retry (route1_retry.yarn).
+<<done R1Dinner2 reach>>
+// She catches his wrist and puts his hand back by his side.
+{$samantha_name}: Hands.
+{$samantha_name}: I said don't move.
+{$samantha_name}: Not like that.
+// She opens the door for him and stands in it.
+<<open_door Door3A>>
+<<walk Player PlayerOutOf3AKiss>>
+<<face Player Samantha>>
+You: Samantha-
+{$samantha_name}: Goodnight, neighbour.
+{$samantha_name}: Try again tomorrow.
+<<close_door Door3A>>
+<<hide Samantha>>
+<<wait 1>>
+<<set $r1_retry_again to false>>
 <<fade_out>>
-<<card "Thursdays.">>
-<<end_demo>>
+<<done R1Dinner2 retry>>
 ===

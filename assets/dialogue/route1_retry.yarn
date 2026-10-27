@@ -1,0 +1,105 @@
+title: Route1RetryStart
+tags: cutscene
+---
+<<declare $r1_retry_again = false>>
+// The entry node of box R1Dinner2Retry, started by reaching for her at her door after the
+// second dinner (Route1Thu2Reach) or again here (Route1RetryReach). The next evening he is
+// in 3B and her text is waiting. $r1_retry_again: he reached for her before in this retry
+// (set by Route1RetryReach, cleared by the kiss); it only changes her words.
+<<enter_box R1Dinner2Retry>>
+<<note_done r1_thu2>>
+<<fade_out>>
+<<hide Samantha>>
+<<place Player PlayerInto3B>>
+<<face Player right>>
+<<if $r1_retry_again>>
+    <<card "Another evening.">>
+<<else>>
+    <<card "The next evening.">>
+<<endif>>
+<<fade_in>>
+<<phone PhoneRetry>>
+<<note r1_retry "A text from Samantha.">>
+You: Home. And my phone's buzzing.
+// The player walks freely from here. Knocking on 3A starts Route1RetryDoor (door_3a.yarn).
+===
+title: Route1RetryDoor
+tags: cutscene
+---
+// Started by knocking on 3A the evening after she sent him home (door_3a.yarn). She stays
+// in her doorway and sets him the same test (samantha_3a.yarn).
+<<walk Player PlayerTo3A>>
+<<face Player right>>
+<<wait 1>>
+<<open_door Door3A>>
+<<place Samantha SamanthaOut>>
+<<show Samantha>>
+<<walk Samantha SamanthaOut>>
+<<face Samantha Player>>
+<<face Player Samantha>>
+<<if $r1_retry_again>>
+    {$samantha_name}: Back again.
+    {$samantha_name}: Same place. Same rule.
+<<else>>
+    {$samantha_name}: Eight o'clock. You came back.
+    {$samantha_name}: Did you think about what I said?
+    You: You said "not like that."
+    {$samantha_name}: I did. Now show me what "like that" is.
+<<endif>>
+{$samantha_name}: Stand there. Hands by your sides.
+{$samantha_name}: Don't move.
+<<done R1Dinner2Retry door>>
+<<note r1_retry "Stand still.">>
+// The player is in control: standing still or reaching for her are actions on her
+// (samantha_3a.yarn). Standing still starts Route1RetryKiss, reaching Route1RetryReach.
+===
+title: Route1RetryKiss
+tags: cutscene
+---
+// Started by standing still at her door the evening after (samantha_3a.yarn). A different
+// kiss from the first one: she takes her time.
+<<set $r1_retry_again to false>>
+<<done R1Dinner2Retry wait>>
+<<wait 1>>
+// She kisses him. Slower this time. Her hand on his chest, not on his wrist.
+// PLACEHOLDER: kiss art, later.
+<<wait 1>>
+{$samantha_name}: That's better.
+You: ...
+{$samantha_name}: You learn.
+{$samantha_name}: Goodnight, neighbour. Sleep. I'll know if you don't.
+// She goes back in; he goes home.
+<<walk Samantha SamanthaHome>>
+<<hide Samantha>>
+<<close_door Door3A>>
+<<wait 1>>
+<<face Player up>>
+<<open_door Door3B>>
+<<walk Player PlayerInto3B>>
+<<face Player down>>
+<<close_door Door3B>>
+<<wait 1>>
+You: She kissed me like she had all night.
+<<note r1_retry "Go to bed.">>
+// The player is in control in 3B. Going to bed starts the next box (bed_3b.yarn).
+===
+title: Route1RetryReach
+tags: cutscene
+---
+// Started by reaching for her again at her door (samantha_3a.yarn): she ends the evening
+// again. The exit "again" enters this box once more, so it starts fresh.
+<<done R1Dinner2Retry reach>>
+// She catches his wrist and puts his hand back by his side.
+{$samantha_name}: No.
+{$samantha_name}: Twice. I thought you were quicker than that.
+{$samantha_name}: Goodnight.
+// She steps back through her door and closes it.
+<<walk Samantha SamanthaHome>>
+<<hide Samantha>>
+<<close_door Door3A>>
+<<wait 1>>
+You: ...Tomorrow, then.
+<<set $r1_retry_again to true>>
+<<fade_out>>
+<<done R1Dinner2Retry again>>
+===
