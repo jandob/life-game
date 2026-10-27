@@ -99,7 +99,7 @@ tags: graph
 <<item fox "Red Fox 2021" which>>
 <<gate find "Where are the socks?" detail="not in the drawer: on the drying rack" text R1MoveIn.ask>>
 <<item socks "Blush socks, on" find>>
-<<gate door "Get in the door" detail="knock with both; shoes off, or she makes you wait" fox socks R1MoveIn.shoes>>
+<<gate door "Get in the door" detail="knock with the wine; the socks on is what she really wanted" fox R1MoveIn.shoes>>
 <<gate notebook "Open her notebook" door>>
 <<clue pages "He's on four of her pages" notebook>>
 <<gate sink "Find the corkscrew" detail="in her sink, under the cups" door>>

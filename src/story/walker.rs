@@ -786,10 +786,7 @@ pub(crate) mod tests {
     /// Steps whose requirements the scenes don't meet, with why: the step is done before
     /// something the graph needs for it. The graph is the design, the scenes are to follow
     /// (task 3b.6).
-    const KNOWN_ORDER_MISMATCHES: &[(&str, &str)] = &[
-        // The scene lets him in with the wine alone; the graph wants the socks on as well.
-        ("R1Dinner2", "door"),
-    ];
+    const KNOWN_ORDER_MISMATCHES: &[(&str, &str)] = &[];
 
     /// The steps that exit `id` needs, directly or not. Alternatives (`a|b`) and clues from
     /// other boxes are no must.
