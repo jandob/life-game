@@ -33,6 +33,8 @@ title: Samantha3A
     <<set $item_blush_socks to false>>
     <<set $r1_socks_at to "feet">>
     <<set $r1_thu2_socks to "pocket">>
+    <<done R1Dinner2 find>>
+    <<done R1Dinner2 socks>>
     {$samantha_name}: I don't want them.
     {$samantha_name}: I want them on you. Here. Now.
     You: On your doormat?
@@ -43,6 +45,7 @@ title: Samantha3A
     <<next_scene Route1Thu2Kiss>>
 -> Reach for her <<if $chapter == "R1Thu2" and $gate_r1_thu2_dinner and not $gate_r1_thu2_stand and $r1_thu2_kiss == "">>
     <<set $r1_thu2_kiss to "reached">>
+    <<done R1Dinner2 reach>>
     // She catches his wrist and puts his hand back by his side.
     {$samantha_name}: Hands.
     {$samantha_name}: I said don't move.

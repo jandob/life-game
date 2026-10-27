@@ -33,6 +33,7 @@ You: ...Both?
 // She turns back to her open door for the keys (assumes 3A is south of her).
 <<face Samantha down>>
 {$samantha_name}: My father owns the building. He's away this week, so you get me instead.
+<<done R1Viewing father>>
 <<face Samantha Player>>
 <<set $samantha_name to "Samantha">>
 {$samantha_name}: Samantha. That's my door. Whoever takes this flat gets me as a neighbour, too.
@@ -61,6 +62,7 @@ You: House rule?
 {$samantha_name}: Window, kitchenette, bathroom. Look at whatever you like.
 {$samantha_name}: Tell me when you've seen enough.
 <<set $gate_r1_view_knock to true>>
+<<done R1Viewing knock>>
 <<note r1_view "Look around 3B: the window, the kitchenette, the bathroom. Then tell her.">>
 ===
 title: Route1ViewingEnd
@@ -69,6 +71,7 @@ tags: cutscene
 // Started by telling her he's seen enough (samantha_3a.yarn): the bottleneck of
 // R1Viewing. Back on the landing, she locks up.
 <<set $gate_r1_view_end to true>>
+<<done R1Viewing flat>>
 <<note_done r1_view>>
 <<walk Samantha SamanthaToLanding no_wait>>
 <<walk Player PlayerToLanding>>

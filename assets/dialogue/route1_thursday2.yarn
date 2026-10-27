@@ -49,6 +49,7 @@ tags: cutscene
 // She holds out her hand and waits. PLACEHOLDER line.
 {$samantha_name}: Hands first. Then shoes.
 <<set $gate_r1_thu2_door to true>>
+<<done R1Dinner2 door>>
 <<note r1_thu2 "Give her what you brought. Shoes off at her door.">>
 ===
 title: Route1Thu2Shoes
@@ -72,6 +73,8 @@ tags: cutscene
     <<set $r1_socks_at to "feet">>
     <<set $r1_thu2_socks to "pocket">>
     <<set $r1_thu2_answer to "socks">>
+    <<done R1Dinner2 find>>
+    <<done R1Dinner2 socks>>
     {$samantha_name}: Grey. And what's in your pocket?
     You: ...
     {$samantha_name}: You brought them and didn't wear them. Put them on. Here.
@@ -137,6 +140,7 @@ You: ...More than I'd like.
 <<if $r1_thu2_notebook == "reached">>
     You: What else is in the notebook?
     {$samantha_name}: Seven pages. You're on four of them.
+    <<done R1Dinner2 pages>>
     You: Four?
     {$samantha_name}: That was your question.
 <<else>>
@@ -154,6 +158,7 @@ You: ...More than I'd like.
 {$samantha_name}: Stand there. Hands by your sides.
 {$samantha_name}: Don't move.
 <<set $gate_r1_thu2_dinner to true>>
+<<done R1Dinner2 dinner>>
 <<note r1_thu2 "Stand still.">>
 // The player is in control: standing still or reaching for her are actions on her
 // (samantha_3a.yarn). Standing still starts Route1Thu2Kiss.
@@ -165,6 +170,9 @@ tags: cutscene
 <<set $gate_r1_thu2_stand to true>>
 <<if $r1_thu2_kiss == "">>
     <<set $r1_thu2_kiss to "still">>
+<<endif>>
+<<if $r1_thu2_kiss == "still">>
+    <<done R1Dinner2 wait>>
 <<endif>>
 // She kisses him. Short. She steps back first.
 <<wait 1>>

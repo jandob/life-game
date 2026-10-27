@@ -4,6 +4,7 @@ title: Kitchen3B
 -> Look
     <<if $chapter == "R1Viewing" and $gate_r1_view_knock and not $gate_r1_view_kitchen>>
         <<set $gate_r1_view_kitchen to true>>
+        <<done R1Viewing kitchen>>
         <<face Samantha Player>>
         // PLACEHOLDER lines.
         <<if $r1_viewing_why == "">>

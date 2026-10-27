@@ -46,6 +46,8 @@ You: I got the flat. Why would I change my mind?
 {$samantha_name}: One more thing. A housewarming present.
 {$samantha_name}: Socks. A matching pair, for once. I couldn't stop thinking about the last ones.
 <<set $item_blush_socks to true>>
+<<done R1MoveIn socks>>
+<<done R1MoveIn ask>>
 You: They're... pink.
 {$samantha_name}: They're blush. And they were on sale in your size. Roughly.
 {$samantha_name}: Your box is still at the bottom of the stairs. I'm not carrying it.
@@ -54,6 +56,7 @@ You: They're... pink.
 <<hide Samantha>>
 <<close_door Door3A>>
 <<set $gate_r1_move_keys to true>>
+<<done R1MoveIn keys>>
 <<note r1_move "Carry the box up from the bottom of the stairs.">>
 ===
 title: Route1MoveInBox
@@ -66,6 +69,7 @@ tags: cutscene
 <<face Player down>>
 <<fade_in>>
 <<set $gate_r1_move_box to true>>
+<<done R1MoveIn carry>>
 <<wait 1>>
 // Behind his door.
 {$samantha_name}: It's me. Open up.
@@ -85,8 +89,10 @@ tags: cutscene
 {$samantha_name}: You answered. Good.
 {$samantha_name}: Since we're neighbours now. Three rules.
 {$samantha_name}: Shoes off inside. Yours too, not just mine.
+<<done R1MoveIn shoes>>
 {$samantha_name}: Music off by eleven. The walls are thin.
 {$samantha_name}: And if I knock, you answer.
+<<done R1MoveIn answer>>
 // PLACEHOLDER: replaces the rules menu.
 You: I just did.
 {$samantha_name}: You did. Keep it up.
@@ -104,6 +110,7 @@ You: I just did.
 {$samantha_name}: Shoes!
 You: ...They're off.
 <<set $gate_r1_move_rules to true>>
+<<done R1MoveIn rules>>
 <<if $gate_r1_move_socks>>
     <<note r1_move "Unpacked. Bed.">>
 <<else>>

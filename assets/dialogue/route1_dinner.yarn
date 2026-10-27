@@ -53,6 +53,7 @@ You: Shoes off.
 {$samantha_name}: Five minutes. Look around if you want.
 {$samantha_name}: Don't touch the knives. Sit down when you're ready.
 <<set $gate_r1_thu1_door to true>>
+<<done R1Dinner1 door>>
 <<note r1_thu1 "Dinner at hers. Sit at her table.">>
 // The player now walks around her flat. Sitting at the table starts Route1Dinner (table_3a.yarn).
 ===
@@ -85,6 +86,7 @@ You: ...Maybe.
 You: Is that a rule too?
 {$samantha_name}: It is now. The sink's over there. Take your time. I like to watch.
 <<set $gate_r1_thu1_sit to true>>
+<<done R1Dinner1 dinner>>
 <<note r1_thu1 "Wash up. Her sink.">>
 // The player walks to the sink himself. Using it starts Route1Dishes (sink_3a.yarn).
 ===
@@ -127,6 +129,7 @@ You: And if I'm busy?
 {$samantha_name}: Goodnight, neighbour.
 <<close_door Door3A>>
 <<set $gate_r1_thu1_dishes to true>>
+<<done R1Dinner1 dishes>>
 <<note r1_thu1 "Home. Bed.">>
 ===
 title: PhoneThursday1
@@ -142,6 +145,8 @@ tags: phone
 -> What's wrong with the gold label?
     {$samantha_name}: It tries too hard.
 <<set $gate_r1_thu1_text to true>>
+<<done R1Dinner1 text>>
+<<done R1Dinner1 wine>>
 <<note r1_thu1 "Dinner at hers. 3A, eight. Bring nothing.">>
 <<note r1_wine "She drinks Red Fox. The 2021, not the gold label.">>
 ===

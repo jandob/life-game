@@ -4,6 +4,7 @@ title: Bath3B
 -> Look
     <<if $chapter == "R1Viewing" and $gate_r1_view_knock and not $gate_r1_view_bath>>
         <<set $gate_r1_view_bath to true>>
+        <<done R1Viewing bath>>
         <<face Samantha Player>>
         // PLACEHOLDER lines.
         <<if $r1_viewing_why == "">>

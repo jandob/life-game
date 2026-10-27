@@ -5,12 +5,15 @@ title: Table3A
     <<next_scene Route1Dinner>>
 -> Look at her notebook <<if $chapter == "R1Thu1" and $gate_r1_thu1_door and not $gate_r1_thu1_sit and $r1_dinner_notes == "">>
     <<set $r1_dinner_notes to "peeked">>
+    <<done R1Dinner1 peek>>
+    <<done R1Dinner1 notes>>
     // PLACEHOLDER lines.
     You: Her notebook. My name's on a page.
     {$samantha_name}: Ah. That's mine. You'll hear it at dinner.
 -> Open the wine <<if $chapter == "R1Thu2" and $item_corkscrew>>
     <<set $item_corkscrew to false>>
     <<set $gate_r1_thu2_open to true>>
+    <<done R1Dinner2 open>>
     <<note r1_thu2 "Sit at her table.">>
     You: There.
     {$samantha_name}: Two glasses. Not to the top.
@@ -24,6 +27,7 @@ title: Table3A
     You: Her notebook. Closed, with a pen clipped to it.
 -> Open her notebook <<if $chapter == "R1Thu2" and $gate_r1_thu2_shoes and not $gate_r1_thu2_dinner and $r1_thu2_notebook == "">>
     <<set $r1_thu2_notebook to "reached">>
+    <<done R1Dinner2 notebook>>
     {$samantha_name}: Ah.
     {$samantha_name}: That's mine.
 -> Look

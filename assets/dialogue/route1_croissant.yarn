@@ -10,6 +10,7 @@ tags: cutscene
 <<card "Sunday morning.">>
 <<fade_in>>
 <<set $item_bakery_bag to true>>
+<<done R1Breakfast bag>>
 <<phone PhoneSundayMorning>>
 <<note r1_sun "A text from Samantha.">>
 You: Six o'clock. One croissant. And my phone's buzzing.
@@ -84,5 +85,6 @@ You: Is that an invitation?
 <<hide Samantha>>
 <<close_door Door3A>>
 <<set $gate_r1_sun_croissant to true>>
+<<done R1Breakfast door>>
 <<note r1_sun "Back to bed. She said so.">>
 ===

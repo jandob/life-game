@@ -7,6 +7,7 @@ title: Bed3B
     <<if $chapter == "R1MoveIn">>
         <<if $gate_r1_move_socks and $gate_r1_move_rules>>
             <<set $gate_r1_move_bed to true>>
+            <<done R1MoveIn bed>>
             <<note_done r1_move>>
             <<next_scene Route1SundayStart>>
         <<elseif not $gate_r1_move_box>>
@@ -19,6 +20,7 @@ title: Bed3B
     <<elseif $chapter == "R1Sunday">>
         <<if $gate_r1_sun_croissant>>
             <<set $gate_r1_sun_bed to true>>
+            <<done R1Breakfast bed>>
             <<note_done r1_sun>>
             <<next_scene Route1Thu1Start>>
         <<elseif not $gate_r1_sun_text>>
@@ -29,6 +31,7 @@ title: Bed3B
     <<elseif $chapter == "R1Thu1">>
         <<if $gate_r1_thu1_dishes>>
             <<set $gate_r1_thu1_bed to true>>
+            <<done R1Dinner1 bed>>
             <<note_done r1_thu1>>
             <<next_scene Route1Thu2Start>>
         <<else>>
@@ -37,6 +40,7 @@ title: Bed3B
     <<elseif $chapter == "R1Thu2">>
         <<if $gate_r1_thu2_night>>
             <<set $gate_r1_thu2_bed to true>>
+            <<done R1Dinner2 knock>>
             <<next_scene Route1Thu2End>>
         <<elseif $gate_r1_thu2_stand>>
             You: My phone first. It's been buzzing since I got in.
@@ -47,6 +51,8 @@ title: Bed3B
 -> Put the blush socks on <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $item_blush_socks>>
     <<set $item_blush_socks to false>>
     <<set $r1_socks_at to "feet">>
+    <<done R1Dinner2 find>>
+    <<done R1Dinner2 socks>>
     You: Fine. Blush.
 -> Look
     <<if $chapter == "R1Viewing">>

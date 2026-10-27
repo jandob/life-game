@@ -9,6 +9,7 @@ title: Drawers3B
     <<set $r1_socks_at to "drawers">>
     <<set $r1_movein_socks to "drawers">>
     <<set $gate_r1_move_socks to true>>
+    <<done R1MoveIn stow>>
     You: Top drawer. Next to the grey ones.
     <<if $gate_r1_move_rules>>
         <<note r1_move "Unpacked. Bed.">>
@@ -17,6 +18,12 @@ title: Drawers3B
     <<endif>>
 -> Put the blush socks on <<if (($chapter == "R1Sunday" and not $gate_r1_sun_croissant) or ($chapter == "R1Thu2" and not $gate_r1_thu2_door)) and $r1_socks_at == "drawers">>
     <<set $r1_socks_at to "feet">>
+    <<if $chapter == "R1Sunday">>
+        <<done R1Breakfast wear>>
+    <<else>>
+        <<done R1Dinner2 find>>
+        <<done R1Dinner2 socks>>
+    <<endif>>
     You: Fine. Blush.
 -> Take the blush socks <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $r1_socks_at == "drawers">>
     <<set $r1_socks_at to "">>

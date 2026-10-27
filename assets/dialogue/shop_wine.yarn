@@ -14,6 +14,8 @@ title: ShopWine
     <<set $item_wine_house to false>>
     <<set $item_wine_fox to true>>
     <<set $gate_r1_thu2_wine to true>>
+    <<done R1Dinner2 which>>
+    <<done R1Dinner2 fox>>
     <<note_done r1_wine>>
     <<note r1_thu2 "Red Fox 2021 in hand. Her door, eight.">>
 -> Take the Red Fox Reserve <<if $chapter == "R1Thu2" and $gate_r1_thu2_text and not $gate_r1_thu2_door and not $item_wine_reserve>>

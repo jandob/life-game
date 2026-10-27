@@ -7,6 +7,8 @@ title: Rack3B
     You: There. In the wash. Technically.
 -> Put the blush socks on <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $r1_socks_at == "rack">>
     <<set $r1_socks_at to "feet">>
+    <<done R1Dinner2 find>>
+    <<done R1Dinner2 socks>>
     You: Fine. Blush.
 -> Take the blush socks <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $r1_socks_at == "rack">>
     <<set $r1_socks_at to "">>

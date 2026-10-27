@@ -18,6 +18,8 @@ title: Sink3A
 -> Take the corkscrew <<if $chapter == "R1Thu2" and $gate_r1_thu2_shoes and not $gate_r1_thu2_cork>>
     <<set $item_corkscrew to true>>
     <<set $gate_r1_thu2_cork to true>>
+    <<done R1Dinner2 sink>>
+    <<done R1Dinner2 corkscrew>>
     <<note r1_thu2 "Open the wine at her table.">>
 -> Look
     <<if $chapter == "R1Thu1" and not $gate_r1_thu1_sit>>

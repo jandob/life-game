@@ -76,6 +76,7 @@ fn add_story_commands(commands: &mut Commands, runner: &mut DialogueRunner) {
     let phone = commands.register_system(phone_command);
     let note = commands.register_system(note_command);
     let note_done = commands.register_system(note_done_command);
+    let done = commands.register_system(done_command);
     runner
         .commands_mut()
         .add_command("stop_chat", stop_chat)
@@ -94,8 +95,13 @@ fn add_story_commands(commands: &mut Commands, runner: &mut DialogueRunner) {
         .add_command("next_scene", next_scene)
         .add_command("phone", phone)
         .add_command("note", note)
-        .add_command("note_done", note_done);
+        .add_command("note_done", note_done)
+        .add_command("done", done);
 }
+
+/// `<<done BOX ID>>`: marks a step of the story graph as written (assets/dialogue/graph_*.yarn).
+/// Only read by dialogue_graph; it has no runtime effect yet.
+fn done_command(In(_): In<(String, String)>) {}
 
 fn spawn_dialogue_runner(
     mut commands: Commands,

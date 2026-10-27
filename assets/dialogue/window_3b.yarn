@@ -5,6 +5,7 @@ title: Window3B
 -> Look
     <<if $chapter == "R1Viewing" and $gate_r1_view_knock and not $gate_r1_view_window>>
         <<set $gate_r1_view_window to true>>
+        <<done R1Viewing window>>
         <<face Samantha Player>>
         // PLACEHOLDER lines, from the old tour.
         <<if $r1_viewing_why == "">>

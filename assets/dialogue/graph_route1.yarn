@@ -44,8 +44,7 @@ tags: graph
 ---
 <<box R1Breakfast "Breakfast" goal="Bring her breakfast">>
 <<gate text "Read her text">>
-<<gate bakery "Buy croissants at the bakery" text>>
-<<item bag "Bakery bag" bakery>>
+<<item bag "Bakery bag, back from the bakery">>
 <<gate wear "Put the blush socks on" detail="she said she'd ask" R1MoveIn.ask>>
 <<gate door "Knock on 3A with the bakery bag" detail="are you wearing them?" bag R1MoveIn.shoes>>
 <<exit bed "Go back to bed" door to=R1Free1>>
@@ -75,12 +74,10 @@ tags: graph
 title: GraphR1Dinner1
 tags: graph
 ---
-<<box R1Dinner1 "First dinner" goal="Be at her door on time, with wine">>
+<<box R1Dinner1 "First dinner" goal="Be at her door at eight">>
 <<gate text "Read her text: eight, and the wine she drinks">>
 <<clue wine "She drinks Red Fox" text>>
-<<gate buy "Buy the wine she named" wine>>
-<<item bottle "A bottle of wine" buy>>
-<<gate door "Knock on 3A" bottle R1MoveIn.shoes>>
+<<gate door "Knock on 3A" text R1MoveIn.shoes>>
 <<gate peek "Glance at her notebook" door>>
 <<clue notes "She writes about him" peek>>
 <<gate dinner "Sit at her table: the dinner" door>>
