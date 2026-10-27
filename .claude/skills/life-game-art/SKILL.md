@@ -79,9 +79,10 @@ elevation (wall straight on, thin floor band), realistic adult proportions, char
 Generate **raw, no snapping**, `--raw-prompt`, text only.
 
 **Constant pixel density:** a character sprite always has the same number of pixels (the 96x192 cell), whatever the scene size.
-Scenes vary in size, the density does not. The reference is **height 576**: a 1024x576 generation is one 16:9 screen, characters
-about 1/2 of 576 high. **Keep the height at 576 and change only the width** for other rooms (tested: an empty flat at 1024, 1536 and
-2048 x 576 kept props at the same scale, fridge height within about 15%, so no stitching is needed up to about 2048x576, 1.2 MP).
+Scenes vary in size, the density does not. **Room height in the game is 384** (decided 2026-10-27, Janosch: reduced so rooms fit the character size; characters about 1/2 of 384 high;
+rooms may have any width; the current ones are 1296 wide, which is not a requirement). The concept round was done at 576, so style tests quote 576. **Keep the height fixed and change only the width** for other
+rooms (tested at 576: an empty flat at 1024, 1536 and 2048 wide kept props at the same scale, fridge height within about 15%, so no stitching
+is needed up to about 2048 wide). To restyle an existing room, `edit` the current `background.png` at its own size (keeps layout and hotspots).
 Do not raise the height with the width at the same aspect ratio (1536x864 gave smaller figures and more black, a smaller size
 chunkier ones). Taller or much wider rooms (beyond about 2048 wide) are not tested: build them from panels with about 128 px overlap.
 Characters are sprites, not part of the background; only some NPCs may be baked in.
