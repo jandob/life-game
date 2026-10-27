@@ -51,7 +51,6 @@ title: Bed3B
 -> Put the blush socks on <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $item_blush_socks>>
     <<set $item_blush_socks to false>>
     <<set $r1_socks_at to "feet">>
-    <<done R1Dinner2 find>>
     <<done R1Dinner2 socks>>
     You: Fine. Blush.
 -> Look

@@ -13,10 +13,14 @@ title: Rack3B
 -> Take the blush socks <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $r1_socks_at == "rack">>
     <<set $r1_socks_at to "">>
     <<set $item_blush_socks to true>>
+    <<done R1Dinner2 find>>
+    You: Dry. Of course they are.
 -> Look
     <<if $r1_socks_at == "rack">>
         You: Blush. Still on the rack. So they were in the wash. Eventually.
         <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door>>
+            You: Dry, too. I could wear them.
+            <<done R1Dinner2 find>>
             <<set $r1_thu2_socks_noted to true>>
             <<note thu2_socks "The socks?">>
         <<endif>>

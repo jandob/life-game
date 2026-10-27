@@ -12,14 +12,13 @@ tags: cutscene
 <<declare $r1_thu2_kiss = "">>
 <<declare $r1_thu2_reply = "">>
 // The start node of chapter R1Thu2, started by going to bed on the first Thursday
-// (bed_3b.yarn). A week later, he comes home from work. The socks are wherever he left
-// them ($r1_socks_at); her text is waiting on his phone.
+// (bed_3b.yarn). A week later, he comes home from work. However the week went, the socks
+// start on the drying rack, washed and dry; her text is waiting on his phone.
 <<set $chapter to "R1Thu2">>
 <<fade_out>>
 <<hide Samantha>>
-<<if $r1_socks_at == "feet">>
-    <<set $r1_socks_at to "drawers">>
-<<endif>>
+<<set $r1_socks_at to "rack">>
+<<set $item_blush_socks to false>>
 <<place Player PlayerFromShop>>
 <<face Player right>>
 <<card "Thursday. A week later.">>
@@ -73,7 +72,6 @@ tags: cutscene
     <<set $r1_socks_at to "feet">>
     <<set $r1_thu2_socks to "pocket">>
     <<set $r1_thu2_answer to "socks">>
-    <<done R1Dinner2 find>>
     <<done R1Dinner2 socks>>
     {$samantha_name}: Grey. And what's in your pocket?
     You: ...

@@ -42,6 +42,12 @@ You: I got the flat. Why would I change my mind?
 {$samantha_name}: Hold out your hand.
 // PLACEHOLDER: replaces the keys menu.
 {$samantha_name}: Palm up. Good.
+// PLACEHOLDER lines: the spare.
+You: There's a second key on your ring. It looks like mine.
+{$samantha_name}: The spare. I keep it.
+You: Is that a rule?
+{$samantha_name}: It's a fact. Rules come later.
+<<done R1MoveIn spare>>
 {$samantha_name}: You do what you're told. That's going to make this very easy.
 {$samantha_name}: One more thing. A housewarming present.
 {$samantha_name}: Socks. A matching pair, for once. I couldn't stop thinking about the last ones.
