@@ -1,19 +1,17 @@
 title: Door3B
 ---
-// Talk target of 3B's door (Interact layer). It opens with the actions here: a popup
-// when several are available, the only one at once. Each picks by story state.
--> Knock <<if not visited("Route1Viewing")>>
+// Talk target of 3B's door on the landing (Hotspots layer). It opens with the actions
+// here: a popup when several are available, the only one at once.
+-> Knock <<if $chapter == "R1Viewing" and not $gate_r1_view_knock>>
     <<next_scene Route1Viewing>>
--> Go in <<if visited("Route1Viewing") and not visited("Route1Croissant")>>
-    You: Not yet. Her croissant's getting cold.
--> Go in <<if visited("Route1Croissant") and not visited("Route1DinnerDoor")>>
-    You: She said eight. Not ten past.
--> Go in <<if visited("Route1Thu2Start") and not visited("Route1Thu2Door")>>
+-> Go in <<if $chapter == "R1MoveIn" and not $gate_r1_move_keys>>
+    You: Locked. She has my keys.
+-> Go in <<if $gate_r1_move_keys>>
     <<open_door Door3B>>
     <<walk Player PlayerInto3B>>
     <<close_door Door3B>>
 -> Look
-    <<if not visited("Route1Viewing")>>
+    <<if $chapter == "R1Viewing">>
         You: 3B. The one from the listing.
     <<else>>
         You: 3B. My door. Still feels like someone else's.

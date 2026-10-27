@@ -1,20 +1,24 @@
 title: Rack3B
 ---
-// Talk target of the drying rack in 3B (Interact layer). See drawers_3b.yarn.
+// Talk target of the drying rack in 3B (Hotspots layer). See drawers_3b.yarn.
+-> Hang the blush socks up <<if $chapter == "R1Sunday" and not $gate_r1_sun_croissant and ($r1_socks_at == "drawers" or $r1_socks_at == "box")>>
+    <<set $r1_socks_at to "rack">>
+    // PLACEHOLDER line.
+    You: There. In the wash. Technically.
+-> Put the blush socks on <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $r1_socks_at == "rack">>
+    <<set $r1_socks_at to "feet">>
+    You: Fine. Blush.
+-> Take the blush socks <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $r1_socks_at == "rack">>
+    <<set $r1_socks_at to "">>
+    <<set $item_blush_socks to true>>
 -> Look
-    <<if $r1_thu2_socks_at == "rack">>
+    <<if $r1_socks_at == "rack">>
         You: Blush. Still on the rack. So they were in the wash. Eventually.
-        <<set $r1_thu2_socks_noted to true>>
-        <<note thu2_socks "The socks?">>
+        <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door>>
+            <<set $r1_thu2_socks_noted to true>>
+            <<note thu2_socks "The socks?">>
+        <<endif>>
     <<else>>
         You: Two T-shirts and a towel. Drying since Sunday.
     <<endif>>
--> Put the blush socks on <<if $r1_thu2_socks_at == "rack">>
-    <<set $r1_thu2_socks_at to "">>
-    <<set $item_blush_socks to false>>
-    <<set $r1_thu2_socks to "on">>
-    You: Fine. Blush.
--> Take the blush socks <<if $r1_thu2_socks_at == "rack">>
-    <<set $r1_thu2_socks_at to "">>
-    <<set $item_blush_socks to true>>
 ===

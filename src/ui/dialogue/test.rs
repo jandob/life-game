@@ -1,7 +1,10 @@
 //! Checks of the Yarn conventions in `assets/dialogue/*.yarn`.
 //! Subdirectories such as `assets/dialogue/forest/` (the retired story) are not checked.
 
-use std::{collections::HashSet, fs};
+use std::{
+    collections::{HashMap, HashSet},
+    fs,
+};
 
 use strsim::levenshtein;
 
@@ -10,7 +13,7 @@ const PATH_TO_DIR: &str = "assets/dialogue";
 const MAX_SIMILARITY_DISTANCE: usize = 4;
 
 /// Custom commands with their allowed number of arguments.
-const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 17] = [
+const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 20] = [
     ("stop_chat", 0..=0),
     ("end_demo", 0..=0),
     ("walk", 2..=3),
@@ -28,6 +31,10 @@ const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 17] = [
     ("phone", 1..=1),
     ("note", 2..=2),
     ("note_done", 1..=1),
+    // Chart data (story/chart.rs): only read, never run.
+    ("chapter", 2..=2),
+    ("gate", 2..=20),
+    ("bottleneck", 2..=20),
 ];
 
 /// Commands that Yarn Spinner itself provides.
@@ -90,7 +97,7 @@ fn parse_command(line: &str) -> Option<(String, Vec<String>)> {
 }
 
 /// The nodes of a file as (title, body lines after `---`).
-fn nodes(contents: &str) -> Vec<(String, Vec<&str>)> {
+pub(crate) fn nodes(contents: &str) -> Vec<(String, Vec<&str>)> {
     let mut nodes = Vec::new();
     let mut title = None;
     let mut body: Option<Vec<&str>> = None;
@@ -267,11 +274,15 @@ fn validate_speaker_variables_declared() {
 /// A conversation with an NPC opens with the NPC's line, or with the actions at a talk
 /// target (options before any line, shown as a popup). Nodes without NPC lines are
 /// exempt: staging nodes that only run commands, and the player's own remarks at an
-/// object (an interactable such as a door).
+/// object (an interactable such as a door). Chart nodes never run and are exempt too.
 #[test]
 fn validate_first_line_is_npc_line() {
+    let charts = chart_nodes();
     for (file, contents) in yarn_files() {
         for (title, body) in nodes(&contents) {
+            if charts.contains(&title) {
+                continue;
+            }
             let is_dialogue = |line: &&&str| {
                 !(line.is_empty() || line.starts_with("<<") || line.starts_with("//"))
             };
@@ -420,5 +431,250 @@ fn validate_items() {
                 );
             }
         }
+    });
+}
+
+/// A gate of the story chart, as declared by `<<gate>>` or `<<bottleneck>>`.
+pub(crate) struct ChartGate {
+    pub id: String,
+    pub label: String,
+    pub requires: Vec<String>,
+}
+
+/// A chapter of the story chart: one chart node.
+pub(crate) struct ChartChapter {
+    pub id: String,
+    pub card: String,
+    pub gates: Vec<ChartGate>,
+    pub bottleneck: ChartGate,
+}
+
+/// The titles of nodes tagged `chart`.
+fn chart_nodes() -> HashSet<String> {
+    node_tags()
+        .into_iter()
+        .filter(|(_, tags)| tags.iter().any(|t| t == crate::story::chart::CHART_TAG))
+        .map(|(title, _)| title)
+        .collect()
+}
+
+/// The chapters of the story chart, in story order: chart files by name, chart nodes in
+/// file order.
+pub(crate) fn chart() -> Vec<ChartChapter> {
+    let charts = chart_nodes();
+    let mut files = yarn_files();
+    files.sort();
+    let mut chapters = Vec::new();
+    for (file, contents) in files {
+        for (title, body) in nodes(&contents) {
+            if !charts.contains(&title) {
+                continue;
+            }
+            let mut chapter = None;
+            let mut gates = Vec::new();
+            let mut bottleneck = None;
+            for line in body {
+                let Some((command, mut args)) = parse_command(line) else {
+                    continue;
+                };
+                if !matches!(command.as_str(), "chapter" | "gate" | "bottleneck") {
+                    continue;
+                }
+                let id = args.remove(0);
+                let label = args.remove(0);
+                match command.as_str() {
+                    "chapter" => chapter = Some((id, label)),
+                    "gate" => gates.push(ChartGate {
+                        id,
+                        label,
+                        requires: args,
+                    }),
+                    _ => {
+                        assert!(
+                            bottleneck.is_none(),
+                            "{title} in {file} has two bottlenecks"
+                        );
+                        bottleneck = Some(ChartGate {
+                            id,
+                            label,
+                            requires: args,
+                        });
+                    }
+                }
+            }
+            let (id, card) =
+                chapter.unwrap_or_else(|| panic!("{title} in {file} needs a <<chapter>>"));
+            let bottleneck =
+                bottleneck.unwrap_or_else(|| panic!("{title} in {file} needs a <<bottleneck>>"));
+            chapters.push(ChartChapter {
+                id,
+                card,
+                gates,
+                bottleneck,
+            });
+        }
+    }
+    chapters
+}
+
+#[test]
+fn chart_is_well_formed() {
+    use crate::story::chart::{gate_variable, CHAPTER, FIRST_NODE};
+
+    let chapters = chart();
+    assert!(!chapters.is_empty(), "no chart nodes");
+    let files = yarn_files();
+    let charts = chart_nodes();
+    let lines: Vec<&str> = files
+        .iter()
+        .flat_map(|(_, contents)| contents.lines().map(str::trim))
+        .collect();
+    let declared = |name: &str| {
+        lines
+            .iter()
+            .any(|l| l.starts_with(&format!("<<declare {name} = ")))
+    };
+    // The non-chart nodes as (title, body).
+    let story: Vec<(String, Vec<&str>)> = files
+        .iter()
+        .flat_map(|(_, contents)| nodes(contents))
+        .filter(|(title, _)| !charts.contains(title))
+        .collect();
+    let sets = |body: &[&str], name: &str, value: &str| {
+        body.iter()
+            .any(|l| *l == format!("<<set {name} to {value}>>"))
+    };
+
+    // Gate id -> (chapter index, requires).
+    let mut gates: HashMap<&str, (usize, &[String])> = HashMap::new();
+    for (i, chapter) in chapters.iter().enumerate() {
+        for gate in chapter.gates.iter().chain([&chapter.bottleneck]) {
+            assert!(
+                gates
+                    .insert(&gate.id, (i, gate.requires.as_slice()))
+                    .is_none(),
+                "gate '{}' twice",
+                gate.id
+            );
+            assert!(!gate.label.is_empty(), "gate '{}' has no label", gate.id);
+        }
+        assert!(!chapter.card.is_empty(), "{} has no card", chapter.id);
+    }
+    assert!(declared(CHAPTER), "{CHAPTER} is not declared");
+
+    for (i, chapter) in chapters.iter().enumerate() {
+        for gate in chapter.gates.iter().chain([&chapter.bottleneck]) {
+            let variable = gate_variable(&gate.id);
+            assert!(
+                declared(&variable),
+                "gate '{}' needs <<declare {variable} = false>>",
+                gate.id
+            );
+            assert!(
+                story.iter().any(|(_, body)| sets(body, &variable, "true")),
+                "gate '{}' is never set: no <<set {variable} to true>>",
+                gate.id
+            );
+            for need in &gate.requires {
+                let Some(&(at, _)) = gates.get(need.as_str()) else {
+                    panic!("gate '{}' requires an unknown gate '{need}'", gate.id);
+                };
+                assert!(
+                    at <= i,
+                    "gate '{}' requires '{need}' of a later chapter",
+                    gate.id
+                );
+            }
+        }
+        // Every gate is required by the bottleneck, directly or not, and there are no
+        // cycles.
+        let mut needed = HashSet::new();
+        let mut path = Vec::new();
+        fn visit<'a>(
+            gate: &'a str,
+            gates: &HashMap<&'a str, (usize, &'a [String])>,
+            needed: &mut HashSet<&'a str>,
+            path: &mut Vec<&'a str>,
+        ) {
+            assert!(
+                !path.contains(&gate),
+                "the requirements form a cycle: {} -> {gate}",
+                path.join(" -> ")
+            );
+            if !needed.insert(gate) {
+                return;
+            }
+            path.push(gate);
+            for need in gates[gate].1 {
+                visit(need, gates, needed, path);
+            }
+            path.pop();
+        }
+        visit(&chapter.bottleneck.id, &gates, &mut needed, &mut path);
+        for gate in &chapter.gates {
+            assert!(
+                needed.contains(gate.id.as_str()),
+                "{}: gate '{}' is not required by the bottleneck '{}'",
+                chapter.id,
+                gate.id,
+                chapter.bottleneck.id
+            );
+        }
+
+        // Exactly one start node, which the bottleneck before starts.
+        let value = format!("\"{}\"", chapter.id);
+        let starts: Vec<&String> = story
+            .iter()
+            .filter(|(_, body)| sets(body, CHAPTER, &value))
+            .map(|(title, _)| title)
+            .collect();
+        assert_eq!(
+            starts.len(),
+            1,
+            "{} needs exactly one start node, found {starts:?}",
+            chapter.id
+        );
+        let start = starts[0];
+        if i == 0 {
+            assert_eq!(start, FIRST_NODE, "the game starts with the first chapter");
+        }
+        for (title, body) in &story {
+            if !body.contains(&format!("<<next_scene {start}>>").as_str()) {
+                continue;
+            }
+            let before = i.checked_sub(1).map(|b| &chapters[b].bottleneck.id);
+            assert!(
+                before.is_some_and(|b| sets(body, &gate_variable(b), "true")),
+                "{title} starts {start}, but only the bottleneck before it may"
+            );
+        }
+    }
+
+    // `$chapter` is a string: its values must be chapters.
+    let ids: HashSet<&str> = chapters.iter().map(|c| c.id.as_str()).collect();
+    for line in &lines {
+        let mut rest = *line;
+        while let Some(at) = rest.find("$chapter") {
+            rest = &rest[at + "$chapter".len()..];
+            let Some(quoted) = rest.split('"').nth(1).filter(|q| !q.is_empty()) else {
+                continue;
+            };
+            assert!(
+                ids.contains(quoted),
+                "'{line}' names an unknown chapter '{quoted}'"
+            );
+        }
+    }
+}
+
+/// Story conditions read the chart state (`$chapter`, gates), items and flags, never
+/// `visited()`.
+#[test]
+fn story_conditions_do_not_read_visits() {
+    validate_lines(|line, file| {
+        assert!(
+            line.starts_with("//") || !line.contains("visited("),
+            "{file} reads visited(): '{line}'"
+        );
     });
 }

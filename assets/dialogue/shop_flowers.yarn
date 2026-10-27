@@ -1,8 +1,9 @@
 title: ShopFlowers
 ---
-// Talk target of the tulips in the corner shop (Interact layer). See shop_door.yarn.
+// Talk target of the tulips in the corner shop (Hotspots layer). See shop_door.yarn.
+// The shop is open on the second Thursday only, between her text and her door.
 -> Look
     You: Tulips. Yellow and red, five a bunch.
--> Take a bunch <<if not $item_tulips>>
+-> Take a bunch <<if $chapter == "R1Thu2" and $gate_r1_thu2_text and not $gate_r1_thu2_door and not $item_tulips>>
     <<set $item_tulips to true>>
 ===

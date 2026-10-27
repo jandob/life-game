@@ -1,8 +1,9 @@
 title: ShopChocolates
 ---
-// Talk target of the chocolate rack in the corner shop (Interact layer). See shop_door.yarn.
+// Talk target of the chocolate rack in the corner shop (Hotspots layer). See shop_door.yarn.
+// The shop is open on the second Thursday only, between her text and her door.
 -> Look
     You: Milk, dark, and a dark one with sea salt that costs twice as much.
--> Take the sea salt one <<if not $item_chocolates>>
+-> Take the sea salt one <<if $chapter == "R1Thu2" and $gate_r1_thu2_text and not $gate_r1_thu2_door and not $item_chocolates>>
     <<set $item_chocolates to true>>
 ===

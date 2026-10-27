@@ -1,15 +1,40 @@
 title: Door3A
 ---
-// Talk target of Samantha's door (Interact layer). It opens with the actions here: a
-// popup when several are available, the only one at once. Each picks by story state.
--> Knock <<if visited("Route1Viewing") and not visited("Route1Croissant")>>
-    <<next_scene Route1Croissant>>
--> Knock <<if visited("Route1Croissant") and not visited("Route1DinnerDoor")>>
-    <<next_scene Route1DinnerDoor>>
--> Knock <<if visited("Route1Thu2Start") and not visited("Route1Thu2Door")>>
-    <<next_scene Route1Thu2Door>>
+// Talk target of Samantha's door (Hotspots layer). It opens with the actions here: a
+// popup when several are available, the only one at once. Each picks by chapter and gates.
+-> Knock <<if $chapter == "R1MoveIn" and not $gate_r1_move_keys>>
+    <<next_scene Route1MoveInKeys>>
+-> Knock <<if $chapter == "R1Sunday" and not $gate_r1_sun_croissant>>
+    <<if not $gate_r1_sun_text>>
+        You: My phone's buzzing. Her, probably. Read it first.
+    <<elseif not $item_bakery_bag>>
+        // Behind her door.
+        {$samantha_name}: ...Where's my croissant?
+    <<else>>
+        <<next_scene Route1Croissant>>
+    <<endif>>
+-> Knock <<if $chapter == "R1Thu1" and not $gate_r1_thu1_door>>
+    <<if not $gate_r1_thu1_text>>
+        You: She texted. I should read it first.
+    <<else>>
+        <<next_scene Route1Thu1Door>>
+    <<endif>>
+-> Knock <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door>>
+    <<if not $gate_r1_thu2_text>>
+        You: Her text first.
+    <<elseif $item_wine_fox>>
+        <<next_scene Route1Thu2Door>>
+    <<elseif $item_wine_reserve>>
+        You: The gold label. She said not that one.
+    <<elseif $item_wine_house>>
+        You: The house red. She'd know.
+    <<else>>
+        You: Empty-handed? Bring what she'd want. The shop's downstairs.
+    <<endif>>
+-> Take my shoes off <<if $chapter == "R1Thu2" and $gate_r1_thu2_door and not $gate_r1_thu2_shoes>>
+    <<next_scene Route1Thu2Shoes>>
 -> Look
-    <<if not visited("Route1Viewing")>>
+    <<if $chapter == "R1Viewing">>
         You: Not this one. The listing said 3B.
     <<else>>
         You: 3A. Her door. The doormat doesn't say welcome.

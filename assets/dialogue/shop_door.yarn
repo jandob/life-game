@@ -1,6 +1,6 @@
 title: ShopDoor
 ---
-// Talk target of the corner shop's door (Interact layer), a separate area of the map reached
+// Talk target of the corner shop's door (Hotspots layer), a separate area of the map reached
 // from the stairs on the landing (stairs_landing.yarn). Taking something is buying it.
 -> Go back up
     <<if $item_wine_fox or $item_wine_reserve or $item_wine_house or $item_tulips or $item_chocolates>>

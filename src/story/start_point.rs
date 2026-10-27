@@ -1,23 +1,23 @@
 //! Start points: launch the game at a point in the story, with the story state as if
-//! the earlier scenes had been played, so a scene can be tested without a playthrough.
+//! the earlier chapters had been played, so a scene can be tested without a playthrough.
 //!
-//! - Native: `cargo run -- --start movein`, `cargo run -- --start list`
-//! - Web: `index.html?start=movein`
+//! - Native: `cargo run -- --start r1thu2`, `cargo run -- --start list`
+//! - Web: `index.html?start=r1thu2`
 //!
 //! `--set NAME=VALUE` (web: `&set=NAME=VALUE`) overrides a Yarn variable afterwards,
-//! e.g. to try another branch. See `docs/start-points.md`.
+//! e.g. a gate inside a chapter. See `docs/start-points.md`.
 //!
-//! The earlier scenes are fast-forwarded without being shown: the first available
-//! option at every choice, lines skipped. That sets every variable and visit count as
-//! real play would. Of their commands only the end state of the world is replayed:
-//! actors placed where their walks end, faced, shown or hidden, doors opened or closed,
-//! the screen left black or clear.
+//! The story chart's walker (`chart.rs`) finds the shortest way to the point, chapter by
+//! chapter, and plays it without showing it. That sets every variable, text and note as
+//! real play would. Of its commands only the end state of the world is replayed: actors
+//! placed where their walks end, faced, shown or hidden, doors opened or closed, the
+//! screen left black or clear.
 
 use bevy::prelude::*;
-use bevy_yarnspinner::default_impl::{MemoryVariableStorage, StringTableTextProvider};
+use bevy_yarnspinner::default_impl::MemoryVariableStorage;
 use bevy_yarnspinner::prelude::*;
-use yarnspinner::runtime::{Dialogue, DialogueEvent};
 
+use super::chart::{self, Walker, WorldCommand};
 use super::inventory::ItemsSeen;
 use super::phone::Phone;
 use super::scripted::{face_command, hide_command, show_command, Actor, ScriptedWalk};
@@ -32,150 +32,79 @@ use crate::GameState;
 pub struct StartPoint {
     pub name: &'static str,
     pub about: &'static str,
-    /// The scenes played before this point, in story order. Only nodes the game starts
-    /// itself (`<<next_scene>>` targets): a node reached by `<<jump>>` is played with
-    /// the node that jumps to it.
-    pub played: &'static [&'static str],
     pub begin: Begin,
 }
 
 pub enum Begin {
-    /// Starts this scene at once.
-    Scene(&'static str),
-    /// Hands control to the player.
-    Roam,
+    /// The start of a chapter of the chart (`$chapter`), its start node played.
+    Chapter(&'static str),
+    /// Inside a chapter: the first point where this gate is done.
+    Gate(&'static str),
 }
 
-const VIEWING: &[&str] = &["Route1Viewing"];
-const MOVE_IN: &[&str] = &["Route1Viewing", "Route1MoveIn"];
-const CROISSANT: &[&str] = &[
-    "Route1Viewing",
-    "Route1MoveIn",
-    "PhoneSundayMorning",
-    "Route1Croissant",
-];
-const THURSDAY2: &[&str] = &[
-    "Route1Viewing",
-    "Route1MoveIn",
-    "PhoneSundayMorning",
-    "Route1Croissant",
-    "Route1DinnerDoor",
-    "Route1Dinner",
-    "Route1Dishes",
-    "Route1Thu2Start",
-];
-const THURSDAY2_READ: &[&str] = &[
-    "Route1Viewing",
-    "Route1MoveIn",
-    "PhoneSundayMorning",
-    "Route1Croissant",
-    "Route1DinnerDoor",
-    "Route1Dinner",
-    "Route1Dishes",
-    "Route1Thu2Start",
-    "PhoneThursday2",
-];
-const THURSDAY2_SHOP: &[&str] = &[
-    "Route1Viewing",
-    "Route1MoveIn",
-    "PhoneSundayMorning",
-    "Route1Croissant",
-    "Route1DinnerDoor",
-    "Route1Dinner",
-    "Route1Dishes",
-    "Route1Thu2Start",
-    "PhoneThursday2",
-    "StairsLanding",
-];
-const THURSDAY2_DOOR: &[&str] = &[
-    "Route1Viewing",
-    "Route1MoveIn",
-    "PhoneSundayMorning",
-    "Route1Croissant",
-    "Route1DinnerDoor",
-    "Route1Dinner",
-    "Route1Dishes",
-    "Route1Thu2Start",
-    "PhoneThursday2",
-    "Route1Thu2Door",
-];
-const THURSDAY2_NIGHT: &[&str] = &[
-    "Route1Viewing",
-    "Route1MoveIn",
-    "PhoneSundayMorning",
-    "Route1Croissant",
-    "Route1DinnerDoor",
-    "Route1Dinner",
-    "Route1Dishes",
-    "Route1Thu2Start",
-    "PhoneThursday2",
-    "Route1Thu2Door",
-    "Route1Thu2Dinner",
-];
-
-/// Every start point, in story order. Add one for each new scene.
+/// Every start point, in story order: one per chapter, and points inside chapters
+/// where they help.
 pub const START_POINTS: &[StartPoint] = &[
     StartPoint {
-        name: "viewing",
-        about: "Saturday: the viewing of 3B, Samantha opens the door across the hall",
-        played: &[],
-        begin: Begin::Scene("Route1Viewing"),
+        name: "r1viewing",
+        about: "Saturday: the viewing of 3B (knock on 3B)",
+        begin: Begin::Chapter("R1Viewing"),
     },
     StartPoint {
-        name: "movein",
-        about: "Moving day: keys, the sock check and her house rules",
-        played: VIEWING,
-        begin: Begin::Scene("Route1MoveIn"),
+        name: "r1viewing3b",
+        about: "The viewing, inside 3B: the window, the kitchen and the bath",
+        begin: Begin::Gate("r1_view_knock"),
     },
     StartPoint {
-        name: "sunday",
-        about: "Sunday morning on the landing, free to walk (knock on 3A)",
-        played: MOVE_IN,
-        begin: Begin::Roam,
+        name: "r1movein",
+        about: "Moving day: keys, the box, the socks and her rules",
+        begin: Begin::Chapter("R1MoveIn"),
     },
     StartPoint {
-        name: "croissant",
-        about: "Sunday morning: the croissant at her door",
-        played: MOVE_IN,
-        begin: Begin::Scene("Route1Croissant"),
+        name: "r1sunday",
+        about: "Sunday morning: her text and the croissant at her door",
+        begin: Begin::Chapter("R1Sunday"),
     },
     StartPoint {
-        name: "dinner",
-        about: "Thursday dinner: knocking on her door at eight",
-        played: CROISSANT,
-        begin: Begin::Scene("Route1DinnerDoor"),
+        name: "r1thu1",
+        about: "The first Thursday: her text, dinner at hers at eight",
+        begin: Begin::Chapter("R1Thu1"),
     },
     StartPoint {
-        name: "thursday2",
-        about: "The second Thursday on the landing, her riddle unread (free to walk)",
-        played: THURSDAY2,
-        begin: Begin::Roam,
+        name: "r1thu1dishes",
+        about: "The first Thursday after dinner: wash up at her sink",
+        begin: Begin::Gate("r1_thu1_sit"),
     },
     StartPoint {
-        name: "shop",
-        about: "The second Thursday in the corner shop, her text read",
-        played: THURSDAY2_SHOP,
-        begin: Begin::Roam,
+        name: "r1thu2",
+        about: "The second Thursday on the landing, her riddle unread",
+        begin: Begin::Chapter("R1Thu2"),
     },
     StartPoint {
-        name: "thursday2door",
-        about: "The second Thursday: knocking on 3A (--set item_wine_fox=true etc.)",
-        played: THURSDAY2_READ,
-        begin: Begin::Scene("Route1Thu2Door"),
+        name: "r1thu2door",
+        about: "The second Thursday at her open door: give her things, shoes off",
+        begin: Begin::Gate("r1_thu2_door"),
     },
     StartPoint {
-        name: "thursday2dinner",
-        about: "The second Thursday: the question game, the kiss and her night text",
-        played: THURSDAY2_DOOR,
-        begin: Begin::Scene("Route1Thu2Dinner"),
+        name: "r1thu2dinner",
+        about: "The second Thursday, the wine open: sit down for the dinner",
+        begin: Begin::Gate("r1_thu2_open"),
     },
     StartPoint {
-        name: "thursday2night",
+        name: "r1thu2night",
         about: "The second Thursday, home in 3B: her night text unread, then bed",
-        played: THURSDAY2_NIGHT,
-        begin: Begin::Roam,
+        begin: Begin::Gate("r1_thu2_stand"),
     },
 ];
+
+impl Begin {
+    fn reached(&self, state: &chart::State) -> bool {
+        match self {
+            Begin::Chapter(chapter) => state.chapter() == *chapter,
+            Begin::Gate(gate) => state.gate(gate),
+        }
+    }
+}
 
 pub fn find(name: &str) -> Option<&'static StartPoint> {
     START_POINTS.iter().find(|p| p.name == name)
@@ -293,85 +222,6 @@ struct StartRequest {
     sets: Vec<(String, String)>,
 }
 
-/// A command of a fast-forwarded scene that changes the world, as (name, parameters).
-type WorldCommand = (String, Vec<String>);
-
-/// Commands whose end state is replayed after a fast-forward.
-const REPLAYED: &[&str] = &[
-    "walk",
-    "place",
-    "face",
-    "show",
-    "hide",
-    "open_door",
-    "close_door",
-    "fade_out",
-    "fade_in",
-    "phone",
-    "note",
-    "note_done",
-];
-
-/// Plays `nodes` on `storage` without presenting anything: the first available option at
-/// every choice, lines skipped. Returns the commands in `REPLAYED`, in order.
-pub fn fast_forward(
-    project: &YarnProject,
-    storage: &MemoryVariableStorage,
-    nodes: &[&str],
-) -> Result<Vec<WorldCommand>, String> {
-    let compilation = project.compilation();
-    let program = compilation
-        .program
-        .clone()
-        .ok_or("the Yarn project has no program")?;
-    let mut text = StringTableTextProvider::new();
-    text.extend_base_language(
-        compilation
-            .string_table
-            .iter()
-            .map(|(id, info)| (id.clone(), info.text.clone())),
-    );
-    let mut dialogue = Dialogue::new(Box::new(storage.clone()), Box::new(text));
-    dialogue.add_program(program);
-
-    // Yarn functions get a world; the standard ones (visited, dice, ...) don't use it.
-    let mut world = World::new();
-    let mut replayed = Vec::new();
-    for &node in nodes {
-        dialogue
-            .set_node(node)
-            .map_err(|err| format!("cannot start '{node}': {err}"))?;
-        'node: for _ in 0..100_000 {
-            let events = dialogue
-                .continue_with_world(&mut world)
-                .map_err(|err| format!("while playing '{node}': {err}"))?;
-            for event in events {
-                match event {
-                    DialogueEvent::Options(options) => {
-                        let option = options
-                            .iter()
-                            .find(|o| o.is_available)
-                            .or(options.first())
-                            .ok_or_else(|| format!("'{node}' offers no options"))?;
-                        dialogue
-                            .set_selected_option(option.id)
-                            .map_err(|err| format!("while playing '{node}': {err}"))?;
-                    }
-                    DialogueEvent::Command(command)
-                        if REPLAYED.contains(&command.name.as_str()) =>
-                    {
-                        let params = command.parameters.iter().map(|p| p.to_string()).collect();
-                        replayed.push((command.name, params));
-                    }
-                    DialogueEvent::DialogueComplete => break 'node,
-                    _ => {}
-                }
-            }
-        }
-    }
-    Ok(replayed)
-}
-
 /// Sets `$NAME` (the `$` is optional) to `value`, typed like the variable's current or
 /// declared value.
 pub fn set_variable(
@@ -408,9 +258,8 @@ pub fn set_variable(
         .map_err(|err| format!("cannot set '{name}': {err}"))
 }
 
-/// Restores the end state of the replayed commands.
-/// Texts (`<<phone>>`) are pending unless their node is in `played`.
-fn replay(world: &mut World, commands: Vec<WorldCommand>, played: &[&str]) {
+/// Restores the end state of the world commands of a walk.
+fn replay(world: &mut World, commands: Vec<WorldCommand>) {
     for (name, params) in commands {
         let arg = |i: usize| params.get(i).cloned().unwrap_or_default();
         let result = match name.as_str() {
@@ -442,22 +291,6 @@ fn replay(world: &mut World, commands: Vec<WorldCommand>, played: &[&str]) {
             }
             "fade_in" => {
                 world.resource_mut::<ScreenFade>().clear();
-                Ok(())
-            }
-            "phone" => {
-                // Yarn only counts visits of nodes some `visited()` asks about, so a
-                // text counts as read when the start point lists it as played.
-                if !played.contains(&arg(0).as_str()) {
-                    world.resource_mut::<Phone>().deliver(arg(0));
-                }
-                Ok(())
-            }
-            "note" => {
-                world.resource_mut::<Phone>().note(arg(0), arg(1));
-                Ok(())
-            }
-            "note_done" => {
-                world.resource_mut::<Phone>().note_done(&arg(0));
                 Ok(())
             }
             _ => Ok(()),
@@ -520,31 +353,59 @@ fn world_is_ready(q_player: Query<(), With<Player>>) -> bool {
     !q_player.is_empty()
 }
 
-/// Fast-forwards to the requested start point once the world is spawned. Runs once:
-/// returning to the menu later plays normally.
+/// The nodes of the map's hotspots: what the walker can use.
+fn hotspot_nodes(map: &TiledMap) -> Vec<String> {
+    map.object_layer("Hotspots")
+        .iter()
+        .filter_map(|obj| obj.prop_str("node").map(str::to_string))
+        .collect()
+}
+
+/// Walks to the requested start point once the world is spawned and replays its end
+/// state. Runs once: returning to the menu later plays normally.
 fn apply_start_point(world: &mut World) {
     let Some(request) = world.remove_resource::<StartRequest>() else {
         return;
     };
-    let mut storage = world.resource::<StoryVars>().0.clone();
+    let hotspots = hotspot_nodes(world.resource::<TiledMap>());
     let project = world.resource::<YarnProject>();
-    let commands = match fast_forward(project, &storage, request.point.played) {
-        Ok(commands) => commands,
+    let walked = Walker::new(project, &hotspots).and_then(|mut walker| {
+        let path = walker.path_to(|state| request.point.begin.reached(state))?;
+        walker.replay(&path)
+    });
+    let (state, commands) = match walked {
+        Ok(walked) => walked,
         Err(err) => {
             error!("Start point '{}': {err}", request.point.name);
             return;
         }
     };
+    let mut storage = world.resource::<StoryVars>().0.clone();
+    if let Err(err) = storage.extend(state.vars.into_iter().collect()) {
+        error!("Start point '{}': {err}", request.point.name);
+    }
     for (name, value) in &request.sets {
         if let Err(err) = set_variable(project, &mut storage, name, value) {
             error!("--set {name}={value}: {err}");
         }
     }
-    replay(world, commands, request.point.played);
-    let storage = world.resource::<StoryVars>().0.clone();
+    replay(world, commands);
+    let mut phone = world.resource_mut::<Phone>();
+    phone.unread = state.unread.into();
+    for note in state.notes {
+        phone.note(note.id.clone(), note.text);
+        if note.done {
+            phone.note_done(&note.id);
+        }
+    }
     world.resource_mut::<ItemsSeen>().rebaseline(&storage);
-    if let Begin::Scene(node) = request.point.begin {
-        world.resource_mut::<QueuedScene>().0 = Some(node.to_string());
+}
+
+/// A new game starts with the first chapter's start node, unless a start point takes
+/// over.
+fn start_new_game(mut queued: ResMut<QueuedScene>, request: Option<Res<StartRequest>>) {
+    if request.is_none() {
+        queued.0 = Some(chart::FIRST_NODE.to_string());
     }
 }
 
@@ -557,6 +418,7 @@ impl Plugin for StartPointPlugin {
                 OnEnter(GameState::MainMenu),
                 skip_main_menu.run_if(resource_exists::<StartRequest>),
             )
+            .add_systems(OnEnter(GameState::Gaming), start_new_game)
             .add_systems(
                 Update,
                 apply_start_point.run_if(
@@ -573,94 +435,60 @@ impl Plugin for StartPointPlugin {
 mod tests {
     use super::*;
 
-    fn real_project() -> App {
-        let files: Vec<YarnFileSource> = std::fs::read_dir("assets/dialogue")
-            .unwrap()
-            .map(|e| e.unwrap().path())
-            .filter(|p| p.extension().is_some_and(|ext| ext == "yarn"))
-            .map(|p| {
-                let name = p.file_name().unwrap().to_string_lossy();
-                YarnFileSource::file(format!("dialogue/{name}"))
-            })
-            .collect();
-        let mut app = App::new();
-        app.add_plugins((
-            MinimalPlugins,
-            AssetPlugin {
-                file_path: "assets".to_string(),
-                ..default()
-            },
-            YarnSpinnerPlugin::with_yarn_sources(files)
-                .with_development_file_generation(DevelopmentFileGeneration::None),
-        ));
-        for _ in 0..5000 {
-            if app.world().contains_resource::<YarnProject>() {
-                return app;
-            }
-            app.update();
-            std::thread::sleep(std::time::Duration::from_millis(2));
-        }
-        panic!("The yarn project did not load");
-    }
+    use crate::story::chart::tests::route1_hotspots;
+    use crate::story::load_real_project;
 
     fn get(storage: &MemoryVariableStorage, name: &str) -> String {
         storage.get(name).map(|v| v.to_string()).unwrap_or_default()
     }
 
     #[test]
-    fn every_start_point_fast_forwards_and_its_scene_exists() {
-        let app = real_project();
+    fn every_start_point_is_reached() {
+        let app = load_real_project();
         let project = app.world().resource::<YarnProject>();
-        let program = project.compilation().program.as_ref().unwrap();
+        let mut walker = Walker::new(project, &route1_hotspots()).unwrap();
         let mut names = std::collections::HashSet::new();
         for point in START_POINTS {
             assert!(names.insert(point.name), "'{}' twice", point.name);
             assert_ne!(point.name, "list", "'list' lists the start points");
-            if let Begin::Scene(node) = point.begin {
-                assert!(
-                    program.nodes.contains_key(node),
-                    "{}: no node '{node}'",
-                    point.name
-                );
-            }
-            fast_forward(project, &MemoryVariableStorage::new(), point.played)
+            let path = walker
+                .path_to(|state| point.begin.reached(state))
                 .unwrap_or_else(|err| panic!("{}: {err}", point.name));
+            let (state, _) = walker.replay(&path).unwrap();
+            assert!(point.begin.reached(&state), "{}", point.name);
         }
     }
 
     #[test]
-    fn sunday_is_after_moving_day_with_the_first_options() {
-        let app = real_project();
+    fn the_second_thursday_starts_with_her_riddle_unread() {
+        let app = load_real_project();
         let project = app.world().resource::<YarnProject>();
-        let storage = MemoryVariableStorage::new();
-        let commands = fast_forward(project, &storage, find("sunday").unwrap().played).unwrap();
-
-        assert_eq!(get(&storage, "$Yarn.Internal.Visiting.Route1Viewing"), "1");
-        // Yarn only counts visits of nodes that some `visited()` asks about.
-        assert_eq!(get(&storage, "$samantha_name"), "Samantha");
-        assert_eq!(get(&storage, "$r1_viewing_opening"), "keen");
-        assert_eq!(get(&storage, "$r1_movein_keys"), "hand");
-
-        // Moving day ends on the landing, the screen clear again.
+        let mut walker = Walker::new(project, &route1_hotspots()).unwrap();
+        let point = find("r1thu2").unwrap();
+        let path = walker.path_to(|s| point.begin.reached(s)).unwrap();
+        let (state, commands) = walker.replay(&path).unwrap();
+        assert_eq!(state.unread, ["PhoneThursday2"]);
+        assert!(state.gate("r1_thu1_bed") && !state.gate("r1_thu2_text"));
+        // Every earlier bottleneck is done.
+        for gate in ["r1_view_end", "r1_move_bed", "r1_sun_bed"] {
+            assert!(state.gate(gate), "{gate}");
+        }
+        // The landing, the screen clear again.
         let place = commands.iter().rposition(|(n, _)| n == "place").unwrap();
-        assert_eq!(commands[place].1, ["Player", "PlayerArrive"]);
+        assert_eq!(commands[place].1, ["Player", "PlayerFromShop"]);
         let last_fade = commands.iter().rev().find(|(n, _)| n.starts_with("fade_"));
         assert_eq!(last_fade.unwrap().0, "fade_in");
-        // The viewing alone ends in black, before moving day fades in.
-        let commands = fast_forward(project, &MemoryVariableStorage::new(), VIEWING).unwrap();
-        let last_fade = commands.iter().rev().find(|(n, _)| n.starts_with("fade_"));
-        assert_eq!(last_fade.unwrap().0, "fade_out");
     }
 
     #[test]
     fn set_variable_keeps_the_declared_type() {
-        let app = real_project();
+        let app = load_real_project();
         let project = app.world().resource::<YarnProject>();
         let mut storage = MemoryVariableStorage::new();
-        set_variable(project, &mut storage, "r1_movein_rules", "fair").unwrap();
-        assert_eq!(get(&storage, "$r1_movein_rules"), "fair");
-        set_variable(project, &mut storage, "$r1_movein_rules", "deal").unwrap();
-        assert_eq!(get(&storage, "$r1_movein_rules"), "deal");
+        set_variable(project, &mut storage, "r1_movein_socks", "refuse").unwrap();
+        assert_eq!(get(&storage, "$r1_movein_socks"), "refuse");
+        set_variable(project, &mut storage, "$gate_r1_thu2_wine", "true").unwrap();
+        assert_eq!(get(&storage, "$gate_r1_thu2_wine"), "true");
         assert!(set_variable(project, &mut storage, "no_such_variable", "x").is_err());
     }
 

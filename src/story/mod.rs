@@ -1,5 +1,6 @@
 //! Story state and scripted scenes.
 
+pub mod chart;
 pub mod inventory;
 pub mod phone;
 pub mod scripted;
@@ -35,6 +36,50 @@ pub fn build_story_runner(
         error!("Could not restore the story variables: {err}");
     }
     runner
+}
+
+/// The game's dialogue files loaded into a Yarn project, for tests.
+#[cfg(test)]
+pub(crate) fn load_real_project() -> App {
+    let files: Vec<YarnFileSource> = std::fs::read_dir("assets/dialogue")
+        .unwrap()
+        .map(|e| e.unwrap().path())
+        .filter(|p| p.extension().is_some_and(|ext| ext == "yarn"))
+        .map(|p| {
+            let name = p.file_name().unwrap().to_string_lossy();
+            YarnFileSource::file(format!("dialogue/{name}"))
+        })
+        .collect();
+    let mut app = App::new();
+    app.add_plugins((
+        MinimalPlugins,
+        AssetPlugin {
+            file_path: "assets".to_string(),
+            ..default()
+        },
+        YarnSpinnerPlugin::with_yarn_sources(files)
+            .with_development_file_generation(DevelopmentFileGeneration::None),
+    ));
+    let started = std::time::Instant::now();
+    while started.elapsed() < std::time::Duration::from_secs(60) {
+        if app.world().contains_resource::<YarnProject>() {
+            return app;
+        }
+        app.update();
+        std::thread::sleep(std::time::Duration::from_millis(2));
+    }
+    // Compile again to say why.
+    let mut compiler = yarnspinner::compiler::Compiler::new();
+    for entry in std::fs::read_dir("assets/dialogue").unwrap() {
+        let path = entry.unwrap().path();
+        if path.extension().is_some_and(|ext| ext == "yarn") {
+            compiler.read_file(path);
+        }
+    }
+    match compiler.compile() {
+        Ok(_) => panic!("The yarn project did not load"),
+        Err(err) => panic!("The yarn project did not load: {err}"),
+    }
 }
 
 fn reset_story_vars(mut commands: Commands) {
