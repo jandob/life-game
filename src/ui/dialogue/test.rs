@@ -13,7 +13,7 @@ const PATH_TO_DIR: &str = "assets/dialogue";
 const MAX_SIMILARITY_DISTANCE: usize = 4;
 
 /// Custom commands with their allowed number of arguments.
-const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 20] = [
+const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 27] = [
     ("stop_chat", 0..=0),
     ("end_demo", 0..=0),
     ("walk", 2..=3),
@@ -35,6 +35,15 @@ const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 20] = [
     ("chapter", 2..=2),
     ("gate", 2..=20),
     ("bottleneck", 2..=20),
+    // Story graph data (assets/dialogue/graph_*.yarn): only read by dialogue_graph.
+    ("box", 2..=6),
+    ("item", 2..=20),
+    ("clue", 2..=20),
+    ("choice", 2..=20),
+    ("option", 3..=3),
+    ("exit", 3..=20),
+    // Marks a step of the story graph as written (scenes): only read by dialogue_graph.
+    ("done", 2..=2),
 ];
 
 /// Commands that Yarn Spinner itself provides.
@@ -274,10 +283,10 @@ fn validate_speaker_variables_declared() {
 /// A conversation with an NPC opens with the NPC's line, or with the actions at a talk
 /// target (options before any line, shown as a popup). Nodes without NPC lines are
 /// exempt: staging nodes that only run commands, and the player's own remarks at an
-/// object (an interactable such as a door). Chart nodes never run and are exempt too.
+/// object (an interactable such as a door). Chart and graph nodes never run and are exempt too.
 #[test]
 fn validate_first_line_is_npc_line() {
-    let charts = chart_nodes();
+    let charts = data_nodes();
     for (file, contents) in yarn_files() {
         for (title, body) in nodes(&contents) {
             if charts.contains(&title) {
@@ -449,13 +458,25 @@ pub(crate) struct ChartChapter {
     pub bottleneck: ChartGate,
 }
 
-/// The titles of nodes tagged `chart`.
-fn chart_nodes() -> HashSet<String> {
+/// The titles of nodes tagged `tag`.
+fn tagged_nodes(tag: &str) -> HashSet<String> {
     node_tags()
         .into_iter()
-        .filter(|(_, tags)| tags.iter().any(|t| t == crate::story::chart::CHART_TAG))
+        .filter(|(_, tags)| tags.iter().any(|t| t == tag))
         .map(|(title, _)| title)
         .collect()
+}
+
+/// The titles of nodes tagged `chart`.
+fn chart_nodes() -> HashSet<String> {
+    tagged_nodes(crate::story::chart::CHART_TAG)
+}
+
+/// The titles of nodes tagged `chart` or `graph`: data, never run.
+fn data_nodes() -> HashSet<String> {
+    let mut titles = chart_nodes();
+    titles.extend(tagged_nodes(crate::story::chart::GRAPH_TAG));
+    titles
 }
 
 /// The chapters of the story chart, in story order: chart files by name, chart nodes in
@@ -524,7 +545,7 @@ fn chart_is_well_formed() {
     let chapters = chart();
     assert!(!chapters.is_empty(), "no chart nodes");
     let files = yarn_files();
-    let charts = chart_nodes();
+    let charts = data_nodes();
     let lines: Vec<&str> = files
         .iter()
         .flat_map(|(_, contents)| contents.lines().map(str::trim))
@@ -677,4 +698,178 @@ fn story_conditions_do_not_read_visits() {
             "{file} reads visited(): '{line}'"
         );
     });
+}
+
+/// A node of a story graph box, as declared by `<<gate>>`, `<<item>>`, `<<clue>>`,
+/// `<<choice>>` or `<<exit>>`.
+struct GraphNode {
+    command: String,
+    id: String,
+    requires: Vec<String>,
+}
+
+/// A story graph box with its nodes and the options of its choices as (choice, option).
+struct GraphBox {
+    id: String,
+    kind: String,
+    nodes: Vec<GraphNode>,
+    options: Vec<(String, String)>,
+    exits: Vec<(String, String)>,
+}
+
+/// The boxes of every `graph` node, in file order.
+fn graph_boxes() -> Vec<GraphBox> {
+    let graphs = tagged_nodes(crate::story::chart::GRAPH_TAG);
+    let mut files = yarn_files();
+    files.sort();
+    let mut boxes: Vec<GraphBox> = Vec::new();
+    for (_, contents) in files {
+        for (title, body) in nodes(&contents) {
+            if !graphs.contains(&title) {
+                continue;
+            }
+            for line in body {
+                let Some((command, mut args)) = parse_command(line) else {
+                    continue;
+                };
+                if command == "box" {
+                    let kind = args
+                        .iter()
+                        .find_map(|a| a.strip_prefix("kind="))
+                        .unwrap_or("chapter")
+                        .to_string();
+                    boxes.push(GraphBox {
+                        id: args.remove(0),
+                        kind,
+                        nodes: Vec::new(),
+                        options: Vec::new(),
+                        exits: Vec::new(),
+                    });
+                    continue;
+                }
+                let Some(current) = boxes.last_mut() else {
+                    continue;
+                };
+                match command.as_str() {
+                    "option" => current.options.push((args.remove(0), args.remove(0))),
+                    "gate" | "item" | "clue" | "choice" | "exit" => {
+                        let id = args.remove(0);
+                        args.remove(0);
+                        if command == "exit" {
+                            let target = args.iter().find_map(|a| a.strip_prefix("to="));
+                            current
+                                .exits
+                                .push((id.clone(), target.unwrap_or_default().to_string()));
+                        }
+                        args.retain(|a| !a.starts_with("to=") && !a.starts_with("detail="));
+                        current.nodes.push(GraphNode {
+                            command,
+                            id,
+                            requires: args,
+                        });
+                    }
+                    _ => {}
+                }
+            }
+        }
+    }
+    boxes
+}
+
+#[test]
+fn graph_is_well_formed() {
+    let boxes = graph_boxes();
+    assert!(!boxes.is_empty(), "no graph nodes");
+    let known: HashSet<&str> = boxes.iter().map(|b| b.id.as_str()).collect();
+    assert_eq!(known.len(), boxes.len(), "a box id is used twice");
+
+    for b in &boxes {
+        let ids: HashSet<&str> = b.nodes.iter().map(|n| n.id.as_str()).collect();
+        assert_eq!(ids.len(), b.nodes.len(), "{} has a node id twice", b.id);
+        for (choice, option) in &b.options {
+            assert!(
+                b.nodes
+                    .iter()
+                    .any(|n| n.command == "choice" && &n.id == choice),
+                "{}: option {option} of unknown choice {choice}",
+                b.id
+            );
+        }
+        for (id, target) in &b.exits {
+            assert!(
+                known.contains(target.as_str()),
+                "{}: exit {id} leads to unknown box '{target}'",
+                b.id
+            );
+        }
+        for node in &b.nodes {
+            for req in &node.requires {
+                for alternative in req.split('|') {
+                    if let Some((box_id, clue)) = alternative.split_once('.') {
+                        let source = boxes.iter().find(|o| o.id == box_id);
+                        assert!(
+                            source.is_some_and(|s| s
+                                .nodes
+                                .iter()
+                                .any(|n| n.command == "clue" && n.id == clue)),
+                            "{}: {} needs unknown clue {alternative}",
+                            b.id,
+                            node.id
+                        );
+                    } else if let Some((choice, option)) = alternative.split_once('=') {
+                        assert!(
+                            b.options
+                                .contains(&(choice.to_string(), option.to_string())),
+                            "{}: {} needs unknown option {alternative}",
+                            b.id,
+                            node.id
+                        );
+                    } else {
+                        assert!(
+                            ids.contains(alternative) && alternative != node.id,
+                            "{}: {} needs unknown node {alternative}",
+                            b.id,
+                            node.id
+                        );
+                    }
+                }
+            }
+        }
+        assert!(
+            b.kind == "stub" || !b.exits.is_empty(),
+            "box {} has no exit",
+            b.id
+        );
+    }
+}
+
+/// Every `<<done BOX ID>>` of a scene names a step of a box of the story graph.
+#[test]
+fn done_marks_name_known_steps() {
+    let boxes = graph_boxes();
+    let graphs = tagged_nodes(crate::story::chart::GRAPH_TAG);
+    for (file, contents) in yarn_files() {
+        for (title, body) in nodes(&contents) {
+            if graphs.contains(&title) {
+                continue;
+            }
+            for line in body {
+                let Some((command, args)) = parse_command(line) else {
+                    continue;
+                };
+                if command != "done" || args.len() != 2 {
+                    continue;
+                }
+                let (box_id, step) = (&args[0], &args[1]);
+                let known = boxes.iter().find(|b| &b.id == box_id).is_some_and(|b| {
+                    b.nodes.iter().any(|n| &n.id == step)
+                        || b.options.iter().any(|(_, o)| o == step)
+                });
+                assert!(
+                    known,
+                    "{file}/{title}: <<done {box_id} {step}>> names an unknown box or step"
+                );
+            }
+        }
+    }
 }

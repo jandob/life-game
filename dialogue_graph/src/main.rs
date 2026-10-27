@@ -1,3 +1,4 @@
+mod story_graph;
 #[cfg(test)]
 mod test;
 
@@ -314,13 +315,17 @@ fn construct_graph(contents: String) -> Graph<String, usize, Directed> {
 
 /// The titles of the nodes tagged `chart` (story chart data, see `src/story/chart.rs`).
 fn chart_titles(contents: &str) -> Vec<String> {
+    tagged_titles(contents, "chart")
+}
+
+fn tagged_titles(contents: &str, tag: &str) -> Vec<String> {
     let mut titles = Vec::new();
     let mut title = None;
     for line in contents.lines().map(str::trim) {
         if let Some(t) = line.strip_prefix("title:") {
             title = Some(t.trim().to_string());
         } else if let Some(tags) = line.strip_prefix("tags:") {
-            if tags.split_whitespace().any(|t| t == "chart") {
+            if tags.split_whitespace().any(|t| t == tag) {
                 titles.extend(title.take());
             }
         } else if line == "---" {
@@ -429,12 +434,45 @@ fn chart_dot(contents: &str) -> String {
     dot + "}\n"
 }
 
+/// Writes `story_<route>.dot` and a `box_<ID>.dot` per box with content, for the file
+/// `graph_<route>.yarn`.
+fn write_story_graph(contents: &str, file_name: &str, done: &story_graph::Done) {
+    let route = file_name.strip_prefix("graph_").unwrap_or(file_name);
+    let boxes = story_graph::graph_boxes(contents);
+    let write = |name: String, dot: String| {
+        let path = format!("{DOT_FILES_OUTPUT_PATH}/{name}.dot");
+        fs::write(&path, dot).unwrap_or_else(|_| panic!("Couldn't write to file: '{path}'"));
+    };
+    write(
+        format!("story_{route}"),
+        story_graph::story_dot(&boxes, route, done),
+    );
+    for b in boxes.iter().filter(|b| story_graph::has_content(b)) {
+        write(
+            format!("box_{}", b.id),
+            story_graph::box_dot(&boxes, b, done),
+        );
+    }
+}
+
+/// The steps that the scenes (the yarn files that are not graph files) mark with
+/// `<<done BOX ID>>`.
+fn scene_done_marks() -> story_graph::Done {
+    fs::read_dir(PATH_TO_DIALOGUES)
+        .expect("Can't read entries in current dir")
+        .filter_map(try_read_yarn_contents)
+        .filter(|(contents, _)| tagged_titles(contents, "graph").is_empty())
+        .flat_map(|(contents, _)| story_graph::done_marks(&contents))
+        .collect()
+}
+
 fn main() {
     if Path::new(DOT_FILES_OUTPUT_PATH).exists() {
         remove_dir_all(DOT_FILES_OUTPUT_PATH).expect("Couldn't hard remove graph output dir");
     }
     create_dir(DOT_FILES_OUTPUT_PATH).expect("Couldn't create graph output dir");
 
+    let done = scene_done_marks();
     for entry in fs::read_dir(PATH_TO_DIALOGUES).expect("Can't read entries in current dir") {
         let (contents, npc_file_name) = match try_read_yarn_contents(entry) {
             Some(r) => r,
@@ -446,6 +484,12 @@ fn main() {
             let path = &format!("{}/{}.dot", DOT_FILES_OUTPUT_PATH, npc_file_name);
             fs::write(path, chart_dot(&contents))
                 .unwrap_or_else(|_| panic!("Couldn't write to file: '{}'", path));
+            continue;
+        }
+
+        // A file of graph nodes is drawn as the story graph: the story level and each box.
+        if !tagged_titles(&contents, "graph").is_empty() {
+            write_story_graph(&contents, &npc_file_name, &done);
             continue;
         }
 

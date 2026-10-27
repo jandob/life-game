@@ -29,6 +29,9 @@ use yarnspinner::runtime::{Dialogue, DialogueEvent, OptionId, VariableStorageErr
 #[cfg(test)]
 /// Yarn node tag of chart nodes.
 pub const CHART_TAG: &str = "chart";
+#[cfg(test)]
+/// Yarn node tag of story graph nodes: data drawn by `dialogue_graph`, never run.
+pub const GRAPH_TAG: &str = "graph";
 /// The node a new game starts with: the first chapter's start node.
 pub const FIRST_NODE: &str = "Route1Start";
 /// The Yarn variable that names the current chapter.
