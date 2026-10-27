@@ -22,7 +22,7 @@
 - [x] 3b.3 Runtime: `done`, `can`, `is_done`, `enter_box`, exits enter boxes
 - [x] 3b.4 Scenes use `can()`; chart, `$chapter`, `$gate_*` and cross-box flags go
 - [x] 3b.5 Start points by box; the walker checks each box from its entry
-- [ ] 3b.6 Scenes for the retry, the knock and the notebook
+- [x] 3b.6 Scenes for the retry, the knock and the notebook
 
 ## 4. Diagrams
 
