@@ -60,3 +60,20 @@ Graphviz, as today. Mermaid output is a small addition if wanted.
 
 - **Lost callbacks.** Route 1 lines that refer back to earlier chapters lose their source. Each one is cut or becomes an exit. Task 3.2 lists them.
 - **Link checks are approximate.** A condition can read the right variable and still be wrong. Start points make any box quick to play.
+
+## Puzzle boxes (2026-10-27)
+
+Janosch redesigned route 1 as an adventure with puzzles (thread "Shape the story graph together"). The box model stays; what is inside a box changes, and the graph now drives the game. These decisions replace D1 to D3 and D6 where they differ.
+
+**D8. Steps.** A box holds steps: `gate` (a puzzle or action), `item`, `clue`, `choice` with `option`s, and `exit`. Syntax is in the header of `assets/dialogue/graph_route1.yarn`. A requirement `BOX.clue` names a clue from an earlier box: the player remembers it, the game stores nothing, and the checks treat it as a hint. A wrong move may end a box early through an exit into a short retry box, which can loop on itself.
+
+**D9. Scenes ask the graph.** The graph is the only source of what can happen when:
+- `<<done BOX ID>>` records a step. It is the only way a step becomes done.
+- `can("BOX", "ID")` is true when `BOX` is the current box, the step is not done, and its requirements in the box hold. Scene conditions use it instead of hand-written `$chapter` and `$gate_*` tests. Extra scene conditions (an item in hand, an option already taken) are ANDed to it.
+- `is_done("BOX", "ID")` reads a step, for lines that explain why something can't happen yet.
+- Doing an exit enters its target box: the target's entry node (`entry=NODE` on `<<box>>`) runs next, and that node runs `<<enter_box BOX>>`, which sets `$box` and clears every step of that box. A box therefore always starts the same way, even on a second visit.
+- State stays in Yarn variables (`$box`, and `$step_<box>_<id>` in lower case, true once done), so the shared story variables, the walker and start points see it. The functions read the same storage.
+
+**D10. What goes.** `chart_route1.yarn`, `$chapter`, `$gate_*`, the route flags that live across chapters (`$r1_viewing_why`, `$r1_movein_socks`, `$r1_croissant_socks`, `$r1_dishes_turn`, `$r1_socks_at` across chapters) and the lines that read them across boxes. Within one box, flavour variables may stay, owned by that box and reset by its entry node.
+
+**D11. Start points and the walker.** A start point is a box: it runs the box's entry node, so no path replay is needed. Inside-box start points do the listed steps first. The walker stays as a check: from each box's entry it plays every way through the box and asserts an exit is always reachable and every step can be done.

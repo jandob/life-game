@@ -15,9 +15,18 @@
 - [ ] 3.2 Janosch decides each cross-chapter callback: cut, or an exit (socks at the croissant and both Thursdays, the viewing's first look at the move-in, turning around at the sink at the second dinner, her notebook)
 - [ ] 3.3 Janosch decides which in-box choices stay (fewer choices)
 
+## 3b. Puzzle boxes (D8 to D11)
+
+- [x] 3b.1 Route 1 up to the notebook as puzzle boxes in `graph_route1.yarn`
+- [x] 3b.2 Scenes mark steps with `<<done BOX ID>>`; diagrams count steps written
+- [ ] 3b.3 Runtime: `done`, `can`, `is_done`, `enter_box`, exits enter boxes
+- [ ] 3b.4 Scenes use `can()`; chart, `$chapter`, `$gate_*` and cross-box flags go
+- [ ] 3b.5 Start points by box; the walker checks each box from its entry
+- [ ] 3b.6 Scenes for the retry, the knock and the notebook
+
 ## 4. Diagrams
 
-- [ ] 4.1 `dialogue_graph`: `story_<route>.dot` and `box_<ID>.dot`
+- [x] 4.1 `dialogue_graph`: `story_<route>.dot` and `box_<ID>.dot`
 
 ## 5. Checks
 
