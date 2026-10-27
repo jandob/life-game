@@ -3,7 +3,9 @@
 
 use std::collections::HashSet;
 
-use crate::{parse_command, quote};
+use story_graph::{cross_box, parse_command, BoxKind, GraphBox, GraphNode, NodeKind};
+
+use crate::quote;
 
 const BLUE: &str = "#3b5b8c";
 const BLUE_FILL: &str = "#eef3fb";
@@ -15,44 +17,6 @@ const RED: &str = "#c0392b";
 const RED_FILL: &str = "#fdeceb";
 const GREY: &str = "#999999";
 const CLUE_BLUE: &str = "#1f6fb2";
-
-#[derive(Clone, Copy, PartialEq)]
-pub enum BoxKind {
-    Chapter,
-    Hub,
-    Side,
-    Retry,
-    Stub,
-}
-
-#[derive(Clone, Copy, PartialEq)]
-pub enum NodeKind {
-    Gate,
-    Item,
-    Clue,
-    Choice,
-    Exit,
-}
-
-pub struct GraphNode {
-    pub kind: NodeKind,
-    pub id: String,
-    pub label: String,
-    pub detail: Option<String>,
-    /// All of these are needed; each is a list of alternatives, any one of which will do.
-    pub requires: Vec<Vec<String>>,
-    pub to: Option<String>,
-}
-
-pub struct GraphBox {
-    pub id: String,
-    pub label: String,
-    pub kind: BoxKind,
-    pub goal: Option<String>,
-    pub nodes: Vec<GraphNode>,
-    /// (choice, option id, option label)
-    pub options: Vec<(String, String, String)>,
-}
 
 /// The steps that scenes mark with `<<done BOX ID>>`, as (box, step id).
 pub type Done = HashSet<(String, String)>;
@@ -112,104 +76,8 @@ fn html(text: &str) -> String {
         .replace('>', "&gt;")
 }
 
-/// The boxes of the nodes tagged `graph`, in file order. Everything up to the next `<<box>>`
-/// belongs to a box.
-pub fn graph_boxes(contents: &str) -> Vec<GraphBox> {
-    let mut boxes: Vec<GraphBox> = Vec::new();
-    let mut tagged = false;
-    let mut in_body = false;
-    for line in contents.lines().map(str::trim) {
-        if in_body {
-            if line == "===" {
-                in_body = false;
-                tagged = false;
-                continue;
-            }
-            if tagged {
-                add_line(&mut boxes, line);
-            }
-        } else if let Some(tags) = line.strip_prefix("tags:") {
-            tagged = tags.split_whitespace().any(|t| t == "graph");
-        } else if line == "---" {
-            in_body = true;
-        }
-    }
-    boxes
-}
-
-fn add_line(boxes: &mut Vec<GraphBox>, line: &str) {
-    let Some((command, mut args)) = parse_command(line) else {
-        return;
-    };
-    if args.len() < 2 {
-        return;
-    }
-    let id = args.remove(0);
-    let label = args.remove(0);
-    let value = |args: &[String], key: &str| {
-        args.iter()
-            .find_map(|a| a.strip_prefix(&format!("{key}=")))
-            .map(str::to_string)
-    };
-    if command == "box" {
-        let kind = match value(&args, "kind").as_deref() {
-            Some("hub") => BoxKind::Hub,
-            Some("side") => BoxKind::Side,
-            Some("retry") => BoxKind::Retry,
-            Some("stub") => BoxKind::Stub,
-            _ => BoxKind::Chapter,
-        };
-        boxes.push(GraphBox {
-            id,
-            label,
-            kind,
-            goal: value(&args, "goal"),
-            nodes: Vec::new(),
-            options: Vec::new(),
-        });
-        return;
-    }
-    let Some(current) = boxes.last_mut() else {
-        return;
-    };
-    let kind = match command.as_str() {
-        "gate" => NodeKind::Gate,
-        "item" => NodeKind::Item,
-        "clue" => NodeKind::Clue,
-        "choice" => NodeKind::Choice,
-        "exit" => NodeKind::Exit,
-        "option" => {
-            // `<<option CHOICE ID "LABEL">>`: the first two words were read as id and label.
-            let (option, label) = (label, args.remove(0));
-            current.options.push((id, option, label));
-            return;
-        }
-        _ => return,
-    };
-    let detail = value(&args, "detail");
-    let to = value(&args, "to");
-    let requires = args
-        .iter()
-        .filter(|a| !a.starts_with("to=") && !a.starts_with("detail="))
-        .map(|a| a.split('|').map(str::to_string).collect())
-        .collect();
-    current.nodes.push(GraphNode {
-        kind,
-        id,
-        label,
-        detail,
-        requires,
-        to,
-    });
-}
-
 fn find<'a>(boxes: &'a [GraphBox], id: &str) -> Option<&'a GraphBox> {
     boxes.iter().find(|b| b.id == id)
-}
-
-/// A cross-box requirement `BOX.clue`.
-fn cross_box(requirement: &str) -> Option<(&str, &str)> {
-    requirement.split_once('.')
 }
 
 /// Boxes that are drawn on their own: a stub, or a box without nodes, has nothing to show.

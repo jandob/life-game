@@ -1,16 +1,16 @@
 title: Shelf3A
 ---
-<<declare $r1_dinner_shelf = false>>
-// Talk target of Samantha's bookshelf (Hotspots layer). She has a word for him while he
-// is in her flat.
-<<if (($chapter == "R1Thu1" and $gate_r1_thu1_door and not $gate_r1_thu1_dishes) or ($chapter == "R1Thu2" and $gate_r1_thu2_shoes and not $gate_r1_thu2_stand)) and not $r1_dinner_shelf>>
+// Talk target of Samantha's bookshelf (Hotspots layer). While he is in her flat she has a
+// word for him; the first time, in the first dinner, a longer one ($r1_dinner_shelf, reset
+// by that box's entry node).
+<<if (can("R1Dinner1", "dinner") or can("R1Dinner1", "dishes")) and not $r1_dinner_shelf>>
     <<set $r1_dinner_shelf to true>>
     {$samantha_name}: Find anything interesting?
     You: "Power and Intimacy: A Reader." Is this for your course?
     {$samantha_name}: Some of it is.
     You: And the rest?
     {$samantha_name}: The rest is for fun. Put it back where you found it.
-<<elseif ($chapter == "R1Thu1" and $gate_r1_thu1_door and not $gate_r1_thu1_dishes) or ($chapter == "R1Thu2" and $gate_r1_thu2_shoes and not $gate_r1_thu2_stand)>>
+<<elseif can("R1Dinner1", "dinner") or can("R1Dinner1", "dishes") or (in_box("R1Dinner2") and is_done("R1Dinner2", "door") and not is_done("R1Dinner2", "wait"))>>
     {$samantha_name}: It's not going anywhere. Neither is dinner. Sit.
 <<else>>
     You: Her bookshelf. Everything in alphabetical order.

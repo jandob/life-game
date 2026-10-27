@@ -4,24 +4,24 @@ title: StairsLanding
 // the bottom. On the second Thursday they lead down to the corner shop, a separate room of
 // the map (shop_door.yarn). Before that there is nothing to get down there.
 -> Go down
-    <<if $chapter == "R1MoveIn" and $gate_r1_move_keys and not $gate_r1_move_box>>
+    <<if can("R1MoveIn", "carry")>>
         <<next_scene Route1MoveInBox>>
-    <<elseif $chapter == "R1Thu2" and not $gate_r1_thu2_door and $gate_r1_thu2_text>>
+    <<elseif in_box("R1Dinner2") and not $r1_thu2_knocked and is_done("R1Dinner2", "text")>>
         <<fade_out>>
         <<place Player ShopIn>>
         <<face Player up>>
         <<fade_in>>
-    <<elseif $chapter == "R1Thu2" and not $gate_r1_thu2_door>>
+    <<elseif in_box("R1Dinner2") and not $r1_thu2_knocked>>
         You: Her text first. Then I'll know what I need.
-    <<elseif $chapter == "R1MoveIn" and not $gate_r1_move_keys>>
+    <<elseif in_box("R1MoveIn") and not is_done("R1MoveIn", "keys")>>
         You: My box can wait. Keys first.
     <<else>>
         You: I've got nothing to get down there.
     <<endif>>
 -> Look
-    <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door>>
+    <<if in_box("R1Dinner2") and not $r1_thu2_knocked>>
         You: The corner shop's at the bottom of the street. Open till ten.
-    <<elseif $chapter == "R1MoveIn" and not $gate_r1_move_box>>
+    <<elseif in_box("R1MoveIn") and not is_done("R1MoveIn", "carry")>>
         You: My box is down there. Everything I own, in one box.
     <<else>>
         You: Three floors of stairs. No lift. I carried my box up these.

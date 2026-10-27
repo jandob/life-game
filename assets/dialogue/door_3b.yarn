@@ -2,16 +2,16 @@ title: Door3B
 ---
 // Talk target of 3B's door on the landing (Hotspots layer). It opens with the actions
 // here: a popup when several are available, the only one at once.
--> Knock <<if $chapter == "R1Viewing" and not $gate_r1_view_knock>>
+-> Knock <<if can("R1Viewing", "knock")>>
     <<next_scene Route1Viewing>>
--> Go in <<if $chapter == "R1MoveIn" and not $gate_r1_move_keys>>
+-> Go in <<if in_box("R1MoveIn") and not is_done("R1MoveIn", "keys")>>
     You: Locked. She has my keys.
--> Go in <<if $gate_r1_move_keys>>
+-> Go in <<if is_done("R1MoveIn", "keys")>>
     <<open_door Door3B>>
     <<walk Player PlayerInto3B>>
     <<close_door Door3B>>
 -> Look
-    <<if $chapter == "R1Viewing">>
+    <<if in_box("R1Viewing")>>
         You: 3B. The one from the listing.
     <<else>>
         You: 3B. My door. Still feels like someone else's.

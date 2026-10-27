@@ -1,32 +1,30 @@
 title: Drawers3B
 ---
-// Talk target of the chest of drawers in 3B (Hotspots layer). Where the blush socks are
-// is $r1_socks_at (drawers, box, rack, feet) while he isn't holding them: on moving day
-// he puts them here or in the box, and on Sunday he can wear them or hang them on the rack
-// (rack_3b.yarn). On the second Thursday they start on the rack, not here.
--> Put the blush socks away <<if $chapter == "R1MoveIn" and $gate_r1_move_box and $item_blush_socks>>
+// Talk target of the chest of drawers in 3B (Hotspots layer). On moving day he puts the
+// blush socks here or in the box (box_3b.yarn). Each box starts the same way: on Sunday
+// they are in the drawers and he can wear them or hang them on the rack (rack_3b.yarn);
+// $r1_socks_at (drawers, rack, feet) says where they are while he isn't holding them. On
+// the second Thursday they start on the rack, not here.
+-> Put the blush socks away <<if can("R1MoveIn", "stow") and $item_blush_socks>>
     <<set $item_blush_socks to false>>
-    <<set $r1_socks_at to "drawers">>
-    <<set $r1_movein_socks to "drawers">>
-    <<set $gate_r1_move_socks to true>>
     <<done R1MoveIn stow>>
     You: Top drawer. Next to the grey ones.
-    <<if $gate_r1_move_rules>>
+    <<if is_done("R1MoveIn", "rules")>>
         <<note r1_move "Unpacked. Bed.">>
     <<else>>
         <<note r1_move "Answer the door.">>
     <<endif>>
--> Put the blush socks on <<if $chapter == "R1Sunday" and not $gate_r1_sun_croissant and $r1_socks_at == "drawers">>
+-> Put the blush socks on <<if can("R1Breakfast", "wear") and not is_done("R1Breakfast", "door") and $r1_socks_at == "drawers">>
     <<set $r1_socks_at to "feet">>
     <<done R1Breakfast wear>>
     You: Fine. Blush.
 -> Look
-    <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door>>
+    <<if in_box("R1Dinner2") and not $r1_thu2_knocked>>
         // PLACEHOLDER lines.
         You: Not in the drawer. I washed them. They're drying somewhere.
         <<set $r1_thu2_socks_noted to true>>
         <<note thu2_socks "The socks?">>
-    <<elseif $chapter == "R1Viewing">>
+    <<elseif in_box("R1Viewing")>>
         You: Somebody's drawers. Empty.
     <<else>>
         You: Shirts, mostly grey. Socks, mostly grey.

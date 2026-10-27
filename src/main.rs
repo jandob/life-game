@@ -74,7 +74,6 @@ fn main() {
             animation::SpriteAnimationPlugin,
             {
                 let plugin = YarnSpinnerPlugin::with_yarn_sources([
-                    YarnFileSource::file("dialogue/chart_route1.yarn"),
                     YarnFileSource::file("dialogue/route1_viewing.yarn"),
                     YarnFileSource::file("dialogue/route1_movein.yarn"),
                     YarnFileSource::file("dialogue/route1_croissant.yarn"),

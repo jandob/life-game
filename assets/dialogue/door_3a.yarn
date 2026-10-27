@@ -1,26 +1,27 @@
 title: Door3A
 ---
 // Talk target of Samantha's door (Hotspots layer). It opens with the actions here: a
-// popup when several are available, the only one at once. Each picks by chapter and gates.
--> Knock <<if $chapter == "R1MoveIn" and not $gate_r1_move_keys>>
+// popup when several are available, the only one at once. Each picks by the story graph:
+// can() for the step it performs, in_box() and is_done() for what to say when it can't yet.
+-> Knock <<if can("R1MoveIn", "keys")>>
     <<next_scene Route1MoveInKeys>>
--> Knock <<if $chapter == "R1Sunday" and not $gate_r1_sun_croissant>>
-    <<if not $gate_r1_sun_text>>
+-> Knock <<if in_box("R1Breakfast") and not is_done("R1Breakfast", "door")>>
+    <<if can("R1Breakfast", "door")>>
+        <<next_scene Route1Croissant>>
+    <<elseif not is_done("R1Breakfast", "text")>>
         You: My phone's buzzing. Her, probably. Read it first.
-    <<elseif not $item_bakery_bag>>
+    <<else>>
         // Behind her door.
         {$samantha_name}: ...Where's my croissant?
-    <<else>>
-        <<next_scene Route1Croissant>>
     <<endif>>
--> Knock <<if $chapter == "R1Thu1" and not $gate_r1_thu1_door>>
-    <<if not $gate_r1_thu1_text>>
-        You: She texted. I should read it first.
-    <<else>>
+-> Knock <<if in_box("R1Dinner1") and not is_done("R1Dinner1", "door")>>
+    <<if can("R1Dinner1", "door")>>
         <<next_scene Route1Thu1Door>>
+    <<else>>
+        You: She texted. I should read it first.
     <<endif>>
--> Knock <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door>>
-    <<if not $gate_r1_thu2_text>>
+-> Knock <<if in_box("R1Dinner2") and not $r1_thu2_knocked>>
+    <<if not is_done("R1Dinner2", "text")>>
         You: Her text first.
     <<elseif $item_wine_fox>>
         <<next_scene Route1Thu2Door>>
@@ -31,10 +32,10 @@ title: Door3A
     <<else>>
         You: Empty-handed? Bring what she'd want. The shop's downstairs.
     <<endif>>
--> Take my shoes off <<if $chapter == "R1Thu2" and $gate_r1_thu2_door and not $gate_r1_thu2_shoes>>
+-> Take my shoes off <<if in_box("R1Dinner2") and $r1_thu2_knocked and not is_done("R1Dinner2", "door")>>
     <<next_scene Route1Thu2Shoes>>
 -> Look
-    <<if $chapter == "R1Viewing">>
+    <<if in_box("R1Viewing")>>
         You: Not this one. The listing said 3B.
     <<else>>
         You: 3A. Her door. The doormat doesn't say welcome.

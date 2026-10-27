@@ -1,16 +1,16 @@
 title: Rack3B
 ---
 // Talk target of the drying rack in 3B (Hotspots layer). See drawers_3b.yarn.
--> Hang the blush socks up <<if $chapter == "R1Sunday" and not $gate_r1_sun_croissant and ($r1_socks_at == "drawers" or $r1_socks_at == "box")>>
+-> Hang the blush socks up <<if can("R1Breakfast", "wear") and not is_done("R1Breakfast", "door") and $r1_socks_at == "drawers">>
     <<set $r1_socks_at to "rack">>
     // PLACEHOLDER line.
     You: There. In the wash. Technically.
--> Put the blush socks on <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $r1_socks_at == "rack">>
+-> Put the blush socks on <<if in_box("R1Dinner2") and is_done("R1Dinner2", "text") and not $r1_thu2_knocked and $r1_socks_at == "rack">>
     <<set $r1_socks_at to "feet">>
     <<done R1Dinner2 find>>
     <<done R1Dinner2 socks>>
     You: Fine. Blush.
--> Take the blush socks <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $r1_socks_at == "rack">>
+-> Take the blush socks <<if in_box("R1Dinner2") and is_done("R1Dinner2", "text") and not $r1_thu2_knocked and $r1_socks_at == "rack">>
     <<set $r1_socks_at to "">>
     <<set $item_blush_socks to true>>
     <<done R1Dinner2 find>>
@@ -18,7 +18,7 @@ title: Rack3B
 -> Look
     <<if $r1_socks_at == "rack">>
         You: Blush. Still on the rack. So they were in the wash. Eventually.
-        <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door>>
+        <<if in_box("R1Dinner2") and is_done("R1Dinner2", "text") and not $r1_thu2_knocked>>
             You: Dry, too. I could wear them.
             <<done R1Dinner2 find>>
             <<set $r1_thu2_socks_noted to true>>

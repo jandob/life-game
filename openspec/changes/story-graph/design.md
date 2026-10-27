@@ -70,7 +70,7 @@ Janosch redesigned route 1 as an adventure with puzzles (thread "Shape the story
 **D9. Scenes ask the graph.** The graph is the only source of what can happen when:
 - `<<done BOX ID>>` records a step. It is the only way a step becomes done.
 - `can("BOX", "ID")` is true when `BOX` is the current box, the step is not done, and its requirements in the box hold. Scene conditions use it instead of hand-written `$chapter` and `$gate_*` tests. Extra scene conditions (an item in hand, an option already taken) are ANDed to it.
-- `is_done("BOX", "ID")` reads a step, for lines that explain why something can't happen yet.
+- `is_done("BOX", "ID")` reads a step, for lines that explain why something can't happen yet. `in_box("BOX")` is true while `BOX` is the current box, for lines that depend on where the story is, as `$chapter == "X"` did. All three read the shared story variables (`src/story/graph.rs`); scenes never name `$box` or `$step_*`.
 - Doing an exit enters its target box: the target's entry node (`entry=NODE` on `<<box>>`) runs next, and that node runs `<<enter_box BOX>>`, which sets `$box` and clears every step of that box. A box therefore always starts the same way, even on a second visit.
 - State stays in Yarn variables (`$box`, and `$step_<box>_<id>` in lower case, true once done), so the shared story variables, the walker and start points see it. The functions read the same storage.
 

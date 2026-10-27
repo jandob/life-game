@@ -1,30 +1,29 @@
 title: Sink3A
 ---
 // Talk target of Samantha's sink (Hotspots layer).
--> Wash up <<if $chapter == "R1Thu1" and $gate_r1_thu1_sit and not $r1_dishes_started>>
+-> Wash up <<if can("R1Dinner1", "dishes") and not $r1_dishes_started>>
     <<next_scene Route1Dishes>>
--> Keep washing <<if $chapter == "R1Thu1" and $r1_dishes_started and not $gate_r1_thu1_dishes>>
+-> Keep washing <<if can("R1Dinner1", "dishes") and $r1_dishes_started>>
     <<if $r1_dishes_turn == "">>
         <<set $r1_dishes_turn to "stay">>
     <<endif>>
     <<next_scene Route1DishesEnd>>
--> Turn around <<if $chapter == "R1Thu1" and $r1_dishes_started and not $gate_r1_thu1_dishes and $r1_dishes_turn == "">>
+-> Turn around <<if can("R1Dinner1", "dishes") and $r1_dishes_started and $r1_dishes_turn == "">>
     <<set $r1_dishes_turn to "turned">>
     <<face Player Samantha>>
     {$samantha_name}: Hm. There he is.
     {$samantha_name}: Back to the plates.
     <<face Player up>>
     <<next_scene Route1DishesEnd>>
--> Take the corkscrew <<if $chapter == "R1Thu2" and $gate_r1_thu2_shoes and not $gate_r1_thu2_cork>>
+-> Take the corkscrew <<if can("R1Dinner2", "sink")>>
     <<set $item_corkscrew to true>>
-    <<set $gate_r1_thu2_cork to true>>
     <<done R1Dinner2 sink>>
     <<done R1Dinner2 corkscrew>>
     <<note r1_thu2 "Open the wine at her table.">>
 -> Look
-    <<if $chapter == "R1Thu1" and not $gate_r1_thu1_sit>>
+    <<if in_box("R1Dinner1") and not is_done("R1Dinner1", "dinner")>>
         {$samantha_name}: Dishes come after dinner. Sit down.
-    <<elseif $chapter == "R1Thu2" and not $gate_r1_thu2_dinner>>
+    <<elseif in_box("R1Dinner2") and not is_done("R1Dinner2", "dinner")>>
         {$samantha_name}: Not tonight. Tonight the sink can wait.
     <<else>>
         You: Her sink. Cleaner than mine.

@@ -1,6 +1,7 @@
 title: Route1Thu2Start
 tags: cutscene
 ---
+<<declare $r1_thu2_knocked = false>>
 <<declare $r1_thu2_text = "">>
 <<declare $r1_thu2_bottle_seen = false>>
 <<declare $r1_thu2_socks_noted = false>>
@@ -8,13 +9,18 @@ tags: cutscene
 <<declare $r1_thu2_tulips = false>>
 <<declare $r1_thu2_chocolates = false>>
 <<declare $r1_thu2_answer = "">>
-<<declare $r1_thu2_notebook = "">>
 <<declare $r1_thu2_kiss = "">>
 <<declare $r1_thu2_reply = "">>
-// The start node of chapter R1Thu2, started by going to bed on the first Thursday
+// The entry node of box R1Dinner2, started by going to bed on the first Thursday
 // (bed_3b.yarn). A week later, he comes home from work. However the week went, the socks
 // start on the drying rack, washed and dry; her text is waiting on his phone.
-<<set $chapter to "R1Thu2">>
+// What the box owns is reset here. $r1_thu2_knocked: he has knocked on 3A with the wine;
+// the graph step "door" is done once his shoes are off.
+<<enter_box R1Dinner2>>
+<<set $r1_thu2_knocked to false>>
+<<set $r1_thu2_bottle_seen to false>>
+<<set $r1_thu2_socks to "">>
+<<set $r1_thu2_kiss to "">>
 <<fade_out>>
 <<hide Samantha>>
 <<set $r1_socks_at to "rack">>
@@ -47,8 +53,7 @@ tags: cutscene
 {$samantha_name}: Eight o'clock.
 // She holds out her hand and waits. PLACEHOLDER line.
 {$samantha_name}: Hands first. Then shoes.
-<<set $gate_r1_thu2_door to true>>
-<<done R1Dinner2 door>>
+<<set $r1_thu2_knocked to true>>
 <<note r1_thu2 "Give her what you brought. Shoes off at her door.">>
 ===
 title: Route1Thu2Shoes
@@ -92,7 +97,7 @@ tags: cutscene
     {$samantha_name}: And the wine. Were you going to keep it?
     You: No. Here.
 <<endif>>
-<<set $gate_r1_thu2_shoes to true>>
+<<done R1Dinner2 door>>
 <<note_done thu2_wine>>
 <<note_done thu2_socks>>
 // She goes back to her stove; he follows her in.
@@ -124,18 +129,12 @@ You: And if I lie?
 {$samantha_name}: Did you think about me this week?
 You: ...More than I'd like.
 {$samantha_name}: That's the right amount.
-<<if $r1_dishes_turn == "turned">>
-    {$samantha_name}: Last week at the sink. I said don't turn around, and you did. Why?
-    You: I wanted to see you.
-    {$samantha_name}: You could have waited. Next time, wait.
-<<else>>
-    {$samantha_name}: Last week at the sink. When I told you not to turn around.
-    {$samantha_name}: What did that feel like?
-    You: Easy.
-    {$samantha_name}: Mm. It was meant to.
-<<endif>>
+{$samantha_name}: Last week at the sink. When I told you not to turn around.
+{$samantha_name}: What did that feel like?
+You: Easy.
+{$samantha_name}: Mm. It was meant to.
 {$samantha_name}: Your turn. One question.
-<<if $r1_thu2_notebook == "reached">>
+<<if is_done("R1Dinner2", "notebook")>>
     You: What else is in the notebook?
     {$samantha_name}: Seven pages. You're on four of them.
     <<done R1Dinner2 pages>>
@@ -155,7 +154,6 @@ You: ...More than I'd like.
 <<face Samantha Player>>
 {$samantha_name}: Stand there. Hands by your sides.
 {$samantha_name}: Don't move.
-<<set $gate_r1_thu2_dinner to true>>
 <<done R1Dinner2 dinner>>
 <<note r1_thu2 "Stand still.">>
 // The player is in control: standing still or reaching for her are actions on her
@@ -165,13 +163,10 @@ title: Route1Thu2Kiss
 tags: cutscene
 ---
 // Started by standing still at her door after the second dinner (samantha_3a.yarn).
-<<set $gate_r1_thu2_stand to true>>
 <<if $r1_thu2_kiss == "">>
     <<set $r1_thu2_kiss to "still">>
 <<endif>>
-<<if $r1_thu2_kiss == "still">>
-    <<done R1Dinner2 wait>>
-<<endif>>
+<<done R1Dinner2 wait>>
 // She kisses him. Short. She steps back first.
 <<wait 1>>
 <<if $r1_thu2_kiss == "still">>

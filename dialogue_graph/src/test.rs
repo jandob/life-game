@@ -2,10 +2,11 @@ use std::fs::{read_dir, read_to_string};
 
 use petgraph::{dot::Dot, Direction};
 use pretty_assertions::assert_eq;
+use story_graph::graph_boxes;
 
 use crate::{
-    chart_dot, chart_titles, construct_graph,
-    story_graph::{box_dot, done_marks, graph_boxes, has_content, story_dot, Done},
+    construct_graph,
+    draw::{box_dot, done_marks, has_content, story_dot, Done},
     tagged_titles, try_read_yarn_contents, PATH_TO_DIALOGUES,
 };
 
@@ -24,14 +25,16 @@ fn graph_construction() {
     assert_eq!(dot_contents, dot.to_string());
 }
 
-/// Titles started with `<<next_scene NODE>>` from any dialogue file. Like a file's first
-/// node, they are entry points and need no incoming jump.
+/// Titles started with `<<next_scene NODE>>` from any dialogue file, and the entry nodes of
+/// the story graph's boxes (started by an exit). Like a file's first node, they are entry
+/// points and need no incoming jump.
 fn next_scene_targets() -> Vec<String> {
     read_dir(format!("../{}", PATH_TO_DIALOGUES))
         .expect("Can't read entries in current dir")
         .filter_map(try_read_yarn_contents)
         .flat_map(|(contents, _)| {
-            contents
+            let entries = graph_boxes(&contents).into_iter().filter_map(|b| b.entry);
+            let scenes = contents
                 .lines()
                 .filter_map(|line| {
                     // Scenes and phone texts are both started by the engine, not jumped to.
@@ -41,7 +44,8 @@ fn next_scene_targets() -> Vec<String> {
                         .or_else(|| line.strip_prefix("<<phone "))?;
                     Some(target.trim_end_matches(">>").trim().to_string())
                 })
-                .collect::<Vec<_>>()
+                .collect::<Vec<_>>();
+            entries.chain(scenes).collect::<Vec<_>>()
         })
         .collect()
 }
@@ -57,9 +61,8 @@ fn validate_no_hanging_nodes() {
             None => continue,
         };
 
-        // Chart and graph nodes are data, never run.
-        let mut charts = chart_titles(&contents);
-        charts.extend(tagged_titles(&contents, "graph"));
+        // Graph nodes are data, never run.
+        let data = tagged_titles(&contents, "graph");
         let graph = construct_graph(contents);
         for index in graph.node_indices().skip(1) {
             let weight = graph.node_weight(index).expect("Node should exist");
@@ -67,7 +70,7 @@ fn validate_no_hanging_nodes() {
                 .strip_prefix("title: ")
                 .and_then(|t| t.split('|').next())
                 .unwrap_or_default();
-            if entry_points.iter().any(|t| t == title) || charts.iter().any(|t| t == title) {
+            if entry_points.iter().any(|t| t == title) || data.iter().any(|t| t == title) {
                 continue;
             }
             assert!(
@@ -80,25 +83,11 @@ fn validate_no_hanging_nodes() {
     }
 }
 
-#[test]
-fn chart_has_a_cluster_per_chapter_in_order() {
-    let contents = "title: ChartA\ntags: chart\n---\n<<chapter A \"Day one.\">>\n<<gate a_x \"Do x\">>\n<<bottleneck a_bed \"Bed\" a_x>>\n===\ntitle: ChartB\ntags: chart\n---\n<<chapter B \"Day two.\">>\n<<gate b_y \"Do y\">>\n<<bottleneck b_bed \"Bed\" b_y>>\n===\n";
-    assert_eq!(chart_titles(contents), ["ChartA", "ChartB"]);
-    let dot = chart_dot(contents);
-    let a = dot.find("label=\"A: Day one.\"").unwrap();
-    let b = dot.find("label=\"B: Day two.\"").unwrap();
-    assert!(a < b);
-    assert!(dot.contains("\"a_bed\" [label=\"Bed\", style=bold];"));
-    assert!(dot.contains("\"a_x\" -> \"a_bed\";"));
-    assert!(dot.contains("\"a_bed\" -> \"b_y\" [style=dashed];"));
-}
-
 const GRAPH: &str = "title: GraphA\ntags: graph\n---\n<<box A \"First\" goal=\"Get in\">>\n<<gate knock \"Knock\">>\n<<clue wine \"She drinks <Fox> & co\" knock>>\n<<choice still \"At her door\" knock>>\n<<option still wait \"Stand still\">>\n<<option still reach \"Reach\">>\n<<exit on \"Go on\" still=wait to=B>>\n<<exit no \"Closed\" still=reach to=R>>\n===\ntitle: GraphB\ntags: graph\n---\n<<box B \"Second\" goal=\"Be on time\">>\n<<gate door \"Door\" A.wine|knock>>\n<<exit end \"End\" door to=C>>\n===\ntitle: GraphR\ntags: graph\n---\n<<box R \"Try again\" kind=retry>>\n<<gate t \"Text\">>\n<<exit back \"Back\" t to=B>>\n===\ntitle: GraphC\ntags: graph\n---\n<<box C \"Later\" kind=stub>>\n===\n";
 
 #[test]
 fn story_graph_has_a_node_per_box_and_an_edge_per_exit() {
     assert_eq!(tagged_titles(GRAPH, "graph").len(), 4);
-    assert!(chart_titles(GRAPH).is_empty());
     let boxes = graph_boxes(GRAPH);
     assert_eq!(boxes.len(), 4);
     assert_eq!(boxes.iter().filter(|b| has_content(b)).count(), 3);

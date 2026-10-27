@@ -1,37 +1,34 @@
 title: Table3A
 ---
 // Talk target of the chair at Samantha's table (Hotspots layer). Her notebook lies on it.
--> Sit down <<if $chapter == "R1Thu1" and $gate_r1_thu1_door and not $gate_r1_thu1_sit>>
+-> Sit down <<if can("R1Dinner1", "dinner")>>
     <<next_scene Route1Dinner>>
--> Look at her notebook <<if $chapter == "R1Thu1" and $gate_r1_thu1_door and not $gate_r1_thu1_sit and $r1_dinner_notes == "">>
-    <<set $r1_dinner_notes to "peeked">>
+-> Look at her notebook <<if can("R1Dinner1", "peek") and not is_done("R1Dinner1", "dinner")>>
     <<done R1Dinner1 peek>>
     <<done R1Dinner1 notes>>
     // PLACEHOLDER lines.
     You: Her notebook. My name's on a page.
     {$samantha_name}: Ah. That's mine. You'll hear it at dinner.
--> Open the wine <<if $chapter == "R1Thu2" and $item_corkscrew>>
+-> Open the wine <<if can("R1Dinner2", "open")>>
     <<set $item_corkscrew to false>>
-    <<set $gate_r1_thu2_open to true>>
     <<done R1Dinner2 open>>
     <<note r1_thu2 "Sit at her table.">>
     You: There.
     {$samantha_name}: Two glasses. Not to the top.
--> Sit down <<if $chapter == "R1Thu2" and $gate_r1_thu2_shoes and not $gate_r1_thu2_dinner>>
-    <<if $gate_r1_thu2_open>>
+-> Sit down <<if in_box("R1Dinner2") and is_done("R1Dinner2", "door") and not is_done("R1Dinner2", "dinner")>>
+    <<if can("R1Dinner2", "dinner")>>
         <<next_scene Route1Thu2Dinner>>
     <<else>>
         {$samantha_name}: Wine first. Corkscrew. Drawer. Sink.
     <<endif>>
--> Look at her notebook <<if $chapter == "R1Thu2" and $gate_r1_thu2_shoes and not $gate_r1_thu2_dinner>>
+-> Look at her notebook <<if in_box("R1Dinner2") and is_done("R1Dinner2", "door") and not is_done("R1Dinner2", "dinner")>>
     You: Her notebook. Closed, with a pen clipped to it.
--> Open her notebook <<if $chapter == "R1Thu2" and $gate_r1_thu2_shoes and not $gate_r1_thu2_dinner and $r1_thu2_notebook == "">>
-    <<set $r1_thu2_notebook to "reached">>
+-> Open her notebook <<if can("R1Dinner2", "notebook") and not is_done("R1Dinner2", "dinner")>>
     <<done R1Dinner2 notebook>>
     {$samantha_name}: Ah.
     {$samantha_name}: That's mine.
 -> Look
-    <<if $chapter == "R1Thu1" and $gate_r1_thu1_sit and not $gate_r1_thu1_dishes>>
+    <<if can("R1Dinner1", "dishes")>>
         {$samantha_name}: Dinner's over. The sink isn't going to come to you.
     <<else>>
         You: Her table. Her notebook on it, closed.

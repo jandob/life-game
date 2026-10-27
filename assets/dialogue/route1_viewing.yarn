@@ -1,9 +1,9 @@
 title: Route1Start
 tags: cutscene
 ---
-// The game starts here (chart.rs FIRST_NODE): the start node of chapter R1Viewing.
+// The game starts here: the entry node of box R1Viewing (graph_route1.yarn).
 // He is on the landing, at ten, for the viewing of 3B.
-<<set $chapter to "R1Viewing">>
+<<enter_box R1Viewing>>
 <<fade_out>>
 <<card "Saturday. The viewing.">>
 <<fade_in>>
@@ -14,7 +14,6 @@ title: Route1Viewing
 tags: cutscene
 ---
 <<declare $samantha_name = "_Samantha">>
-<<declare $r1_viewing_why = "">>
 // Started by knocking on 3B (door_3b.yarn). The door across the hall opens instead.
 <<walk Player PlayerKnock>>
 <<face Player up>>
@@ -61,17 +60,14 @@ You: House rule?
 // PLACEHOLDER: the tour is his now.
 {$samantha_name}: Window, kitchenette, bathroom. Look at whatever you like.
 {$samantha_name}: Tell me when you've seen enough.
-<<set $gate_r1_view_knock to true>>
 <<done R1Viewing knock>>
 <<note r1_view "Look around 3B: the window, the kitchenette, the bathroom. Then tell her.">>
 ===
 title: Route1ViewingEnd
 tags: cutscene
 ---
-// Started by telling her he's seen enough (samantha_3a.yarn): the bottleneck of
-// R1Viewing. Back on the landing, she locks up.
-<<set $gate_r1_view_end to true>>
-<<done R1Viewing flat>>
+// Started by telling her he's seen enough (samantha_3a.yarn): the exit of box R1Viewing.
+// Back on the landing, she locks up.
 <<note_done r1_view>>
 <<walk Samantha SamanthaToLanding no_wait>>
 <<walk Player PlayerToLanding>>
@@ -93,7 +89,8 @@ You: Not your father?
 <<walk Samantha SamanthaHome>>
 <<hide Samantha>>
 <<close_door Door3A>>
-// Time skip to moving day (route1_movein.yarn).
+// Time skip to moving day. The exit enters box R1MoveIn: its entry node plays next
+// (route1_movein.yarn).
 <<fade_out>>
-<<next_scene Route1MoveInStart>>
+<<done R1Viewing flat>>
 ===

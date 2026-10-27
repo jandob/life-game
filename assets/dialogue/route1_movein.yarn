@@ -1,13 +1,9 @@
 title: Route1MoveInStart
 tags: cutscene
 ---
-<<declare $r1_movein_socks = "">>
-<<declare $r1_socks_at = "">>
-// The start node of chapter R1MoveIn. Starts in black (Route1ViewingEnd). He is back on
-// the landing with his one box at the bottom of the stairs; she has his keys.
-// $r1_socks_at is where the blush socks are when he isn't holding them: drawers, box,
-// rack, or feet (he is wearing them).
-<<set $chapter to "R1MoveIn">>
+// The entry node of box R1MoveIn. Starts in black (Route1ViewingEnd). He is back on the
+// landing with his one box at the bottom of the stairs; she has his keys.
+<<enter_box R1MoveIn>>
 <<place Player PlayerArrive>>
 <<face Player right>>
 <<card "Saturday. Moving day.">>
@@ -30,14 +26,6 @@ tags: cutscene
 {$samantha_name}: Last time you were six minutes early. I was starting to think you'd changed your mind.
 You: I got the flat. Why would I change my mind?
 {$samantha_name}: People do. Usually right after they read the contract.
-// PLACEHOLDER lines: what he looked at first at the viewing.
-<<if $r1_viewing_why == "light">>
-    {$samantha_name}: I told my father you went straight for the window. He's been unbearable all week.
-<<elseif $r1_viewing_why == "kitchen">>
-    {$samantha_name}: You went straight for the kitchen. I've decided that means you cook. You don't, do you.
-<<elseif $r1_viewing_why == "bath">>
-    {$samantha_name}: You checked the bathroom first. I've decided to find that thorough.
-<<endif>>
 {$samantha_name}: Two keys. The street door and 3B.
 {$samantha_name}: Hold out your hand.
 // PLACEHOLDER: replaces the keys menu.
@@ -61,7 +49,6 @@ You: They're... pink.
 <<walk Samantha SamanthaHome>>
 <<hide Samantha>>
 <<close_door Door3A>>
-<<set $gate_r1_move_keys to true>>
 <<done R1MoveIn keys>>
 <<note r1_move "Carry the box up from the bottom of the stairs.">>
 ===
@@ -74,7 +61,6 @@ tags: cutscene
 <<place Player PlayerInto3B>>
 <<face Player down>>
 <<fade_in>>
-<<set $gate_r1_move_box to true>>
 <<done R1MoveIn carry>>
 <<wait 1>>
 // Behind his door.
@@ -115,9 +101,8 @@ You: I just did.
 <<wait 1>>
 {$samantha_name}: Shoes!
 You: ...They're off.
-<<set $gate_r1_move_rules to true>>
 <<done R1MoveIn rules>>
-<<if $gate_r1_move_socks>>
+<<if is_done("R1MoveIn", "stow")>>
     <<note r1_move "Unpacked. Bed.">>
 <<else>>
     <<note r1_move "Find a place for the socks.">>

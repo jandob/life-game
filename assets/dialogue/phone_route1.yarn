@@ -9,7 +9,6 @@ tags: phone
     {$samantha_name}: I know. I can hear you on the stairs.
 -> Good morning to you too.
     {$samantha_name}: Morning. Once.
-<<set $gate_r1_sun_text to true>>
 <<done R1Breakfast text>>
 <<note r1_sun "Bring Samantha her croissant. Her door, 3A. Knock once.">>
 ===
@@ -27,7 +26,6 @@ tags: phone
 -> Okay.
     <<set $r1_thu2_text to "ok">>
     {$samantha_name}: Good.
-<<set $gate_r1_thu2_text to true>>
 <<done R1Dinner2 text>>
 <<note r1_thu2 "Tonight, eight, her door. Bring what she'd want.">>
 ===
@@ -54,7 +52,6 @@ tags: phone
 -> Yes, Samantha.
     <<set $r1_thu2_reply to "name">>
     {$samantha_name}: Good boy.
-<<set $gate_r1_thu2_night to true>>
 <<done R1Dinner2 night>>
 <<note_done r1_thu2>>
 <<note thu3 "Next Thursday. Wear the socks.">>

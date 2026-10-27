@@ -1,31 +1,30 @@
 title: ShopWine
 ---
 // Talk target of the wine shelf in the corner shop (Hotspots layer). See shop_door.yarn.
-// She named her wine in her text on the first Thursday; holding it is a gate of the
-// second Thursday.
+// She named her wine in her text on the first Thursday; holding it is a step of the
+// second dinner (R1Dinner2).
 -> Look
     You: Red Fox, the 2021. The one she drinks.
     You: Next to it the Reserve. Same fox, gold label. And a house red with a price sticker on the front.
--> Take the Red Fox 2021 <<if $chapter == "R1Thu2" and $gate_r1_thu2_text and not $gate_r1_thu2_door and not $item_wine_fox>>
+-> Take the Red Fox 2021 <<if in_box("R1Dinner2") and is_done("R1Dinner2", "text") and not $r1_thu2_knocked and not $item_wine_fox>>
     <<if $item_wine_reserve or $item_wine_house>>
         You: I put the other one back.
     <<endif>>
     <<set $item_wine_reserve to false>>
     <<set $item_wine_house to false>>
     <<set $item_wine_fox to true>>
-    <<set $gate_r1_thu2_wine to true>>
     <<done R1Dinner2 which>>
     <<done R1Dinner2 fox>>
     <<note_done r1_wine>>
     <<note r1_thu2 "Red Fox 2021 in hand. Her door, eight.">>
--> Take the Red Fox Reserve <<if $chapter == "R1Thu2" and $gate_r1_thu2_text and not $gate_r1_thu2_door and not $item_wine_reserve>>
+-> Take the Red Fox Reserve <<if in_box("R1Dinner2") and is_done("R1Dinner2", "text") and not $r1_thu2_knocked and not $item_wine_reserve>>
     <<if $item_wine_fox or $item_wine_house>>
         You: I put the other one back.
     <<endif>>
     <<set $item_wine_fox to false>>
     <<set $item_wine_house to false>>
     <<set $item_wine_reserve to true>>
--> Take the house red <<if $chapter == "R1Thu2" and $gate_r1_thu2_text and not $gate_r1_thu2_door and not $item_wine_house>>
+-> Take the house red <<if in_box("R1Dinner2") and is_done("R1Dinner2", "text") and not $r1_thu2_knocked and not $item_wine_house>>
     <<if $item_wine_fox or $item_wine_reserve>>
         You: I put the other one back.
     <<endif>>

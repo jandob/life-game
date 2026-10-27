@@ -43,6 +43,8 @@ bevy_tweening = { version = "0.16.0", features = ["bevy_ui"]}
 bevy_yarnspinner = "0.9.0"
 yarnspinner = "0.9.0"
 
+story_graph = { path = "story_graph" }
+
 serde_json = "1.0"
 serde = { version = "1.0.229", features = ["derive"] }
 ron = "0.12"
@@ -52,4 +54,4 @@ strsim = "0.11.1"
 
 [workspace]
 
-members = [ "dialogue_graph", "dialogue_lines", "map-bootstrapper" ]
+members = [ "dialogue_graph", "dialogue_lines", "map-bootstrapper", "story_graph" ]

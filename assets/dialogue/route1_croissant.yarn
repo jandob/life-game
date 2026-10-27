@@ -1,9 +1,13 @@
 title: Route1SundayStart
 tags: cutscene
 ---
-// The start node of chapter R1Sunday, started by going to bed on moving day (bed_3b.yarn).
+<<declare $r1_socks_at = "">>
+// The entry node of box R1Breakfast, started by going to bed on moving day (bed_3b.yarn).
 // He is back up the stairs from the bakery with her croissant; her text is waiting.
-<<set $chapter to "R1Sunday">>
+// $r1_socks_at is where the blush socks are while he isn't holding them: drawers, rack, or
+// feet (he is wearing them). They start in the drawers, however moving day went.
+<<enter_box R1Breakfast>>
+<<set $r1_socks_at to "drawers">>
 <<fade_out>>
 <<place Player PlayerArrive>>
 <<face Player right>>
@@ -18,16 +22,8 @@ You: Six o'clock. One croissant. And my phone's buzzing.
 title: Route1Croissant
 tags: cutscene
 ---
-<<declare $r1_croissant_socks = "">>
 // Started by knocking on 3A on Sunday morning with the bakery bag (door_3a.yarn).
 // What he did with the socks before knocking: wearing them, on the rack, or neither.
-<<if $r1_socks_at == "feet">>
-    <<set $r1_croissant_socks to "yes">>
-<<elseif $r1_socks_at == "rack">>
-    <<set $r1_croissant_socks to "wash">>
-<<else>>
-    <<set $r1_croissant_socks to "no">>
-<<endif>>
 <<walk Player PlayerTo3A>>
 <<face Player right>>
 <<wait 2>>
@@ -53,19 +49,15 @@ You: One croissant. Like you said.
 <<set $item_bakery_bag to false>>
 // She looks down at his feet.
 {$samantha_name}: Now. I told you I'd ask.
-<<if $r1_movein_socks == "refuse">>
-    // PLACEHOLDER line.
-    {$samantha_name}: You looked at them yesterday like they might bite. Let's see.
-<<endif>>
 {$samantha_name}: Are you wearing them?
-<<if $r1_croissant_socks == "yes">>
+<<if $r1_socks_at == "feet">>
     You: Yes.
     {$samantha_name}: Show me.
     You: Here? On the landing?
     {$samantha_name}: You knocked on my door at six in the morning. You don't get to be shy now.
     You: ...
     {$samantha_name}: Blush. Told you they were your size.
-<<elseif $r1_croissant_socks == "wash">>
+<<elseif $r1_socks_at == "rack">>
     You: They're in the wash.
     {$samantha_name}: You've had them for one day.
     You: I wanted them clean.
@@ -84,7 +76,6 @@ You: Is that an invitation?
 <<walk Samantha SamanthaIn>>
 <<hide Samantha>>
 <<close_door Door3A>>
-<<set $gate_r1_sun_croissant to true>>
 <<done R1Breakfast door>>
 <<note r1_sun "Back to bed. She said so.">>
 ===

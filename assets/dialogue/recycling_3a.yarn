@@ -3,7 +3,7 @@ title: Recycling3A
 // Talk target of Samantha's recycling bag on the landing (Hotspots layer). On the second
 // Thursday it's the wine clue she left for him.
 -> Look
-    <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door>>
+    <<if in_box("R1Dinner2") and not $r1_thu2_knocked>>
         You: Her recycling. Last Thursday's bottle, right on top.
         You: Red Fox. The 2021.
         <<set $r1_thu2_bottle_seen to true>>
@@ -11,6 +11,6 @@ title: Recycling3A
     <<else>>
         You: Her recycling. Folded flat and sorted. Of course it is.
     <<endif>>
--> Take the bottle <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door>>
+-> Take the bottle <<if in_box("R1Dinner2") and not $r1_thu2_knocked>>
     You: I'm not going through her rubbish.
 ===

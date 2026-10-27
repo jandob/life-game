@@ -4,6 +4,6 @@ title: ShopFlowers
 // The shop is open on the second Thursday only, between her text and her door.
 -> Look
     You: Tulips. Yellow and red, five a bunch.
--> Take a bunch <<if $chapter == "R1Thu2" and $gate_r1_thu2_text and not $gate_r1_thu2_door and not $item_tulips>>
+-> Take a bunch <<if in_box("R1Dinner2") and is_done("R1Dinner2", "text") and not $r1_thu2_knocked and not $item_tulips>>
     <<set $item_tulips to true>>
 ===

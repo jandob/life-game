@@ -19,9 +19,9 @@
 
 - [x] 3b.1 Route 1 up to the notebook as puzzle boxes in `graph_route1.yarn`
 - [x] 3b.2 Scenes mark steps with `<<done BOX ID>>`; diagrams count steps written
-- [ ] 3b.3 Runtime: `done`, `can`, `is_done`, `enter_box`, exits enter boxes
-- [ ] 3b.4 Scenes use `can()`; chart, `$chapter`, `$gate_*` and cross-box flags go
-- [ ] 3b.5 Start points by box; the walker checks each box from its entry
+- [x] 3b.3 Runtime: `done`, `can`, `is_done`, `enter_box`, exits enter boxes
+- [x] 3b.4 Scenes use `can()`; chart, `$chapter`, `$gate_*` and cross-box flags go
+- [x] 3b.5 Start points by box; the walker checks each box from its entry
 - [ ] 3b.6 Scenes for the retry, the knock and the notebook
 
 ## 4. Diagrams

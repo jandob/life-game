@@ -1,20 +1,22 @@
-//! The story chart (see `openspec/changes/story-chart`): the story as chapters of gates,
-//! and a walker that plays it the way a player could.
+//! The walker: plays the story the way a player could, to check it and to find the way
+//! to a start point.
 //!
-//! The chart lives in Yarn, in nodes tagged `chart` that never run
-//! (`assets/dialogue/chart_route1.yarn`). Story state is plain Yarn: `$chapter` names the
-//! current chapter and `$gate_<id>` is true once a gate is done. Each chapter's start node
-//! is the only node that sets `$chapter` to it.
+//! The story is the graph (`graph.rs`, `assets/dialogue/graph_route1.yarn`): boxes of
+//! steps. The walker plays one box from its entry node and tries every action, until an
+//! exit of the box is done. It runs on a bare `Dialogue` without Bevy systems, so it also
+//! works on wasm, with the graph's functions and the commands `done` and `enter_box` played
+//! on its own storage.
 //!
-//! The walker plays on a bare `Dialogue`, without Bevy systems, so it also runs on wasm.
 //! An action is one available option of a hotspot node's popup (or the whole node, when it
 //! opens with a line), or reading a pending text. A `<<next_scene>>` plays after the node
-//! that queued it, and any other choice inside a run branches the search. World commands
-//! are only collected, for start points to replay. A state is the story variables plus
-//! the phone's pending texts and notes.
+//! that queued it (so does the entry node of the box an exit leads to), and any other
+//! choice inside a run branches the search. World commands are only collected, for start
+//! points to replay. A state is the story variables plus the phone's pending texts and
+//! notes.
 //!
-//! The chart checks walk every chapter (tests below and in `ui/dialogue/test.rs`), and
-//! start points replay the walker's shortest path to their chapter (`start_point.rs`).
+//! The box checks (tests below) walk every box with an entry node: every way of playing
+//! reaches an exit, and every step an exit needs can be done. Start points inside a box
+//! replay the walker's shortest path to their steps (`start_point.rs`).
 
 use std::collections::hash_map::DefaultHasher;
 use std::collections::{BTreeMap, HashMap, HashSet, VecDeque};
@@ -24,25 +26,13 @@ use std::sync::{Arc, Mutex};
 use bevy::prelude::*;
 use bevy_yarnspinner::default_impl::{MemoryVariableStorage, StringTableTextProvider};
 use bevy_yarnspinner::prelude::*;
+use story_graph::{StoryGraph, BOX_VARIABLE, STEP_PREFIX};
 use yarnspinner::runtime::{Dialogue, DialogueEvent, OptionId, VariableStorageError};
 
-#[cfg(test)]
-/// Yarn node tag of chart nodes.
-pub const CHART_TAG: &str = "chart";
-#[cfg(test)]
-/// Yarn node tag of story graph nodes: data drawn by `dialogue_graph`, never run.
-pub const GRAPH_TAG: &str = "graph";
-/// The node a new game starts with: the first chapter's start node.
-pub const FIRST_NODE: &str = "Route1Start";
-/// The Yarn variable that names the current chapter.
-pub const CHAPTER: &str = "$chapter";
-/// Walks with more states than this fail, so a chart that grows too wide gets noticed.
-pub const STATE_CAP: usize = 50_000;
+use super::graph::{self, Graph};
 
-/// The Yarn variable of a gate.
-pub fn gate_variable(id: &str) -> String {
-    format!("$gate_{id}")
-}
+/// Walks with more states than this fail, so a box that grows too wide gets noticed.
+pub const STATE_CAP: usize = 50_000;
 
 /// A command of a run that changes the world, as (name, parameters).
 pub type WorldCommand = (String, Vec<String>);
@@ -86,19 +76,28 @@ pub struct State {
 }
 
 impl State {
-    pub fn is_true(&self, name: &str) -> bool {
-        matches!(self.vars.get(name), Some(YarnValue::Boolean(true)))
+    /// A state with these variables set, e.g. what an earlier box leaves behind.
+    pub fn with_vars(vars: impl IntoIterator<Item = (String, YarnValue)>) -> Self {
+        Self {
+            vars: vars.into_iter().collect(),
+            ..Self::default()
+        }
     }
 
-    pub fn gate(&self, id: &str) -> bool {
-        self.is_true(&gate_variable(id))
-    }
-
-    pub fn chapter(&self) -> String {
-        match self.vars.get(CHAPTER) {
-            Some(YarnValue::String(chapter)) => chapter.clone(),
+    /// The current box, empty before the first one is entered.
+    pub fn box_id(&self) -> String {
+        match self.vars.get(BOX_VARIABLE) {
+            Some(YarnValue::String(current)) => current.clone(),
             _ => String::new(),
         }
+    }
+
+    /// Whether the step is done.
+    pub fn step(&self, box_id: &str, id: &str) -> bool {
+        matches!(
+            self.vars.get(&story_graph::step_variable(box_id, id)),
+            Some(YarnValue::Boolean(true))
+        )
     }
 
     #[cfg(test)]
@@ -106,12 +105,12 @@ impl State {
         self.notes.iter().any(|note| !note.done)
     }
 
-    /// Equal for states that play the same. Only variables in `read` count: a variable
-    /// that no condition reads can't change what happens.
+    /// Equal for states that play the same. Only variables in `read` and the steps count: a
+    /// variable that no condition reads can't change what happens.
     fn key(&self, read: &HashSet<String>) -> u64 {
         let mut hasher = DefaultHasher::new();
         for (name, value) in &self.vars {
-            if read.contains(name) {
+            if read.contains(name) || name.starts_with(STEP_PREFIX) {
                 name.hash(&mut hasher);
                 value.to_string().hash(&mut hasher);
             }
@@ -318,20 +317,19 @@ pub struct Walker {
     /// Shared with the dialogue: loading a state writes into it.
     storage: TrackedStorage,
     defaults: HashMap<String, YarnValue>,
-    /// The variables some condition or line reads, and the chart's: they tell states
+    /// The variables some condition or line reads, and the current box: they tell states
     /// apart.
     read: HashSet<String>,
-    /// The variables runs have read, for `take_reads`.
-    reads_seen: HashSet<String>,
     /// Runs played before, by (node, choices).
     memo: HashMap<(String, Vec<usize>), Vec<Memo>>,
     /// The nodes of the map's hotspots, each once.
     hotspots: Vec<String>,
+    graph: Arc<StoryGraph>,
     world: World,
 }
 
 impl Walker {
-    pub fn new(project: &YarnProject, hotspots: &[String]) -> Result<Self, String> {
+    pub fn new(project: &YarnProject, hotspots: &[String], graph: &Graph) -> Result<Self, String> {
         let compilation = project.compilation();
         let program = compilation
             .program
@@ -357,16 +355,10 @@ impl Walker {
             .filter_map(|i| i.operands.first())
             .map(|operand| YarnValue::from(operand.clone()).to_string())
             .collect();
-        read.extend(
-            program
-                .initial_values
-                .keys()
-                .filter(|name| name.starts_with("$gate_"))
-                .cloned(),
-        );
-        read.insert(CHAPTER.to_string());
+        read.insert(BOX_VARIABLE.to_string());
         let storage = TrackedStorage::default();
         let mut dialogue = Dialogue::new(Box::new(storage.clone()), Box::new(text));
+        graph::add_functions(dialogue.library_mut(), &graph.0, &storage);
         dialogue.add_program(program);
         let mut unique = Vec::new();
         for node in hotspots {
@@ -379,9 +371,9 @@ impl Walker {
             storage,
             defaults,
             read,
-            reads_seen: HashSet::new(),
             memo: HashMap::new(),
             hotspots: unique,
+            graph: graph.0.clone(),
             world: World::new(),
         })
     }
@@ -399,14 +391,12 @@ impl Walker {
         });
         if let Some(memo) = known {
             let outcome = memo.outcome.clone();
-            self.reads_seen
-                .extend(memo.reads.iter().map(|(name, _)| name.clone()));
             return Ok(self.apply(state, &outcome));
         }
         let outcome = self.play(state, node, choices)?;
-        let reads = self.storage.take_reads();
-        self.reads_seen.extend(reads.iter().cloned());
-        let reads = reads
+        let reads = self
+            .storage
+            .take_reads()
             .into_iter()
             .map(|name| {
                 let value = state.vars.get(&name).cloned();
@@ -437,7 +427,9 @@ impl Walker {
             if name.starts_with(VISIT_PREFIX) {
                 continue;
             }
-            if self.defaults.get(name) == Some(value) {
+            // A step that is not done is missing, as in the game's storage.
+            let not_done = name.starts_with(STEP_PREFIX) && *value == YarnValue::Boolean(false);
+            if not_done || self.defaults.get(name) == Some(value) {
                 next.vars.remove(name);
             } else {
                 next.vars.insert(name.clone(), value.clone());
@@ -509,6 +501,16 @@ impl Walker {
                             }
                             "note_done" => effects.push(Effect::NoteDone(arg())),
                             "next_scene" => queued = Some(arg()),
+                            "done" => {
+                                let box_id = arg();
+                                let id = arg();
+                                let entry =
+                                    graph::mark_done(&self.graph, &mut self.storage, &box_id, &id)?;
+                                queued = entry.or(queued);
+                            }
+                            "enter_box" => {
+                                graph::enter_box(&self.graph, &mut self.storage, &arg())?
+                            }
                             "end_demo" => effects.push(Effect::End),
                             name if WORLD_COMMANDS.contains(&name) => {
                                 let params = command.parameters.iter().map(|p| p.to_string());
@@ -541,26 +543,6 @@ impl Walker {
             }
         }
         Err(format!("'{node}' does not finish"))
-    }
-
-    #[cfg(test)]
-    /// Equal for states that play the same (see `State::key`).
-    pub fn key(&self, state: &State) -> u64 {
-        state.key(&self.read)
-    }
-
-    #[cfg(test)]
-    /// Forgets the variables read so far and returns them.
-    pub fn take_reads(&mut self) -> HashSet<String> {
-        std::mem::take(&mut self.reads_seen)
-    }
-
-    #[cfg(test)]
-    /// Whether two states agree on every variable in `names`.
-    pub fn agree(a: &State, b: &State, names: &HashSet<String>) -> bool {
-        names
-            .iter()
-            .all(|name| a.vars.get(name) == b.vars.get(name))
     }
 
     /// Every way to play `node` from `state` to its end.
@@ -624,14 +606,23 @@ impl Walker {
         Ok(actions)
     }
 
-    /// The state of a new game: `FIRST_NODE` played.
-    pub fn start(&mut self) -> Result<(Step, State), String> {
-        let mut plays = self.plays(&State::default(), FIRST_NODE, false)?;
+    /// Plays the entry node of `box_id` from `state` (what the story has set before it): the
+    /// way into the box. Returns the step, the state and the world commands.
+    pub fn enter(
+        &mut self,
+        state: &State,
+        box_id: &str,
+    ) -> Result<(Step, State, Vec<WorldCommand>), String> {
+        let entry = self
+            .graph
+            .find(box_id)
+            .and_then(|b| b.entry.clone())
+            .ok_or_else(|| format!("box '{box_id}' has no entry node"))?;
+        let mut plays = self.plays(state, &entry, false)?;
         if plays.len() != 1 {
-            return Err(format!("{FIRST_NODE} must play one way"));
+            return Err(format!("{entry} must play one way"));
         }
-        let (step, state, _) = plays.remove(0);
-        Ok((step, state))
+        Ok(plays.remove(0))
     }
 
     #[cfg(test)]
@@ -702,39 +693,37 @@ impl Walker {
         Ok(walk)
     }
 
-    /// The shortest actions from a new game to a state where `goal` holds, chapter by
-    /// chapter: in each chapter the shortest way to the goal or, if it lies further on,
-    /// to the next chapter.
-    pub fn path_to(&mut self, goal: impl Fn(&State) -> bool) -> Result<Vec<Step>, String> {
-        let (first, mut state) = self.start()?;
+    /// The shortest actions from the entry of `box_id` (played from `base`) to a state where
+    /// every one of `steps` is done. The entry node is the first action.
+    pub fn path_in_box(
+        &mut self,
+        base: &State,
+        box_id: &str,
+        steps: &[&str],
+    ) -> Result<Vec<Step>, String> {
+        let (first, state, _) = self.enter(base, box_id)?;
         let mut path = vec![first];
-        while !goal(&state) {
-            if state.ended {
-                return Err("the story ends before".to_string());
-            }
-            let chapter = state.chapter();
-            let walk = self.search(
-                state,
-                |s| goal(s) || s.ended || s.chapter() != chapter,
-                STATE_CAP,
-                true,
-            )?;
-            let Some(&exit) = walk.exits.first() else {
-                return Err(format!("chapter '{chapter}' has no way on"));
-            };
-            path.extend(walk.path(exit));
-            state = walk.states[exit].clone();
+        let reached = |s: &State| steps.iter().all(|id| s.step(box_id, id));
+        let walk = self.search(
+            state,
+            |s| reached(s) || s.ended || s.box_id() != box_id,
+            STATE_CAP,
+            true,
+        )?;
+        let Some(&exit) = walk.exits.first() else {
+            return Err(format!("{box_id}: the steps {steps:?} can't be reached"));
+        };
+        if !reached(&walk.states[exit]) {
+            return Err(format!(
+                "{box_id}: the box ends before the steps {steps:?} are done"
+            ));
         }
+        path.extend(walk.path(exit));
         Ok(path)
     }
 
-    /// Plays `path` from a new game. Returns the end state and the world commands of every
+    /// Plays `path` from `state`. Returns the end state and the world commands of every
     /// step, in order.
-    pub fn replay(&mut self, path: &[Step]) -> Result<(State, Vec<WorldCommand>), String> {
-        self.replay_from(State::default(), path)
-    }
-
-    /// Plays `path` from `state`, as `replay`.
     pub fn replay_from(
         &mut self,
         mut state: State,
@@ -759,11 +748,13 @@ impl Walker {
 
 #[cfg(test)]
 pub(crate) mod tests {
-    use std::collections::{HashMap, HashSet};
+    use std::collections::HashSet;
+
+    use story_graph::{GraphBox, NodeKind};
 
     use super::*;
     use crate::story::load_real_project;
-    use crate::ui::dialogue::test::{chart, ChartChapter};
+    use crate::story::start_point::base_vars;
 
     /// The hotspot nodes of the side-view map.
     pub(crate) fn route1_hotspots() -> Vec<String> {
@@ -789,42 +780,42 @@ pub(crate) mod tests {
     fn walker() -> Walker {
         let app = load_real_project();
         let project = app.world().resource::<YarnProject>();
-        Walker::new(project, &route1_hotspots()).unwrap()
+        Walker::new(project, &route1_hotspots(), &Graph::route1()).unwrap()
     }
 
-    /// Checks one walk of `chapter`. Returns its exits.
-    fn check_walk(
-        walk: &Walk,
-        chapter: &ChartChapter,
-        next: Option<&ChartChapter>,
-        requires: &HashMap<String, Vec<String>>,
-    ) -> Vec<State> {
-        let id = &chapter.id;
-        for gate in chapter.gates.iter().chain([&chapter.bottleneck]) {
-            assert!(
-                walk.states.iter().any(|s| s.gate(&gate.id)),
-                "{id}: gate '{}' is never reached",
-                gate.id
-            );
-        }
-        for (i, targets) in walk.edges.iter().enumerate() {
-            for &j in targets {
-                let (from, to) = (&walk.states[i], &walk.states[j]);
-                for (gate, needs) in requires {
-                    if from.gate(gate) || !to.gate(gate) {
-                        continue;
-                    }
-                    for need in needs {
-                        assert!(
-                            to.gate(need),
-                            "{id}: gate '{gate}' is set before '{need}': {}",
-                            walk.describe(j)
-                        );
-                    }
-                }
+    /// Steps whose requirements the scenes don't meet, with why: the step is done before
+    /// something the graph needs for it. The graph is the design, the scenes are to follow
+    /// (task 3b.6).
+    const KNOWN_ORDER_MISMATCHES: &[(&str, &str)] = &[
+        // The scene lets him in with the wine alone; the graph wants the socks on as well.
+        ("R1Dinner2", "door"),
+    ];
+
+    /// The steps that exit `id` needs, directly or not. Alternatives (`a|b`) and clues from
+    /// other boxes are no must.
+    fn needed_by(b: &GraphBox, id: &str, needed: &mut HashSet<String>) {
+        let id = b.choice_of(id).unwrap_or(id);
+        let Some(node) = b.node(id) else {
+            return;
+        };
+        for alternatives in node.requires.iter().filter(|a| a.len() == 1) {
+            let requirement = &alternatives[0];
+            if story_graph::cross_box(requirement).is_some() {
+                continue;
+            }
+            let step = requirement
+                .split_once('=')
+                .map_or(requirement.as_str(), |(_, option)| option);
+            if needed.insert(step.to_string()) {
+                needed_by(b, step, needed);
             }
         }
-        // No dead ends: the exits can be reached from every state.
+    }
+
+    /// Checks one walk of box `b` from its entry.
+    fn check_box(b: &GraphBox, walk: &Walk) {
+        let id = &b.id;
+        // No dead ends: an exit can be reached from every state.
         let mut reaches = vec![false; walk.states.len()];
         for &exit in &walk.exits {
             reaches[exit] = true;
@@ -841,10 +832,12 @@ pub(crate) mod tests {
         }
         if let Some(stuck) = reaches.iter().position(|r| !r) {
             panic!(
-                "{id}: dead end, the bottleneck can't be reached after: {}",
+                "{id}: dead end, no exit can be reached after: {}",
                 walk.describe(stuck)
             );
         }
+        assert!(!walk.exits.is_empty(), "{id}: the walk has no exit");
+        // There is always something to do: an open note on the phone.
         let exits: HashSet<usize> = walk.exits.iter().copied().collect();
         for (i, state) in walk.states.iter().enumerate() {
             if !exits.contains(&i) {
@@ -855,117 +848,88 @@ pub(crate) mod tests {
                 );
             }
         }
-        assert!(!walk.exits.is_empty(), "{id}: the walk has no exit");
-        walk.exits
-            .iter()
-            .map(|&exit| {
-                let state = &walk.states[exit];
-                assert!(
-                    state.gate(&chapter.bottleneck.id),
-                    "{id}: left without its bottleneck: {}",
-                    walk.describe(exit)
-                );
-                match next {
-                    Some(next) => assert_eq!(
-                        state.chapter(),
-                        next.id,
-                        "{id}: the bottleneck leads elsewhere: {}",
-                        walk.describe(exit)
-                    ),
-                    None => assert!(
-                        state.ended,
-                        "{id}: the last chapter must end the demo: {}",
-                        walk.describe(exit)
-                    ),
-                }
-                state.clone()
-            })
-            .collect()
-    }
 
-    /// Walks every chapter from every way the chapter before it can end.
-    #[test]
-    fn every_chapter_can_be_finished_in_any_order() {
-        let chapters = chart();
-        let requires: HashMap<String, Vec<String>> = chapters
+        // Steps are done in some state. The exits reached and everything they need must be.
+        let done_somewhere = |step: &str| walk.states.iter().any(|s| s.step(id, step));
+        let exits_of_box: Vec<&str> = b
+            .nodes
             .iter()
-            .flat_map(|c| c.gates.iter().chain([&c.bottleneck]))
-            .map(|g| (g.id.clone(), g.requires.clone()))
+            .filter(|n| n.kind == NodeKind::Exit)
+            .map(|n| n.id.as_str())
             .collect();
-        let mut walker = walker();
-        let (_, start) = walker.start().unwrap();
-        let mut entries = vec![start];
-        for (i, chapter) in chapters.iter().enumerate() {
-            let id = chapter.id.clone();
-            let mut exits: Vec<State> = Vec::new();
-            let mut seen = HashSet::new();
-            let mut states = 0;
-            // Walks so far, with their entry and the variables they read. An entry that
-            // agrees with a walked one on all of those, and on texts and notes, plays the
-            // same: its exits are the same paths played from it.
-            let mut walked: Vec<(State, HashSet<String>, Walk)> = Vec::new();
-            for entry in &entries {
-                assert_eq!(entry.chapter(), id, "the chapter after its start node");
-                let same = walked.iter().find(|(other, reads, _)| {
-                    other.unread == entry.unread
-                        && other.notes == entry.notes
-                        && Walker::agree(other, entry, reads)
-                });
-                let found = match same {
-                    // The last chapter's exits lead nowhere.
-                    Some(_) if i + 1 == chapters.len() => Vec::new(),
-                    Some((_, _, walk)) => walk
-                        .exits
-                        .iter()
-                        .map(|&exit| {
-                            walker
-                                .replay_from(entry.clone(), &walk.path(exit))
-                                .unwrap()
-                                .0
-                        })
-                        .collect(),
-                    None => {
-                        walker.take_reads();
-                        let walk = walker
-                            .walk(entry.clone(), |s| s.ended || s.chapter() != id, STATE_CAP)
-                            .unwrap_or_else(|err| panic!("{id}: {err}"));
-                        states += walk.states.len();
-                        eprintln!(
-                            "{id}: walk {} has {} states",
-                            walked.len() + 1,
-                            walk.states.len()
-                        );
-                        let found = check_walk(&walk, chapter, chapters.get(i + 1), &requires);
-                        walked.push((entry.clone(), walker.take_reads(), walk));
-                        found
+        let reached: Vec<&str> = exits_of_box
+            .iter()
+            .copied()
+            .filter(|exit| done_somewhere(exit))
+            .collect();
+        assert!(!reached.is_empty(), "{id}: no exit of the box is ever done");
+        let mut needed = HashSet::new();
+        for exit in &reached {
+            needed_by(b, exit, &mut needed);
+        }
+        for step in &needed {
+            assert!(done_somewhere(step), "{id}: step '{step}' is never done");
+        }
+        let all: Vec<&str> = b
+            .nodes
+            .iter()
+            .map(|n| n.id.as_str())
+            .chain(b.options.iter().map(|(_, o, _)| o.as_str()))
+            .collect();
+        let never: Vec<&str> = all
+            .into_iter()
+            .filter(|step| b.node(step).is_none_or(|n| n.kind != NodeKind::Choice))
+            .filter(|step| !done_somewhere(step))
+            .collect();
+        eprintln!(
+            "{id}: {} states, exits done {reached:?}, never done {never:?}",
+            walk.states.len()
+        );
+
+        // Steps are done after what the graph needs for them.
+        for (i, targets) in walk.edges.iter().enumerate() {
+            for &j in targets {
+                let (from, to) = (&walk.states[i], &walk.states[j]);
+                for node in &b.nodes {
+                    if from.step(id, &node.id) || !to.step(id, &node.id) {
+                        continue;
                     }
-                };
-                for exit in found {
-                    if seen.insert(walker.key(&exit)) {
-                        exits.push(exit);
+                    if !b.requirements_hold(&node.id, &|step| to.step(id, step)) {
+                        assert!(
+                            KNOWN_ORDER_MISMATCHES.contains(&(id.as_str(), node.id.as_str())),
+                            "{id}: step '{}' is done before what the graph needs for it: {}",
+                            node.id,
+                            walk.describe(j)
+                        );
                     }
                 }
             }
-            println!(
-                "{id}: {} ways in, {} walks, {states} states, {} ways out",
-                entries.len(),
-                walked.len(),
-                exits.len()
-            );
-            entries = exits;
         }
     }
 
+    /// Walks every box with a scene from its entry node, trying every action.
     #[test]
-    fn start_points_find_every_chapter() {
+    fn every_box_can_be_finished_in_any_order() {
+        let graph = Graph::route1();
         let mut walker = walker();
-        for chapter in chart() {
-            let path = walker
-                .path_to(|s| s.chapter() == chapter.id)
-                .unwrap_or_else(|err| panic!("{}: {err}", chapter.id));
-            let (state, _) = walker.replay(&path).unwrap();
-            assert_eq!(state.chapter(), chapter.id);
-            assert!(chapter.gates.iter().all(|g| !state.gate(&g.id)));
+        for b in graph.0.boxes.iter().filter(|b| b.entry.is_some()) {
+            let base = State::with_vars(base_vars(&b.id));
+            let (_, start, _) = walker.enter(&base, &b.id).unwrap();
+            assert_eq!(start.box_id(), b.id, "the entry node enters its box");
+            let exits: Vec<String> = b
+                .nodes
+                .iter()
+                .filter(|n| n.kind == NodeKind::Exit)
+                .map(|n| n.id.clone())
+                .collect();
+            let walk = walker
+                .walk(
+                    start,
+                    |s| s.ended || s.box_id() != b.id || exits.iter().any(|e| s.step(&b.id, e)),
+                    STATE_CAP,
+                )
+                .unwrap_or_else(|err| panic!("{}: {err}", b.id));
+            check_box(b, &walk);
         }
     }
 }

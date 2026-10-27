@@ -1,23 +1,21 @@
 title: Window3B
 ---
 // Talk target of the window in 3B (Hotspots layer). At the viewing it is one of the three
-// things he looks at; the first of them sets $r1_viewing_why, which moving day reads.
+// things he looks at; the one he looks at first gets a remark.
 -> Look
-    <<if $chapter == "R1Viewing" and $gate_r1_view_knock and not $gate_r1_view_window>>
-        <<set $gate_r1_view_window to true>>
+    <<if can("R1Viewing", "window")>>
         <<done R1Viewing window>>
         <<face Samantha Player>>
         // PLACEHOLDER lines, from the old tour.
-        <<if $r1_viewing_why == "">>
-            <<set $r1_viewing_why to "light">>
+        <<if not is_done("R1Viewing", "kitchen") and not is_done("R1Viewing", "bath")>>
             {$samantha_name}: Straight to the window. The part I always save for last.
         <<endif>>
         {$samantha_name}: Tram stop on the corner. Bakery opens at six. You'll hate it for a week, then you'll love it.
         {$samantha_name}: It opens if you ask it nicely. The last tenant never asked nicely.
-        <<if $gate_r1_view_window and $gate_r1_view_kitchen and $gate_r1_view_bath>>
+        <<if can("R1Viewing", "flat")>>
             <<note r1_view "Tell Samantha you've seen enough.">>
         <<endif>>
-    <<elseif $chapter == "R1Viewing">>
+    <<elseif in_box("R1Viewing")>>
         You: The tram stop, the bakery. Still there.
     <<else>>
         You: My window. Tram stop, bakery. She was right about the week.
