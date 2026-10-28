@@ -71,8 +71,57 @@ tags: cutscene
 {$samantha_name}: Look at me. Not at my hands.
 <<wait 1>>
 <<fade_out>>
-// PLACEHOLDER: explicit scene, later. She leads: he waits, holds still, does not touch
-// until she says. Cut away here; the morning follows.
+// The night, on a dark screen until it has scene art. She leads: he waits, holds
+// still, and doesn't touch until she says.
+// Scene art, later: her on the edge of his mattress, his hands flat on the sheet.
+{$samantha_name}: Hands flat on the sheet. Both of them.
+You: Like this?
+{$samantha_name}: Like that. If they move, I stop. Understood?
+You: Understood.
+// She pulls her top over her head and drops it on his floor.
+{$samantha_name}: You're staring.
+You: You said look at you.
+{$samantha_name}: I did. Keep doing it.
+// She pushes the duvet down, slowly, all the way.
+{$samantha_name}: Oh. You've been waiting a while already.
+You: Since you knocked.
+{$samantha_name}: Then a little longer won't kill you.
+// She takes him in her hand and doesn't move it.
+{$samantha_name}: Breathe.
+You: I am.
+{$samantha_name}: Slower.
+// She strokes him once, all the way, and stops.
+You: Please.
+{$samantha_name}: Please what?
+You: ...Don't stop.
+{$samantha_name}: That's not your decision. Hands.
+// His hands had lifted off the sheet. He puts them back.
+{$samantha_name}: Good.
+// Scene art, later: her astride him, one hand on his chest.
+// She climbs over him and sinks down onto him, an inch at a time, watching his face.
+{$samantha_name}: Don't move your hips. I'm doing this. You're having it done to you.
+You: God.
+{$samantha_name}: Not God. Me.
+// She rides him slowly, for herself, and he lets her.
+{$samantha_name}: You want to come.
+You: Yes.
+{$samantha_name}: Not yet. Not until I say. I want to see if you can.
+You: I can't. Not much longer.
+{$samantha_name}: You can. Look at me.
+// She takes her own pleasure first, her hand pressing his chest down, and he holds on.
+// Her breath goes ragged. She shudders, and stills, and smiles down at him.
+{$samantha_name}: There.
+{$samantha_name}: Now ask.
+You: Can I... please?
+{$samantha_name}: Good. Now.
+// He comes with his hands still flat on the sheet.
+<<wait 1>>
+{$samantha_name}: You didn't move them once.
+You: You said not to.
+{$samantha_name}: I know. I was watching.
+// She lies down beside him, on top of the duvet, and doesn't touch him.
+{$samantha_name}: Sleep. I'm staying.
+<<wait 1>>
 <<card "Morning.">>
 <<place Player PlayerToBedroom>>
 <<face Player down>>

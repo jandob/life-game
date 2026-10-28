@@ -104,12 +104,58 @@ You: Croissant?
 You: ...Croissant.
 {$samantha_name}: And I can say it too. Remember that.
 // She puts her hand flat on his chest. Warm. She watches him breathe.
-{$samantha_name}: Not tonight. Tonight was for talking.
-{$samantha_name}: But you're blushing, and I like it.
+{$samantha_name}: Tonight was for talking. Mostly.
+{$samantha_name}: You're blushing, and I like it. Do you want to find out what "a little" is?
+You: ...Yes.
+{$samantha_name}: Then go and lie down. On your front.
 <<wait 1>>
 <<fade_out>>
-// PLACEHOLDER: explicit scene, later. Her first step with his receptive side: a little,
-// slow, talked through, the safeword in reach.
+// Her first step with his receptive side, on a dark screen until it has scene art:
+// a little, slow, talked through, the safeword in reach.
+// Scene art, later: him on his front on the mattress, her kneeling beside him.
+{$samantha_name}: Pillow under your hips. There.
+{$samantha_name}: Tell me what you're thinking.
+You: That I don't know what I'm doing.
+{$samantha_name}: You don't have to. I do.
+// She runs her hand down his back, slowly, and leaves it resting low.
+{$samantha_name}: I brought something. It's cold for a second.
+You: You brought it? You planned this?
+{$samantha_name}: I plan everything. You're in the notebook, remember.
+// A cool touch. One finger, resting, not pushing.
+{$samantha_name}: Breathe out.
+You: ...
+{$samantha_name}: Yes, not yet or no?
+You: Yes.
+// She presses in, a little. Slowly. She stops and waits.
+{$samantha_name}: Still yes?
+You: Still yes.
+{$samantha_name}: Good. That's a little. Here's a little more.
+// Deeper. She curls her finger, and he makes a sound he didn't know he could make.
+{$samantha_name}: Oh. There it is.
+You: What... was that?
+{$samantha_name}: That was you, finding out.
+{$samantha_name}: Don't hide your face. I want to hear you.
+// She keeps the same slow rhythm and reaches round to hold him with her other hand.
+// She doesn't stroke. She just holds him while she moves inside him.
+You: I'm close.
+{$samantha_name}: I know. Your whole back just told me.
+{$samantha_name}: Not yet.
+You: Please.
+{$samantha_name}: You remember the word?
+You: Yes.
+{$samantha_name}: You don't need it, do you.
+You: No.
+{$samantha_name}: Then wait for me to say.
+// She keeps him there, a long moment, her mouth by his ear.
+{$samantha_name}: Good. Now.
+// He comes in her hand, with her still inside him, shaking.
+<<wait 1>>
+{$samantha_name}: Breathe. I've got you.
+// She stays like that until he's still, then slowly lets go.
+{$samantha_name}: That was a little.
+You: That was a little?
+{$samantha_name}: Mm. Get some water. I'm going to write.
+<<wait 1>>
 <<fade_in>>
 // She writes at the counter, then reads it out.
 {$samantha_name}: "Said 'a little.' Meant 'more'."
