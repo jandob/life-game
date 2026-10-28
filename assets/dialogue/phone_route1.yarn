@@ -9,7 +9,7 @@ tags: phone
     {$samantha_name}: I know. I can hear you on the stairs.
 -> Good morning to you too.
     {$samantha_name}: Morning. Once.
-<<set $gate_r1_sun_text to true>>
+<<done R1Breakfast text>>
 <<note r1_sun "Bring Samantha her croissant. Her door, 3A. Knock once.">>
 ===
 title: PhoneThursday2
@@ -26,7 +26,7 @@ tags: phone
 -> Okay.
     <<set $r1_thu2_text to "ok">>
     {$samantha_name}: Good.
-<<set $gate_r1_thu2_text to true>>
+<<done R1Dinner2 text>>
 <<note r1_thu2 "Tonight, eight, her door. Bring what she'd want.">>
 ===
 title: PhoneThursday2Night
@@ -41,18 +41,31 @@ tags: phone
 <<endif>>
 -> Yes.
     <<set $r1_thu2_reply to "yes">>
-    <<if $r1_thu2_kiss == "still">>
-        {$samantha_name}: Good boy. You liked that, didn't you.
-    <<else>>
-        {$samantha_name}: Good boy.
-    <<endif>>
+    {$samantha_name}: Good boy. You liked that, didn't you.
 -> And if I don't?
     <<set $r1_thu2_reply to "if">>
     {$samantha_name}: Then I'll know.
 -> Yes, Samantha.
     <<set $r1_thu2_reply to "name">>
     {$samantha_name}: Good boy.
-<<set $gate_r1_thu2_night to true>>
+<<done R1Dinner2 night>>
 <<note_done r1_thu2>>
 <<note thu3 "Next Thursday. Wear the socks.">>
+===
+title: PhoneRetry
+tags: phone
+---
+// Her text the evening after she sent him home, delivered by Route1RetryStart.
+{$samantha_name}: Tonight. Same time.
+<<if $r1_retry_again>>
+    {$samantha_name}: And listen this time.
+<<endif>>
+-> Yes.
+    {$samantha_name}: Good.
+-> Am I forgiven?
+    {$samantha_name}: There was nothing to forgive. There was something to learn.
+-> What did I do wrong?
+    {$samantha_name}: Come and find out.
+<<done R1Dinner2Retry text>>
+<<note r1_retry "Tonight, eight, her door. Knock.">>
 ===

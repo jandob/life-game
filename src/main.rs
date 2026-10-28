@@ -74,7 +74,6 @@ fn main() {
             animation::SpriteAnimationPlugin,
             {
                 let plugin = YarnSpinnerPlugin::with_yarn_sources([
-                    YarnFileSource::file("dialogue/chart_route1.yarn"),
                     YarnFileSource::file("dialogue/route1_viewing.yarn"),
                     YarnFileSource::file("dialogue/route1_movein.yarn"),
                     YarnFileSource::file("dialogue/route1_croissant.yarn"),
@@ -89,6 +88,9 @@ fn main() {
                     YarnFileSource::file("dialogue/samantha_3a.yarn"),
                     YarnFileSource::file("dialogue/door_3a_inside.yarn"),
                     YarnFileSource::file("dialogue/route1_thursday2.yarn"),
+                    YarnFileSource::file("dialogue/route1_retry.yarn"),
+                    YarnFileSource::file("dialogue/route1_knock.yarn"),
+                    YarnFileSource::file("dialogue/route1_notebook.yarn"),
                     YarnFileSource::file("dialogue/stairs_landing.yarn"),
                     YarnFileSource::file("dialogue/recycling_3a.yarn"),
                     YarnFileSource::file("dialogue/door_3b_inside.yarn"),

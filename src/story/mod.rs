@@ -1,11 +1,12 @@
 //! Story state and scripted scenes.
 
-pub mod chart;
+pub mod graph;
 pub mod inventory;
 pub mod phone;
 pub mod scripted;
 pub mod start_point;
 pub mod transition;
+pub mod walker;
 
 use bevy::prelude::*;
 use bevy_yarnspinner::default_impl::MemoryVariableStorage;
@@ -21,11 +22,13 @@ pub struct StoryVars(pub MemoryVariableStorage);
 /// Builds a runner on the shared story variables.
 ///
 /// Building a runner resets every variable it knows to its declared default, so the
-/// values the story has already set are restored right after.
+/// values the story has already set are restored right after. The story graph's
+/// functions (`can`, `is_done`, `in_box`) are registered on it, reading the same variables.
 pub fn build_story_runner(
     project: &YarnProject,
     commands: &mut Commands,
     story_vars: &StoryVars,
+    graph: &graph::Graph,
 ) -> DialogueRunner {
     let saved = story_vars.0.variables();
     let mut runner = project
@@ -35,6 +38,7 @@ pub fn build_story_runner(
     if let Err(err) = runner.variable_storage_mut().extend(saved) {
         error!("Could not restore the story variables: {err}");
     }
+    graph::add_functions(runner.library_mut(), &graph.0, &story_vars.0);
     runner
 }
 
@@ -91,6 +95,7 @@ pub struct StoryPlugin;
 impl Plugin for StoryPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<StoryVars>()
+            .insert_resource(graph::Graph::route1())
             .add_plugins((
                 scripted::ScriptedPlugin,
                 inventory::InventoryPlugin,
@@ -132,11 +137,12 @@ mod tests {
     fn story_vars_survive_building_the_next_runner() {
         let mut app = app_with_project();
         let story_vars = StoryVars::default();
+        let graph = graph::Graph::route1();
         let mut state: SystemState<(Commands, Res<YarnProject>)> =
             SystemState::new(app.world_mut());
         let (mut commands, project) = state.get_mut(app.world_mut()).unwrap();
 
-        let mut first = build_story_runner(&project, &mut commands, &story_vars);
+        let mut first = build_story_runner(&project, &mut commands, &story_vars, &graph);
         assert_eq!(
             first.variable_storage().get("$flag").unwrap().to_string(),
             "unset"
@@ -147,7 +153,7 @@ mod tests {
             .unwrap();
         drop(first);
 
-        let second = build_story_runner(&project, &mut commands, &story_vars);
+        let second = build_story_runner(&project, &mut commands, &story_vars, &graph);
         assert_eq!(
             second.variable_storage().get("$flag").unwrap().to_string(),
             "set"
@@ -163,6 +169,35 @@ mod tests {
             plain.variable_storage().get("$flag").unwrap().to_string(),
             "unset"
         );
+    }
+
+    /// The graph's functions on a runner read the story variables, the ones the commands and
+    /// the next runner write.
+    #[test]
+    fn graph_functions_follow_the_story_variables() {
+        let mut app = app_with_project();
+        let story_vars = StoryVars::default();
+        let graph = graph::Graph::route1();
+        let mut state: SystemState<(Commands, Res<YarnProject>)> =
+            SystemState::new(app.world_mut());
+        let (mut commands, project) = state.get_mut(app.world_mut()).unwrap();
+        let mut runner = build_story_runner(&project, &mut commands, &story_vars, &graph);
+        let ask = |runner: &DialogueRunner, function: &str, args: &[&str]| -> bool {
+            let args = args.iter().map(|a| YarnValue::from(*a)).collect();
+            bool::try_from(runner.library().get(function).unwrap().call(args)).unwrap()
+        };
+        assert!(!ask(&runner, "in_box", &["R1Viewing"]));
+        graph::enter_box(&graph.0, runner.variable_storage_mut(), "R1Viewing").unwrap();
+        assert!(ask(&runner, "in_box", &["R1Viewing"]));
+        assert!(ask(&runner, "can", &["R1Viewing", "knock"]));
+        graph::mark_done(&graph.0, &mut story_vars.0.clone(), "R1Viewing", "knock").unwrap();
+        assert!(!ask(&runner, "can", &["R1Viewing", "knock"]));
+        assert!(ask(&runner, "is_done", &["R1Viewing", "knock"]));
+        assert!(ask(&runner, "can", &["R1Viewing", "window"]));
+
+        // The next runner sees the same story.
+        let next = build_story_runner(&project, &mut commands, &story_vars, &graph);
+        assert!(ask(&next, "is_done", &["R1Viewing", "knock"]));
     }
 
     #[derive(Resource, Default)]
@@ -216,7 +251,12 @@ mod tests {
         let mut state: SystemState<(Commands, Res<YarnProject>)> =
             SystemState::new(app.world_mut());
         let (mut commands, project) = state.get_mut(app.world_mut()).unwrap();
-        let mut runner = build_story_runner(&project, &mut commands, &StoryVars::default());
+        let mut runner = build_story_runner(
+            &project,
+            &mut commands,
+            &StoryVars::default(),
+            &graph::Graph::route1(),
+        );
         let walk = commands.register_system(walk_command);
         runner.commands_mut().add_command("walk", walk);
         assert_eq!(

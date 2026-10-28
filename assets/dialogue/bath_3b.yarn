@@ -2,22 +2,21 @@ title: Bath3B
 ---
 // Talk target of the bathroom door in 3B (Hotspots layer). See window_3b.yarn.
 -> Look
-    <<if $chapter == "R1Viewing" and $gate_r1_view_knock and not $gate_r1_view_bath>>
-        <<set $gate_r1_view_bath to true>>
+    <<if can("R1Viewing", "bath")>>
+        <<done R1Viewing bath>>
         <<face Samantha Player>>
         // PLACEHOLDER lines.
-        <<if $r1_viewing_why == "">>
-            <<set $r1_viewing_why to "bath">>
+        <<if not is_done("R1Viewing", "window") and not is_done("R1Viewing", "kitchen")>>
             {$samantha_name}: The bathroom first. Practical. Or nervous.
         <<endif>>
         {$samantha_name}: The hot water takes a minute. Don't stand there waiting for it, it hates that.
         {$samantha_name}: So. You just finished?
         You: Last month. This would be my first flat.
         {$samantha_name}: I can tell.
-        <<if $gate_r1_view_window and $gate_r1_view_kitchen and $gate_r1_view_bath>>
+        <<if can("R1Viewing", "flat")>>
             <<note r1_view "Tell Samantha you've seen enough.">>
         <<endif>>
-    <<elseif $chapter == "R1Viewing">>
+    <<elseif in_box("R1Viewing")>>
         You: The hot water takes a minute. Apparently.
     <<else>>
         You: The bathroom. The hot water still takes a minute.

@@ -5,6 +5,7 @@ use crate::{
     player::chat::{PlayerStartedChat, PlayerStoppedChat},
     story::{
         build_story_runner,
+        graph::{done_command, enter_box_command, Graph},
         phone::{note_command, note_done_command, phone_command},
         scripted::{await_walks_command, face_command, hide_command, show_command, walk_command},
         transition::{
@@ -76,6 +77,8 @@ fn add_story_commands(commands: &mut Commands, runner: &mut DialogueRunner) {
     let phone = commands.register_system(phone_command);
     let note = commands.register_system(note_command);
     let note_done = commands.register_system(note_done_command);
+    let done = commands.register_system(done_command);
+    let enter_box = commands.register_system(enter_box_command);
     runner
         .commands_mut()
         .add_command("stop_chat", stop_chat)
@@ -94,7 +97,9 @@ fn add_story_commands(commands: &mut Commands, runner: &mut DialogueRunner) {
         .add_command("next_scene", next_scene)
         .add_command("phone", phone)
         .add_command("note", note)
-        .add_command("note_done", note_done);
+        .add_command("note_done", note_done)
+        .add_command("done", done)
+        .add_command("enter_box", enter_box);
 }
 
 fn spawn_dialogue_runner(
@@ -102,13 +107,14 @@ fn spawn_dialogue_runner(
     mut typewriter: ResMut<Typewriter>,
     project: Res<YarnProject>,
     story_vars: Res<StoryVars>,
+    graph: Res<Graph>,
     mut fade: ResMut<ScreenFade>,
     mut ev_spawn_dialogue_runner: MessageReader<SpawnDialogueRunner>,
     mut ev_player_stopped_chat: MessageWriter<PlayerStoppedChat>,
 ) {
     for ev in ev_spawn_dialogue_runner.read() {
         typewriter.reset();
-        let mut dialogue_runner = build_story_runner(&project, &mut commands, &story_vars);
+        let mut dialogue_runner = build_story_runner(&project, &mut commands, &story_vars, &graph);
         add_story_commands(&mut commands, &mut dialogue_runner);
 
         if let Err(err) = dialogue_runner.try_start_node(&ev.node) {

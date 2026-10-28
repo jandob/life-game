@@ -1,0 +1,181 @@
+title: Route1NotebookStart
+tags: cutscene
+---
+// The entry node of box R1Notebook, started by going to work after the knock night
+// (door_3b_inside.yarn); free time (R1Free2) has no scene. Evening: he comes home to 3B.
+// Her notebook is on the kitchenette counter, his only table.
+<<enter_box R1Notebook>>
+<<fade_out>>
+<<hide Samantha>>
+<<place Player PlayerInto3B>>
+<<face Player right>>
+<<card "Evening.">>
+<<fade_in>>
+You: Home. Finally.
+You: The light's on. I switched it off this morning.
+<<note r1_nb "Something's on the kitchenette counter.">>
+// The player walks freely from here. The notebook is on the kitchenette (kitchen_3b.yarn).
+===
+title: Route1NotebookRead
+tags: cutscene
+---
+// Started by reading her pages at the kitchenette (kitchen_3b.yarn).
+<<done R1Notebook read>>
+You: Her handwriting. Small, even, no crossings-out.
+You: A page for the viewing. "Keen to please. Waits to be told. Doesn't know it yet."
+You: Thursday. "Brought the right wine. Shoes off before I asked."
+You: And a new page. Dated the night she knocked.
+You: "Answered on the first knock. Stood where I put him."
+You: "Reached once. Stopped when told. Didn't sulk."
+You: "Went red when I said good. Pretended he hadn't."
+You: ...I did not go red.
+You: One more line, underlined. "Ask him what he liked. He won't say it unprompted."
+// Three knocks.
+You: Someone's at my door.
+<<note r1_nb "Answer the door.">>
+// The player walks to the front door. Answering it starts Route1NotebookAsk (door_3b_inside.yarn).
+===
+title: Route1NotebookAsk
+tags: cutscene
+---
+// Started by answering the door after reading her pages (door_3b_inside.yarn). She let
+// herself in with the spare key earlier, and made the notebook a conversation on purpose.
+<<place Samantha SamanthaWait>>
+<<show Samantha>>
+<<open_door Door3B>>
+<<face Samantha Player>>
+<<face Player Samantha>>
+{$samantha_name}: You read it.
+You: It was on my counter. You left it there.
+{$samantha_name}: I did. With the spare key. I keep it, remember.
+{$samantha_name}: I could have told you what I wrote. This way I get to watch your face.
+<<walk Samantha SamanthaToKitchen no_wait>>
+<<walk Player PlayerToKitchen>>
+<<await_walks>>
+<<close_door Door3B>>
+<<face Samantha Player>>
+<<face Player Samantha>>
+{$samantha_name}: Sit if you like. This is a talk, not a test.
+{$samantha_name}: The other night. What did you like?
+You: ...All of it?
+{$samantha_name}: Try again. Properly.
+You: Being told to wait.
+{$samantha_name}: Mm. And?
+You: That you didn't hurry.
+{$samantha_name}: And the thing you wouldn't say out loud?
+You: ...
+{$samantha_name}: I'll wait. I'm good at it.
+<<done R1Notebook ask>>
+<<note r1_nb "Tell her what you liked. And what you wouldn't say.">>
+// The player is in control: telling her starts Route1NotebookLimits (samantha_3a.yarn).
+===
+title: Route1NotebookLimits
+tags: cutscene
+---
+// Started by telling her what he liked (samantha_3a.yarn). Limits first, then her first
+// step towards his receptive side, kept light.
+<<done R1Notebook limits>>
+{$samantha_name}: You don't have to say it all at once.
+{$samantha_name}: Rules first. Mine, for this.
+{$samantha_name}: Three answers. Yes, not yet, no. All three are fine.
+{$samantha_name}: Being told what to do.
+You: Yes.
+{$samantha_name}: I know. Being told when to wait.
+You: Yes.
+{$samantha_name}: Your hands held down. By me.
+You: ...Not yet.
+{$samantha_name}: Good. Not yet is allowed.
+{$samantha_name}: Being hurt.
+You: No.
+{$samantha_name}: Noted. I don't want that either. I want you listening, not flinching.
+{$samantha_name}: And the thing you wouldn't say.
+You: ...That I didn't want to be the one reaching. Last night. That I wanted to be the one reached for.
+{$samantha_name}: Ah.
+{$samantha_name}: That's in the notebook too. Page three.
+{$samantha_name}: I'd like to find out how far that goes. Slowly. With you telling me when to stop.
+You: Slowly.
+{$samantha_name}: Yes, not yet or no?
+You: ...Yes. A little.
+{$samantha_name}: A little. Good.
+{$samantha_name}: A word, then. If you say it, everything stops. No questions, no sulking.
+{$samantha_name}: Croissant.
+You: Croissant?
+{$samantha_name}: You'll never say it by accident. You'll never forget it either.
+You: ...Croissant.
+{$samantha_name}: And I can say it too. Remember that.
+// She puts her hand flat on his chest. Warm. She watches him breathe.
+{$samantha_name}: Tonight was for talking. Mostly.
+{$samantha_name}: You're blushing, and I like it. Do you want to find out what "a little" is?
+You: ...Yes.
+{$samantha_name}: Then go and lie down. On your front.
+<<wait 1>>
+<<fade_out>>
+// Her first step with his receptive side, on a dark screen until it has scene art:
+// a little, slow, talked through, the safeword in reach.
+// Scene art, later: him on his front on the mattress, her kneeling beside him.
+{$samantha_name}: Pillow under your hips. There.
+{$samantha_name}: Tell me what you're thinking.
+You: That I don't know what I'm doing.
+{$samantha_name}: You don't have to. I do.
+// She runs her hand down his back, slowly, and leaves it resting low.
+{$samantha_name}: I brought something. It's cold for a second.
+You: You brought it? You planned this?
+{$samantha_name}: I plan everything. You're in the notebook, remember.
+// A cool touch. One finger, resting, not pushing.
+{$samantha_name}: Breathe out.
+You: ...
+{$samantha_name}: Yes, not yet or no?
+You: Yes.
+// She presses in, a little. Slowly. She stops and waits.
+{$samantha_name}: Still yes?
+You: Still yes.
+{$samantha_name}: Good. That's a little. Here's a little more.
+// Deeper. She curls her finger, and he makes a sound he didn't know he could make.
+{$samantha_name}: Oh. There it is.
+You: What... was that?
+{$samantha_name}: That was you, finding out.
+{$samantha_name}: Don't hide your face. I want to hear you.
+// She keeps the same slow rhythm and reaches round to hold him with her other hand.
+// She doesn't stroke. She just holds him while she moves inside him.
+You: I'm close.
+{$samantha_name}: I know. Your whole back just told me.
+{$samantha_name}: Not yet.
+You: Please.
+{$samantha_name}: You remember the word?
+You: Yes.
+{$samantha_name}: You don't need it, do you.
+You: No.
+{$samantha_name}: Then wait for me to say.
+// She keeps him there, a long moment, her mouth by his ear.
+{$samantha_name}: Good. Now.
+// He comes in her hand, with her still inside him, shaking.
+<<wait 1>>
+{$samantha_name}: Breathe. I've got you.
+// She stays like that until he's still, then slowly lets go.
+{$samantha_name}: That was a little.
+You: That was a little?
+{$samantha_name}: Mm. Get some water. I'm going to write.
+<<wait 1>>
+<<fade_in>>
+// She writes at the counter, then reads it out.
+{$samantha_name}: "Said 'a little.' Meant 'more'."
+{$samantha_name}: One line longer.
+{$samantha_name}: Goodnight, boyfriend.
+<<open_door Door3B>>
+<<walk Samantha SamanthaToLanding>>
+<<hide Samantha>>
+<<close_door Door3B>>
+<<wait 1>>
+<<note r1_nb "Go to bed.">>
+You: Boyfriend. I still haven't got used to it.
+// The player is in control in 3B. Going to bed is the exit (bed_3b.yarn).
+===
+title: Route1NotebookEnd
+tags: cutscene
+---
+// Started by going to bed after the notebook (bed_3b.yarn): the end of route 1 so far.
+// The exit leads to R1HerWorld, a stub.
+<<fade_out>>
+<<card "Her notes, one line longer.">>
+<<end_demo>>
+===

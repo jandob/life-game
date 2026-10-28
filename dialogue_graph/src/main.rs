@@ -1,3 +1,4 @@
+mod draw;
 #[cfg(test)]
 mod test;
 
@@ -10,6 +11,7 @@ use std::{
 };
 
 use petgraph::{dot::Dot, prelude::*};
+use story_graph::graph_boxes;
 
 const PATH_TO_DIALOGUES: &str = "assets/dialogue";
 const DOT_FILES_OUTPUT_PATH: &str = "graphs";
@@ -312,15 +314,14 @@ fn construct_graph(contents: String) -> Graph<String, usize, Directed> {
     container.graph
 }
 
-/// The titles of the nodes tagged `chart` (story chart data, see `src/story/chart.rs`).
-fn chart_titles(contents: &str) -> Vec<String> {
+fn tagged_titles(contents: &str, tag: &str) -> Vec<String> {
     let mut titles = Vec::new();
     let mut title = None;
     for line in contents.lines().map(str::trim) {
         if let Some(t) = line.strip_prefix("title:") {
             title = Some(t.trim().to_string());
         } else if let Some(tags) = line.strip_prefix("tags:") {
-            if tags.split_whitespace().any(|t| t == "chart") {
+            if tags.split_whitespace().any(|t| t == tag) {
                 titles.extend(title.take());
             }
         } else if line == "---" {
@@ -330,103 +331,37 @@ fn chart_titles(contents: &str) -> Vec<String> {
     titles
 }
 
-/// Command name and arguments of a `<<name arg "quoted arg">>` line.
-fn parse_command(line: &str) -> Option<(String, Vec<String>)> {
-    let inner = line.strip_prefix("<<")?.strip_suffix(">>")?;
-    let mut words = Vec::new();
-    let mut current = String::new();
-    let mut quoted = false;
-    for c in inner.chars() {
-        match c {
-            '"' => quoted = !quoted,
-            c if c.is_whitespace() && !quoted => {
-                if !current.is_empty() {
-                    words.push(std::mem::take(&mut current));
-                }
-            }
-            c => current.push(c),
-        }
-    }
-    if !current.is_empty() {
-        words.push(current);
-    }
-    let mut words = words.into_iter();
-    Some((words.next()?, words.collect()))
-}
-
 fn quote(text: &str) -> String {
     format!("\"{}\"", text.replace('"', "\\\""))
 }
 
-/// The story chart of a file as Graphviz: one cluster per chapter, labelled with its card,
-/// a box per gate, an edge per requirement and the bottleneck in bold. Each bottleneck
-/// leads on to the gates of the next chapter that need nothing else.
-fn chart_dot(contents: &str) -> String {
-    struct Gate {
-        id: String,
-        label: String,
-        requires: Vec<String>,
-        bottleneck: bool,
+/// Writes `story_<route>.dot` and a `box_<ID>.dot` per box with content, for the file
+/// `graph_<route>.yarn`.
+fn write_story_graph(contents: &str, file_name: &str, done: &draw::Done) {
+    let route = file_name.strip_prefix("graph_").unwrap_or(file_name);
+    let boxes = graph_boxes(contents);
+    let write = |name: String, dot: String| {
+        let path = format!("{DOT_FILES_OUTPUT_PATH}/{name}.dot");
+        fs::write(&path, dot).unwrap_or_else(|_| panic!("Couldn't write to file: '{path}'"));
+    };
+    write(
+        format!("story_{route}"),
+        draw::story_dot(&boxes, route, done),
+    );
+    for b in boxes.iter().filter(|b| draw::has_content(b)) {
+        write(format!("box_{}", b.id), draw::box_dot(&boxes, b, done));
     }
-    let mut chapters: Vec<(String, String, Vec<Gate>)> = Vec::new();
-    for line in contents.lines().map(str::trim) {
-        let Some((command, mut args)) = parse_command(line) else {
-            continue;
-        };
-        if !matches!(command.as_str(), "chapter" | "gate" | "bottleneck") || args.len() < 2 {
-            continue;
-        }
-        let id = args.remove(0);
-        let label = args.remove(0);
-        if command == "chapter" {
-            chapters.push((id, label, Vec::new()));
-        } else if let Some((_, _, gates)) = chapters.last_mut() {
-            gates.push(Gate {
-                id,
-                label,
-                requires: args,
-                bottleneck: command == "bottleneck",
-            });
-        }
-    }
+}
 
-    let mut dot = String::from("digraph chart {\n    rankdir=TB;\n    node [shape=box];\n");
-    for (i, (id, card, gates)) in chapters.iter().enumerate() {
-        dot += &format!(
-            "    subgraph cluster_{i} {{\n        label={};\n",
-            quote(&format!("{id}: {card}"))
-        );
-        for gate in gates {
-            let style = if gate.bottleneck { ", style=bold" } else { "" };
-            dot += &format!(
-                "        {} [label={}{style}];\n",
-                quote(&gate.id),
-                quote(&gate.label)
-            );
-        }
-        dot += "    }\n";
-    }
-    for (i, (_, _, gates)) in chapters.iter().enumerate() {
-        for gate in gates {
-            for need in &gate.requires {
-                dot += &format!("    {} -> {};\n", quote(need), quote(&gate.id));
-            }
-        }
-        let Some((_, _, next)) = chapters.get(i + 1) else {
-            continue;
-        };
-        let Some(bottleneck) = gates.iter().find(|g| g.bottleneck) else {
-            continue;
-        };
-        for gate in next.iter().filter(|g| g.requires.is_empty()) {
-            dot += &format!(
-                "    {} -> {} [style=dashed];\n",
-                quote(&bottleneck.id),
-                quote(&gate.id)
-            );
-        }
-    }
-    dot + "}\n"
+/// The steps that the scenes (the yarn files that are not graph files) mark with
+/// `<<done BOX ID>>`.
+fn scene_done_marks() -> draw::Done {
+    fs::read_dir(PATH_TO_DIALOGUES)
+        .expect("Can't read entries in current dir")
+        .filter_map(try_read_yarn_contents)
+        .filter(|(contents, _)| tagged_titles(contents, "graph").is_empty())
+        .flat_map(|(contents, _)| draw::done_marks(&contents))
+        .collect()
 }
 
 fn main() {
@@ -435,17 +370,16 @@ fn main() {
     }
     create_dir(DOT_FILES_OUTPUT_PATH).expect("Couldn't create graph output dir");
 
+    let done = scene_done_marks();
     for entry in fs::read_dir(PATH_TO_DIALOGUES).expect("Can't read entries in current dir") {
         let (contents, npc_file_name) = match try_read_yarn_contents(entry) {
             Some(r) => r,
             None => continue,
         };
 
-        // A file of chart nodes is drawn as the story chart instead.
-        if !chart_titles(&contents).is_empty() {
-            let path = &format!("{}/{}.dot", DOT_FILES_OUTPUT_PATH, npc_file_name);
-            fs::write(path, chart_dot(&contents))
-                .unwrap_or_else(|_| panic!("Couldn't write to file: '{}'", path));
+        // A file of graph nodes is drawn as the story graph: the story level and each box.
+        if !tagged_titles(&contents, "graph").is_empty() {
+            write_story_graph(&contents, &npc_file_name, &done);
             continue;
         }
 

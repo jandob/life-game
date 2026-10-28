@@ -14,6 +14,13 @@ Install `graphviz`, e.g. `sudo pacman -Syu graphviz`.
 
 Run `cargo run -p dialogue_graph ; dot -Tsvg graphs/eleonore.dot | save o.svg -f | vieb o.svg` in nushell, translate to bash or whatever else you are using (also you probably want to replace vieb with another browser or any software that can display `.svg` files).
 
+The story graph (`assets/dialogue/graph_route1.yarn`) is drawn as `graphs/story_route1.dot` and one `graphs/box_<ID>.dot` per box:
+
+```
+cargo run -p dialogue_graph
+dot -Tpng graphs/story_route1.dot -o story_route1.png
+```
+
 ## Appendix
 
 [Credits](https://github.com/jandob/life-game/blob/main/CREDITS.md).

@@ -1,23 +1,34 @@
 title: Kitchen3B
 ---
 // Talk target of the kitchenette in 3B (Hotspots layer). See window_3b.yarn.
+-> Look at the notebook <<if can("R1Notebook", "left")>>
+    <<done R1Notebook left>>
+    You: Her notebook. Black cover, the pen clipped to it.
+    You: On my counter. I didn't leave it here.
+    You: She has the spare key. "I keep it."
+    <<note r1_nb "Read what she wrote about you.">>
+-> Read the pages about you <<if can("R1Notebook", "read")>>
+    <<next_scene Route1NotebookRead>>
 -> Look
-    <<if $chapter == "R1Viewing" and $gate_r1_view_knock and not $gate_r1_view_kitchen>>
-        <<set $gate_r1_view_kitchen to true>>
+    <<if can("R1Viewing", "kitchen")>>
+        <<done R1Viewing kitchen>>
         <<face Samantha Player>>
         // PLACEHOLDER lines.
-        <<if $r1_viewing_why == "">>
-            <<set $r1_viewing_why to "kitchen">>
+        <<if not is_done("R1Viewing", "window") and not is_done("R1Viewing", "bath")>>
             {$samantha_name}: The kitchen first. Either you cook, or you want me to think you do.
         <<endif>>
         {$samantha_name}: Two rings and a fridge that hums. You're looking at the sockets like they might bite.
         {$samantha_name}: How old are you, anyway?
         You: Old enough to sign a lease.
         {$samantha_name}: Barely, by the look of you. I'm twenty-five, I've signed four.
-        <<if $gate_r1_view_window and $gate_r1_view_kitchen and $gate_r1_view_bath>>
+        <<if can("R1Viewing", "flat")>>
             <<note r1_view "Tell Samantha you've seen enough.">>
         <<endif>>
-    <<elseif $chapter == "R1Viewing">>
+    <<elseif in_box("R1Notebook") and not is_done("R1Notebook", "left")>>
+        You: Two rings, a fridge that hums, and a notebook that isn't mine.
+    <<elseif in_box("R1Notebook")>>
+        You: Her notebook. Closed. It has my name in it more than once.
+    <<elseif in_box("R1Viewing")>>
         You: Two rings and a fridge that hums.
     <<else>>
         You: Two rings and a fridge that hums. I've used one of the rings.

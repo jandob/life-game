@@ -1,16 +1,18 @@
 title: Route1Thu1Start
 tags: cutscene
 ---
-<<declare $r1_dinner_notes = "">>
 <<declare $r1_dishes_started = false>>
 <<declare $r1_dishes_turn = "">>
-// The start node of chapter R1Thu1, started by going to bed on Sunday (bed_3b.yarn).
-// Thursday evening on the landing. The socks he wore on Sunday are back in the drawers.
-<<set $chapter to "R1Thu1">>
+<<declare $r1_dinner_shelf = false>>
+// The entry node of box R1Dinner1, started by going to bed on Sunday (bed_3b.yarn).
+// Thursday evening on the landing. What the box owns is reset here: the dishes, the
+// shelf's word, and where the socks are (nobody remembers Sunday).
+<<enter_box R1Dinner1>>
+<<set $r1_dishes_started to false>>
+<<set $r1_dishes_turn to "">>
+<<set $r1_dinner_shelf to false>>
+<<set $r1_socks_at to "">>
 <<fade_out>>
-<<if $r1_socks_at == "feet">>
-    <<set $r1_socks_at to "drawers">>
-<<endif>>
 <<place Player PlayerArrive>>
 <<face Player right>>
 <<card "Thursday. Eight o'clock.">>
@@ -36,13 +38,6 @@ tags: cutscene
 {$samantha_name}: Come in. You know the rule.
 You: Shoes off.
 {$samantha_name}: Good.
-<<if $r1_croissant_socks == "yes">>
-    {$samantha_name}: Blush again. You're making a habit of it.
-<<elseif $r1_croissant_socks == "wash">>
-    {$samantha_name}: Grey. Still in the wash, I suppose.
-<<else>>
-    {$samantha_name}: Still not wearing them. I noticed. I notice everything.
-<<endif>>
 // She goes back to her stove; he follows her in.
 <<walk Samantha SamanthaToKitchen3A no_wait>>
 <<walk Player PlayerInto3A>>
@@ -52,7 +47,7 @@ You: Shoes off.
 <<face Player Samantha>>
 {$samantha_name}: Five minutes. Look around if you want.
 {$samantha_name}: Don't touch the knives. Sit down when you're ready.
-<<set $gate_r1_thu1_door to true>>
+<<done R1Dinner1 door>>
 <<note r1_thu1 "Dinner at hers. Sit at her table.">>
 // The player now walks around her flat. Sitting at the table starts Route1Dinner (table_3a.yarn).
 ===
@@ -68,7 +63,7 @@ tags: cutscene
 You: It smells great.
 {$samantha_name}: I know.
 {$samantha_name}: I study people, you know. It's practically my job.
-<<if $r1_dinner_notes == "peeked">>
+<<if is_done("R1Dinner1", "peek")>>
     // PLACEHOLDER lines: he looked at her notebook before she showed it.
     {$samantha_name}: And you already had your hand on my notebook. So you know there's a page about you.
     You: I didn't read it.
@@ -84,7 +79,7 @@ You: ...Maybe.
 {$samantha_name}: Anyway. I cooked, so you wash up.
 You: Is that a rule too?
 {$samantha_name}: It is now. The sink's over there. Take your time. I like to watch.
-<<set $gate_r1_thu1_sit to true>>
+<<done R1Dinner1 dinner>>
 <<note r1_thu1 "Wash up. Her sink.">>
 // The player walks to the sink himself. Using it starts Route1Dishes (sink_3a.yarn).
 ===
@@ -126,7 +121,7 @@ You: And if I'm busy?
 <<face Player Samantha>>
 {$samantha_name}: Goodnight, neighbour.
 <<close_door Door3A>>
-<<set $gate_r1_thu1_dishes to true>>
+<<done R1Dinner1 dishes>>
 <<note r1_thu1 "Home. Bed.">>
 ===
 title: PhoneThursday1
@@ -141,7 +136,8 @@ tags: phone
     {$samantha_name}: Good.
 -> What's wrong with the gold label?
     {$samantha_name}: It tries too hard.
-<<set $gate_r1_thu1_text to true>>
+<<done R1Dinner1 text>>
+<<done R1Dinner1 wine>>
 <<note r1_thu1 "Dinner at hers. 3A, eight. Bring nothing.">>
 <<note r1_wine "She drinks Red Fox. The 2021, not the gold label.">>
 ===

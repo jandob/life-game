@@ -1,27 +1,32 @@
-//! Start points: launch the game at a point in the story, with the story state as if
-//! the earlier chapters had been played, so a scene can be tested without a playthrough.
+//! Start points: launch the game at a point in the story, so a scene can be tested without a
+//! playthrough.
 //!
-//! - Native: `cargo run -- --start r1thu2`, `cargo run -- --start list`
-//! - Web: `index.html?start=r1thu2`
+//! - Native: `cargo run -- --start r1dinner2`, `cargo run -- --start list`
+//! - Web: `index.html?start=r1dinner2`
 //!
 //! `--set NAME=VALUE` (web: `&set=NAME=VALUE`) overrides a Yarn variable afterwards,
-//! e.g. a gate inside a chapter. See `docs/start-points.md`.
+//! e.g. a flavour variable of a box. See `docs/start-points.md`.
 //!
-//! The story chart's walker (`chart.rs`) finds the shortest way to the point, chapter by
-//! chapter, and plays it without showing it. That sets every variable, text and note as
-//! real play would. Of its commands only the end state of the world is replayed: actors
-//! placed where their walks end, faced, shown or hidden, doors opened or closed, the
-//! screen left black or clear.
+//! A start point is a box of the story graph (`graph.rs`). Every box starts the same way,
+//! so the game sets what earlier boxes leave behind (Samantha's name) and plays the box's
+//! entry node, which enters the box.
+//!
+//! A point inside a box also lists steps. The walker (`walker.rs`) finds the shortest way
+//! from the entry to a state where they are done and plays it without showing it. That
+//! sets every variable, text and note as real play would. Of its commands only the end
+//! state of the world is replayed: actors placed where their walks end, faced, shown or
+//! hidden, doors opened or closed, the screen left black or clear.
 
 use bevy::prelude::*;
 use bevy_yarnspinner::default_impl::MemoryVariableStorage;
 use bevy_yarnspinner::prelude::*;
 
-use super::chart::{self, Walker, WorldCommand};
+use super::graph::Graph;
 use super::inventory::ItemsSeen;
 use super::phone::Phone;
 use super::scripted::{face_command, hide_command, show_command, Actor, ScriptedWalk};
 use super::transition::{place_command, QueuedScene, ScreenFade};
+use super::walker::{State, Walker, WorldCommand};
 use super::StoryVars;
 use crate::player::Player;
 use crate::world::map::doors::{close_door_command, open_door_command};
@@ -32,77 +37,105 @@ use crate::GameState;
 pub struct StartPoint {
     pub name: &'static str,
     pub about: &'static str,
-    pub begin: Begin,
+    /// The box of the story graph. Its entry node is played.
+    pub box_id: &'static str,
+    /// Steps of the box that are done first: the point is inside the box.
+    pub steps: &'static [&'static str],
 }
 
-pub enum Begin {
-    /// The start of a chapter of the chart (`$chapter`), its start node played.
-    Chapter(&'static str),
-    /// Inside a chapter: the first point where this gate is done.
-    Gate(&'static str),
-}
-
-/// Every start point, in story order: one per chapter, and points inside chapters
+/// Every start point, in story order: one per box with a scene, and points inside boxes
 /// where they help.
 pub const START_POINTS: &[StartPoint] = &[
     StartPoint {
         name: "r1viewing",
         about: "Saturday: the viewing of 3B (knock on 3B)",
-        begin: Begin::Chapter("R1Viewing"),
+        box_id: "R1Viewing",
+        steps: &[],
     },
     StartPoint {
         name: "r1viewing3b",
         about: "The viewing, inside 3B: the window, the kitchen and the bath",
-        begin: Begin::Gate("r1_view_knock"),
+        box_id: "R1Viewing",
+        steps: &["knock"],
     },
     StartPoint {
         name: "r1movein",
         about: "Moving day: keys, the box, the socks and her rules",
-        begin: Begin::Chapter("R1MoveIn"),
+        box_id: "R1MoveIn",
+        steps: &[],
     },
     StartPoint {
-        name: "r1sunday",
+        name: "r1breakfast",
         about: "Sunday morning: her text and the croissant at her door",
-        begin: Begin::Chapter("R1Sunday"),
+        box_id: "R1Breakfast",
+        steps: &[],
     },
     StartPoint {
-        name: "r1thu1",
+        name: "r1dinner1",
         about: "The first Thursday: her text, dinner at hers at eight",
-        begin: Begin::Chapter("R1Thu1"),
+        box_id: "R1Dinner1",
+        steps: &[],
     },
     StartPoint {
-        name: "r1thu1dishes",
+        name: "r1dinner1dishes",
         about: "The first Thursday after dinner: wash up at her sink",
-        begin: Begin::Gate("r1_thu1_sit"),
+        box_id: "R1Dinner1",
+        steps: &["dinner"],
     },
     StartPoint {
-        name: "r1thu2",
+        name: "r1dinner2",
         about: "The second Thursday on the landing, her riddle unread",
-        begin: Begin::Chapter("R1Thu2"),
+        box_id: "R1Dinner2",
+        steps: &[],
     },
     StartPoint {
-        name: "r1thu2door",
-        about: "The second Thursday at her open door: give her things, shoes off",
-        begin: Begin::Gate("r1_thu2_door"),
+        name: "r1dinner2door",
+        about: "The second Thursday inside her door, shoes off: the corkscrew, the notebook",
+        box_id: "R1Dinner2",
+        steps: &["door"],
     },
     StartPoint {
-        name: "r1thu2dinner",
+        name: "r1dinner2dinner",
         about: "The second Thursday, the wine open: sit down for the dinner",
-        begin: Begin::Gate("r1_thu2_open"),
+        box_id: "R1Dinner2",
+        steps: &["open"],
     },
     StartPoint {
-        name: "r1thu2night",
+        name: "r1dinner2night",
         about: "The second Thursday, home in 3B: her night text unread, then bed",
-        begin: Begin::Gate("r1_thu2_stand"),
+        box_id: "R1Dinner2",
+        steps: &["wait"],
+    },
+    StartPoint {
+        name: "r1retry",
+        about: "The evening after she sent him home: her text, then her door again",
+        box_id: "R1Dinner2Retry",
+        steps: &[],
+    },
+    StartPoint {
+        name: "r1knock",
+        about: "Late at night in 3B: the knock",
+        box_id: "R1Knock",
+        steps: &[],
+    },
+    StartPoint {
+        name: "r1notebook",
+        about: "Evening in 3B: her notebook on the kitchenette counter",
+        box_id: "R1Notebook",
+        steps: &[],
     },
 ];
 
-impl Begin {
-    fn reached(&self, state: &chart::State) -> bool {
-        match self {
-            Begin::Chapter(chapter) => state.chapter() == *chapter,
-            Begin::Gate(gate) => state.gate(gate),
-        }
+/// What the earlier boxes leave behind that a box's entry node does not set: after the
+/// viewing she has told him her name.
+pub fn base_vars(box_id: &str) -> Vec<(String, YarnValue)> {
+    if box_id == "R1Viewing" {
+        Vec::new()
+    } else {
+        vec![(
+            "$samantha_name".to_string(),
+            YarnValue::String("Samantha".to_string()),
+        )]
     }
 }
 
@@ -361,29 +394,47 @@ fn hotspot_nodes(map: &TiledMap) -> Vec<String> {
         .collect()
 }
 
-/// Walks to the requested start point once the world is spawned and replays its end
-/// state. Runs once: returning to the menu later plays normally.
+/// Starts the requested point once the world is spawned. Runs once: returning to the menu
+/// later plays normally. A point at the start of a box queues its entry node. A point inside
+/// a box walks to its steps and replays the end state.
 fn apply_start_point(world: &mut World) {
     let Some(request) = world.remove_resource::<StartRequest>() else {
         return;
     };
-    let hotspots = hotspot_nodes(world.resource::<TiledMap>());
-    let project = world.resource::<YarnProject>();
-    let walked = Walker::new(project, &hotspots).and_then(|mut walker| {
-        let path = walker.path_to(|state| request.point.begin.reached(state))?;
-        walker.replay(&path)
-    });
-    let (state, commands) = match walked {
-        Ok(walked) => walked,
-        Err(err) => {
-            error!("Start point '{}': {err}", request.point.name);
-            return;
-        }
+    let point = request.point;
+    let graph = world.resource::<Graph>().clone();
+    let Some(entry) = graph.0.find(point.box_id).and_then(|b| b.entry.clone()) else {
+        error!(
+            "Start point '{}': box {} has no scene",
+            point.name, point.box_id
+        );
+        return;
     };
     let mut storage = world.resource::<StoryVars>().0.clone();
-    if let Err(err) = storage.extend(state.vars.into_iter().collect()) {
-        error!("Start point '{}': {err}", request.point.name);
+    let base = State::with_vars(base_vars(point.box_id));
+    let mut commands = Vec::new();
+    let mut state = base.clone();
+    if point.steps.is_empty() {
+        world.resource_mut::<QueuedScene>().0 = Some(entry);
+    } else {
+        let hotspots = hotspot_nodes(world.resource::<TiledMap>());
+        let project = world.resource::<YarnProject>();
+        let walked = Walker::new(project, &hotspots, &graph).and_then(|mut walker| {
+            let path = walker.path_in_box(&base, point.box_id, point.steps)?;
+            walker.replay_from(base, &path)
+        });
+        match walked {
+            Ok(walked) => (state, commands) = walked,
+            Err(err) => {
+                error!("Start point '{}': {err}", point.name);
+                return;
+            }
+        }
     }
+    if let Err(err) = storage.extend(state.vars.into_iter().collect()) {
+        error!("Start point '{}': {err}", point.name);
+    }
+    let project = world.resource::<YarnProject>();
     for (name, value) in &request.sets {
         if let Err(err) = set_variable(project, &mut storage, name, value) {
             error!("--set {name}={value}: {err}");
@@ -401,11 +452,14 @@ fn apply_start_point(world: &mut World) {
     world.resource_mut::<ItemsSeen>().rebaseline(&storage);
 }
 
-/// A new game starts with the first chapter's start node, unless a start point takes
-/// over.
-fn start_new_game(mut queued: ResMut<QueuedScene>, request: Option<Res<StartRequest>>) {
+/// A new game starts with the first box's entry node, unless a start point takes over.
+fn start_new_game(
+    mut queued: ResMut<QueuedScene>,
+    request: Option<Res<StartRequest>>,
+    graph: Res<Graph>,
+) {
     if request.is_none() {
-        queued.0 = Some(chart::FIRST_NODE.to_string());
+        queued.0 = graph.0.boxes.iter().find_map(|b| b.entry.clone());
     }
 }
 
@@ -435,44 +489,63 @@ impl Plugin for StartPointPlugin {
 mod tests {
     use super::*;
 
-    use crate::story::chart::tests::route1_hotspots;
     use crate::story::load_real_project;
+    use crate::story::walker::tests::route1_hotspots;
 
     fn get(storage: &MemoryVariableStorage, name: &str) -> String {
         storage.get(name).map(|v| v.to_string()).unwrap_or_default()
     }
 
+    fn walker(app: &App) -> Walker {
+        let project = app.world().resource::<YarnProject>();
+        Walker::new(project, &route1_hotspots(), &Graph::route1()).unwrap()
+    }
+
     #[test]
     fn every_start_point_is_reached() {
         let app = load_real_project();
-        let project = app.world().resource::<YarnProject>();
-        let mut walker = Walker::new(project, &route1_hotspots()).unwrap();
+        let mut walker = walker(&app);
+        let graph = Graph::route1();
         let mut names = std::collections::HashSet::new();
         for point in START_POINTS {
             assert!(names.insert(point.name), "'{}' twice", point.name);
             assert_ne!(point.name, "list", "'list' lists the start points");
+            let b = graph.0.find(point.box_id).unwrap();
+            assert!(b.entry.is_some(), "{}: box without a scene", point.name);
+            for step in point.steps {
+                assert!(b.has_step(step), "{}: unknown step {step}", point.name);
+            }
+            let base = State::with_vars(base_vars(point.box_id));
             let path = walker
-                .path_to(|state| point.begin.reached(state))
+                .path_in_box(&base, point.box_id, point.steps)
                 .unwrap_or_else(|err| panic!("{}: {err}", point.name));
-            let (state, _) = walker.replay(&path).unwrap();
-            assert!(point.begin.reached(&state), "{}", point.name);
+            let (state, _) = walker.replay_from(base, &path).unwrap();
+            assert_eq!(state.box_id(), point.box_id, "{}", point.name);
+            for step in point.steps {
+                assert!(state.step(point.box_id, step), "{}: {step}", point.name);
+            }
+        }
+        // A start point for every box with a scene.
+        for b in graph.0.boxes.iter().filter(|b| b.entry.is_some()) {
+            assert!(
+                START_POINTS
+                    .iter()
+                    .any(|p| p.box_id == b.id && p.steps.is_empty()),
+                "no start point for {}",
+                b.id
+            );
         }
     }
 
     #[test]
-    fn the_second_thursday_starts_with_her_riddle_unread() {
+    fn the_second_dinner_starts_with_her_riddle_unread() {
         let app = load_real_project();
-        let project = app.world().resource::<YarnProject>();
-        let mut walker = Walker::new(project, &route1_hotspots()).unwrap();
-        let point = find("r1thu2").unwrap();
-        let path = walker.path_to(|s| point.begin.reached(s)).unwrap();
-        let (state, commands) = walker.replay(&path).unwrap();
+        let mut walker = walker(&app);
+        let base = State::with_vars(base_vars("R1Dinner2"));
+        let (_, state, commands) = walker.enter(&base, "R1Dinner2").unwrap();
         assert_eq!(state.unread, ["PhoneThursday2"]);
-        assert!(state.gate("r1_thu1_bed") && !state.gate("r1_thu2_text"));
-        // Every earlier bottleneck is done.
-        for gate in ["r1_view_end", "r1_move_bed", "r1_sun_bed"] {
-            assert!(state.gate(gate), "{gate}");
-        }
+        assert_eq!(state.box_id(), "R1Dinner2");
+        assert!(!state.step("R1Dinner2", "text"));
         // The landing, the screen clear again.
         let place = commands.iter().rposition(|(n, _)| n == "place").unwrap();
         assert_eq!(commands[place].1, ["Player", "PlayerFromShop"]);
@@ -481,14 +554,28 @@ mod tests {
     }
 
     #[test]
+    fn a_point_inside_a_box_does_its_steps_first() {
+        let app = load_real_project();
+        let mut walker = walker(&app);
+        let point = find("r1dinner2night").unwrap();
+        let base = State::with_vars(base_vars(point.box_id));
+        let path = walker
+            .path_in_box(&base, point.box_id, point.steps)
+            .unwrap();
+        let (state, _) = walker.replay_from(base, &path).unwrap();
+        assert_eq!(state.unread, ["PhoneThursday2Night"]);
+        assert!(state.step("R1Dinner2", "dinner") && !state.step("R1Dinner2", "night"));
+    }
+
+    #[test]
     fn set_variable_keeps_the_declared_type() {
         let app = load_real_project();
         let project = app.world().resource::<YarnProject>();
         let mut storage = MemoryVariableStorage::new();
-        set_variable(project, &mut storage, "r1_movein_socks", "refuse").unwrap();
-        assert_eq!(get(&storage, "$r1_movein_socks"), "refuse");
-        set_variable(project, &mut storage, "$gate_r1_thu2_wine", "true").unwrap();
-        assert_eq!(get(&storage, "$gate_r1_thu2_wine"), "true");
+        set_variable(project, &mut storage, "r1_dishes_turn", "stay").unwrap();
+        assert_eq!(get(&storage, "$r1_dishes_turn"), "stay");
+        set_variable(project, &mut storage, "$r1_thu2_knocked", "true").unwrap();
+        assert_eq!(get(&storage, "$r1_thu2_knocked"), "true");
         assert!(set_variable(project, &mut storage, "no_such_variable", "x").is_err());
     }
 
@@ -496,23 +583,23 @@ mod tests {
     fn launch_options_from_args_and_query() {
         let args = |a: &[&str]| LaunchOptions::from_args(a.iter().map(|s| s.to_string()));
         let expected = LaunchOptions {
-            start: Some("movein".to_string()),
-            sets: vec![("r1_viewing_why".to_string(), "money".to_string())],
+            start: Some("r1movein".to_string()),
+            sets: vec![("r1_dishes_turn".to_string(), "stay".to_string())],
         };
         assert_eq!(
-            args(&["--start", "movein", "--set", "r1_viewing_why=money"]),
+            args(&["--start", "r1movein", "--set", "r1_dishes_turn=stay"]),
             expected
         );
         assert_eq!(
-            args(&["--start=movein", "--other", "--set=r1_viewing_why=money"]),
+            args(&["--start=r1movein", "--other", "--set=r1_dishes_turn=stay"]),
             expected
         );
         assert_eq!(
-            LaunchOptions::from_query("?start=movein&set=r1_viewing_why%3Dmoney&x=1"),
+            LaunchOptions::from_query("?start=r1movein&set=r1_dishes_turn%3Dstay&x=1"),
             expected
         );
         assert_eq!(
-            LaunchOptions::from_query("?start=movein&set=r1_viewing_why=money"),
+            LaunchOptions::from_query("?start=r1movein&set=r1_dishes_turn=stay"),
             expected
         );
         assert_eq!(LaunchOptions::from_query(""), LaunchOptions::default());

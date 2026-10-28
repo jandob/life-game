@@ -4,6 +4,6 @@ title: ShopChocolates
 // The shop is open on the second Thursday only, between her text and her door.
 -> Look
     You: Milk, dark, and a dark one with sea salt that costs twice as much.
--> Take the sea salt one <<if $chapter == "R1Thu2" and $gate_r1_thu2_text and not $gate_r1_thu2_door and not $item_chocolates>>
+-> Take the sea salt one <<if in_box("R1Dinner2") and is_done("R1Dinner2", "text") and not $r1_thu2_knocked and not $item_chocolates>>
     <<set $item_chocolates to true>>
 ===

@@ -1,0 +1,166 @@
+title: GraphR1Viewing
+tags: graph
+---
+// The story graph of route 1 as puzzle chapters (openspec/changes/story-graph). Graph
+// nodes are data and never run. The game reads this file (src/story/graph.rs) and plays
+// by it; dialogue_graph draws graphs/story_route1.dot and one graphs/box_<ID>.dot per box.
+//   <<box ID "LABEL" [kind=chapter|hub|side|retry|stub] [goal=...] [parent=BOX] [entry=NODE]>>
+//                                               entry: the Yarn node that enters the box. It runs
+//                                               <<enter_box ID>>. A box without a scene has none
+//   <<gate ID "LABEL" [detail=...] REQ...>>     a step or puzzle the player does
+//   <<item ID "LABEL" REQ...>>                  an item the player gets
+//   <<clue ID "LABEL" REQ...>>                  something learned; later boxes need it as BOX.ID
+//   <<choice ID "LABEL" REQ...>> and <<option CHOICE ID "LABEL">>
+//   <<exit ID "LABEL" REQ... to=BOX>>           a door out of the box
+//   <<done BOX ID>>                             in a scene (not here): it performs that step, so the
+//                                               graph draws it as written. ID: a gate, item, clue, option or exit id.
+//                                               Doing an exit enters the box it leads to (its entry node runs)
+// Scenes ask the graph with can("BOX", "ID") (BOX is the current box, the step is not done and
+// its requirements hold; for an option also: no option of its choice is done) and
+// is_done("BOX", "ID").
+// A REQ is a node id (all needed), a|b (any one), choice=option, or BOX.clue: a clue
+// from an earlier box. The player remembers it and the game never stores it, so it is
+// a hint drawn in the diagrams, not a requirement the checks enforce. A node with no
+// requirement in its own box follows the box's entry.
+<<box R1Viewing "The viewing" goal="Get the flat" entry=Route1Start>>
+<<gate knock "Knock on 3B: she shows him in">>
+<<clue father "Her father owns the house" knock>>
+<<gate window "Look at the window" knock>>
+<<gate kitchen "Look at the kitchenette" knock>>
+<<gate bath "Look at the bathroom" knock>>
+<<exit flat "Tell her he's seen enough" window kitchen bath to=R1MoveIn>>
+===
+title: GraphR1MoveIn
+tags: graph
+---
+<<box R1MoveIn "Moving in" goal="Get your keys and move in" entry=Route1MoveInStart>>
+<<gate keys "Knock on 3A: the keys">>
+<<item socks "Blush socks" keys>>
+<<clue ask "“I'll ask” about the socks" keys>>
+<<clue spare "She keeps the spare key" keys>>
+<<gate carry "Carry his box up" keys>>
+<<gate stow "Put the socks somewhere" detail="the drawers, or back in the box" carry socks>>
+<<gate rules "Answer her knock: her rules" carry>>
+<<clue shoes "Her rule: shoes off at her door" rules>>
+<<clue answer "Her rule: if she knocks, he answers" rules>>
+<<exit bed "Go to bed" stow rules to=R1Breakfast>>
+===
+title: GraphR1Breakfast
+tags: graph
+---
+<<box R1Breakfast "Breakfast" goal="Bring her breakfast" entry=Route1SundayStart>>
+<<gate text "Read her text">>
+<<item bag "Bakery bag, back from the bakery">>
+<<gate wear "Put the blush socks on" detail="she said she'd ask" R1MoveIn.ask>>
+<<gate door "Knock on 3A with the bakery bag" detail="are you wearing them?" text bag R1MoveIn.shoes>>
+<<exit bed "Go back to bed" door to=R1Free1>>
+===
+title: GraphR1Free1
+tags: graph
+---
+<<box R1Free1 "Free time" kind=hub goal="Optional side puzzles">>
+<<exit shop "Go to the shop" to=R1SideShop>>
+<<exit wander "Walk through the city" to=R1SideWanderer>>
+<<exit on "Wait for her text" to=R1Dinner1>>
+===
+title: GraphR1SideShop
+tags: graph
+---
+<<box R1SideShop "Side: the shop" kind=side parent=R1Free1>>
+<<gate shelves "Look around the shop">>
+<<exit back "Home" shelves to=R1Free1>>
+===
+title: GraphR1SideWanderer
+tags: graph
+---
+<<box R1SideWanderer "Side: the wanderer" kind=side parent=R1Free1>>
+<<gate meet "A stranger on the street">>
+<<exit back "Home" meet to=R1Free1>>
+===
+title: GraphR1Dinner1
+tags: graph
+---
+<<box R1Dinner1 "First dinner" goal="Be at her door at eight" entry=Route1Thu1Start>>
+<<gate text "Read her text: eight, and the wine she drinks">>
+<<clue wine "She drinks Red Fox" text>>
+<<gate door "Knock on 3A" text R1MoveIn.shoes>>
+<<gate peek "Glance at her notebook" door>>
+<<clue notes "She writes about him" peek>>
+<<gate dinner "Sit at her table: the dinner" door>>
+<<gate dishes "Wash up: the dishes" dinner>>
+<<exit bed "Go to bed" dishes to=R1Dinner2>>
+===
+title: GraphR1Dinner2
+tags: graph
+---
+<<box R1Dinner2 "Second dinner" goal="“Bring what I'd want”" entry=Route1Thu2Start>>
+<<gate text "Her text: “Bring what I'd want”">>
+<<gate which "Which bottle?" detail="three Red Fox wines; her recycling bin shows the empty 2021" text R1Dinner1.wine>>
+<<item fox "Red Fox 2021" which>>
+<<gate find "Where are the socks?" detail="not in the drawer: on the drying rack" text R1MoveIn.ask>>
+<<item socks "Blush socks, on" find>>
+<<gate door "Get in the door" detail="knock with the wine; the socks on is what she really wanted" fox R1MoveIn.shoes>>
+<<gate notebook "Open her notebook" door>>
+<<clue pages "He's on four of her pages" notebook>>
+<<gate sink "Find the corkscrew" detail="in her sink, under the cups" door>>
+<<item corkscrew "Corkscrew" sink>>
+<<gate open "Open the wine" corkscrew>>
+<<gate dinner "Dinner" open>>
+<<choice still "At her door" dinner>>
+<<option still wait "Stand still">>
+<<option still reach "Reach for her">>
+<<gate night "Answer her night text" still=wait>>
+<<exit knock "Go to bed" night to=R1Knock>>
+<<exit retry "She closes the door" still=reach to=R1Dinner2Retry>>
+===
+title: GraphR1Dinner2Retry
+tags: graph
+---
+<<box R1Dinner2Retry "Try again" kind=retry goal="“Tonight. Same time.”" entry=Route1RetryStart>>
+<<gate text "Her text: “Tonight. Same time.”">>
+<<gate door "Knock on 3A" text>>
+<<choice still "At her door" door>>
+<<option still wait "Stand still">>
+<<option still reach "Reach for her">>
+<<exit knock "Stood still" still=wait to=R1Knock>>
+<<exit again "Reached again" still=reach to=R1Dinner2Retry>>
+===
+title: GraphR1Knock
+tags: graph
+---
+<<box R1Knock "The knock" goal="Answer when she knocks" entry=Route1KnockStart>>
+<<gate late "Late at night: a knock on 3B">>
+<<gate open "Open the door, as the rule says" late R1MoveIn.answer>>
+<<gate wait "She tells him to wait" detail="reaching for her only gets “Wait.”; the puzzle is to hold still" open>>
+<<gate morning "Morning: “You're my boyfriend now. I decided.”" wait>>
+<<exit on "Go to work" morning to=R1Free2>>
+===
+title: GraphR1Free2
+tags: graph
+---
+<<box R1Free2 "Free time" kind=hub goal="Optional side puzzles">>
+<<exit walk "Walk through the city" to=R1SideWalk>>
+<<exit on "Come home" to=R1Notebook>>
+===
+title: GraphR1SideWalk
+tags: graph
+---
+<<box R1SideWalk "Side: a walk" kind=side parent=R1Free2>>
+<<gate walk "Walk through the city">>
+<<exit back "Home" walk to=R1Free2>>
+===
+title: GraphR1Notebook
+tags: graph
+---
+<<box R1Notebook "The notebook" goal="Find out what she writes about you" entry=Route1NotebookStart>>
+<<gate left "Her notebook, left on his table">>
+<<gate read "Read the pages about him" left R1Dinner1.notes|R1Dinner2.pages>>
+<<gate ask "Ask her about it" read>>
+<<gate limits "Talk through his limits" detail="she leads; limits first" ask>>
+<<exit on "Her notes, one line longer" limits to=R1HerWorld>>
+===
+title: GraphR1HerWorld
+tags: graph
+---
+<<box R1HerWorld "Her world" kind=stub goal="Pass her friends' night out">>
+===

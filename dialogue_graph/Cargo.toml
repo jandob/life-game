@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+story_graph = { path = "../story_graph" }
 petgraph = "0.6.5"
 petgraph-evcxr = "0.2.0"
 

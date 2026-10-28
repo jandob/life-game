@@ -1,29 +1,17 @@
 title: Box3B
 ---
 // Talk target of his moving box in 3B (Hotspots layer). See drawers_3b.yarn.
--> Leave the blush socks in the box <<if $chapter == "R1MoveIn" and $gate_r1_move_box and $item_blush_socks>>
+-> Leave the blush socks in the box <<if can("R1MoveIn", "stow") and $item_blush_socks>>
     <<set $item_blush_socks to false>>
-    <<set $r1_socks_at to "box">>
-    <<set $r1_movein_socks to "refuse">>
-    <<set $gate_r1_move_socks to true>>
+    <<done R1MoveIn stow>>
     You: Under the cables. Where I won't see them.
-    <<if $gate_r1_move_rules>>
+    <<if is_done("R1MoveIn", "rules")>>
         <<note r1_move "Unpacked. Bed.">>
     <<else>>
         <<note r1_move "Answer the door.">>
     <<endif>>
--> Put the blush socks on <<if (($chapter == "R1Sunday" and not $gate_r1_sun_croissant) or ($chapter == "R1Thu2" and not $gate_r1_thu2_door)) and $r1_socks_at == "box">>
-    <<set $r1_socks_at to "feet">>
-    You: Fine. Blush.
--> Take the blush socks <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $r1_socks_at == "box">>
-    <<set $r1_socks_at to "">>
-    <<set $item_blush_socks to true>>
 -> Look
-    <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $r1_socks_at == "box">>
-        You: Under the cables. Where I put them so I'd stop seeing them.
-        <<set $r1_thu2_socks_noted to true>>
-        <<note thu2_socks "The socks?">>
-    <<elseif $chapter == "R1Viewing">>
+    <<if in_box("R1Viewing")>>
         You: The last tenant's boxes. Or the next one's.
     <<else>>
         You: Cables. Chargers for phones I don't own anymore.

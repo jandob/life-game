@@ -1,55 +1,73 @@
 title: Bed3B
 ---
-// Talk target of his bed in 3B (Hotspots layer). Going to sleep is the bottleneck of most
-// chapters: it starts the next chapter once the chapter's gates are done, and says it is
-// too early before that.
--> Go to sleep <<if $chapter != "R1Viewing">>
-    <<if $chapter == "R1MoveIn">>
-        <<if $gate_r1_move_socks and $gate_r1_move_rules>>
-            <<set $gate_r1_move_bed to true>>
-            <<note_done r1_move>>
-            <<next_scene Route1SundayStart>>
-        <<elseif not $gate_r1_move_box>>
+// Talk target of his bed in 3B (Hotspots layer). Going to sleep is the exit of most boxes:
+// it ends the box once its steps are done, and says it is too early before that. The
+// exit enters the next box (the entry node runs). The breakfast leads to free time, a hub
+// without a scene, so its bed starts the next box with a scene itself. So does the way
+// out of the knock (door_3b_inside.yarn) and the last bed, which ends the demo.
+-> Go to sleep <<if not in_box("R1Viewing")>>
+    <<if can("R1MoveIn", "bed")>>
+        <<note_done r1_move>>
+        <<done R1MoveIn bed>>
+    <<elseif in_box("R1MoveIn")>>
+        <<if not is_done("R1MoveIn", "carry")>>
             You: My box is still at the bottom of the stairs. Not yet.
         <<elseif $item_blush_socks>>
             You: Not with a pair of pink socks in my hand. They need a place.
         <<else>>
             You: Someone's at my door.
         <<endif>>
-    <<elseif $chapter == "R1Sunday">>
-        <<if $gate_r1_sun_croissant>>
-            <<set $gate_r1_sun_bed to true>>
-            <<note_done r1_sun>>
-            <<next_scene Route1Thu1Start>>
-        <<elseif not $gate_r1_sun_text>>
+    <<elseif can("R1Breakfast", "bed")>>
+        <<note_done r1_sun>>
+        <<done R1Breakfast bed>>
+        <<next_scene Route1Thu1Start>>
+    <<elseif in_box("R1Breakfast")>>
+        <<if not is_done("R1Breakfast", "text")>>
             You: My phone's buzzing. Sleep can wait.
         <<else>>
             You: Her croissant first. It's getting cold.
         <<endif>>
-    <<elseif $chapter == "R1Thu1">>
-        <<if $gate_r1_thu1_dishes>>
-            <<set $gate_r1_thu1_bed to true>>
-            <<note_done r1_thu1>>
-            <<next_scene Route1Thu2Start>>
-        <<else>>
-            You: It's not even eight. Dinner at hers first.
-        <<endif>>
-    <<elseif $chapter == "R1Thu2">>
-        <<if $gate_r1_thu2_night>>
-            <<set $gate_r1_thu2_bed to true>>
-            <<next_scene Route1Thu2End>>
-        <<elseif $gate_r1_thu2_stand>>
+    <<elseif can("R1Dinner1", "bed")>>
+        <<note_done r1_thu1>>
+        <<done R1Dinner1 bed>>
+    <<elseif in_box("R1Dinner1")>>
+        You: It's not even eight. Dinner at hers first.
+    <<elseif can("R1Dinner2", "knock")>>
+        <<note_done thu3>>
+        <<done R1Dinner2 knock>>
+    <<elseif in_box("R1Dinner2")>>
+        <<if is_done("R1Dinner2", "wait")>>
             You: My phone first. It's been buzzing since I got in.
         <<else>>
             You: Not yet. Tonight's at hers.
         <<endif>>
+    <<elseif can("R1Dinner2Retry", "knock")>>
+        <<note_done r1_retry>>
+        <<done R1Dinner2Retry knock>>
+    <<elseif in_box("R1Dinner2Retry")>>
+        You: Not yet. Tonight's at hers.
+    <<elseif in_box("R1Knock")>>
+        <<if not is_done("R1Knock", "open")>>
+            You: Not now. She's knocking.
+        <<elseif not is_done("R1Knock", "morning")>>
+            You: Not now. She's here.
+        <<else>>
+            You: Work first. It's morning.
+        <<endif>>
+    <<elseif can("R1Notebook", "on")>>
+        <<note_done r1_nb>>
+        <<done R1Notebook on>>
+        <<next_scene Route1NotebookEnd>>
+    <<elseif in_box("R1Notebook")>>
+        You: Not yet. Her notebook first.
     <<endif>>
--> Put the blush socks on <<if $chapter == "R1Thu2" and not $gate_r1_thu2_door and $item_blush_socks>>
+-> Put the blush socks on <<if in_box("R1Dinner2") and not $r1_thu2_knocked and $item_blush_socks>>
     <<set $item_blush_socks to false>>
     <<set $r1_socks_at to "feet">>
+    <<done R1Dinner2 socks>>
     You: Fine. Blush.
 -> Look
-    <<if $chapter == "R1Viewing">>
+    <<if in_box("R1Viewing")>>
         {$samantha_name}: This is where the bed goes. There's a mattress, but no frame. The last tenant took it. Sentimental, I suppose.
     <<else>>
         You: My bed. A mattress on the floor, made for once.

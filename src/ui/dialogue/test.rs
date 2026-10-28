@@ -1,11 +1,9 @@
 //! Checks of the Yarn conventions in `assets/dialogue/*.yarn`.
 //! Subdirectories such as `assets/dialogue/forest/` (the retired story) are not checked.
 
-use std::{
-    collections::{HashMap, HashSet},
-    fs,
-};
+use std::{collections::HashSet, fs};
 
+use story_graph::{parse_command, BoxKind, GraphBox, NodeKind};
 use strsim::levenshtein;
 
 const PATH_TO_DIR: &str = "assets/dialogue";
@@ -13,7 +11,7 @@ const PATH_TO_DIR: &str = "assets/dialogue";
 const MAX_SIMILARITY_DISTANCE: usize = 4;
 
 /// Custom commands with their allowed number of arguments.
-const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 20] = [
+const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 26] = [
     ("stop_chat", 0..=0),
     ("end_demo", 0..=0),
     ("walk", 2..=3),
@@ -31,10 +29,18 @@ const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 20] = [
     ("phone", 1..=1),
     ("note", 2..=2),
     ("note_done", 1..=1),
-    // Chart data (story/chart.rs): only read, never run.
-    ("chapter", 2..=2),
+    // Story graph data (assets/dialogue/graph_*.yarn): never run, read by the game
+    // (story/graph.rs) and by dialogue_graph.
+    ("box", 2..=6),
     ("gate", 2..=20),
-    ("bottleneck", 2..=20),
+    ("item", 2..=20),
+    ("clue", 2..=20),
+    ("choice", 2..=20),
+    ("option", 3..=3),
+    ("exit", 3..=20),
+    // Scenes drive the story graph (story/graph.rs): a step is done, a box is entered.
+    ("done", 2..=2),
+    ("enter_box", 1..=1),
 ];
 
 /// Commands that Yarn Spinner itself provides.
@@ -68,32 +74,6 @@ where
             predicate(line, &file_name)
         }
     }
-}
-
-/// Command name and arguments of a `<<name arg "quoted arg">>` line. Like Yarn, a
-/// quoted argument may contain spaces and loses its quotes.
-fn parse_command(line: &str) -> Option<(String, Vec<String>)> {
-    let inner = line.strip_prefix("<<")?.strip_suffix(">>")?;
-    let mut words = Vec::new();
-    let mut current = String::new();
-    let mut quoted = false;
-    for c in inner.chars() {
-        match c {
-            '"' => quoted = !quoted,
-            c if c.is_whitespace() && !quoted => {
-                if !current.is_empty() {
-                    words.push(std::mem::take(&mut current));
-                }
-            }
-            c => current.push(c),
-        }
-    }
-    if !current.is_empty() {
-        words.push(current);
-    }
-    let mut words = words.into_iter();
-    let name = words.next()?;
-    Some((name, words.collect()))
 }
 
 /// The nodes of a file as (title, body lines after `---`).
@@ -274,13 +254,13 @@ fn validate_speaker_variables_declared() {
 /// A conversation with an NPC opens with the NPC's line, or with the actions at a talk
 /// target (options before any line, shown as a popup). Nodes without NPC lines are
 /// exempt: staging nodes that only run commands, and the player's own remarks at an
-/// object (an interactable such as a door). Chart nodes never run and are exempt too.
+/// object (an interactable such as a door). Graph nodes never run and are exempt too.
 #[test]
 fn validate_first_line_is_npc_line() {
-    let charts = chart_nodes();
+    let graphs = graph_nodes();
     for (file, contents) in yarn_files() {
         for (title, body) in nodes(&contents) {
-            if charts.contains(&title) {
+            if graphs.contains(&title) {
                 continue;
             }
             let is_dialogue = |line: &&&str| {
@@ -434,240 +414,21 @@ fn validate_items() {
     });
 }
 
-/// A gate of the story chart, as declared by `<<gate>>` or `<<bottleneck>>`.
-pub(crate) struct ChartGate {
-    pub id: String,
-    pub label: String,
-    pub requires: Vec<String>,
-}
-
-/// A chapter of the story chart: one chart node.
-pub(crate) struct ChartChapter {
-    pub id: String,
-    pub card: String,
-    pub gates: Vec<ChartGate>,
-    pub bottleneck: ChartGate,
-}
-
-/// The titles of nodes tagged `chart`.
-fn chart_nodes() -> HashSet<String> {
+/// The titles of nodes tagged `tag`.
+fn tagged_nodes(tag: &str) -> HashSet<String> {
     node_tags()
         .into_iter()
-        .filter(|(_, tags)| tags.iter().any(|t| t == crate::story::chart::CHART_TAG))
+        .filter(|(_, tags)| tags.iter().any(|t| t == tag))
         .map(|(title, _)| title)
         .collect()
 }
 
-/// The chapters of the story chart, in story order: chart files by name, chart nodes in
-/// file order.
-pub(crate) fn chart() -> Vec<ChartChapter> {
-    let charts = chart_nodes();
-    let mut files = yarn_files();
-    files.sort();
-    let mut chapters = Vec::new();
-    for (file, contents) in files {
-        for (title, body) in nodes(&contents) {
-            if !charts.contains(&title) {
-                continue;
-            }
-            let mut chapter = None;
-            let mut gates = Vec::new();
-            let mut bottleneck = None;
-            for line in body {
-                let Some((command, mut args)) = parse_command(line) else {
-                    continue;
-                };
-                if !matches!(command.as_str(), "chapter" | "gate" | "bottleneck") {
-                    continue;
-                }
-                let id = args.remove(0);
-                let label = args.remove(0);
-                match command.as_str() {
-                    "chapter" => chapter = Some((id, label)),
-                    "gate" => gates.push(ChartGate {
-                        id,
-                        label,
-                        requires: args,
-                    }),
-                    _ => {
-                        assert!(
-                            bottleneck.is_none(),
-                            "{title} in {file} has two bottlenecks"
-                        );
-                        bottleneck = Some(ChartGate {
-                            id,
-                            label,
-                            requires: args,
-                        });
-                    }
-                }
-            }
-            let (id, card) =
-                chapter.unwrap_or_else(|| panic!("{title} in {file} needs a <<chapter>>"));
-            let bottleneck =
-                bottleneck.unwrap_or_else(|| panic!("{title} in {file} needs a <<bottleneck>>"));
-            chapters.push(ChartChapter {
-                id,
-                card,
-                gates,
-                bottleneck,
-            });
-        }
-    }
-    chapters
+/// The titles of nodes tagged `graph`: story graph data, never run.
+fn graph_nodes() -> HashSet<String> {
+    tagged_nodes(crate::story::graph::GRAPH_TAG)
 }
 
-#[test]
-fn chart_is_well_formed() {
-    use crate::story::chart::{gate_variable, CHAPTER, FIRST_NODE};
-
-    let chapters = chart();
-    assert!(!chapters.is_empty(), "no chart nodes");
-    let files = yarn_files();
-    let charts = chart_nodes();
-    let lines: Vec<&str> = files
-        .iter()
-        .flat_map(|(_, contents)| contents.lines().map(str::trim))
-        .collect();
-    let declared = |name: &str| {
-        lines
-            .iter()
-            .any(|l| l.starts_with(&format!("<<declare {name} = ")))
-    };
-    // The non-chart nodes as (title, body).
-    let story: Vec<(String, Vec<&str>)> = files
-        .iter()
-        .flat_map(|(_, contents)| nodes(contents))
-        .filter(|(title, _)| !charts.contains(title))
-        .collect();
-    let sets = |body: &[&str], name: &str, value: &str| {
-        body.iter()
-            .any(|l| *l == format!("<<set {name} to {value}>>"))
-    };
-
-    // Gate id -> (chapter index, requires).
-    let mut gates: HashMap<&str, (usize, &[String])> = HashMap::new();
-    for (i, chapter) in chapters.iter().enumerate() {
-        for gate in chapter.gates.iter().chain([&chapter.bottleneck]) {
-            assert!(
-                gates
-                    .insert(&gate.id, (i, gate.requires.as_slice()))
-                    .is_none(),
-                "gate '{}' twice",
-                gate.id
-            );
-            assert!(!gate.label.is_empty(), "gate '{}' has no label", gate.id);
-        }
-        assert!(!chapter.card.is_empty(), "{} has no card", chapter.id);
-    }
-    assert!(declared(CHAPTER), "{CHAPTER} is not declared");
-
-    for (i, chapter) in chapters.iter().enumerate() {
-        for gate in chapter.gates.iter().chain([&chapter.bottleneck]) {
-            let variable = gate_variable(&gate.id);
-            assert!(
-                declared(&variable),
-                "gate '{}' needs <<declare {variable} = false>>",
-                gate.id
-            );
-            assert!(
-                story.iter().any(|(_, body)| sets(body, &variable, "true")),
-                "gate '{}' is never set: no <<set {variable} to true>>",
-                gate.id
-            );
-            for need in &gate.requires {
-                let Some(&(at, _)) = gates.get(need.as_str()) else {
-                    panic!("gate '{}' requires an unknown gate '{need}'", gate.id);
-                };
-                assert!(
-                    at <= i,
-                    "gate '{}' requires '{need}' of a later chapter",
-                    gate.id
-                );
-            }
-        }
-        // Every gate is required by the bottleneck, directly or not, and there are no
-        // cycles.
-        let mut needed = HashSet::new();
-        let mut path = Vec::new();
-        fn visit<'a>(
-            gate: &'a str,
-            gates: &HashMap<&'a str, (usize, &'a [String])>,
-            needed: &mut HashSet<&'a str>,
-            path: &mut Vec<&'a str>,
-        ) {
-            assert!(
-                !path.contains(&gate),
-                "the requirements form a cycle: {} -> {gate}",
-                path.join(" -> ")
-            );
-            if !needed.insert(gate) {
-                return;
-            }
-            path.push(gate);
-            for need in gates[gate].1 {
-                visit(need, gates, needed, path);
-            }
-            path.pop();
-        }
-        visit(&chapter.bottleneck.id, &gates, &mut needed, &mut path);
-        for gate in &chapter.gates {
-            assert!(
-                needed.contains(gate.id.as_str()),
-                "{}: gate '{}' is not required by the bottleneck '{}'",
-                chapter.id,
-                gate.id,
-                chapter.bottleneck.id
-            );
-        }
-
-        // Exactly one start node, which the bottleneck before starts.
-        let value = format!("\"{}\"", chapter.id);
-        let starts: Vec<&String> = story
-            .iter()
-            .filter(|(_, body)| sets(body, CHAPTER, &value))
-            .map(|(title, _)| title)
-            .collect();
-        assert_eq!(
-            starts.len(),
-            1,
-            "{} needs exactly one start node, found {starts:?}",
-            chapter.id
-        );
-        let start = starts[0];
-        if i == 0 {
-            assert_eq!(start, FIRST_NODE, "the game starts with the first chapter");
-        }
-        for (title, body) in &story {
-            if !body.contains(&format!("<<next_scene {start}>>").as_str()) {
-                continue;
-            }
-            let before = i.checked_sub(1).map(|b| &chapters[b].bottleneck.id);
-            assert!(
-                before.is_some_and(|b| sets(body, &gate_variable(b), "true")),
-                "{title} starts {start}, but only the bottleneck before it may"
-            );
-        }
-    }
-
-    // `$chapter` is a string: its values must be chapters.
-    let ids: HashSet<&str> = chapters.iter().map(|c| c.id.as_str()).collect();
-    for line in &lines {
-        let mut rest = *line;
-        while let Some(at) = rest.find("$chapter") {
-            rest = &rest[at + "$chapter".len()..];
-            let Some(quoted) = rest.split('"').nth(1).filter(|q| !q.is_empty()) else {
-                continue;
-            };
-            assert!(
-                ids.contains(quoted),
-                "'{line}' names an unknown chapter '{quoted}'"
-            );
-        }
-    }
-}
-
-/// Story conditions read the chart state (`$chapter`, gates), items and flags, never
+/// Story conditions read the story graph (`can()`, `is_done()`), items and flags, never
 /// `visited()`.
 #[test]
 fn story_conditions_do_not_read_visits() {
@@ -677,4 +438,308 @@ fn story_conditions_do_not_read_visits() {
             "{file} reads visited(): '{line}'"
         );
     });
+}
+
+/// The boxes of every `graph` node of every file, in file name order.
+fn graph_boxes() -> Vec<GraphBox> {
+    let mut files = yarn_files();
+    files.sort();
+    files
+        .iter()
+        .flat_map(|(_, contents)| story_graph::graph_boxes(contents))
+        .collect()
+}
+
+/// The scene nodes (not graph data) of every file as (file, title, body lines).
+fn scene_nodes() -> Vec<(String, String, Vec<String>)> {
+    let graphs = graph_nodes();
+    let mut scenes = Vec::new();
+    for (file, contents) in yarn_files() {
+        for (title, body) in nodes(&contents) {
+            if !graphs.contains(&title) {
+                let body = body.into_iter().map(str::to_string).collect();
+                scenes.push((file.clone(), title, body));
+            }
+        }
+    }
+    scenes
+}
+
+#[test]
+fn graph_is_well_formed() {
+    let boxes = graph_boxes();
+    assert!(!boxes.is_empty(), "no graph nodes");
+    let known: HashSet<&str> = boxes.iter().map(|b| b.id.as_str()).collect();
+    assert_eq!(known.len(), boxes.len(), "a box id is used twice");
+    let titles: HashSet<String> = yarn_files()
+        .iter()
+        .flat_map(|(_, contents)| nodes(contents))
+        .map(|(title, _)| title)
+        .collect();
+    let mut entries = HashSet::new();
+
+    for b in &boxes {
+        let ids: HashSet<&str> = b.nodes.iter().map(|n| n.id.as_str()).collect();
+        assert_eq!(ids.len(), b.nodes.len(), "{} has a node id twice", b.id);
+        if let Some(entry) = &b.entry {
+            assert!(
+                titles.contains(entry),
+                "{}: the entry node '{entry}' does not exist",
+                b.id
+            );
+            assert!(entries.insert(entry), "{entry} is the entry of two boxes");
+        }
+        for (choice, option, _) in &b.options {
+            assert!(
+                b.nodes
+                    .iter()
+                    .any(|n| n.kind == NodeKind::Choice && &n.id == choice),
+                "{}: option {option} of unknown choice {choice}",
+                b.id
+            );
+            assert!(
+                !ids.contains(option.as_str()),
+                "{}: option {option} is also a node",
+                b.id
+            );
+        }
+        for node in b.nodes.iter().filter(|n| n.kind == NodeKind::Exit) {
+            let target = node.to.as_deref().unwrap_or_default();
+            assert!(
+                known.contains(target),
+                "{}: exit {} leads to unknown box '{target}'",
+                b.id,
+                node.id
+            );
+        }
+        for node in &b.nodes {
+            for req in node.requires.iter().flatten() {
+                if let Some((box_id, clue)) = story_graph::cross_box(req) {
+                    let source = boxes.iter().find(|o| o.id == box_id);
+                    assert!(
+                        source.is_some_and(|s| s
+                            .nodes
+                            .iter()
+                            .any(|n| n.kind == NodeKind::Clue && n.id == clue)),
+                        "{}: {} needs unknown clue {req}",
+                        b.id,
+                        node.id
+                    );
+                } else if let Some((choice, option)) = req.split_once('=') {
+                    assert!(
+                        b.options.iter().any(|(c, o, _)| c == choice && o == option),
+                        "{}: {} needs unknown option {req}",
+                        b.id,
+                        node.id
+                    );
+                } else {
+                    assert!(
+                        ids.contains(req.as_str()) && *req != node.id,
+                        "{}: {} needs unknown node {req}",
+                        b.id,
+                        node.id
+                    );
+                }
+            }
+        }
+        assert!(
+            b.kind == BoxKind::Stub || b.nodes.iter().any(|n| n.kind == NodeKind::Exit),
+            "box {} has no exit",
+            b.id
+        );
+    }
+}
+
+/// Every `<<done BOX ID>>` of a scene names a step of a box of the story graph.
+#[test]
+fn done_marks_name_known_steps() {
+    let boxes = graph_boxes();
+    for (file, title, body) in scene_nodes() {
+        for line in body {
+            let Some((command, args)) = parse_command(&line) else {
+                continue;
+            };
+            if command != "done" || args.len() != 2 {
+                continue;
+            }
+            let (box_id, step) = (&args[0], &args[1]);
+            let known = boxes
+                .iter()
+                .find(|b| &b.id == box_id)
+                .is_some_and(|b| b.has_step(step));
+            assert!(
+                known,
+                "{file}/{title}: <<done {box_id} {step}>> names an unknown box or step"
+            );
+        }
+    }
+}
+
+/// `<<enter_box BOX>>` is run by the entry node of that box and only there, once.
+#[test]
+fn entry_nodes_enter_their_box() {
+    let boxes = graph_boxes();
+    for (file, title, body) in scene_nodes() {
+        let entered: Vec<String> = body
+            .iter()
+            .filter_map(|line| parse_command(line))
+            .filter(|(command, _)| command == "enter_box")
+            .map(|(_, args)| args.first().cloned().unwrap_or_default())
+            .collect();
+        let entry_of = boxes
+            .iter()
+            .find(|b| b.entry.as_deref() == Some(title.as_str()));
+        match entry_of {
+            Some(b) => assert_eq!(
+                entered,
+                std::slice::from_ref(&b.id),
+                "{file}/{title} is the entry of {} and must run <<enter_box {}>> once",
+                b.id,
+                b.id
+            ),
+            None => assert!(
+                entered.is_empty(),
+                "{file}/{title} runs <<enter_box>> but is no entry node"
+            ),
+        }
+    }
+}
+
+/// An exit starts the next box through `<<done>>`. A box without a scene (free time) can't,
+/// so the scene of the exit leading into it starts the next box with a scene itself:
+/// `<<next_scene ENTRY>>` of a box is only allowed together with such an exit.
+#[test]
+fn entry_nodes_are_started_by_exits() {
+    let boxes = graph_boxes();
+    let entries: HashSet<&str> = boxes.iter().filter_map(|b| b.entry.as_deref()).collect();
+    for (file, title, body) in scene_nodes() {
+        let commands: Vec<(String, Vec<String>)> =
+            body.iter().filter_map(|line| parse_command(line)).collect();
+        let into_a_hub = commands.iter().any(|(command, args)| {
+            command == "done"
+                && args.len() == 2
+                && boxes
+                    .iter()
+                    .find(|b| b.id == args[0])
+                    .and_then(|b| b.node(&args[1]))
+                    .filter(|n| n.kind == NodeKind::Exit)
+                    .and_then(|n| boxes.iter().find(|t| Some(&t.id) == n.to.as_ref()))
+                    .is_some_and(|target| target.entry.is_none())
+        });
+        for (command, args) in &commands {
+            if command == "next_scene" && args.first().is_some_and(|a| entries.contains(a.as_str()))
+            {
+                assert!(
+                    into_a_hub,
+                    "{file}/{title}: <<next_scene {}>> starts a box; leave it to an exit's <<done>>",
+                    args[0]
+                );
+            }
+        }
+    }
+}
+
+/// Every exit that leads to a box with a scene is done by some scene.
+#[test]
+fn every_exit_into_a_scene_is_done_somewhere() {
+    let boxes = graph_boxes();
+    let marks: HashSet<(String, String)> = scene_nodes()
+        .iter()
+        .flat_map(|(_, _, body)| body.iter().filter_map(|line| parse_command(line)))
+        .filter(|(command, args)| command == "done" && args.len() == 2)
+        .map(|(_, args)| (args[0].clone(), args[1].clone()))
+        .collect();
+    for b in &boxes {
+        for exit in b.nodes.iter().filter(|n| n.kind == NodeKind::Exit) {
+            let target = boxes.iter().find(|t| Some(&t.id) == exit.to.as_ref());
+            if b.entry.is_some() && target.is_some_and(|t| t.entry.is_some()) {
+                assert!(
+                    marks.contains(&(b.id.clone(), exit.id.clone())),
+                    "no scene does <<done {} {}>>, the exit into {:?}",
+                    b.id,
+                    exit.id,
+                    exit.to
+                );
+            }
+        }
+    }
+}
+
+/// The arguments of the calls to `function(` in a line, e.g. `can("A", "b")` is [A, b].
+fn calls(line: &str, function: &str) -> Vec<Vec<String>> {
+    let pattern = format!("{function}(");
+    let mut found = Vec::new();
+    for (at, _) in line.match_indices(&pattern) {
+        let before = line[..at].chars().next_back();
+        if before.is_some_and(|c| c.is_alphanumeric() || c == '_' || c == '$') {
+            continue;
+        }
+        let Some(end) = line[at..].find(')') else {
+            continue;
+        };
+        let args = line[at + pattern.len()..at + end]
+            .split(',')
+            .map(|a| a.trim().trim_matches('"').to_string())
+            .collect();
+        found.push(args);
+    }
+    found
+}
+
+/// `can()`, `is_done()` and `in_box()` in the scenes name steps of the graph.
+#[test]
+fn scenes_ask_known_steps() {
+    let boxes = graph_boxes();
+    let mut asked = 0;
+    for (file, title, body) in scene_nodes() {
+        for line in body.iter().filter(|l| !l.starts_with("//")) {
+            for function in ["can", "is_done", "in_box"] {
+                for args in calls(line, function) {
+                    asked += 1;
+                    let wanted = if function == "in_box" { 1 } else { 2 };
+                    assert_eq!(
+                        args.len(),
+                        wanted,
+                        "{file}/{title}: {function}() takes {wanted} arguments: '{line}'"
+                    );
+                    let Some(b) = boxes.iter().find(|b| b.id == args[0]) else {
+                        panic!("{file}/{title}: unknown box '{}': '{line}'", args[0]);
+                    };
+                    assert!(
+                        b.entry.is_some(),
+                        "{file}/{title}: box {} has no scene: '{line}'",
+                        b.id
+                    );
+                    if wanted == 2 {
+                        assert!(
+                            b.has_step(&args[1]),
+                            "{file}/{title}: box {} has no step '{}': '{line}'",
+                            b.id,
+                            args[1]
+                        );
+                    }
+                }
+            }
+        }
+    }
+    assert!(
+        asked > 50,
+        "the scenes ask the graph, found only {asked} calls"
+    );
+}
+
+/// The graph's variables and the retired chart's are the engine's: scenes ask through
+/// `can()`, `is_done()` and `in_box()` and change them through `<<done>>` and `<<enter_box>>`.
+#[test]
+fn scenes_do_not_touch_graph_variables() {
+    for (file, title, body) in scene_nodes() {
+        for line in body.iter().filter(|l| !l.starts_with("//")) {
+            for name in ["$box", "$step_", "$chapter", "$gate_"] {
+                assert!(
+                    !line.contains(name),
+                    "{file}/{title}: '{line}' touches {name}"
+                );
+            }
+        }
+    }
 }

@@ -2,13 +2,13 @@ title: Door3AInside
 ---
 // Talk target just inside Samantha's door (Hotspots layer). He leaves 3A only when she
 // sees him out.
-<<if $chapter == "R1Thu1" and not $gate_r1_thu1_sit>>
+<<if can("R1Dinner1", "dinner")>>
     {$samantha_name}: Leaving already? Dinner's nearly ready.
-<<elseif $chapter == "R1Thu1" and not $gate_r1_thu1_dishes>>
+<<elseif can("R1Dinner1", "dishes")>>
     {$samantha_name}: The sink's over there. Dishes first, then you can go.
-<<elseif $chapter == "R1Thu2" and not $gate_r1_thu2_dinner>>
+<<elseif in_box("R1Dinner2") and not is_done("R1Dinner2", "dinner")>>
     {$samantha_name}: You've only just got here.
-<<elseif $chapter == "R1Thu2" and not $gate_r1_thu2_stand>>
+<<elseif in_box("R1Dinner2") and not is_done("R1Dinner2", "wait")>>
     {$samantha_name}: I said stand there. Not leave.
 <<endif>>
 ===
