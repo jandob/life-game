@@ -21,6 +21,10 @@ const FADE_SECONDS: f32 = 1.0;
 const CARD_SECONDS: f32 = 2.5;
 /// Above the dialogue box, below the end card text (1001).
 const OVERLAY_Z: i32 = 500;
+/// A scene image covers the HUD (450) and the world; the dialogue box sits above it.
+const FRAME_Z: i32 = 470;
+/// The scene images are drawn at this aspect ratio and shown whole, with black bars.
+const FRAME_ASPECT: f32 = 16.0 / 9.0;
 
 /// The scene that `<<next_scene>>` starts after the current dialogue has completed.
 /// While it is set the player can't start another conversation.
@@ -33,6 +37,8 @@ pub struct ScreenFade {
     alpha: f32,
     target: f32,
     done: Option<Arc<AtomicBool>>,
+    /// The scene image `<<frame>>` shows, under the fade and above the world.
+    frame: Option<Handle<Image>>,
 }
 
 impl ScreenFade {
@@ -50,6 +56,7 @@ impl ScreenFade {
     pub fn clear(&mut self) {
         self.start(0.0).store(true, Ordering::Relaxed);
         self.alpha = 0.0;
+        self.frame = None;
     }
 
     /// Cuts to black and fades back in, e.g. as the player steps through a door to
@@ -77,6 +84,14 @@ pub struct Card {
 #[derive(Component)]
 struct FadeOverlay;
 
+/// The full-screen black container of the `<<frame>>` image.
+#[derive(Component)]
+struct FrameRoot;
+
+/// The `<<frame>>` image itself, fitted into the window by `update_frame`.
+#[derive(Component)]
+struct FrameImage;
+
 #[derive(Component)]
 pub struct CardText;
 
@@ -95,6 +110,24 @@ pub fn fade_out_command(In(_): In<()>, mut fade: ResMut<ScreenFade>) -> Arc<Atom
 /// `<<fade_in>>`: blocks until the screen is clear.
 pub fn fade_in_command(In(_): In<()>, mut fade: ResMut<ScreenFade>) -> Arc<AtomicBool> {
     fade.start(0.0)
+}
+
+/// `<<frame "NAME">>`: shows a scene image (`assets/story/frames/NAME.png`) over the world
+/// until the next `<<frame>>`, `<<frame_clear>>` or the end of the scene. Doesn't block.
+pub fn frame_command(
+    In(name): In<String>,
+    mut fade: ResMut<ScreenFade>,
+    assets: Res<GameAssets>,
+) {
+    match assets.frame(&name) {
+        Some(handle) => fade.frame = Some(handle.clone()),
+        None => error!("frame: unknown image '{name}'"),
+    }
+}
+
+/// `<<frame_clear>>`: hides the scene image.
+pub fn frame_clear_command(In(_): In<()>, mut fade: ResMut<ScreenFade>) {
+    fade.frame = None;
 }
 
 /// `<<card "TEXT">>`: shows a title card over the black screen for a moment.
@@ -138,6 +171,61 @@ pub fn place_command(
     }
     transform.translation.x = point.x;
     transform.translation.y = point.y;
+}
+
+fn spawn_frame(mut commands: Commands) {
+    commands
+        .spawn((
+            FrameRoot,
+            Node {
+                position_type: PositionType::Absolute,
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..default()
+            },
+            BackgroundColor(Color::BLACK),
+            ZIndex(FRAME_Z),
+            Visibility::Hidden,
+            Pickable::IGNORE,
+        ))
+        .with_child((FrameImage, Node::default(), ImageNode::default()));
+}
+
+/// Shows the current `<<frame>>` image, as large as fits the window at its aspect ratio.
+fn update_frame(
+    fade: Res<ScreenFade>,
+    windows: Query<&Window, With<bevy::window::PrimaryWindow>>,
+    mut q_root: Query<&mut Visibility, With<FrameRoot>>,
+    mut q_image: Query<(&mut Node, &mut ImageNode), With<FrameImage>>,
+) {
+    for mut visibility in &mut q_root {
+        *visibility = if fade.frame.is_some() {
+            Visibility::Inherited
+        } else {
+            Visibility::Hidden
+        };
+    }
+    let Some(frame) = fade.frame.as_ref() else {
+        return;
+    };
+    let Ok(window) = windows.single() else {
+        return;
+    };
+    let window_aspect = window.width() / window.height().max(1.0);
+    let (width, height) = if window_aspect >= FRAME_ASPECT {
+        (100.0 * FRAME_ASPECT / window_aspect, 100.0)
+    } else {
+        (100.0, 100.0 * window_aspect / FRAME_ASPECT)
+    };
+    for (mut node, mut image) in &mut q_image {
+        node.width = Val::Percent(width);
+        node.height = Val::Percent(height);
+        if image.image != *frame {
+            image.image = frame.clone();
+        }
+    }
 }
 
 fn spawn_overlay(mut commands: Commands, assets: Res<GameAssets>) {
@@ -246,12 +334,12 @@ impl Plugin for TransitionPlugin {
         app.init_resource::<QueuedScene>()
             .init_resource::<ScreenFade>()
             .init_resource::<Card>()
-            .add_systems(OnEnter(GameState::Gaming), spawn_overlay)
+            .add_systems(OnEnter(GameState::Gaming), (spawn_overlay, spawn_frame))
             .add_systems(OnExit(GameState::Gaming), reset_transitions)
             .add_systems(
                 Update,
                 (
-                    (update_fade, update_card).run_if(not(in_state(GameState::AssetLoading))),
+                    (update_fade, update_card, update_frame).run_if(not(in_state(GameState::AssetLoading))),
                     reset_transitions.run_if(on_message::<EndingTriggered>),
                 ),
             );
