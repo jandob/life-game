@@ -9,8 +9,8 @@ use crate::{
         phone::{note_command, note_done_command, phone_command},
         scripted::{await_walks_command, face_command, hide_command, show_command, walk_command},
         transition::{
-            card_command, fade_in_command, fade_out_command, next_scene_command, place_command,
-            start_queued_scene, ScreenFade,
+            card_command, fade_in_command, fade_out_command, frame_clear_command, frame_command,
+            next_scene_command, place_command, start_queued_scene, ScreenFade,
         },
         StoryVars,
     },
@@ -73,6 +73,8 @@ fn add_story_commands(commands: &mut Commands, runner: &mut DialogueRunner) {
     let fade_out = commands.register_system(fade_out_command);
     let fade_in = commands.register_system(fade_in_command);
     let card = commands.register_system(card_command);
+    let frame = commands.register_system(frame_command);
+    let frame_clear = commands.register_system(frame_clear_command);
     let next_scene = commands.register_system(next_scene_command);
     let phone = commands.register_system(phone_command);
     let note = commands.register_system(note_command);
@@ -94,6 +96,8 @@ fn add_story_commands(commands: &mut Commands, runner: &mut DialogueRunner) {
         .add_command("fade_out", fade_out)
         .add_command("fade_in", fade_in)
         .add_command("card", card)
+        .add_command("frame", frame)
+        .add_command("frame_clear", frame_clear)
         .add_command("next_scene", next_scene)
         .add_command("phone", phone)
         .add_command("note", note)

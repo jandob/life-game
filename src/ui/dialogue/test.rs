@@ -11,7 +11,7 @@ const PATH_TO_DIR: &str = "assets/dialogue";
 const MAX_SIMILARITY_DISTANCE: usize = 4;
 
 /// Custom commands with their allowed number of arguments.
-const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 26] = [
+const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 28] = [
     ("stop_chat", 0..=0),
     ("end_demo", 0..=0),
     ("walk", 2..=3),
@@ -25,6 +25,8 @@ const CUSTOM_COMMANDS: [(&str, std::ops::RangeInclusive<usize>); 26] = [
     ("fade_out", 0..=0),
     ("fade_in", 0..=0),
     ("card", 1..=1),
+    ("frame", 1..=1),
+    ("frame_clear", 0..=0),
     ("next_scene", 1..=1),
     ("phone", 1..=1),
     ("note", 2..=2),
@@ -215,6 +217,25 @@ fn validate_next_scene_exists() {
             assert!(
                 args.first().is_some_and(|node| titles.contains(node)),
                 "<<next_scene>> in {file} names a node that doesn't exist: '{line}'"
+            );
+        }
+    });
+}
+
+/// Every `<<frame "NAME">>` names a scene image that `GameAssets::frame` knows and that exists
+/// under `assets/story/frames/`.
+#[test]
+fn validate_frames_exist() {
+    validate_lines(|line, file| {
+        let Some((command, args)) = parse_command(line) else {
+            return;
+        };
+        if command == "frame" {
+            let name = args.first().expect("<<frame>> needs a name");
+            let path = format!("assets/story/frames/{name}.png");
+            assert!(
+                std::path::Path::new(&path).is_file(),
+                "<<frame>> in {file} names a missing image {path}: '{line}'"
             );
         }
     });

@@ -275,6 +275,8 @@ fn spawn_dialogue(mut commands: Commands, assets: Res<GameAssets>) {
                 position_type: PositionType::Absolute,
                 ..default()
             },
+            // Above a `<<frame>>` scene image (transition.rs) and the HUD.
+            ZIndex(480),
             Visibility::Hidden,
         ))
         .add_children(&[dialogue_options, dialogue_root]);

@@ -23,6 +23,7 @@
 - [x] 3b.4 Scenes use `can()`; chart, `$chapter`, `$gate_*` and cross-box flags go
 - [x] 3b.5 Start points by box; the walker checks each box from its entry
 - [x] 3b.6 Scenes for the retry, the knock and the notebook
+- [x] 3b.7 Notebook scene images: `<<frame "NAME">>` and `<<frame_clear>>` show `assets/story/frames/NAME.png` full screen under the dialogue box (frames 7 and 8 are placeholders); art record in `art/jobs/route1_notebook_frames.md`
 
 ## 4. Diagrams
 
