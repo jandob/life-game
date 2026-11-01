@@ -5,7 +5,8 @@
 
 - art/artgen-profile.json matches the authoritative sprite-format spec;
 - the artgen skill copies in .claude/.pi/.github equal the tool's canonical tools/artgen/SKILL.md;
-- the life-game-art skill copies are identical.
+- the life-game-art skill copies are identical;
+- every .aseprite look's gen layer matches its generated strips (tools/aseprite/sync_gen.py).
 """
 from __future__ import annotations
 
@@ -57,6 +58,14 @@ def test_profile_matches_sprite_format_spec() -> None:
             os.environ.pop("ARTGEN_PROFILE")
         else:
             os.environ["ARTGEN_PROFILE"] = old
+
+
+def test_aseprite_gen_layers_current() -> None:
+    sys.path.insert(0, str(REPO / "tools/aseprite"))
+    import sync_gen
+
+    stale = [n for n, spec in sync_gen.LOOKS.items() if not sync_gen.sync(n, spec, check=True)]
+    assert not stale, f"run python tools/aseprite/sync_gen.py for {stale}"
 
 
 if __name__ == "__main__":

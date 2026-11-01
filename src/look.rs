@@ -1,11 +1,13 @@
-//! Character looks: a folder with a `look.ron` manifest and one PNG strip per clip
-//! (see openspec/changes/character-looks-and-sprite-format).
+//! Character looks: a folder with a `look.ron` manifest and either one PNG strip per clip
+//! (see openspec/changes/character-looks-and-sprite-format) or one `.aseprite` file whose
+//! tags are named `<clip>_<facing>` (for example `walk_right`), drawn by bevy_aseprite_ultra.
 
 use std::collections::HashMap;
 use std::f32::consts::PI;
 
 use bevy::asset::{io::Reader, AssetLoader, LoadContext};
 use bevy::prelude::*;
+use bevy_aseprite_ultra::prelude::{Animation, AseAnimation, Aseprite};
 use serde::Deserialize;
 
 use crate::animation::{CharacterAnim, SpriteAnimationClip, SpriteAnimator};
@@ -67,13 +69,22 @@ impl From<CharacterAnim> for ClipKind {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ClipManifest {
-    pub file: String,
+    /// PNG strip; unused when the look has an `aseprite` file.
+    #[serde(default, deserialize_with = "some_string")]
+    pub file: Option<String>,
+    /// Frames per row of the strip; unused when the look has an `aseprite` file.
+    #[serde(default)]
     pub frames: u32,
     pub rows: Vec<Facing>,
     #[serde(default)]
     pub mirror_left: bool,
     #[serde(default = "default_frame_ms")]
     pub frame_ms: u32,
+}
+
+/// Optional string fields written as plain strings (`file: "idle.png"`, not `Some(...)`).
+fn some_string<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Option<String>, D::Error> {
+    String::deserialize(d).map(Some)
 }
 
 fn default_frame_ms() -> u32 {
@@ -105,7 +116,16 @@ pub struct LookManifest {
     pub id: String,
     pub character: String,
     pub cell: (u32, u32),
+    /// The look's `.aseprite` file. Frames, timing and tags then come from it, and each
+    /// clip row plays the tag [`tag_name`]`(kind, facing)`.
+    #[serde(default, deserialize_with = "some_string")]
+    pub aseprite: Option<String>,
     pub clips: HashMap<ClipKind, ClipManifest>,
+}
+
+/// Aseprite tag of a clip facing one way: `idle_down`, `walk_right`, ...
+pub fn tag_name(kind: ClipKind, facing: Facing) -> String {
+    format!("{kind:?}_{facing:?}").to_lowercase()
 }
 
 /// Which clip of which look to show.
@@ -151,10 +171,12 @@ struct Strip {
     layout: Handle<TextureAtlasLayout>,
 }
 
-/// A loaded look: manifest plus the image and atlas layout of every strip.
+/// A loaded look: manifest plus either its Aseprite file or the image and atlas layout of
+/// every strip.
 #[derive(Asset, TypePath)]
 pub struct Look {
     pub manifest: LookManifest,
+    aseprite: Option<Handle<Aseprite>>,
     strips: HashMap<ClipKind, Strip>,
 }
 
@@ -181,8 +203,26 @@ impl AssetLoader for LookLoader {
         let manifest: LookManifest =
             ron::from_str(text).map_err(|e| format!("Failed to parse look: {e}"))?;
 
+        if let Some(file) = &manifest.aseprite {
+            if let Some((kind, _)) = manifest.clips.iter().find(|(_, c)| c.rows.is_empty()) {
+                return Err(format!("Look {}: clip {kind:?} has no rows", manifest.id));
+            }
+            let path = load_context
+                .path()
+                .resolve_embed_str(file)
+                .map_err(|e| format!("Invalid aseprite path {file}: {e}"))?;
+            return Ok(Look {
+                aseprite: Some(load_context.load(path)),
+                manifest,
+                strips: HashMap::new(),
+            });
+        }
+
         let mut strips = HashMap::new();
         for (kind, clip) in &manifest.clips {
+            let Some(file) = clip.file.as_deref() else {
+                return Err(format!("Look {}: clip {kind:?} has no file", manifest.id));
+            };
             if clip.frames == 0 || clip.rows.is_empty() {
                 return Err(format!(
                     "Look {}: clip {kind:?} has no frames or rows",
@@ -191,8 +231,8 @@ impl AssetLoader for LookLoader {
             }
             let path = load_context
                 .path()
-                .resolve_embed_str(&clip.file)
-                .map_err(|e| format!("Invalid clip path {}: {e}", clip.file))?;
+                .resolve_embed_str(file)
+                .map_err(|e| format!("Invalid clip path {file}: {e}"))?;
             let layout = TextureAtlasLayout::from_grid(
                 UVec2::new(manifest.cell.0, manifest.cell.1),
                 clip.frames,
@@ -209,7 +249,11 @@ impl AssetLoader for LookLoader {
                 },
             );
         }
-        Ok(Look { manifest, strips })
+        Ok(Look {
+            manifest,
+            aseprite: None,
+            strips,
+        })
     }
 
     fn extensions(&self) -> &[&str] {
@@ -262,10 +306,17 @@ impl CharacterLook {
 }
 
 fn apply_looks(
+    mut commands: Commands,
     looks: Res<Assets<Look>>,
-    mut q: Query<(&mut CharacterLook, &mut Sprite, &mut SpriteAnimator)>,
+    mut q: Query<(
+        Entity,
+        &mut CharacterLook,
+        &mut Sprite,
+        &mut SpriteAnimator,
+        Has<AseAnimation>,
+    )>,
 ) {
-    for (mut character, mut sprite, mut animator) in &mut q {
+    for (entity, mut character, mut sprite, mut animator, has_ase) in &mut q {
         let Some(look) = looks.get(&character.look) else {
             continue;
         };
@@ -295,6 +346,25 @@ fn apply_looks(
         let Some(source_look) = source_look else {
             continue;
         };
+        let Some(clip) = source_look.manifest.clips.get(&choice.kind) else {
+            continue;
+        };
+
+        if let Some(aseprite) = &source_look.aseprite {
+            // bevy_aseprite_ultra sets image and atlas; `animate_sprites` skips this entity.
+            let tag = tag_name(choice.kind, clip.rows[choice.row]);
+            commands.entity(entity).insert(AseAnimation {
+                aseprite: aseprite.clone(),
+                animation: Animation::tag(&tag),
+            });
+            sprite.flip_x = choice.flip;
+            character.applied = Some((source, choice));
+            continue;
+        }
+        if has_ase {
+            commands.entity(entity).remove::<AseAnimation>();
+        }
+
         let (Some(strip), Some(clip)) = (
             source_look.strips.get(&choice.kind),
             source_look.manifest.clips.get(&choice.kind),
@@ -322,7 +392,8 @@ pub struct LookPlugin;
 
 impl Plugin for LookPlugin {
     fn build(&self, app: &mut App) {
-        app.init_asset::<Look>()
+        app.add_plugins(bevy_aseprite_ultra::AsepriteUltraPlugin)
+            .init_asset::<Look>()
             .init_asset_loader::<LookLoader>()
             // Last: after the systems that set the intent (player state, NPC animation).
             .add_systems(Last, apply_looks.run_if(in_state(crate::GameState::Gaming)));
@@ -337,7 +408,8 @@ mod tests {
         ron::from_str(ron_text).unwrap()
     }
 
-    const FULL: &str = include_str!("../assets/library/characters/looks/sam_casual/look.ron");
+    const FULL: &str = include_str!("../assets/library/characters/looks/player_main/look.ron");
+    const ASE: &str = include_str!("../assets/library/characters/looks/sam_casual/look.ron");
     const IDLE_ONLY: &str = r#"Look(id: "x", character: "samantha", cell: (128, 256), clips: {
         Idle: (file: "idle.png", frames: 1, rows: [Down, Left, Right, Up]),
     })"#;
@@ -353,13 +425,69 @@ mod tests {
     fn shipped_looks_parse() {
         for text in [
             FULL,
-            include_str!("../assets/library/characters/looks/player_main/look.ron"),
+            ASE,
             include_str!("../assets/library/characters/looks/sam_ponytail/look.ron"),
         ] {
             let look = parse(text);
             assert_eq!(look.cell, (LOOK_CELL.x, LOOK_CELL.y));
             assert!(look.clips.contains_key(&Idle) && look.clips.contains_key(&Walk));
         }
+    }
+
+    /// Every tag an aseprite look can resolve to exists in its file, and the canvas is one cell.
+    #[test]
+    fn aseprite_looks_have_their_tags() {
+        use aseprite_loader::loader::{AsepriteFile, LayerSelection};
+        let dir = concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/assets/library/characters/looks"
+        );
+        for entry in std::fs::read_dir(dir).unwrap() {
+            let folder = entry.unwrap().path();
+            let look = parse(&std::fs::read_to_string(folder.join("look.ron")).unwrap());
+            let Some(file) = &look.aseprite else { continue };
+            let bytes = std::fs::read(folder.join(file)).unwrap();
+            let ase = AsepriteFile::load(&bytes).unwrap();
+            assert_eq!(
+                ase.size(),
+                (LOOK_CELL.x as u16, LOOK_CELL.y as u16),
+                "{file}"
+            );
+            for facing in [Down, Left, Right, Up] {
+                for kind in [Idle, Walk] {
+                    let Some(c) = resolve_clip(&look, None, kind, facing, Right) else {
+                        continue;
+                    };
+                    let tag = tag_name(c.kind, look.clips[&c.kind].rows[c.row]);
+                    let t = ase.tags().iter().find(|t| t.name == tag);
+                    let t = t.unwrap_or_else(|| panic!("{file}: no tag {tag}"));
+                    // Every frame of the tag draws something.
+                    for frame in t.range.clone() {
+                        let mut buf = vec![0u8; (LOOK_CELL.x * LOOK_CELL.y * 4) as usize];
+                        ase.render_frame(frame as usize, &mut buf, &LayerSelection::All)
+                            .unwrap();
+                        assert!(
+                            buf.chunks(4).any(|p| p[3] > 0),
+                            "{file}: frame {frame} empty"
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn aseprite_look_tags() {
+        let look = parse(ASE);
+        assert_eq!(look.aseprite.as_deref(), Some("sam_casual.aseprite"));
+        let c = resolve_clip(&look, None, Walk, Left, Left).unwrap();
+        assert_eq!(
+            tag_name(c.kind, look.clips[&c.kind].rows[c.row]),
+            "walk_right"
+        );
+        assert!(c.flip);
+        let c = resolve_clip(&look, None, Idle, Up, Left).unwrap();
+        assert_eq!(tag_name(c.kind, look.clips[&c.kind].rows[c.row]), "idle_up");
     }
 
     #[test]

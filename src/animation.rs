@@ -6,6 +6,7 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
+use bevy_aseprite_ultra::prelude::AseAnimation;
 
 use crate::look::{facing_of, Facing};
 
@@ -70,7 +71,11 @@ impl SpriteAnimator {
     }
 }
 
-fn animate_sprites(time: Res<Time>, mut q_sprites: Query<(&mut SpriteAnimator, &mut Sprite)>) {
+/// Entities with an [`AseAnimation`] are animated by bevy_aseprite_ultra instead.
+fn animate_sprites(
+    time: Res<Time>,
+    mut q_sprites: Query<(&mut SpriteAnimator, &mut Sprite), Without<AseAnimation>>,
+) {
     for (mut animator, mut sprite) in &mut q_sprites {
         // Always keep the atlas index within the current clip's range, so that
         // clip switches (via SpriteAnimator::play) don't leave the index stuck
