@@ -114,11 +114,7 @@ pub fn fade_in_command(In(_): In<()>, mut fade: ResMut<ScreenFade>) -> Arc<Atomi
 
 /// `<<frame "NAME">>`: shows a scene image (`assets/story/frames/NAME.png`) over the world
 /// until the next `<<frame>>`, `<<frame_clear>>` or the end of the scene. Doesn't block.
-pub fn frame_command(
-    In(name): In<String>,
-    mut fade: ResMut<ScreenFade>,
-    assets: Res<GameAssets>,
-) {
+pub fn frame_command(In(name): In<String>, mut fade: ResMut<ScreenFade>, assets: Res<GameAssets>) {
     match assets.frame(&name) {
         Some(handle) => fade.frame = Some(handle.clone()),
         None => error!("frame: unknown image '{name}'"),
@@ -339,7 +335,8 @@ impl Plugin for TransitionPlugin {
             .add_systems(
                 Update,
                 (
-                    (update_fade, update_card, update_frame).run_if(not(in_state(GameState::AssetLoading))),
+                    (update_fade, update_card, update_frame)
+                        .run_if(not(in_state(GameState::AssetLoading))),
                     reset_transitions.run_if(on_message::<EndingTriggered>),
                 ),
             );

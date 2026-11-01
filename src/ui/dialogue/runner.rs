@@ -9,8 +9,8 @@ use crate::{
         phone::{note_command, note_done_command, phone_command},
         scripted::{await_walks_command, face_command, hide_command, show_command, walk_command},
         transition::{
-            card_command, fade_in_command, frame_clear_command, frame_command, fade_out_command, next_scene_command, place_command,
-            start_queued_scene, ScreenFade,
+            card_command, fade_in_command, fade_out_command, frame_clear_command, frame_command,
+            next_scene_command, place_command, start_queued_scene, ScreenFade,
         },
         StoryVars,
     },
