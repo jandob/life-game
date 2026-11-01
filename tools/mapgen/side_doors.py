@@ -6,7 +6,7 @@ the opening while a door is closed (an image layer named like the door, see
 `src/world/side_view/mod.rs`). Each leaf is sized to the dark opening of its door and
 coloured from the frame beside it.
 
-    python tools/mapgen/side_doors.py   # writes assets/library/rooms/doors/*.png
+    python tools/mapgen/side_doors.py   # writes art/rooms/doors/*.png, then run tools/aseprite/sync_gen.py
 """
 
 import random
@@ -15,7 +15,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "assets/library/rooms/doors"
+OUT = ROOT / "art/rooms/doors"  # gen sources; tools/aseprite/sync_gen.py builds the .aseprite files
 
 # name -> (width, height, wood colour sampled from the painted frame)
 LEAVES = {

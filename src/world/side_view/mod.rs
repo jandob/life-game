@@ -10,12 +10,13 @@
 use bevy::prelude::*;
 use bevy::time::Real;
 use bevy::window::{CursorIcon, PrimaryWindow, SystemCursorIcon};
+use bevy_aseprite_ultra::prelude::{Animation, AseAnimation};
 use bevy_yarnspinner::prelude::DialogueRunner;
 
 use super::camera::{update_camera_target, DebugZoom, MainCamera, VIEW_WIDTH};
 use super::camera_shake::{update_camera, CameraShake};
 use super::map::doors::DoorStates;
-use super::map::tiled_map::TiledMap;
+use super::map::tiled_map::{LayerArt, TiledMap};
 use crate::character::SPRITE_FEET_BELOW_CENTRE;
 use crate::player::chat::PlayerStartedChat;
 use crate::player::input::{InputBlocked, MouseWorldCoords};
@@ -82,13 +83,22 @@ fn spawn_rooms(mut commands: Commands, map: Res<TiledMap>, assets: Res<GameAsset
         } else {
             BACKGROUND_Z - behind + i as f32
         };
-        commands.spawn((
+        let mut entity = commands.spawn((
             Name::new(format!("Image layer {}", layer.name)),
             ImageLayerName(layer.name.clone()),
-            Sprite::from_image(layer.image.clone()),
             bevy::sprite::Anchor::TOP_LEFT,
             Transform::from_translation(corner.extend(z)),
         ));
+        match &layer.art {
+            LayerArt::Image(image) => entity.insert(Sprite::from_image(image.clone())),
+            LayerArt::Aseprite(aseprite) => entity.insert((
+                Sprite::default(),
+                AseAnimation {
+                    aseprite: aseprite.clone(),
+                    animation: Animation::default(),
+                },
+            )),
+        };
     }
 
     let rooms = SideRooms::from_map(&map);

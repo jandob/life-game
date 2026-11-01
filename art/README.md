@@ -20,7 +20,8 @@ art/
 
 Flow: new takes land in the git-ignored `tools/artgen/out/`; a chosen take is copied into `characters/<name>/keys/`;
 `tools/sprite_gen/realistic/build_sheets.py` and `portraits.py` read the keys and write finished sheets and portraits into
-`assets/library/`. Palettes are read by `tools/scenekit` (`art/palettes/interior.hex`). Sidecar JSONs keep the paths they were
+`assets/library/`. Looks that have an `.aseprite` file (see `tools/aseprite/README.md`) are not copied: their strips
+here feed the file's `gen` layer via `tools/aseprite/sync_gen.py`, and hand edits live in its `paint` layer. Palettes are read by `tools/scenekit` (`art/palettes/interior.hex`). Sidecar JSONs keep the paths they were
 generated with (history); they are not rewritten.
 
 ## The artgen tool (git subtree)

@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_aseprite_ultra::prelude::{AseAnimation, Aseprite};
 use bevy_yarnspinner::{events::*, prelude::*};
 
 use crate::player::chat::PlayerStoppedChat;
@@ -22,7 +23,7 @@ fn convert_name(name: &str) -> String {
 /// Return an Option so that you only set the texture when there is a proper speaker.
 /// If there is a frame delay (due to events or similar), then we will simply
 /// display the previous speaker for couple of frames. That's okay.
-fn character_icon(assets: &GameAssets, name: &str) -> Option<Handle<Image>> {
+fn character_icon(assets: &GameAssets, name: &str) -> Option<Handle<Aseprite>> {
     speaker(name).map(|speaker| portrait(assets, speaker))
 }
 
@@ -30,7 +31,7 @@ fn present_line(
     trigger: On<PresentLine>,
     assets: Res<GameAssets>,
     mut typewriter: ResMut<Typewriter>,
-    mut q_character_icon: Query<&mut ImageNode, With<DialogueCharacterIcon>>,
+    mut q_character_icon: Query<&mut AseAnimation, With<DialogueCharacterIcon>>,
     mut q_name_text: Query<&mut Text, With<DialogueNameNode>>,
     mut q_runner_flags: Query<&mut RunnerFlags>,
 ) {
@@ -46,7 +47,7 @@ fn present_line(
     let event = trigger.event();
     let raw_name = event.line.character_name().unwrap_or_default();
     if let Some(texture) = character_icon(&assets, raw_name) {
-        character_icon_image.image = texture;
+        character_icon_image.aseprite = texture;
     }
     name_text.0 = convert_name(raw_name);
 
@@ -150,7 +151,7 @@ fn continue_dialogue(
 fn update_displayed_character(
     assets: Res<GameAssets>,
     typewriter: Res<Typewriter>,
-    mut q_character_icon: Query<&mut ImageNode, With<DialogueCharacterIcon>>,
+    mut q_character_icon: Query<&mut AseAnimation, With<DialogueCharacterIcon>>,
     mut q_name_text: Query<&mut Text, With<DialogueNameNode>>,
 ) {
     let mut character_icon_image = match q_character_icon.single_mut() {
@@ -164,7 +165,7 @@ fn update_displayed_character(
 
     let raw_name = &typewriter.character_name.clone().unwrap_or_default();
     if let Some(texture) = character_icon(&assets, raw_name) {
-        character_icon_image.image = texture;
+        character_icon_image.aseprite = texture;
     }
     name_text.0 = convert_name(raw_name);
 }

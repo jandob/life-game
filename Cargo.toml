@@ -37,6 +37,7 @@ strum_macros = "0.26.4"
 
 bevy = "0.19.1"
 bevy_asset_loader = { version = "0.27.0", features = ["2d", "standard_dynamic_assets"] }
+bevy_aseprite_ultra = "0.9"
 
 noisy_bevy = "0.14.0"
 bevy_tweening = { version = "0.16.0", features = ["bevy_ui"]}
@@ -50,6 +51,7 @@ serde = { version = "1.0.229", features = ["derive"] }
 ron = "0.12"
 
 [dev-dependencies]
+aseprite-loader = "0.4"
 strsim = "0.11.1"
 
 [workspace]

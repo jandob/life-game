@@ -1,5 +1,6 @@
 use bevy::audio::AudioSource;
 use bevy::prelude::*;
+use bevy_aseprite_ultra::prelude::Aseprite;
 use bevy_asset_loader::prelude::*;
 
 use crate::look::Look;
@@ -34,10 +35,10 @@ pub struct GameAssets {
     #[asset(path = "library/ui/dialogue_continue.png")]
     pub dialogue_continue: Handle<Image>,
 
-    #[asset(path = "library/portraits/samantha.png")]
-    pub samantha_icon: Handle<Image>,
-    #[asset(path = "library/portraits/player.png")]
-    pub player_icon: Handle<Image>,
+    #[asset(path = "library/portraits/samantha.aseprite")]
+    pub samantha_icon: Handle<Aseprite>,
+    #[asset(path = "library/portraits/player.aseprite")]
+    pub player_icon: Handle<Aseprite>,
 
     // --- SCENE IMAGES (`<<frame>>`, see story/transition.rs) ---
     #[asset(path = "story/frames/route1_notebook/f1.png")]

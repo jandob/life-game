@@ -3,6 +3,7 @@
 use std::str::FromStr;
 
 use bevy::prelude::*;
+use bevy_aseprite_ultra::prelude::Aseprite;
 
 use crate::npc::NpcDialogue;
 use crate::GameAssets;
@@ -25,7 +26,7 @@ pub fn speaker(raw_name: &str) -> Option<Speaker> {
     }
 }
 
-pub fn portrait(assets: &GameAssets, speaker: Speaker) -> Handle<Image> {
+pub fn portrait(assets: &GameAssets, speaker: Speaker) -> Handle<Aseprite> {
     match speaker {
         Speaker::Player => assets.player_icon.clone(),
         Speaker::Npc(NpcDialogue::Samantha) => assets.samantha_icon.clone(),
