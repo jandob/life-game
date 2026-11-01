@@ -8,7 +8,7 @@ the wall. A side-on table and bed are drawn. The door leaves are separate images
 game can hide them while a door is open. Stage 3 of the side-view plan replaces all of
 this with painted rooms.
 
-    python tools/mapgen/side_placeholders.py   # writes assets/library/rooms/*
+    python tools/mapgen/side_placeholders.py   # writes art/rooms/*, then run tools/aseprite/sync_gen.py
 """
 
 import json
@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[2]
 MAP = ROOT / "assets/maps/route1_flat.tmj"
-OUT = ROOT / "assets/library/rooms"
+OUT = ROOT / "art/rooms"  # gen sources; tools/aseprite/sync_gen.py builds the .aseprite files
 
 T = 48
 WIDTH, HEIGHT = 27 * T, 12 * T

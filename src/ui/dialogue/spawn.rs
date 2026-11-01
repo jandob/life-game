@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_aseprite_ultra::prelude::AseAnimation;
 use bevy_tweening::{lens::*, *};
 use bevy_yarnspinner::prelude::*;
 
@@ -162,7 +163,11 @@ fn spawn_dialogue_bottom(commands: &mut Commands, assets: &Res<GameAssets>) -> E
                 height: Val::Px(128.0),
                 ..default()
             },
-            ImageNode::new(assets.samantha_icon.clone()),
+            ImageNode::default(),
+            AseAnimation {
+                aseprite: assets.samantha_icon.clone(),
+                animation: bevy_aseprite_ultra::prelude::Animation::default(),
+            },
             ZIndex(1),
             DialogueCharacterIcon,
         ))

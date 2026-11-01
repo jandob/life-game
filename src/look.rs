@@ -408,7 +408,11 @@ mod tests {
         ron::from_str(ron_text).unwrap()
     }
 
-    const FULL: &str = include_str!("../assets/library/characters/looks/player_main/look.ron");
+    /// A PNG-strip look with every clip and a drawn left row.
+    const FULL: &str = r#"Look(id: "full", character: "player", cell: (128, 256), clips: {
+        Idle: (file: "idle.png", frames: 1, rows: [Down, Left, Right, Up], mirror_left: true),
+        Walk: (file: "walk.png", frames: 4, rows: [Right], mirror_left: true, frame_ms: 140),
+    })"#;
     const ASE: &str = include_str!("../assets/library/characters/looks/sam_casual/look.ron");
     const IDLE_ONLY: &str = r#"Look(id: "x", character: "samantha", cell: (128, 256), clips: {
         Idle: (file: "idle.png", frames: 1, rows: [Down, Left, Right, Up]),
@@ -426,6 +430,7 @@ mod tests {
         for text in [
             FULL,
             ASE,
+            include_str!("../assets/library/characters/looks/player_main/look.ron"),
             include_str!("../assets/library/characters/looks/sam_ponytail/look.ron"),
         ] {
             let look = parse(text);

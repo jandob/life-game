@@ -1,4 +1,4 @@
-"""Create or update the `gen` layer of the game's .aseprite files from generated strips.
+"""Create or update the `gen` layer of the game's .aseprite files from generated PNGs.
 
 The game loads .aseprite files directly (bevy_aseprite_ultra). Each file has two layers:
   gen    the generated pixels (locked), written only by this script
@@ -32,54 +32,76 @@ WALK_MS = 140
 
 @dataclass
 class TagSpec:
-    name: str  # "<clip>_<facing>", as src/look.rs expects
-    file: str  # strip in the gen folder
-    row: int
-    frames: int
-    ms: int
+    name: str | None  # "<clip>_<facing>" as src/look.rs expects; None for an untagged still image
+    file: str  # generated PNG, relative to the repo root
+    row: int = 0
+    frames: int = 1
+    ms: int = IDLE_MS
 
 
 @dataclass
-class LookSpec:
-    gen_dir: str  # generated strips (written by tools/sprite_gen/looks/build_looks.py)
+class AseSpec:
     target: str  # the .aseprite file the game loads
     tags: list[TagSpec]
+    cell: tuple[int, int] | None = None  # canvas size; None: the size of the (single) source image
 
 
-def look_tags() -> list[TagSpec]:
-    """Strip layout of build_looks.py: idle.png rows down, left, right, up; walk.png one row facing right."""
-    return [
-        TagSpec("idle_down", "idle.png", 0, 1, IDLE_MS),
-        TagSpec("idle_right", "idle.png", 2, 1, IDLE_MS),
-        TagSpec("idle_up", "idle.png", 3, 1, IDLE_MS),
-        TagSpec("walk_right", "walk.png", 0, 4, WALK_MS),
-    ]
+def look(character: str, look_id: str) -> AseSpec:
+    """A look built from build_looks.py strips: idle.png rows down, left, right, up; walk.png facing right."""
+    src = f"art/characters/{character}/looks/{look_id}"
+    return AseSpec(
+        f"assets/library/characters/looks/{look_id}/{look_id}.aseprite",
+        [
+            TagSpec("idle_down", f"{src}/idle.png", 0, 1, IDLE_MS),
+            TagSpec("idle_right", f"{src}/idle.png", 2, 1, IDLE_MS),
+            TagSpec("idle_up", f"{src}/idle.png", 3, 1, IDLE_MS),
+            TagSpec("walk_right", f"{src}/walk.png", 0, 4, WALK_MS),
+        ],
+        CELL,
+    )
 
+
+def still(src: str, target: str) -> AseSpec:
+    """A single untagged frame, canvas the size of the source image."""
+    return AseSpec(target, [TagSpec(None, src)])
+
+
+ROOMS = ["landing", "flat3a", "flat3b", "shop"]
+DOORS = ["door", "door_landing_3a", "door_landing_3b", "door_3a_inside", "door_3b_inside"]
+PORTRAITS = ["player", "samantha"]
 
 LOOKS = {
-    "sam_casual": LookSpec(
-        "art/characters/samantha/looks/sam_casual",
-        "assets/library/characters/looks/sam_casual/sam_casual.aseprite",
-        look_tags(),
-    ),
+    "player_main": look("player", "player_main"),
+    "sam_casual": look("samantha", "sam_casual"),
+    "sam_ponytail": look("samantha", "sam_ponytail"),
+    **{f"room_{r}": still(f"art/rooms/{r}/background.png", f"assets/library/rooms/{r}/background.aseprite")
+       for r in ROOMS},
+    **{d: still(f"art/rooms/doors/{d}.png", f"assets/library/rooms/doors/{d}.aseprite") for d in DOORS},
+    **{f"portrait_{p}": still(f"art/portraits/{p}.png", f"assets/library/portraits/{p}.aseprite")
+       for p in PORTRAITS},
 }
 
 
-def gen_frames(spec: LookSpec) -> list[tuple[int, Image.Image]]:
+def canvas(spec: AseSpec) -> tuple[int, int]:
+    return spec.cell or Image.open(ROOT / spec.tags[0].file).size
+
+
+def gen_frames(spec: AseSpec) -> list[tuple[int, Image.Image]]:
     """(duration, cell image) per frame, in tag order."""
+    cw, ch = canvas(spec)
     out = []
     for t in spec.tags:
-        strip = Image.open(ROOT / spec.gen_dir / t.file).convert("RGBA")
+        strip = Image.open(ROOT / t.file).convert("RGBA")
         for i in range(t.frames):
-            box = (i * CELL[0], t.row * CELL[1], (i + 1) * CELL[0], (t.row + 1) * CELL[1])
-            out.append((t.ms, strip.crop(box)))
+            out.append((t.ms, strip.crop((i * cw, t.row * ch, (i + 1) * cw, (t.row + 1) * ch))))
     return out
 
 
-def tag_ranges(spec: LookSpec) -> list[tuple[str, int, int]]:
+def tag_ranges(spec: AseSpec) -> list[tuple[str, int, int]]:
     out, start = [], 0
     for t in spec.tags:
-        out.append((t.name, start, start + t.frames - 1))
+        if t.name:
+            out.append((t.name, start, start + t.frames - 1))
         start += t.frames
     return out
 
@@ -95,7 +117,7 @@ def same(a: Image.Image, b: Image.Image) -> bool:
     return ImageChops.difference(_visible(a), _visible(b)).getbbox(alpha_only=False) is None
 
 
-def sync(name: str, spec: LookSpec, check: bool) -> bool:
+def sync(name: str, spec: AseSpec, check: bool) -> bool:
     """Returns True if the file is (now) up to date."""
     target = ROOT / spec.target
     frames = gen_frames(spec)
@@ -103,13 +125,15 @@ def sync(name: str, spec: LookSpec, check: bool) -> bool:
         if check:
             print(f"{name}: missing {spec.target}")
             return False
+        w, h = canvas(spec)
         ase = asefile.build(
-            CELL[0], CELL[1], LAYERS,
+            w, h, LAYERS,
             [(ms, {GEN: im}) for ms, im in frames],
             tag_ranges(spec),
             asefile.image_palette([im for _, im in frames]),
-            grid=CELL,
+            grid=spec.cell,
         )
+        target.parent.mkdir(parents=True, exist_ok=True)
         ase.save(target)
         print(f"{name}: created {spec.target}")
         return True
@@ -120,7 +144,7 @@ def sync(name: str, spec: LookSpec, check: bool) -> bool:
         print(f"{name}: {spec.target} has no 'gen' layer")
         return False
     gen = names.index("gen")
-    if ase.tags() != tag_ranges(spec) or len(ase.frames) != len(frames):
+    if ase.tags() != tag_ranges(spec) or len(ase.frames) != len(frames) or (ase.width, ase.height) != canvas(spec):
         print(f"{name}: frame or tag layout of {spec.target} differs from the spec; fix it by hand or rebuild")
         return False
 
@@ -148,7 +172,7 @@ def sync(name: str, spec: LookSpec, check: bool) -> bool:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--check", action="store_true", help="only report, exit 1 if anything is missing or stale")
-    ap.add_argument("looks", nargs="*", help="look ids (default: all)")
+    ap.add_argument("looks", nargs="*", help="names from LOOKS (default: all)")
     args = ap.parse_args()
     ok = True
     for name in args.looks or LOOKS:

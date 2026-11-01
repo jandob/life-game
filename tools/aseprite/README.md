@@ -3,6 +3,16 @@
 The game loads `.aseprite` files directly (bevy_aseprite_ultra), so saving in Aseprite is all it
 takes to change in-game art. No export step.
 
+## What is converted
+
+All in-house art the game shows: the three character looks, the four room backgrounds, the door
+leaves and the player and Samantha portraits (see `LOOKS` in `sync_gen.py`). The side-view map
+`assets/maps/side/route1.tmj` points its image layers at the `.aseprite` files; Tiled release builds
+from 1.11 on display them. Third-party art (forest NPCs, tilesets, UI) and the scenekit tile pages
+stay PNG.
+
+Still images (rooms, doors, portraits) are one untagged frame with the same `gen` and `paint` layers.
+
 ## Layout of a look file
 
 `assets/library/characters/looks/<look>/<look>.aseprite`, canvas 128x256 (one look cell, feet on row 245).

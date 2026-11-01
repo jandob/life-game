@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use bevy::asset::{io::Reader, AssetLoader, LoadContext};
 use bevy::prelude::*;
+use bevy_aseprite_ultra::prelude::Aseprite;
 use serde_json::Value;
 
 use crate::character::SPRITE_FEET_BELOW_CENTRE;
@@ -28,11 +29,19 @@ pub struct TiledMap {
     pub background: Option<Color>,
 }
 
+/// The picture of an image layer: a plain image, or an `.aseprite` file (Tiled 1.11+
+/// release builds show those too) drawn by bevy_aseprite_ultra.
+#[derive(Clone)]
+pub enum LayerArt {
+    Image(Handle<Image>),
+    Aseprite(Handle<Aseprite>),
+}
+
 /// An image layer of the map: one picture placed at its offset.
 #[derive(Clone)]
 pub struct ImageLayer {
     pub name: String,
-    pub image: Handle<Image>,
+    pub art: LayerArt,
     /// Top-left corner in Tiled px
     pub offset: Vec2,
     /// Draws over the characters (`above = true`), e.g. a foreground
@@ -321,7 +330,11 @@ impl AssetLoader for TiledMapLoader {
                         .map_err(|e| format!("Invalid image layer path {image_src}: {e}"))?;
                     image_layers.push(ImageLayer {
                         name: layer["name"].as_str().unwrap_or("").to_string(),
-                        image: load_context.load(image_path),
+                        art: if image_src.ends_with(".aseprite") || image_src.ends_with(".ase") {
+                            LayerArt::Aseprite(load_context.load(image_path))
+                        } else {
+                            LayerArt::Image(load_context.load(image_path))
+                        },
                         offset: Vec2::new(
                             layer["offsetx"].as_f64().unwrap_or(0.0) as f32,
                             layer["offsety"].as_f64().unwrap_or(0.0) as f32,
